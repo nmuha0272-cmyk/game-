@@ -1,6 +1,5 @@
 [gd_scene load_steps=19 format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/interactables/light_switch.tscn" id="2_switch"]
 [ext_resource type="Script" path="res://scripts/environment/flickering_light.gd" id="3_flicker"]
 [ext_resource type="Script" path="res://scripts/environment/pulsing_light.gd" id="4_pulse"]
@@ -9,6 +8,7 @@
 [ext_resource type="AudioStream" path="res://assets/audio/ambient_drone.wav" id="7_drone"]
 [ext_resource type="AudioStream" path="res://assets/audio/distant_clank.wav" id="8_clank"]
 [ext_resource type="AudioStream" path="res://assets/audio/metal_creak.wav" id="9_creak"]
+[ext_resource type="Script" path="res://scripts/player/player_spawner.gd" id="10_spawner"]
 
 [sub_resource type="FastNoiseLite" id="Noise_grime"]
 frequency = 0.03
@@ -280,5 +280,23 @@ sounds = Array[AudioStream]([ExtResource("8_clank"), ExtResource("9_creak")])
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 1.3, -3)
 light = NodePath("../Lights/CeilingLight1")
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
+[node name="Players" type="Node3D" parent="."]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
+spawn_path = NodePath("../Players")
+script = ExtResource("10_spawner")
+spawn_points = NodePath("../SpawnPoints")
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="Spawn1" type="Marker3D" parent="SpawnPoints"]
 transform = Transform3D(0.977, 0, 0.211, 0, 1, 0, -0.211, 0, 0.977, -3, 0, 8.5)
+
+[node name="Spawn2" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(0.977, 0, 0.211, 0, 1, 0, -0.211, 0, 0.977, -1.5, 0, 8.5)
+
+[node name="Spawn3" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(0.977, 0, 0.211, 0, 1, 0, -0.211, 0, 0.977, -3, 0, 7)
+
+[node name="Spawn4" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(0.977, 0, 0.211, 0, 1, 0, -0.211, 0, 0.977, -1.5, 0, 7)

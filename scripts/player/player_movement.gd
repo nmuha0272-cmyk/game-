@@ -1,6 +1,8 @@
 class_name Player
 extends CharacterBody3D
 ## Moves the player around: walking, sprinting (uses stamina) and crouching.
+## Only the computer that owns this player runs the movement. Everyone else
+## receives the position through the MultiplayerSynchronizer.
 
 @export var walk_speed := 3.5
 @export var sprint_speed := 6.0
@@ -14,8 +16,14 @@ extends CharacterBody3D
 ## How fast the camera slides down/up when crouching.
 @export var crouch_transition_speed := 10.0
 
+# These are synced over the network so other players see/hear us correctly.
 var is_sprinting := false
-var is_crouching := false
+var is_grounded := true
+var is_crouching := false:
+	set(value):
+		is_crouching = value
+		if is_node_ready():
+			_apply_crouch_shape()
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _head_stand_y := 0.0
@@ -26,11 +34,22 @@ var _head_stand_y := 0.0
 @onready var body_mesh: MeshInstance3D = $BodyMesh
 
 
+func _enter_tree() -> void:
+	# The player's name is the network ID of the person who controls it.
+	var id := name.to_int()
+	if id > 0:
+		set_multiplayer_authority(id)
+
+
 func _ready() -> void:
 	_head_stand_y = head.position.y
+	_apply_crouch_shape()
 
 
 func _physics_process(delta: float) -> void:
+	if not is_multiplayer_authority():
+		return
+
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
 
@@ -56,14 +75,15 @@ func _physics_process(delta: float) -> void:
 	velocity.z = lerpf(velocity.z, direction.z * speed, weight)
 
 	move_and_slide()
+	is_grounded = is_on_floor()
 
 
 func _update_crouch(delta: float) -> void:
 	var wants_crouch := Input.is_action_pressed("crouch")
 	if wants_crouch and not is_crouching:
-		_set_crouching(true)
+		is_crouching = true
 	elif not wants_crouch and is_crouching and _can_stand_up():
-		_set_crouching(false)
+		is_crouching = false
 
 	# Slide the head smoothly to its new height.
 	var target_y := _head_stand_y
@@ -73,9 +93,9 @@ func _update_crouch(delta: float) -> void:
 			clampf(crouch_transition_speed * delta, 0.0, 1.0))
 
 
-func _set_crouching(value: bool) -> void:
-	is_crouching = value
-	var height := crouch_height if value else stand_height
+## Shrinks or grows the body. Runs automatically when is_crouching changes.
+func _apply_crouch_shape() -> void:
+	var height := crouch_height if is_crouching else stand_height
 	var capsule := collision_shape.shape as CapsuleShape3D
 	capsule.height = height
 	# Keep the bottom of the capsule on the floor.

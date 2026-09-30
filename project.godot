@@ -12,8 +12,12 @@ config_version=5
 
 config/name="Subject Zero"
 config/description="First-person 1-4 player co-op horror game."
-run/main_scene="res://scenes/test_room/test_room.tscn"
+run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.4", "Forward Plus")
+
+[autoload]
+
+NetworkManager="*res://scripts/autoload/network_manager.gd"
 
 [display]
 

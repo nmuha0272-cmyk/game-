@@ -198,12 +198,12 @@ res://
 - [x] Test: walk around the test room with the flashlight
 
 ### Phase 3 — Multiplayer Foundation
-- [ ] `NetworkManager` autoload: host a game, join by IP, handle disconnects
-- [ ] Simple main menu: Host, Join (IP box), Quit
-- [ ] Spawn a player for each person who joins (up to 4)
-- [ ] Sync player movement, camera direction, and flashlight on/off
-- [ ] Each player only controls their own character
-- [ ] Test: run two copies of the game on one computer and see both players move
+- [x] `NetworkManager` autoload: host a game, join by IP, handle disconnects
+- [x] Simple main menu: Host, Join (IP box), Quit
+- [x] Spawn a player for each person who joins (up to 4)
+- [x] Sync player movement, camera direction, and flashlight on/off
+- [x] Each player only controls their own character
+- [x] Test: run two copies of the game on one computer and see both players move
 
 ### Phase 4 — Lobby and Character Select
 - [ ] Lobby screen listing connected players

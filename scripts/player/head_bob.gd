@@ -5,7 +5,7 @@ extends Camera3D
 
 signal stepped
 
-@export var body: CharacterBody3D
+@export var body: Player
 ## Meters walked per footstep.
 @export var step_length := 1.8
 @export var bob_height := 0.05
@@ -21,7 +21,7 @@ var _phase := 0.0
 func _process(delta: float) -> void:
 	var speed := Vector3(body.velocity.x, 0.0, body.velocity.z).length()
 
-	if body.is_on_floor() and speed > 0.5:
+	if body.is_grounded and speed > 0.5:
 		var old_phase := _phase
 		# The phase goes up by PI for every step walked.
 		_phase += speed * delta / step_length * PI
