@@ -1,0 +1,71 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player_movement.gd" id="1_move"]
+[ext_resource type="Script" path="res://scripts/player/stamina.gd" id="2_stamina"]
+[ext_resource type="Script" path="res://scripts/player/player_look.gd" id="3_look"]
+[ext_resource type="Script" path="res://scripts/player/head_bob.gd" id="4_bob"]
+[ext_resource type="Script" path="res://scripts/player/flashlight.gd" id="5_flash"]
+[ext_resource type="Script" path="res://scripts/player/interactor.gd" id="6_interact"]
+[ext_resource type="Script" path="res://scripts/player/footsteps.gd" id="7_steps"]
+[ext_resource type="AudioStream" path="res://assets/audio/footstep_placeholder.wav" id="8_sound"]
+[ext_resource type="PackedScene" path="res://ui/player_hud.tscn" id="9_hud"]
+
+[sub_resource type="CapsuleShape3D" id="Shape_body"]
+resource_local_to_scene = true
+radius = 0.35
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="Mesh_body"]
+radius = 0.35
+height = 1.8
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_move")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("Shape_body")
+
+[node name="BodyMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_body")
+
+[node name="Stamina" type="Node" parent="."]
+script = ExtResource("2_stamina")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+script = ExtResource("3_look")
+
+[node name="Camera3D" type="Camera3D" parent="Head" node_paths=PackedStringArray("body")]
+current = true
+fov = 75.0
+script = ExtResource("4_bob")
+body = NodePath("../..")
+
+[node name="Flashlight" type="SpotLight3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.15, 0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 3.0
+shadow_enabled = true
+spot_range = 20.0
+spot_attenuation = 0.8
+spot_angle = 20.0
+spot_angle_attenuation = 0.6
+script = ExtResource("5_flash")
+
+[node name="InteractRay" type="RayCast3D" parent="Head/Camera3D" node_paths=PackedStringArray("player")]
+target_position = Vector3(0, 0, -2.5)
+script = ExtResource("6_interact")
+player = NodePath("../../..")
+
+[node name="Footsteps" type="AudioStreamPlayer3D" parent="." node_paths=PackedStringArray("player", "head_bob")]
+stream = ExtResource("8_sound")
+script = ExtResource("7_steps")
+player = NodePath("..")
+head_bob = NodePath("../Head/Camera3D")
+
+[node name="HUD" parent="." node_paths=PackedStringArray("stamina", "interactor") instance=ExtResource("9_hud")]
+stamina = NodePath("../Stamina")
+interactor = NodePath("../Head/Camera3D/InteractRay")

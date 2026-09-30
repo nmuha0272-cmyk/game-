@@ -1,0 +1,36 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/interactables/light_switch.gd" id="1_switch"]
+
+[sub_resource type="BoxShape3D" id="Shape_plate"]
+size = Vector3(0.18, 0.26, 0.12)
+
+[sub_resource type="BoxMesh" id="Mesh_plate"]
+size = Vector3(0.14, 0.22, 0.04)
+
+[sub_resource type="StandardMaterial3D" id="Mat_plate"]
+albedo_color = Color(0.7, 0.68, 0.6, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_lever"]
+size = Vector3(0.03, 0.09, 0.03)
+
+[sub_resource type="StandardMaterial3D" id="Mat_lever"]
+albedo_color = Color(0.6, 0.1, 0.08, 1)
+
+[node name="LightSwitch" type="StaticBody3D"]
+script = ExtResource("1_switch")
+prompt_text = "Flip switch"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.06)
+shape = SubResource("Shape_plate")
+
+[node name="Plate" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
+mesh = SubResource("Mesh_plate")
+surface_material_override/0 = SubResource("Mat_plate")
+
+[node name="Lever" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.055)
+mesh = SubResource("Mesh_lever")
+surface_material_override/0 = SubResource("Mat_lever")

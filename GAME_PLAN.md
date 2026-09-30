@@ -190,12 +190,12 @@ res://
       crouch (Ctrl), interact (E), ability (Q), flashlight (F)
 
 ### Phase 2 — Single-Player First-Person Controller
-- [ ] First-person camera with mouse look
-- [ ] Walking, sprinting with stamina, crouching
-- [ ] Head bob and footstep sounds (placeholder sounds are fine)
-- [ ] Flashlight toggle with a narrow cone of light
-- [ ] Interaction system: look at an object, press E, it responds
-- [ ] Test: walk around the test room with the flashlight
+- [x] First-person camera with mouse look
+- [x] Walking, sprinting with stamina, crouching
+- [x] Head bob and footstep sounds (placeholder sounds are fine)
+- [x] Flashlight toggle with a narrow cone of light
+- [x] Interaction system: look at an object, press E, it responds
+- [x] Test: walk around the test room with the flashlight
 
 ### Phase 3 — Multiplayer Foundation
 - [ ] `NetworkManager` autoload: host a game, join by IP, handle disconnects
