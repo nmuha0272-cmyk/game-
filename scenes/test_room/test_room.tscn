@@ -1,25 +1,77 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/interactables/light_switch.tscn" id="2_switch"]
+[ext_resource type="Script" path="res://scripts/environment/flickering_light.gd" id="3_flicker"]
+[ext_resource type="Script" path="res://scripts/environment/pulsing_light.gd" id="4_pulse"]
+[ext_resource type="Script" path="res://scripts/environment/random_ambient_sounds.gd" id="5_ambient"]
+[ext_resource type="AudioStream" path="res://assets/audio/fluorescent_buzz.wav" id="6_buzz"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient_drone.wav" id="7_drone"]
+[ext_resource type="AudioStream" path="res://assets/audio/distant_clank.wav" id="8_clank"]
+[ext_resource type="AudioStream" path="res://assets/audio/metal_creak.wav" id="9_creak"]
 
-[sub_resource type="StandardMaterial3D" id="Mat_gray"]
-albedo_color = Color(0.5, 0.5, 0.5, 1)
-roughness = 0.9
+[sub_resource type="FastNoiseLite" id="Noise_grime"]
+frequency = 0.03
+fractal_octaves = 5
+
+[sub_resource type="Gradient" id="Gradient_grime"]
+colors = PackedColorArray(0.55, 0.55, 0.52, 1, 1, 1, 1, 1)
+
+[sub_resource type="NoiseTexture2D" id="Tex_grime"]
+seamless = true
+color_ramp = SubResource("Gradient_grime")
+noise = SubResource("Noise_grime")
+
+[sub_resource type="StandardMaterial3D" id="Mat_concrete"]
+albedo_color = Color(0.36, 0.37, 0.35, 1)
+albedo_texture = SubResource("Tex_grime")
+roughness = 0.95
+uv1_scale = Vector3(0.3, 0.3, 0.3)
+uv1_triplanar = true
 
 [sub_resource type="StandardMaterial3D" id="Mat_box"]
-albedo_color = Color(0.35, 0.35, 0.38, 1)
-roughness = 0.8
+albedo_color = Color(0.3, 0.29, 0.26, 1)
+albedo_texture = SubResource("Tex_grime")
+roughness = 0.85
+uv1_scale = Vector3(0.6, 0.6, 0.6)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="Mat_tube1"]
+albedo_color = Color(0.8, 0.9, 0.85, 1)
+emission_enabled = true
+emission = Color(0.8, 1, 0.9, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_tube2"]
+albedo_color = Color(0.8, 0.9, 0.85, 1)
+emission_enabled = true
+emission = Color(0.8, 1, 0.9, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_red_lamp"]
+albedo_color = Color(0.5, 0.05, 0.03, 1)
+emission_enabled = true
+emission = Color(1, 0.08, 0.04, 1)
+emission_energy_multiplier = 4.0
 
 [sub_resource type="Environment" id="Env_room"]
 background_mode = 1
-background_color = Color(0.02, 0.02, 0.03, 1)
+background_color = Color(0, 0, 0, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.25, 0.25, 0.3, 1)
-ambient_light_energy = 0.4
-fog_enabled = true
-fog_light_color = Color(0.1, 0.1, 0.12, 1)
-fog_density = 0.02
+ambient_light_color = Color(0.2, 0.26, 0.28, 1)
+ambient_light_energy = 0.3
+tonemap_mode = 2
+tonemap_exposure = 1.2
+ssao_enabled = true
+glow_enabled = true
+glow_bloom = 0.05
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.035
+volumetric_fog_albedo = Color(0.75, 0.8, 0.8, 1)
+volumetric_fog_length = 40.0
+adjustment_enabled = true
+adjustment_contrast = 1.15
+adjustment_saturation = 0.65
 
 [node name="TestRoom" type="Node3D"]
 
@@ -32,37 +84,98 @@ environment = SubResource("Env_room")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
 use_collision = true
 size = Vector3(20, 0.5, 20)
-material = SubResource("Mat_gray")
+material = SubResource("Mat_concrete")
 
 [node name="Ceiling" type="CSGBox3D" parent="Geometry"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.25, 0)
 use_collision = true
 size = Vector3(20, 0.5, 20)
-material = SubResource("Mat_gray")
+material = SubResource("Mat_concrete")
 
-[node name="WallNorth" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -10.25)
+[node name="WallNorthLeft" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.25, 2, -10.25)
 use_collision = true
-size = Vector3(21, 4, 0.5)
-material = SubResource("Mat_gray")
+size = Vector3(2.5, 4, 0.5)
+material = SubResource("Mat_concrete")
+
+[node name="WallNorthRight" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 2, -10.25)
+use_collision = true
+size = Vector3(16.5, 4, 0.5)
+material = SubResource("Mat_concrete")
+
+[node name="WallNorthAboveDoor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 3.5, -10.25)
+use_collision = true
+size = Vector3(2, 1, 0.5)
+material = SubResource("Mat_concrete")
 
 [node name="WallSouth" type="CSGBox3D" parent="Geometry"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 10.25)
 use_collision = true
 size = Vector3(21, 4, 0.5)
-material = SubResource("Mat_gray")
+material = SubResource("Mat_concrete")
 
 [node name="WallEast" type="CSGBox3D" parent="Geometry"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.25, 2, 0)
 use_collision = true
 size = Vector3(0.5, 4, 20)
-material = SubResource("Mat_gray")
+material = SubResource("Mat_concrete")
 
 [node name="WallWest" type="CSGBox3D" parent="Geometry"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.25, 2, 0)
 use_collision = true
 size = Vector3(0.5, 4, 20)
-material = SubResource("Mat_gray")
+material = SubResource("Mat_concrete")
+
+[node name="Corridor" type="Node3D" parent="Geometry"]
+
+[node name="CorridorFloor" type="CSGBox3D" parent="Geometry/Corridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.25, -14.5)
+use_collision = true
+size = Vector3(3, 0.5, 9)
+material = SubResource("Mat_concrete")
+
+[node name="CorridorCeiling" type="CSGBox3D" parent="Geometry/Corridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 3.25, -14.5)
+use_collision = true
+size = Vector3(3, 0.5, 9)
+material = SubResource("Mat_concrete")
+
+[node name="CorridorWallWest" type="CSGBox3D" parent="Geometry/Corridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.25, 1.5, -14.5)
+use_collision = true
+size = Vector3(0.5, 3, 8)
+material = SubResource("Mat_concrete")
+
+[node name="CorridorWallEast" type="CSGBox3D" parent="Geometry/Corridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.75, 1.5, -14.5)
+use_collision = true
+size = Vector3(0.5, 3, 8)
+material = SubResource("Mat_concrete")
+
+[node name="CorridorWallEnd" type="CSGBox3D" parent="Geometry/Corridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.5, -18.75)
+use_collision = true
+size = Vector3(3, 3, 0.5)
+material = SubResource("Mat_concrete")
+
+[node name="Fixtures" type="Node3D" parent="Geometry"]
+
+[node name="Tube1" type="CSGBox3D" parent="Geometry/Fixtures"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3.95, -3)
+size = Vector3(1.4, 0.08, 0.2)
+material = SubResource("Mat_tube1")
+
+[node name="Tube2" type="CSGBox3D" parent="Geometry/Fixtures"]
+transform = Transform3D(0.97, -0.242, 0, 0.242, 0.97, 0, 0, 0, 1, 4, 3.85, 4)
+size = Vector3(1.4, 0.08, 0.2)
+material = SubResource("Mat_tube2")
+
+[node name="RedLamp" type="CSGBox3D" parent="Geometry/Fixtures"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 2.6, -18.45)
+size = Vector3(0.25, 0.14, 0.12)
+material = SubResource("Mat_red_lamp")
 
 [node name="Boxes" type="Node3D" parent="."]
 
@@ -91,33 +204,81 @@ material = SubResource("Mat_box")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 2, 3)
 use_collision = true
 size = Vector3(1, 4, 1)
-material = SubResource("Mat_gray")
+material = SubResource("Mat_concrete")
 
 [node name="LowWall" type="CSGBox3D" parent="Boxes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.6, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.6, 0.5)
 use_collision = true
 size = Vector3(5, 1.2, 0.4)
 material = SubResource("Mat_box")
 
+[node name="ToppledCrate" type="CSGBox3D" parent="Boxes"]
+transform = Transform3D(0.8154, -0.2114, 0.5390, 0.4412, 0.8297, -0.3420, -0.3749, 0.5167, 0.7698, -6.5, 0.5, -14.8)
+use_collision = true
+size = Vector3(0.9, 0.9, 0.9)
+material = SubResource("Mat_box")
+
 [node name="Lights" type="Node3D" parent="."]
 
-[node name="CeilingLight1" type="OmniLight3D" parent="Lights"]
+[node name="CeilingLight1" type="OmniLight3D" parent="Lights" node_paths=PackedStringArray("buzz")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3.6, -3)
-light_color = Color(0.9, 0.95, 1, 1)
-light_energy = 1.5
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.4
 shadow_enabled = true
 omni_range = 9.0
+script = ExtResource("3_flicker")
+fixture_material = SubResource("Mat_tube1")
+buzz = NodePath("Buzz")
+brokenness = 0.1
 
-[node name="CeilingLight2" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3.6, 4)
-light_color = Color(0.9, 0.95, 1, 1)
-light_energy = 1.0
+[node name="Buzz" type="AudioStreamPlayer3D" parent="Lights/CeilingLight1"]
+stream = ExtResource("6_buzz")
+volume_db = -22.0
+unit_size = 2.0
+autoplay = true
+
+[node name="CeilingLight2" type="OmniLight3D" parent="Lights" node_paths=PackedStringArray("buzz")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3.5, 4)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.1
 shadow_enabled = true
 omni_range = 8.0
+script = ExtResource("3_flicker")
+fixture_material = SubResource("Mat_tube2")
+buzz = NodePath("Buzz")
+brokenness = 0.75
+
+[node name="Buzz" type="AudioStreamPlayer3D" parent="Lights/CeilingLight2"]
+stream = ExtResource("6_buzz")
+volume_db = -18.0
+unit_size = 2.0
+autoplay = true
+
+[node name="EmergencyLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 2.5, -18.2)
+light_color = Color(1, 0.08, 0.04, 1)
+light_energy = 2.5
+shadow_enabled = true
+omni_range = 7.0
+script = ExtResource("4_pulse")
+fixture_material = SubResource("Mat_red_lamp")
+
+[node name="Sound" type="Node3D" parent="."]
+
+[node name="AmbientDrone" type="AudioStreamPlayer" parent="Sound"]
+stream = ExtResource("7_drone")
+volume_db = -12.0
+autoplay = true
+
+[node name="RandomSounds" type="AudioStreamPlayer3D" parent="Sound"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -4.25)
+unit_size = 8.0
+script = ExtResource("5_ambient")
+sounds = Array[AudioStream]([ExtResource("8_clank"), ExtResource("9_creak")])
 
 [node name="LightSwitch" parent="." node_paths=PackedStringArray("light") instance=ExtResource("2_switch")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 1.3, -3)
 light = NodePath("../Lights/CeilingLight1")
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -7, 0, 7)
+transform = Transform3D(0.977, 0, 0.211, 0, 1, 0, -0.211, 0, 0.977, -3, 0, 8.5)
