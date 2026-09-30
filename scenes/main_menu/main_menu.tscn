@@ -44,6 +44,13 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
+[node name="NameEdit" type="LineEdit" parent="Center/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Your name"
+alignment = 1
+max_length = 20
+
 [node name="HostButton" type="Button" parent="Center/Box"]
 unique_name_in_owner = true
 layout_mode = 2

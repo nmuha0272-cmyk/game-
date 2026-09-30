@@ -16,6 +16,9 @@ extends CharacterBody3D
 ## How fast the camera slides down/up when crouching.
 @export var crouch_transition_speed := 10.0
 
+## Which character this is (see characters.gd). Set by the spawner.
+var character: int = Characters.Id.NONE
+
 # These are synced over the network so other players see/hear us correctly.
 var is_sprinting := false
 var is_grounded := true

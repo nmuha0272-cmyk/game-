@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3]
+
+[sub_resource type="StandardMaterial3D" id="Mat_metal"]
+albedo_color = Color(0.62, 0.62, 0.58, 1)
+metallic = 0.9
+roughness = 0.35
+
+[sub_resource type="BoxMesh" id="Mesh_tag"]
+size = Vector3(0.03, 0.05, 0.003)
+
+[sub_resource type="TorusMesh" id="Mesh_chain"]
+inner_radius = 0.045
+outer_radius = 0.048
+
+[node name="DogTags" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.05)
+
+[node name="Tag1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.966, -0.259, 0, 0.259, 0.966, 0, 0, 0, 1, 0, -0.04, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_tag")
+surface_material_override/0 = SubResource("Mat_metal")
+
+[node name="Tag2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, 0.342, 0, -0.342, 0.94, 0, 0, 0, 1, 0.012, -0.045, 0.005)
+cast_shadow = 0
+mesh = SubResource("Mesh_tag")
+surface_material_override/0 = SubResource("Mat_metal")
+
+[node name="Chain" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.03, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_chain")
+surface_material_override/0 = SubResource("Mat_metal")

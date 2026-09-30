@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="StandardMaterial3D" id="Mat_body"]
+albedo_color = Color(0.16, 0.15, 0.14, 1)
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="Mat_trim"]
+albedo_color = Color(0.7, 0.7, 0.68, 1)
+metallic = 0.8
+roughness = 0.3
+
+[sub_resource type="BoxMesh" id="Mesh_body"]
+size = Vector3(0.13, 0.08, 0.05)
+
+[sub_resource type="CylinderMesh" id="Mesh_lens"]
+top_radius = 0.026
+bottom_radius = 0.028
+height = 0.045
+
+[sub_resource type="BoxMesh" id="Mesh_top"]
+size = Vector3(0.13, 0.015, 0.05)
+
+[node name="FilmCamera" type="Node3D"]
+transform = Transform3D(0.342, 0, 0.94, 0, 1, 0, -0.94, 0, 0.342, -0.03, 0.01, 0)
+
+[node name="Body" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Mesh_body")
+surface_material_override/0 = SubResource("Mat_body")
+
+[node name="Top" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.047, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_top")
+surface_material_override/0 = SubResource("Mat_trim")
+
+[node name="Lens" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0.015, 0, -0.045)
+cast_shadow = 0
+mesh = SubResource("Mesh_lens")
+surface_material_override/0 = SubResource("Mat_trim")

@@ -10,6 +10,8 @@
 [ext_resource type="AudioStream" path="res://assets/audio/footstep_placeholder.wav" id="8_sound"]
 [ext_resource type="PackedScene" path="res://ui/player_hud.tscn" id="9_hud"]
 [ext_resource type="Script" path="res://scripts/player/player_ownership.gd" id="10_owner"]
+[ext_resource type="Script" path="res://scripts/player/held_item.gd" id="11_held"]
+[ext_resource type="Script" path="res://scripts/player/nameplate.gd" id="12_nameplate"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 resource_local_to_scene = true
@@ -90,12 +92,18 @@ body = NodePath("../..")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.15, 0)
 light_color = Color(1, 0.95, 0.85, 1)
 light_energy = 3.0
+light_cull_mask = 4294967293
 shadow_enabled = true
 spot_range = 20.0
 spot_attenuation = 0.8
 spot_angle = 20.0
 spot_angle_attenuation = 0.6
 script = ExtResource("5_flash")
+
+[node name="HeldItem" type="Node3D" parent="Head/Camera3D" node_paths=PackedStringArray("player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26, -0.24, -0.45)
+script = ExtResource("11_held")
+player = NodePath("../../..")
 
 [node name="InteractRay" type="RayCast3D" parent="Head/Camera3D" node_paths=PackedStringArray("player")]
 target_position = Vector3(0, 0, -2.5)
@@ -111,6 +119,15 @@ head_bob = NodePath("../Head/Camera3D")
 [node name="HUD" parent="." node_paths=PackedStringArray("stamina", "interactor") instance=ExtResource("9_hud")]
 stamina = NodePath("../Stamina")
 interactor = NodePath("../Head/Camera3D/InteractRay")
+
+[node name="Nameplate" type="Label3D" parent="." node_paths=PackedStringArray("player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, 0)
+billboard = 1
+modulate = Color(0.85, 0.9, 0.88, 0.85)
+font_size = 28
+outline_size = 6
+script = ExtResource("12_nameplate")
+player = NodePath("..")
 
 [node name="Ownership" type="Node" parent="."]
 script = ExtResource("10_owner")

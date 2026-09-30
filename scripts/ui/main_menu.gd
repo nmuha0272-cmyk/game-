@@ -8,6 +8,7 @@ signal join_requested(address: String)
 @onready var host_button: Button = %HostButton
 @onready var join_button: Button = %JoinButton
 @onready var quit_button: Button = %QuitButton
+@onready var name_edit: LineEdit = %NameEdit
 @onready var ip_edit: LineEdit = %IPEdit
 @onready var status_label: Label = %StatusLabel
 
@@ -20,6 +21,10 @@ func _ready() -> void:
 	show_status("")
 
 
+func get_player_name() -> String:
+	return name_edit.text.strip_edges()
+
+
 func show_status(text: String) -> void:
 	status_label.text = text
 
@@ -28,3 +33,4 @@ func set_buttons_enabled(enabled: bool) -> void:
 	host_button.disabled = not enabled
 	join_button.disabled = not enabled
 	ip_edit.editable = enabled
+	name_edit.editable = enabled

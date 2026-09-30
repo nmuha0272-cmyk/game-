@@ -1,6 +1,6 @@
 extends MultiplayerSpawner
-## Creates a player for each person in the game, and removes them when
-## they leave. Only the host decides when to spawn. The MultiplayerSpawner
+## Creates a player for each person in the lobby when the level loads, and
+## removes them if they leave. Only the host decides when to spawn. The MultiplayerSpawner
 ## then runs `_create_player` on every computer, so everyone makes the same
 ## player in the same spot.
 
@@ -17,11 +17,13 @@ func _ready() -> void:
 	spawn_function = _create_player
 	if not multiplayer.is_server():
 		return
-	multiplayer.peer_connected.connect(_add_player)
 	multiplayer.peer_disconnected.connect(_remove_player)
-	# The host is always player 1. Also add anyone already connected.
-	_add_player(1)
-	for id in multiplayer.get_peers():
+	var ids: Array = GameState.players.keys()
+	if ids.is_empty():
+		# Running the level by itself (no lobby), e.g. "Run This Scene" in the editor.
+		ids = [1]
+	ids.sort()
+	for id in ids:
 		_add_player(id)
 
 
@@ -29,7 +31,8 @@ func _ready() -> void:
 func _add_player(id: int) -> void:
 	if players.has_node(str(id)) or players.get_child_count() >= NetworkManager.MAX_PLAYERS:
 		return
-	var data := {"id": id, "position": Vector3.ZERO, "yaw": 0.0}
+	var data := {"id": id, "character": GameState.get_character(id),
+			"position": Vector3.ZERO, "yaw": 0.0}
 	var point := _free_spawn_point()
 	if point:
 		data.position = point.position
@@ -42,6 +45,7 @@ func _create_player(data: Dictionary) -> Node:
 	var player := PLAYER_SCENE.instantiate()
 	# The name is the player's network ID. The player uses it to know who controls it.
 	player.name = str(data.id)
+	player.character = data.character
 	player.position = data.position
 	player.rotation.y = data.yaw
 	return player

@@ -152,6 +152,99 @@ Every puzzle below requires teamwork.
 
 ---
 
+## Chapter 1 Lore and Experiments
+
+**The facility:** Site 12, hidden under the "Blackwater Weather Station."
+**The program:** Project IRONWOOD, a 1960s government program to create
+stronger, tougher soldiers. Volunteers were told it was vitamin research.
+
+### Personal experiment threads
+
+In Chapter 1, each character discovers one experiment connected to their own
+past. This introduces every character's story and teases their spotlight chapter.
+
+**Personal items rule (teamwork):** Any player can find a personal item, but it
+only fully "unlocks" when its owner picks it up or looks at it. The owner then
+says a short voice line and the full lore entry appears in everyone's journal.
+Other players see a hint like *"This belongs to the Son."* so they must bring
+their teammate to it.
+
+| Character | Experiment they discover | What they learn | Teases |
+|---|---|---|---|
+| **Journalist** | **Serum H-7 "Growth"** — the experiment that created Subject 7, the Long Man | Her missing informant worked here and was trying to expose H-7 before he vanished | Chapter 1 main story |
+| **Engineer** | **The Growth Chamber** — the machine that delivered H-7 | He designed it. His signature is on the blueprint | Chapter 2 |
+| **Guard** | **The Level B Containment Order** | His name is on the order to seal the lower levels "regardless of personnel inside" | Chapter 3 |
+| **Son** | **The IRONWOOD Volunteer Program** | His parent was Volunteer 14, and was moved to a secret "Program Zero" | Chapter 4 |
+
+### Subject 7 — "The Long Man" (Chapter 1 monster)
+
+A young soldier who volunteered for Serum H-7. It was meant to make bones
+stronger. Instead, his bones never stopped growing. His medical files show his
+height climbing week after week until staff note that he "no longer fits in
+his cell." He was moved to the maintenance tunnels, which is where the team
+meets him. He is sensitive to light (weak to the Journalist's flash).
+
+### Lore placement, room by room
+
+Types of lore: **Files** (folders and papers), **Reel Tapes** (audio logs
+played on tape machines), **Photos** (taken by the Journalist), **Posters**,
+**Environmental clues** (things written on walls or left behind), and
+**Personal Items** (tied to one character). Items marked **Required** are
+needed to finish the chapter; everything else is optional to find.
+
+**Room 1 — Weather Station Exterior**
+- **Environmental:** Rusted sign, "Property of U.S. Government — No Trespassing"
+- **Personal Item (Journalist):** Her informant's abandoned car. Inside is his
+  notebook with the words "H-7" and "they're still down there" circled
+- **Photo:** Journalist can photograph fresh drag marks leading to the station,
+  proving something still moves around here
+
+**Room 2 — Station Office**
+- **File:** Staff directory. One name is scratched out (the Engineer's)
+- **Personal Item (Engineer):** His old desk nameplate and coffee mug, still
+  sitting where he left them
+- **Environmental:** A corkboard with the Journalist's own newspaper articles
+  pinned to it. Someone was watching her
+- **Reel Tape 1 (Required):** The facility director welcoming new "volunteers"
+  and promising them they'll serve their country. The keypad code for the
+  Split Code puzzle is mentioned at the end
+
+**Room 3 — Hidden Stairwell**
+- **Poster:** "STRONGER SOLDIERS. SAFER NATION." with a smiling soldier
+- **Personal Item (Guard):** A dusty clipboard with the guard duty roster for
+  the night of the sealing. Frank's name is on it
+- **Environmental:** Tally marks scratched into the wall, hundreds of them
+
+**Room 4 — Maintenance Tunnels**
+- **File:** Subject 7 medical log, showing his height growing each week
+- **Environmental:** A height chart painted on the wall with marks climbing
+  higher and higher until they go past the ceiling
+- **Personal Item (Son):** His parent's volunteer ID card: "Volunteer 14,"
+  stamped *TRANSFERRED — PROGRAM ZERO*
+- **Personal Item (Son):** A crayon drawing he made as a child and mailed to
+  his parent, taped to the inside of a locker
+- **Photo:** Journalist photographs the Long Man. This photo is proof of the
+  experiments and completes her Chapter 1 story
+
+**Room 5 — Elevator Room**
+- **Personal Item (Engineer):** The Growth Chamber blueprint with his signature
+- **File (Required):** Level B Containment Order, signed and stamped, with
+  Frank listed as the guard responsible. Needed to learn the elevator override
+- **Reel Tape 2:** A panicked scientist's final recording as the alarms go off
+  and the doors begin to seal
+- **Environmental:** The elevator control panel shows "LEVEL B — SEALED BY
+  ORDER" as the team rides down, right before the cable snaps
+
+### Lore tasks for Claude Code
+- [ ] Lore item data format (title, type, text or audio, owner character if personal)
+- [ ] Journal menu with tabs: Files, Tapes, Photos, Personal
+- [ ] Personal item system with owner voice lines and hints for other players
+- [ ] Tape machine interactable that plays Reel Tapes out loud for everyone nearby
+- [ ] Journalist photo system that recognizes photographable lore targets
+- [ ] Place all Chapter 1 lore items listed above (placeholder text is fine at first)
+
+---
+
 ## Project Folder Structure
 
 ```
@@ -206,10 +299,10 @@ res://
 - [x] Test: run two copies of the game on one computer and see both players move
 
 ### Phase 4 — Lobby and Character Select
-- [ ] Lobby screen listing connected players
-- [ ] Character select: each of the four characters can only be picked once
-- [ ] Host presses Start when everyone has picked
-- [ ] Each character shows their held item in first-person view (placeholder shapes)
+- [x] Lobby screen listing connected players
+- [x] Character select: each of the four characters can only be picked once
+- [x] Host presses Start when everyone has picked
+- [x] Each character shows their held item in first-person view (placeholder shapes)
 
 ### Phase 5 — Character Abilities
 - [ ] Base ability script with cooldown handling (shared by all four)
