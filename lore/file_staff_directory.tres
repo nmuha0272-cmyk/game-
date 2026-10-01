@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_staff_directory"
+title = "Site 12 Staff Directory"
+type = 0
+text = "BLACKWATER WEATHER STATION / SITE 12\nStaff directory, revised 1963.\n\nDr. H. Calloway, Director, Project IRONWOOD\nDr. M. Reyes, Medical\n[NAME SCRATCHED OUT], Engineering, Growth Chamber design\nF. Kowalski, Security, Level B\n\nAll staff: volunteers are not to be told the true purpose of Serum H-7."
+owner_character = -1
+voice_line = ""

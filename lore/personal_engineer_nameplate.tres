@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_engineer_nameplate"
+title = "Desk Nameplate and Mug"
+type = 3
+text = "A brass nameplate, worn smooth: CHIEF ENGINEER, GROWTH CHAMBER.\nNext to it, a chipped coffee mug, still sitting where it was left decades ago."
+owner_character = 2
+voice_line = "That's... my desk. They never even moved my mug."

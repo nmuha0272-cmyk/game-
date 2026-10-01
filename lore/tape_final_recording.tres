@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "tape_final_recording"
+title = "Reel Tape 2: Final Recording"
+type = 1
+text = "DR. REYES: This is Dr. Reyes, Medical. If anyone finds this...\nDR. REYES: The alarms started twenty minutes ago. Level B is sealing.\nDR. REYES: Subject 7 is out of his cell. He doesn't fit through the doors anymore, so he... folds.\nDR. REYES: The guard on duty has the order. He's closing the doors with people still inside.\nDR. REYES: God forgive us. It was never vitamins.\n(Something heavy scrapes along the ceiling. The tape ends.)"
+owner_character = -1
+voice_line = ""

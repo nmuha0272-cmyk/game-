@@ -6,6 +6,8 @@ extends StaticBody3D
 signal photographed(by: Player)
 
 @export var evidence_name := "Evidence"
+## Optional story entry the photo unlocks in the journal.
+@export var lore_entry: LoreEntry
 
 var is_photographed := false
 
@@ -31,6 +33,8 @@ func interact(_by: Player) -> void:
 func photograph(by: Player) -> void:
 	if multiplayer.is_server() and not is_photographed:
 		_set_photographed.rpc(by.name.to_int())
+		if lore_entry:
+			GameState.server_unlock_lore(lore_entry.id, by.name.to_int())
 
 
 @rpc("authority", "call_local", "reliable")

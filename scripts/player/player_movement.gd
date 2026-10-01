@@ -99,6 +99,8 @@ func _physics_process(delta: float) -> void:
 
 	# Input.get_vector gives x = left/right, y = forward/back (forward is negative).
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	if GameState.menu_open:
+		input = Vector2.ZERO
 	var direction := (transform.basis * Vector3(input.x, 0.0, input.y)).normalized()
 
 	var moving_forward := input.y < -0.1
@@ -135,7 +137,7 @@ func _update_crouch(delta: float) -> void:
 	# Slide the head smoothly to its new height.
 	var target_y := _head_stand_y
 	if is_downed:
-		target_y = 0.4
+		target_y = 0.35
 	elif is_crouching:
 		target_y -= stand_height - crouch_height
 	head.position.y = lerpf(head.position.y, target_y,
@@ -149,8 +151,15 @@ func _apply_crouch_shape() -> void:
 	capsule.height = height
 	# Keep the bottom of the capsule on the floor.
 	collision_shape.position.y = height / 2.0
-	body_mesh.scale.y = height / stand_height
-	body_mesh.position.y = height / 2.0
+	if is_downed:
+		# Lie on the floor.
+		body_mesh.scale.y = 1.0
+		body_mesh.rotation_degrees = Vector3(0, 0, 90)
+		body_mesh.position.y = 0.35
+	else:
+		body_mesh.rotation_degrees = Vector3.ZERO
+		body_mesh.scale.y = height / stand_height
+		body_mesh.position.y = height / 2.0
 
 
 ## True if there is room above our head to stand back up.
@@ -166,10 +175,14 @@ func _follow_carrier(carrier: Player, delta: float) -> void:
 	head.position.y = lerpf(head.position.y, 0.4, clampf(crouch_transition_speed * delta, 0.0, 1.0))
 
 
-# Teammates can look at a downed player and press E to help them up.
+# Teammates can look at a downed player and hold E to help them up.
 # (The Interactor calls these, just like on doors and switches.)
 func can_interact(by: Player) -> bool:
 	return downed.can_be_helped(by)
+
+
+func get_hold_time(_by: Player) -> float:
+	return DownedState.HELP_UP_TIME
 
 
 func get_prompt(by: Player) -> String:

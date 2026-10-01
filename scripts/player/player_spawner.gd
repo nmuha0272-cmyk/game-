@@ -37,7 +37,26 @@ func _add_player(id: int) -> void:
 	if point:
 		data.position = point.position
 		data.yaw = point.rotation.y
-	spawn(data)
+	# Restarting after a wipe: appear at the last checkpoint instead.
+	var checkpoint := _current_checkpoint()
+	if checkpoint:
+		data.position = checkpoint.get_spawn_position(players.get_child_count())
+	var player := spawn(data)
+	# Give back the gear they had at the checkpoint (once everyone has the player).
+	if GameState.checkpoint_inventories.has(id):
+		var slots: Array = GameState.checkpoint_inventories[id].duplicate(true)
+		get_tree().create_timer(0.5).timeout.connect(func() -> void:
+			if is_instance_valid(player):
+				player.inventory.server_set_slots(slots))
+
+
+func _current_checkpoint() -> Checkpoint:
+	if GameState.checkpoint_name.is_empty():
+		return null
+	for checkpoint: Checkpoint in get_tree().get_nodes_in_group("checkpoints"):
+		if checkpoint.name == GameState.checkpoint_name:
+			return checkpoint
+	return null
 
 
 ## Runs on every computer. Builds the player from the host's spawn data.

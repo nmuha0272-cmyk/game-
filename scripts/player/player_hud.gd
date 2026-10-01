@@ -20,11 +20,13 @@ extends CanvasLayer
 @onready var gas_overlay: ColorRect = $GasOverlay
 @onready var hotbar: HBoxContainer = $Hotbar
 @onready var battery_label: Label = $BatteryLabel
+@onready var subtitle_label: Label = $SubtitleLabel
 
 var _slot_labels: Array[Label] = []
 var _slot_panels: Array[PanelContainer] = []
 
 var _message_tween: Tween
+var _subtitle_left := 0.0
 
 
 func _ready() -> void:
@@ -71,8 +73,18 @@ func _process(_delta: float) -> void:
 
 	_show_gas_warning()
 	downed_overlay.visible = player.is_downed
-	if player.is_downed:
-		status_label.text = "You are down! A teammate can help you up."
+	if player.downed.is_out:
+		var watching: String = player.get_node("Spectator").watched_name()
+		status_label.text = "You bled out. You'll be back at the next checkpoint." + \
+				("\nWatching %s (click to switch)" % watching if not watching.is_empty() else "")
+	elif player.is_downed:
+		status_label.text = "You are down! %ds left. A teammate can help you up (hold E)." % \
+				ceili(player.downed.time_left)
+
+	if _subtitle_left > 0.0:
+		_subtitle_left -= _delta
+		if _subtitle_left <= 0.0:
+			subtitle_label.text = ""
 
 
 func _show_gas_warning() -> void:
@@ -112,6 +124,16 @@ func _refresh_hotbar() -> void:
 		_slot_labels[i].text = "%d  %s" % [i + 1, item_name]
 		var selected := i == inventory.active_slot
 		_slot_panels[i].modulate = Color(1, 1, 1, 1) if selected else Color(1, 1, 1, 0.45)
+
+
+## Someone speaks near a spot (a voice line or a tape). Only shown if your
+## player is close enough to hear it.
+func show_subtitle_near(where: Vector3, hearing_range: float, speaker: String, text: String,
+		seconds: float) -> void:
+	if player.global_position.distance_to(where) > hearing_range:
+		return
+	subtitle_label.text = ("%s: \"%s\"" % [speaker, text]) if not speaker.is_empty() else text
+	_subtitle_left = seconds
 
 
 func show_message(text: String) -> void:

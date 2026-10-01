@@ -26,6 +26,7 @@
 [ext_resource type="Script" path="res://scripts/environment/toxic_gas.gd" id="24_x"]
 [ext_resource type="Script" path="res://scripts/environment/bake_navigation_on_start.gd" id="25_x"]
 [ext_resource type="Script" path="res://scripts/environment/flickering_light.gd" id="26_x"]
+[ext_resource type="Script" path="res://scripts/game/team_monitor.gd" id="99_team"]
 [ext_resource type="AudioStream" path="res://assets/audio/ambient_drone.wav" id="27_x"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_28"]
@@ -2013,3 +2014,6 @@ transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.5, 0, -1)
 
 [node name="Spawn4" type="Marker3D" parent="SpawnPoints"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.5, 0, 1)
+
+[node name="TeamMonitor" type="Node" parent="."]
+script = ExtResource("99_team")

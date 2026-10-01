@@ -47,7 +47,7 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not is_local() or player.is_downed:
+	if not is_local() or player.is_downed or GameState.menu_open:
 		return
 	if event.is_action_pressed("ability"):
 		_on_pressed()

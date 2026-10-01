@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_guard_roster"
+title = "Guard Duty Roster"
+type = 3
+text = "Guard duty roster, Level B, the night of the sealing.\n22:00 - 06:00: KOWALSKI, F.\n\nThe signature at the bottom is Frank's."
+owner_character = 3
+voice_line = "That's my name. That was the night... I signed it. I was there."

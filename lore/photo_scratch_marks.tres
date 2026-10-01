@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "photo_scratch_marks"
+title = "Photo: Scratch Marks"
+type = 2
+text = "A photo of deep scratch marks on the wall, more than two and a half meters off the floor.\nWhatever made them was very, very tall."
+owner_character = -1
+voice_line = ""

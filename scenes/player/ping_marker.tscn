@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/ping_marker.gd" id="1_ping"]
+[ext_resource type="AudioStream" path="res://assets/audio/ping.wav" id="2_blip"]
+
+[sub_resource type="SphereMesh" id="Mesh_dot"]
+radius = 0.08
+height = 0.16
+
+[node name="PingMarker" type="Node3D"]
+script = ExtResource("1_ping")
+
+[node name="Dot" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Mesh_dot")
+
+[node name="Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+pixel_size = 0.0015
+billboard = 1
+no_depth_test = true
+fixed_size = true
+font_size = 22
+outline_size = 6
+render_priority = 10
+text = "Here"
+
+[node name="Blip" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_blip")
+unit_size = 20.0

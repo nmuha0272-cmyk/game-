@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_poster_stronger"
+title = "Poster: Stronger Soldiers"
+type = 0
+text = "STRONGER SOLDIERS. SAFER NATION.\n\nA smiling soldier salutes under bright red letters.\nSomeone has scratched the soldier's eyes out."
+owner_character = -1
+voice_line = ""

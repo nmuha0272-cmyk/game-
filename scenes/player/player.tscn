@@ -17,6 +17,8 @@
 [ext_resource type="Script" path="res://scripts/items/inventory.gd" id="15_inventory"]
 [ext_resource type="Script" path="res://scripts/items/inventory_controls.gd" id="16_inv_controls"]
 [ext_resource type="Script" path="res://scripts/items/gear_hand.gd" id="17_gear_hand"]
+[ext_resource type="Script" path="res://scripts/player/pinger.gd" id="18_pinger"]
+[ext_resource type="Script" path="res://scripts/game/spectator.gd" id="19_spectator"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 resource_local_to_scene = true
@@ -136,6 +138,14 @@ head_bob = NodePath("../Head/Camera3D")
 script = ExtResource("16_inv_controls")
 inventory = NodePath("../Inventory")
 interactor = NodePath("../Head/Camera3D/InteractRay")
+
+[node name="Pinger" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("18_pinger")
+player = NodePath("..")
+
+[node name="Spectator" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("19_spectator")
+player = NodePath("..")
 
 [node name="AbilityHolder" type="Node" parent="." node_paths=PackedStringArray("player")]
 script = ExtResource("14_abilities")

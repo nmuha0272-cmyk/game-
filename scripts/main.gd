@@ -10,9 +10,12 @@ extends Node
 ## "res://scenes/test_room/puzzle_lab.tscn" (don't commit that change).
 const STORY_START := "res://scenes/test_room/test_room.tscn"
 
+var _current_level := STORY_START
+
 @onready var level_root: Node = $Level
 @onready var menu = $MainMenu
 @onready var lobby = $Lobby
+@onready var settings_menu: MenuBase = $Menus/Settings
 
 
 func _ready() -> void:
@@ -20,10 +23,13 @@ func _ready() -> void:
 	menu.join_requested.connect(_on_join_requested)
 	lobby.start_requested.connect(_on_start_requested)
 	lobby.leave_requested.connect(_on_leave_requested)
+	$Menus/PauseMenu.leave_requested.connect(_on_leave_requested)
+	menu.settings_requested.connect(settings_menu.open)
 	NetworkManager.connected_to_server.connect(_on_connected_to_server)
 	NetworkManager.connection_failed.connect(_on_connection_failed)
 	NetworkManager.server_disconnected.connect(_on_server_disconnected)
 	GameState.game_started.connect(_on_game_started)
+	GameState.restart_requested.connect(_restart_level)
 
 
 func _on_host_requested() -> void:
@@ -60,7 +66,26 @@ func _on_start_requested() -> void:
 func _on_game_started() -> void:
 	lobby.hide()
 	if multiplayer.is_server():
+		_current_level = STORY_START
 		level_root.add_child(load(STORY_START).instantiate())
+
+
+## Host only: the whole team went down. Reload the level; players appear at
+## the last checkpoint with the gear they had there.
+func _restart_level() -> void:
+	if not multiplayer.is_server():
+		return
+	for child in level_root.get_children():
+		child.queue_free()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	level_root.add_child(load(_current_level).instantiate())
+	_fade_in_everyone.rpc()
+
+
+@rpc("authority", "call_local", "reliable")
+func _fade_in_everyone() -> void:
+	get_tree().call_group("screen_fader", "fade_in")
 
 
 func _on_leave_requested() -> void:
@@ -88,6 +113,9 @@ func _show_lobby() -> void:
 func _return_to_menu(message: String) -> void:
 	for child in level_root.get_children():
 		child.queue_free()
+	for open_menu in get_tree().get_nodes_in_group("menus"):
+		open_menu.hide()
+	$ScreenFader.fade_in(0.1)
 	GameState.reset()
 	get_window().title = "Subject Zero"
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

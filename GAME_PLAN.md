@@ -236,11 +236,11 @@ needed to finish the chapter; everything else is optional to find.
   ORDER" as the team rides down, right before the cable snaps
 
 ### Lore tasks for Claude Code
-- [ ] Lore item data format (title, type, text or audio, owner character if personal)
-- [ ] Journal menu with tabs: Files, Tapes, Photos, Personal
-- [ ] Personal item system with owner voice lines and hints for other players
-- [ ] Tape machine interactable that plays Reel Tapes out loud for everyone nearby
-- [ ] Journalist photo system that recognizes photographable lore targets
+- [x] Lore item data format (title, type, text or audio, owner character if personal)
+- [x] Journal menu with tabs: Files, Tapes, Photos, Personal
+- [x] Personal item system with owner voice lines and hints for other players
+- [x] Tape machine interactable that plays Reel Tapes out loud for everyone nearby
+- [x] Journalist photo system that recognizes photographable lore targets
 - [ ] Place all Chapter 1 lore items listed above (placeholder text is fine at first)
 
 ---
@@ -343,11 +343,11 @@ res://
 - [x] Test: every puzzle with 2 players, and confirm none can be solved solo
 
 ### Phase 9 — Core Game Systems
-- [ ] Downed and revive system (30 second timer)
-- [ ] Checkpoints and restart when the whole team is downed
-- [ ] Collectible lore: notes, reel tapes, and photos with a journal menu
-- [ ] Ping system: press a button to mark an item or spot for teammates
-- [ ] Pause menu and settings (volume, mouse sensitivity, brightness)
+- [x] Downed and revive system (30 second timer)
+- [x] Checkpoints and restart when the whole team is downed
+- [x] Collectible lore: notes, reel tapes, and photos with a journal menu
+- [x] Ping system: press a button to mark an item or spot for teammates
+- [x] Pause menu and settings (volume, mouse sensitivity, brightness)
 
 ### Phase 10 — Chapter 1: "The Surface"
 

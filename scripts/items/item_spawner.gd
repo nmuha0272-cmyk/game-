@@ -25,7 +25,10 @@ func _ready() -> void:
 		# Wait one frame so the level is fully loaded on everyone's computer.
 		await get_tree().process_frame
 		for point: Node3D in spawn_points.get_children():
-			spawn({"kind": "item", "item": Items.create(point.item_id),
+			var item := Items.create(point.item_id)
+			if not point.lore_id.is_empty():
+				item["lore"] = point.lore_id
+			spawn({"kind": "item", "item": item,
 					"position": point.global_position, "velocity": Vector3.ZERO})
 
 

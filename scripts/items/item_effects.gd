@@ -15,7 +15,7 @@ static func server_use(item: Dictionary, player: Player, target_id: int) -> bool
 			return true
 		"medkit":
 			var target := Player.find(player.get_tree(), target_id)
-			if target and target.is_downed \
+			if target and target.is_downed and not target.downed.is_out \
 					and target.global_position.distance_to(player.global_position) <= 1.6:
 				target.downed.server_set_downed(false)
 				return true

@@ -20,6 +20,19 @@
 [ext_resource type="Script" path="res://scripts/items/item_spawn_point.gd" id="19_item_point"]
 [ext_resource type="Script" path="res://scripts/interactables/door_lock.gd" id="20_lock"]
 [ext_resource type="Script" path="res://scripts/environment/toxic_gas.gd" id="21_gas"]
+[ext_resource type="Script" path="res://scripts/game/team_monitor.gd" id="22_team"]
+[ext_resource type="Script" path="res://scripts/game/checkpoint.gd" id="23_checkpoint"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_file.tscn" id="24_lore_file"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_poster.tscn" id="25_lore_poster"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_personal.tscn" id="26_lore_personal"]
+[ext_resource type="PackedScene" path="res://scenes/lore/tape_machine.tscn" id="27_tape"]
+[ext_resource type="Resource" path="res://lore/file_staff_directory.tres" id="28_l1"]
+[ext_resource type="Resource" path="res://lore/file_poster_stronger.tres" id="29_l2"]
+[ext_resource type="Resource" path="res://lore/photo_scratch_marks.tres" id="30_l3"]
+[ext_resource type="Resource" path="res://lore/personal_son_volunteer_id.tres" id="31_l4"]
+[ext_resource type="Resource" path="res://lore/personal_engineer_nameplate.tres" id="32_l5"]
+[ext_resource type="Resource" path="res://lore/personal_journalist_notebook.tres" id="33_l6"]
+[ext_resource type="Resource" path="res://lore/personal_guard_roster.tres" id="34_l7"]
 
 [sub_resource type="FastNoiseLite" id="Noise_grime"]
 frequency = 0.03
@@ -81,6 +94,9 @@ density = 1.2
 albedo = Color(0.55, 0.75, 0.25, 1)
 emission = Color(0.05, 0.09, 0.02, 1)
 edge_fade = 0.4
+
+[sub_resource type="BoxShape3D" id="Shape_checkpoint"]
+size = Vector3(3, 3, 2.5)
 
 [sub_resource type="Environment" id="Env_room"]
 background_mode = 1
@@ -358,6 +374,7 @@ shadow_enabled = true
 omni_range = 8.0
 
 [node name="ScratchMarks" parent="AbilityTest" instance=ExtResource("14_evidence")]
+lore_entry = ExtResource("30_l3")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.98, 2.2, -3)
 
 [node name="TestKnockdownButton" parent="AbilityTest" instance=ExtResource("15_knockdown")]
@@ -477,6 +494,7 @@ item_id = "walkie"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.2, 8.5)
 script = ExtResource("19_item_point")
 item_id = "reel_tape"
+lore_id = "tape_final_recording"
 
 [node name="CarBattery12" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.3, 8.8)
@@ -487,6 +505,65 @@ item_id = "car_battery"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.8, 0.2, -8.8)
 script = ExtResource("19_item_point")
 item_id = "fuse"
+
+[node name="TeamMonitor" type="Node" parent="."]
+script = ExtResource("22_team")
+
+[node name="Checkpoints" type="Node3D" parent="."]
+
+[node name="StorageCheckpoint" type="Area3D" parent="Checkpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 1.5, 4.5)
+script = ExtResource("23_checkpoint")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/StorageCheckpoint"]
+shape = SubResource("Shape_checkpoint")
+
+[node name="Spawn1" type="Marker3D" parent="Checkpoints/StorageCheckpoint"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -1.5, -1)
+
+[node name="Spawn2" type="Marker3D" parent="Checkpoints/StorageCheckpoint"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, -1)
+
+[node name="Spawn3" type="Marker3D" parent="Checkpoints/StorageCheckpoint"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, -1.5, -1)
+
+[node name="Spawn4" type="Marker3D" parent="Checkpoints/StorageCheckpoint"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, -2.2)
+
+[node name="Lore" type="Node3D" parent="."]
+
+[node name="StaffDirectory" parent="Lore" instance=ExtResource("24_lore_file")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 1.0, -3.75)
+entry = ExtResource("28_l1")
+
+[node name="Poster" parent="Lore" instance=ExtResource("25_lore_poster")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 1.8, 1)
+entry = ExtResource("29_l2")
+
+[node name="VolunteerID" parent="Lore" instance=ExtResource("26_lore_personal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.0, 3.9)
+entry = ExtResource("31_l4")
+
+[node name="Nameplate" parent="Lore" instance=ExtResource("26_lore_personal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0.0, 9.5)
+entry = ExtResource("32_l5")
+
+[node name="InformantNotebook" parent="Lore" instance=ExtResource("26_lore_personal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.2, 0.5)
+entry = ExtResource("33_l6")
+
+[node name="GuardRoster" parent="Lore" instance=ExtResource("26_lore_personal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0.0, -9.5)
+entry = ExtResource("34_l7")
+
+[node name="TapeMachine" parent="Lore" instance=ExtResource("27_tape")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -9.6, 0, 8.5)
+
+[node name="TapeSpawn" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.2, 0.2, 7.5)
+script = ExtResource("19_item_point")
+item_id = "reel_tape"
+lore_id = "tape_welcome"
 
 [node name="Players" type="Node3D" parent="."]
 

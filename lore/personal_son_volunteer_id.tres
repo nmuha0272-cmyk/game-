@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_son_volunteer_id"
+title = "Volunteer 14 ID Card"
+type = 3
+text = "VOLUNTEER IDENTIFICATION, PROJECT IRONWOOD\nVolunteer No. 14\nStatus stamped in red: TRANSFERRED - PROGRAM ZERO\n\nThe photo on the card has been torn off."
+owner_character = 0
+voice_line = "Volunteer 14... that was Dad's number. Transferred to... Program Zero? What is that?"

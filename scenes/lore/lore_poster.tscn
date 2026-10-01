@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_item.gd" id="1_lore"]
+
+[sub_resource type="BoxShape3D" id="Shape"]
+size = Vector3(0.7, 1.0, 0.06)
+
+[sub_resource type="BoxMesh" id="Mesh"]
+size = Vector3(0.65, 0.95, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="Mat"]
+albedo_color = Color(0.7, 0.62, 0.48, 1)
+roughness = 1.0
+
+[node name="LorePoster" type="StaticBody3D"]
+script = ExtResource("1_lore")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.03)
+shape = SubResource("Shape")
+
+[node name="Paper" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.01)
+mesh = SubResource("Mesh")
+surface_material_override/0 = SubResource("Mat")
+
+[node name="Text" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0.02)
+pixel_size = 0.004
+modulate = Color(0.6, 0.08, 0.05, 1)
+text = "STRONGER SOLDIERS.
+SAFER NATION."
+font_size = 36
+outline_size = 0

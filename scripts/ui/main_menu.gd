@@ -4,6 +4,7 @@ extends Control
 
 signal host_requested
 signal join_requested(address: String)
+signal settings_requested
 
 @onready var host_button: Button = %HostButton
 @onready var join_button: Button = %JoinButton
@@ -18,6 +19,7 @@ func _ready() -> void:
 	join_button.pressed.connect(func() -> void: join_requested.emit(ip_edit.text))
 	ip_edit.text_submitted.connect(func(text: String) -> void: join_requested.emit(text))
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
+	%SettingsButton.pressed.connect(func() -> void: settings_requested.emit())
 	show_status("")
 
 

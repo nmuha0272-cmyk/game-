@@ -5,6 +5,9 @@ extends Node
 
 signal players_changed
 signal game_started
+## The whole team went down: main.gd reloads the level from the checkpoint.
+signal restart_requested
+signal journal_changed
 
 ## Player network ID -> {"name": String, "character": Characters.Id}
 var players := {}
@@ -13,6 +16,17 @@ var game_in_progress := false
 var local_player_name := "Player"
 ## If the host refused to let us in, this says why.
 var rejection_reason := ""
+## True while a menu (pause, journal, settings) is open on this computer,
+## so the player doesn't walk around or use things behind it.
+var menu_open := false
+
+## The last checkpoint reached (the host decides; used when restarting).
+var checkpoint_name := ""
+var checkpoint_order := 0
+## Everyone's gear when the checkpoint was reached (network ID -> slots).
+var checkpoint_inventories := {}
+## Lore entry IDs the team has found. Shared by everyone.
+var journal: Array = []
 
 
 func _ready() -> void:
@@ -31,6 +45,11 @@ func reset() -> void:
 	players.clear()
 	game_in_progress = false
 	rejection_reason = ""
+	checkpoint_name = ""
+	checkpoint_order = 0
+	checkpoint_inventories = {}
+	journal = []
+	menu_open = false
 	players_changed.emit()
 
 
@@ -148,3 +167,54 @@ func _reject(reason: String) -> void:
 func _start_game() -> void:
 	game_in_progress = true
 	game_started.emit()
+
+
+
+# --- Checkpoints and restarting -------------------------------------------
+
+## Host only: the team reached a checkpoint. Save everyone's gear.
+func server_reach_checkpoint(checkpoint: Checkpoint) -> void:
+	checkpoint_name = checkpoint.name
+	checkpoint_order = checkpoint.order
+	checkpoint_inventories.clear()
+	for player: Player in get_tree().get_nodes_in_group("players"):
+		checkpoint_inventories[player.name.to_int()] = player.inventory.slots.duplicate(true)
+	_announce.rpc("Checkpoint reached.")
+
+
+## Host only: everyone is down. Fade out on every screen, then restart.
+func server_team_wiped() -> void:
+	_show_wipe.rpc()
+	await get_tree().create_timer(3.0).timeout
+	restart_requested.emit()
+
+
+@rpc("authority", "call_local", "reliable")
+func _show_wipe() -> void:
+	get_tree().call_group("screen_fader", "fade_out", "Everyone is down...\nBack to the last checkpoint.")
+
+
+@rpc("authority", "call_local", "reliable")
+func _announce(text: String) -> void:
+	get_tree().call_group("player_hud", "show_message", text)
+
+
+# --- Journal (lore) -------------------------------------------------------
+
+## Host only: someone found a lore entry. Everyone gets it in their journal.
+func server_unlock_lore(entry_id: String, finder_id: int) -> void:
+	if not multiplayer.is_server() or entry_id in journal:
+		return
+	_unlock_lore.rpc(entry_id, finder_id)
+
+
+@rpc("authority", "call_local", "reliable")
+func _unlock_lore(entry_id: String, finder_id: int) -> void:
+	if entry_id in journal:
+		return
+	journal.append(entry_id)
+	journal_changed.emit()
+	var entry := Lore.get_entry(entry_id)
+	if entry:
+		get_tree().call_group("player_hud", "show_message", "%s found: %s  (J to read)" % [
+				get_player_name(finder_id), entry.title])

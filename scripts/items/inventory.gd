@@ -82,6 +82,13 @@ func server_add(item: Dictionary) -> bool:
 	return true
 
 
+## Host only: replace all slots at once (restoring gear at a checkpoint).
+func server_set_slots(new_slots: Array) -> void:
+	if multiplayer.is_server():
+		slots = new_slots
+		_send_to_everyone()
+
+
 func server_remove(slot: int) -> Dictionary:
 	var item := get_item(slot)
 	if multiplayer.is_server() and not item.is_empty():

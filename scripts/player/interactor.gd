@@ -64,6 +64,8 @@ func _cancel_hold() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if GameState.menu_open:
+		return
 	if event.is_action_pressed("interact") and current_target and not player.is_downed:
 		var hold_time: float = current_target.get_hold_time(player) \
 				if current_target.has_method("get_hold_time") else 0.0
