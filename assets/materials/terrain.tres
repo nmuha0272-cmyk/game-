@@ -1,0 +1,30 @@
+[gd_resource type="ShaderMaterial" load_steps=14 format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/terrain.gdshader" id="1"]
+[ext_resource type="Texture2D" path="res://assets/textures/cinder_block_albedo.jpg" id="2"]
+[ext_resource type="Texture2D" path="res://assets/textures/cinder_block_normal.jpg" id="3"]
+[ext_resource type="Texture2D" path="res://assets/textures/cinder_block_rough.jpg" id="4"]
+[ext_resource type="Texture2D" path="res://assets/textures/concrete_floor_albedo.jpg" id="5"]
+[ext_resource type="Texture2D" path="res://assets/textures/concrete_floor_normal.jpg" id="6"]
+[ext_resource type="Texture2D" path="res://assets/textures/concrete_floor_rough.jpg" id="7"]
+[ext_resource type="Texture2D" path="res://assets/textures/concrete_wall_albedo.jpg" id="8"]
+[ext_resource type="Texture2D" path="res://assets/textures/concrete_wall_normal.jpg" id="9"]
+[ext_resource type="Texture2D" path="res://assets/textures/concrete_wall_rough.jpg" id="10"]
+[ext_resource type="Texture2D" path="res://assets/textures/ground_albedo.jpg" id="11"]
+[ext_resource type="Texture2D" path="res://assets/textures/ground_normal.jpg" id="12"]
+[ext_resource type="Texture2D" path="res://assets/textures/ground_rough.jpg" id="13"]
+
+[resource]
+shader = ExtResource("1")
+shader_parameter/ground_albedo = ExtResource("11")
+shader_parameter/ground_normal = ExtResource("12")
+shader_parameter/ground_rough = ExtResource("13")
+shader_parameter/floor_albedo = ExtResource("5")
+shader_parameter/floor_normal = ExtResource("6")
+shader_parameter/floor_rough = ExtResource("7")
+shader_parameter/wall_albedo = ExtResource("2")
+shader_parameter/wall_normal = ExtResource("3")
+shader_parameter/wall_rough = ExtResource("4")
+shader_parameter/ceiling_albedo = ExtResource("8")
+shader_parameter/ceiling_normal = ExtResource("9")
+shader_parameter/ceiling_rough = ExtResource("10")

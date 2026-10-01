@@ -1,5 +1,6 @@
 [gd_scene load_steps=8 format=3]
 
+[ext_resource type="Material" path="res://assets/materials/rusty_metal.tres" id="rusty_metal"]
 [ext_resource type="Script" path="res://scripts/interactables/door.gd" id="1_door"]
 [ext_resource type="AudioStream" path="res://assets/audio/door_creak.wav" id="2_creak"]
 [ext_resource type="AudioStream" path="res://assets/audio/door_pound.wav" id="3_pound"]
@@ -28,12 +29,12 @@ shape = SubResource("Shape_panel")
 [node name="Panel" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.5, 0)
 mesh = SubResource("Mesh_panel")
-surface_material_override/0 = SubResource("Mat_panel")
+surface_material_override/0 = ExtResource("rusty_metal")
 
 [node name="Handle" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 1.1, 0)
 mesh = SubResource("Mesh_handle")
-surface_material_override/0 = SubResource("Mat_panel")
+surface_material_override/0 = ExtResource("rusty_metal")
 
 [node name="Sound" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.5, 0)

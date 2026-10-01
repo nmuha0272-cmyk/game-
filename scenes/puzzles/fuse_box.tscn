@@ -1,5 +1,6 @@
 [gd_scene load_steps=8 format=3]
 
+[ext_resource type="Material" path="res://assets/materials/rusty_metal.tres" id="rusty_metal"]
 [ext_resource type="Script" path="res://scripts/puzzles/item_socket.gd" id="1_x"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2"]
@@ -37,7 +38,7 @@ shape = SubResource("BoxShape3D_2")
 [node name="Box" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.09)
 mesh = SubResource("BoxMesh_4")
-surface_material_override/0 = SubResource("StandardMaterial3D_3")
+surface_material_override/0 = ExtResource("rusty_metal")
 
 [node name="Slot" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.185)

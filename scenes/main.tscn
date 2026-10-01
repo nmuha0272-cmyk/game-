@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/main_menu/main_menu.tscn" id="2_menu"]
@@ -7,6 +7,11 @@
 [ext_resource type="Script" path="res://scripts/ui/settings_menu.gd" id="5_settings"]
 [ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="6_pause"]
 [ext_resource type="Script" path="res://scripts/ui/screen_fader.gd" id="7_fader"]
+[ext_resource type="Script" path="res://scripts/ui/screen_effects.gd" id="8_fx"]
+[ext_resource type="Shader" path="res://assets/shaders/horror_screen.gdshader" id="9_fxshader"]
+
+[sub_resource type="ShaderMaterial" id="FxMaterial"]
+shader = ExtResource("9_fxshader")
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -39,3 +44,16 @@ journal_menu = NodePath("../Journal")
 
 [node name="ScreenFader" type="CanvasLayer" parent="."]
 script = ExtResource("7_fader")
+
+[node name="ScreenEffects" type="CanvasLayer" parent="."]
+layer = -1
+script = ExtResource("8_fx")
+
+[node name="Effect" type="ColorRect" parent="ScreenEffects"]
+material = SubResource("FxMaterial")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

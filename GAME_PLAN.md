@@ -379,6 +379,9 @@ Tasks:
 - [x] Lore items that introduce the facility and each character's reason for coming
 - [x] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"
 - [ ] Replace placeholder art with real models, textures, and lighting
+      (First pass done: generated PBR textures, forest, night sky, props,
+      light fixtures, screen filter, new Long Man body. Still needs real
+      character models like Ethan's .glb.)
 - [x] Horror atmosphere: flickering lights, fog, ambient sounds, music stingers
 
 ### Phase 11 — Polish and Playtesting

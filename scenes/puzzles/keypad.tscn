@@ -1,5 +1,6 @@
 [gd_scene load_steps=8 format=3]
 
+[ext_resource type="Material" path="res://assets/materials/rusty_metal.tres" id="rusty_metal"]
 [ext_resource type="Script" path="res://scripts/puzzles/keypad.gd" id="1_x"]
 [ext_resource type="Script" path="res://scripts/puzzles/keypad_key.gd" id="2_x"]
 
@@ -28,7 +29,7 @@ script = ExtResource("1_x")
 [node name="Panel" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
 mesh = SubResource("BoxMesh_4")
-surface_material_override/0 = SubResource("StandardMaterial3D_3")
+surface_material_override/0 = ExtResource("rusty_metal")
 
 [node name="Display" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19, 0.045)

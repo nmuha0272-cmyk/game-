@@ -1,5 +1,6 @@
 [gd_scene load_steps=8 format=3]
 
+[ext_resource type="Material" path="res://assets/materials/rusty_metal.tres" id="rusty_metal"]
 [ext_resource type="Script" path="res://scripts/lore/tape_machine.gd" id="1_tape"]
 [ext_resource type="AudioStream" path="res://assets/audio/radio_static.wav" id="2_hiss"]
 
@@ -33,7 +34,7 @@ shape = SubResource("Shape")
 [node name="Body" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 mesh = SubResource("Mesh_body")
-surface_material_override/0 = SubResource("Mat_body")
+surface_material_override/0 = ExtResource("rusty_metal")
 
 [node name="Reels" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0.18)

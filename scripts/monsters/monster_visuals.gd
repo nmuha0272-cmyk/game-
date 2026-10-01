@@ -21,11 +21,27 @@ var _last_position := Vector3.ZERO
 var _walked := 0.0
 var _click_timer := 0.0
 var _fold := 0.0
+var _twitch_timer := 2.0
+var _head_roll := 14.0
+@onready var _head: Node3D = body.get_node_or_null("HeadPivot")
 
 
 func _ready() -> void:
 	monster.get_node("SenseGlow").visible = false
 	_last_position = monster.global_position
+
+
+## Every few seconds the head snaps to a new angle, then settles. (Each
+## computer twitches on its own; it's just for looks.)
+func _update_head(delta: float) -> void:
+	if _head == null:
+		return
+	_twitch_timer -= delta
+	if _twitch_timer <= 0.0:
+		_twitch_timer = randf_range(1.5, 5.0) * (0.4 if monster.state == Monster.State.CHASE else 1.0)
+		_head_roll = randf_range(-35.0, 35.0) if randf() < 0.6 else 14.0
+		_head.rotation_degrees.z = _head_roll  # the snap
+	_head.rotation_degrees.z = lerpf(_head.rotation_degrees.z, _head_roll * 0.8, clampf(delta * 2.0, 0.0, 1.0))
 
 
 ## The Long Man doesn't fit in the tunnels. Under a low ceiling he folds
@@ -46,6 +62,8 @@ func _process(delta: float) -> void:
 	if monster.state != _last_state:
 		_on_state_changed(monster.state)
 		_last_state = monster.state
+
+	_update_head(delta)
 
 	# Twitch while stunned.
 	if monster.is_stunned:
