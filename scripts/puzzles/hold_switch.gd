@@ -1,3 +1,4 @@
+class_name HoldSwitch
 extends PuzzleInput
 ## Something one player has to keep holding: a heavy vent cover, a breaker
 ## switch, a safelight switch... Press E to start holding it, E again to let go.
@@ -18,6 +19,20 @@ var holder_id := 0
 
 var _hold_start := Vector3.ZERO
 var _hold_age := 0.0
+
+
+func _ready() -> void:
+	super()
+	add_to_group("hold_switches")
+
+
+## The switch this player is holding, or null. Lets them let go with E even
+## when they aren't looking at it any more (a lifted vent cover is up high).
+static func held_by(player: Player) -> Node:
+	for hold_switch in player.get_tree().get_nodes_in_group("hold_switches"):
+		if hold_switch.holder_id == player.name.to_int():
+			return hold_switch
+	return null
 
 
 func _allowed(by: Player) -> bool:

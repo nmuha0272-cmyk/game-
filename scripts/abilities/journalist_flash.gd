@@ -14,7 +14,7 @@ var _sound: AudioStreamPlayer3D
 
 func _init() -> void:
 	ability_name = "Camera Flash"
-	cooldown = 15.0
+	cooldown = 12.0
 
 
 func _ready() -> void:

@@ -24,7 +24,8 @@ enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED, DIST
 @export var patrol_speed := 1.6
 @export var investigate_speed := 2.6
 ## Faster than walking (3.5), slower than sprinting (6), so stamina matters.
-@export var chase_speed := 4.4
+## Even Frank (slower, 5.1 sprint) can pull away for a few seconds.
+@export var chase_speed := 4.2
 @export var search_speed := 2.0
 @export var turn_speed := 6.0
 
@@ -38,6 +39,8 @@ enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED, DIST
 @export var search_radius := 5.0
 ## Seconds it pounds on a held door before giving up.
 @export var give_up_on_door_time := 6.0
+## Seconds after catching someone during which it ignores everyone.
+@export var catch_cooldown := 6.0
 ## The Long Man hates light: flash stuns last this many times longer.
 @export var light_sensitivity := 1.5
 
@@ -58,6 +61,7 @@ var _state_before_block: State = State.PATROL
 var _pound_timer := 0.0
 ## After giving up on a held door, ignore doors for a moment so we can walk away.
 var _ignore_doors_time := 0.0
+var _ignore_players_time := 0.0
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 @onready var nav: NavigationAgent3D = $NavigationAgent3D
@@ -100,6 +104,11 @@ func _think(delta: float) -> void:
 				_start_search(_last_known_position)
 			return
 
+	if _ignore_players_time > 0.0:
+		_ignore_players_time -= delta
+		_think_wander()
+		return
+
 	# Seeing someone always wins. Stick with the current target if we still see them.
 	if target and senses.can_see(target):
 		_chase(target)
@@ -133,7 +142,7 @@ func _think_chase(delta: float) -> void:
 	nav.target_position = _last_known_position
 	if global_position.distance_to(target.global_position) <= catch_distance:
 		target.downed.server_set_downed(true)
-		_start_search(global_position)
+		_wander_off()
 
 
 func _think_wander() -> void:
@@ -194,6 +203,17 @@ func _chase(player: Player) -> void:
 	_last_known_position = player.global_position
 
 
+## After catching someone it stalks off to the far end of its patrol, giving
+## the others a chance to help them up (instead of camping the body).
+func _wander_off() -> void:
+	state = State.PATROL
+	target = null
+	_ignore_doors_time = 0.0
+	_patrol_index = _farthest_patrol_point_from(global_position)
+	nav.target_position = _patrol_position(_patrol_index)
+	_ignore_players_time = catch_cooldown
+
+
 func _start_search(around: Vector3) -> void:
 	state = State.SEARCH
 	target = null
@@ -204,7 +224,7 @@ func _start_search(around: Vector3) -> void:
 
 ## Host only: something made a loud noise (a door, a flash, a heavy object).
 func hear_noise(noise_position: Vector3, radius: float) -> void:
-	if not multiplayer.is_server():
+	if not multiplayer.is_server() or _ignore_players_time > 0.0:
 		return
 	if state in [State.PATROL, State.INVESTIGATE, State.SEARCH] \
 			and global_position.distance_to(noise_position) <= radius:

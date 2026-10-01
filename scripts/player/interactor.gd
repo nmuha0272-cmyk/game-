@@ -76,3 +76,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			hold_progress = 0.0
 		else:
 			current_target.interact(player)
+	elif event.is_action_pressed("interact") and current_target == null:
+		# Not looking at anything: let go of whatever we're holding up.
+		var held := HoldSwitch.held_by(player)
+		if held:
+			held.interact(player)

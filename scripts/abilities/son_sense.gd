@@ -2,7 +2,7 @@ extends Ability
 ## The Son's ability. Press Q: nearby monsters glow through walls for a few
 ## seconds, but ONLY on the Son's screen. He has to tell the others.
 
-var duration := 3.0
+var duration := 4.0
 var radius := 25.0
 
 var _time_left := 0.0
@@ -12,7 +12,7 @@ var _sound: AudioStreamPlayer
 
 func _init() -> void:
 	ability_name = "Sense"
-	cooldown = 20.0
+	cooldown = 15.0
 
 
 func _ready() -> void:

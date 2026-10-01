@@ -74,6 +74,9 @@ func refresh() -> void:
 	start_button.disabled = not GameState.can_start()
 	if GameState.get_character(my_id) == Characters.Id.NONE:
 		hint_label.text = "Pick a character."
+	elif is_host and not GameState.has_enough_players():
+		hint_label.text = "Subject Zero needs at least %d players. Waiting for friends to join..." \
+				% GameState.MIN_PLAYERS
 	elif is_host and not GameState.can_start():
 		hint_label.text = "Waiting for everyone to pick a character..."
 	elif is_host:

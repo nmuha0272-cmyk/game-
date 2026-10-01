@@ -383,9 +383,12 @@ Tasks:
 - [ ] Playtest with real friends and write down what's confusing or not scary
 - [ ] Teamwork check: did players have to talk and help each other? If anyone
       could finish a section alone, redesign it
-- [ ] Fix bugs, especially multiplayer sync problems
-- [ ] Balance ability cooldowns and monster speed
-- [ ] Export builds for Windows
+      (Automated check done: no Chapter 1 section can be finished by one
+      player. The game needs at least 2 players outside the editor. Still
+      needs real players for the "did they talk" part.)
+- [x] Fix bugs, especially multiplayer sync problems
+- [x] Balance ability cooldowns and monster speed (first pass; tune again after playtests, see PLAYTEST.md)
+- [x] Export builds for Windows (export_presets.cfg; build lands in build/windows/)
 
 ### Later (after Chapter 1 is fun)
 - Steam lobbies and invites (GodotSteam)
