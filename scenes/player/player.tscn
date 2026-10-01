@@ -14,6 +14,9 @@
 [ext_resource type="Script" path="res://scripts/player/nameplate.gd" id="12_nameplate"]
 [ext_resource type="Script" path="res://scripts/player/downed_state.gd" id="13_downed"]
 [ext_resource type="Script" path="res://scripts/abilities/ability_holder.gd" id="14_abilities"]
+[ext_resource type="Script" path="res://scripts/items/inventory.gd" id="15_inventory"]
+[ext_resource type="Script" path="res://scripts/items/inventory_controls.gd" id="16_inv_controls"]
+[ext_resource type="Script" path="res://scripts/items/gear_hand.gd" id="17_gear_hand"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 resource_local_to_scene = true
@@ -78,6 +81,9 @@ script = ExtResource("2_stamina")
 [node name="Downed" type="Node" parent="."]
 script = ExtResource("13_downed")
 
+[node name="Inventory" type="Node" parent="."]
+script = ExtResource("15_inventory")
+
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 script = ExtResource("3_look")
@@ -110,6 +116,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26, -0.24, -0.45)
 script = ExtResource("11_held")
 player = NodePath("../../..")
 
+[node name="GearHand" type="Node3D" parent="Head/Camera3D" node_paths=PackedStringArray("inventory")]
+transform = Transform3D(0.94, 0, -0.342, 0, 1, 0, 0.342, 0, 0.94, -0.27, -0.24, -0.45)
+script = ExtResource("17_gear_hand")
+inventory = NodePath("../../../Inventory")
+
 [node name="InteractRay" type="RayCast3D" parent="Head/Camera3D" node_paths=PackedStringArray("player")]
 target_position = Vector3(0, 0, -2.5)
 script = ExtResource("6_interact")
@@ -120,6 +131,11 @@ stream = ExtResource("8_sound")
 script = ExtResource("7_steps")
 player = NodePath("..")
 head_bob = NodePath("../Head/Camera3D")
+
+[node name="InventoryControls" type="Node" parent="." node_paths=PackedStringArray("inventory", "interactor")]
+script = ExtResource("16_inv_controls")
+inventory = NodePath("../Inventory")
+interactor = NodePath("../Head/Camera3D/InteractRay")
 
 [node name="AbilityHolder" type="Node" parent="." node_paths=PackedStringArray("player")]
 script = ExtResource("14_abilities")

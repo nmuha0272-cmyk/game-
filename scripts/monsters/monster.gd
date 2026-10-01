@@ -9,9 +9,11 @@ extends CharacterBody3D
 ##     ^                              │                          │
 ##     └────────── SEARCH <───────────┴────loses them────────────┘
 ## A camera flash puts it in STUNNED. A door the Guard is holding puts it in
-## BLOCKED (it pounds on the door, then gives up). Catching a player downs them.
+## BLOCKED (it pounds on the door, then gives up). A locked door does too.
+## A burning flare puts it in DISTRACTED: it stares at the flare and ignores
+## players until it burns out. Catching a player downs them.
 
-enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED }
+enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED, DISTRACTED }
 
 ## Marker3D points it walks between while patrolling.
 @export var patrol_points: Node3D
@@ -93,6 +95,10 @@ func _think(delta: float) -> void:
 		State.BLOCKED:
 			_think_blocked(delta)
 			return
+		State.DISTRACTED:
+			if _timer <= 0.0:
+				_start_search(_last_known_position)
+			return
 
 	# Seeing someone always wins. Stick with the current target if we still see them.
 	if target and senses.can_see(target):
@@ -146,7 +152,8 @@ func _think_wander() -> void:
 
 
 func _think_blocked(delta: float) -> void:
-	if not is_instance_valid(_blocked_door) or not _blocked_door.is_held() or _blocked_door.is_open:
+	if not is_instance_valid(_blocked_door) or _blocked_door.is_open \
+			or not (_blocked_door.is_held() or _blocked_door.is_locked()):
 		# Nobody is holding it any more: open it and carry on.
 		if is_instance_valid(_blocked_door):
 			_blocked_door.server_force_open()
@@ -204,6 +211,18 @@ func hear_noise(noise_position: Vector3, radius: float) -> void:
 		_investigate(noise_position)
 
 
+## Host only: a burning flare nearby. Go stare at it until it burns out.
+func distract(flare_position: Vector3, seconds: float) -> void:
+	if not multiplayer.is_server() or state in [State.DORMANT, State.STUNNED]:
+		return
+	if state != State.DISTRACTED:
+		nav.target_position = flare_position
+	state = State.DISTRACTED
+	target = null
+	_last_known_position = flare_position
+	_timer = seconds
+
+
 ## Host only: the Journalist's flash hit us.
 func stun(seconds: float) -> void:
 	if not multiplayer.is_server():
@@ -248,6 +267,7 @@ func _current_speed() -> float:
 		State.INVESTIGATE: return investigate_speed
 		State.CHASE: return chase_speed
 		State.SEARCH: return search_speed
+		State.DISTRACTED: return investigate_speed
 	return 0.0
 
 
@@ -259,7 +279,7 @@ func _check_for_door() -> void:
 	var door := door_probe.get_collider() as Door
 	if door == null or door.is_open:
 		return
-	if door.is_held():
+	if door.is_held() or door.is_locked():
 		_blocked_door = door
 		_state_before_block = state
 		state = State.BLOCKED

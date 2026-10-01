@@ -9,7 +9,11 @@ signal target_changed(target: Node)
 
 @export var player: Player
 
-var current_target: Node = null
+## What we're looking at. Becomes null if that object is removed
+## (for example an item someone else just picked up).
+var current_target: Node = null:
+	get:
+		return current_target if is_instance_valid(current_target) else null
 
 
 func _ready() -> void:

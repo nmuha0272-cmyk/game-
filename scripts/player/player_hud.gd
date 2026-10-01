@@ -1,6 +1,7 @@
 extends CanvasLayer
 ## The on-screen overlay: crosshair, prompts, stamina, ability cooldown,
-## progress bar, messages, camera-flash whiteout and the "you are down" screen.
+## progress bar, gear hotbar, flashlight battery, messages, camera-flash
+## whiteout, toxic gas warning and the "you are down" screen.
 ## Only your own player has a HUD.
 
 @export var player: Player
@@ -16,6 +17,12 @@ extends CanvasLayer
 @onready var message_label: Label = $MessageLabel
 @onready var flash_overlay: ColorRect = $FlashOverlay
 @onready var downed_overlay: ColorRect = $DownedOverlay
+@onready var gas_overlay: ColorRect = $GasOverlay
+@onready var hotbar: HBoxContainer = $Hotbar
+@onready var battery_label: Label = $BatteryLabel
+
+var _slot_labels: Array[Label] = []
+var _slot_panels: Array[PanelContainer] = []
 
 var _message_tween: Tween
 
@@ -27,13 +34,26 @@ func _ready() -> void:
 	_on_stamina_changed(stamina.current, stamina.max_stamina)
 	message_label.modulate.a = 0.0
 	flash_overlay.modulate.a = 0.0
+	_build_hotbar()
+	# (The HUD starts before the player, so look the node up directly.)
+	player.get_node("Inventory").changed.connect(_refresh_hotbar)
+	_refresh_hotbar()
 
 
 func _process(_delta: float) -> void:
 	var target := interactor.current_target
-	prompt_label.visible = target != null and not player.is_downed
-	if prompt_label.visible:
+	var teammate: Player = player.get_node("InventoryControls").get_teammate_in_reach()
+	var held := player.inventory.get_active_item()
+	prompt_label.visible = not player.is_downed and (target != null or (teammate != null and not held.is_empty()))
+	if target:
 		prompt_label.text = target.get_prompt(player)
+	elif prompt_label.visible:
+		prompt_label.text = "[T] Give %s to %s" % [Items.display_name(held),
+				GameState.get_player_name(teammate.name.to_int())]
+
+	var charge := player.flashlight.charge
+	battery_label.text = "[F] Flashlight  %d%%" % roundi(charge * 100.0)
+	battery_label.modulate = Color(1, 0.45, 0.35) if charge < player.flashlight.low_battery else Color.WHITE
 
 	var ability: Ability = ability_holder.ability
 	if ability:
@@ -45,9 +65,49 @@ func _process(_delta: float) -> void:
 	else:
 		ability_label.text = ""
 
+	_show_gas_warning()
 	downed_overlay.visible = player.is_downed
 	if player.is_downed:
 		status_label.text = "You are down! A teammate can help you up."
+
+
+func _show_gas_warning() -> void:
+	var in_gas := false
+	for gas in get_tree().get_nodes_in_group("toxic_gas"):
+		if gas.contains(player):
+			in_gas = true
+	gas_overlay.visible = in_gas and not player.is_downed
+	if not gas_overlay.visible:
+		return
+	var mask := player.inventory.find_working_gas_mask()
+	if mask >= 0:
+		status_label.text = "Toxic gas! Gas mask filter: %ds" % ceili(player.inventory.slots[mask].filter)
+	else:
+		status_label.text = "TOXIC GAS! Get out, or find a gas mask!"
+
+
+func _build_hotbar() -> void:
+	for i in Inventory.SLOT_COUNT:
+		var panel := PanelContainer.new()
+		panel.custom_minimum_size = Vector2(150, 34)
+		var label := Label.new()
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.clip_text = true
+		panel.add_child(label)
+		hotbar.add_child(panel)
+		_slot_panels.append(panel)
+		_slot_labels.append(label)
+
+
+func _refresh_hotbar() -> void:
+	var inventory: Inventory = player.get_node("Inventory")
+	for i in Inventory.SLOT_COUNT:
+		var item := inventory.get_item(i)
+		var item_name := Items.display_name(item) if not item.is_empty() else "-"
+		_slot_labels[i].text = "%d  %s" % [i + 1, item_name]
+		var selected := i == inventory.active_slot
+		_slot_panels[i].modulate = Color(1, 1, 1, 1) if selected else Color(1, 1, 1, 0.45)
 
 
 func show_message(text: String) -> void:

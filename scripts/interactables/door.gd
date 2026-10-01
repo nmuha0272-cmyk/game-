@@ -17,28 +17,39 @@ func is_held() -> bool:
 	return held_by != 0
 
 
+## A DoorLock child that hasn't been unlocked yet (keycard or jammed).
+func is_locked() -> bool:
+	var lock := get_node_or_null("Lock") as DoorLock
+	return lock != null and lock.is_locked
+
+
 func get_prompt(by: Player) -> String:
+	if is_locked():
+		return $Lock.get_prompt(by)
 	var by_id := by.name.to_int()
 	if held_by == by_id:
 		return "Holding the door shut (let go of Q to release)"
 	if is_held():
 		return "%s is holding the door shut" % GameState.get_player_name(held_by)
 	var text := "[E] Close door" if is_open else "[E] Open door"
-	if by.character == Characters.Id.GUARD and not is_open:
+	if by.character == Characters.Id.GUARD and not is_open and not is_locked():
 		text += "   [Hold Q] Hold it shut"
 	return text
 
 
-func _on_interact(_by: Player) -> void:
-	if not is_held():
+func _on_interact(by: Player) -> void:
+	if is_locked():
+		$Lock.server_try_unlock(by)
+	elif not is_held():
 		_set_open.rpc(not is_open)
 		# Doors are noisy. Monsters nearby come to look.
 		get_tree().call_group("monsters", "hear_noise", global_position, 8.0)
 
 
-## Host only: a monster shoves the door open (unless the Guard is holding it).
+## Host only: open the door (used by monsters and unlocking). Does nothing
+## while the Guard is holding it or it's still locked.
 func server_force_open() -> void:
-	if multiplayer.is_server() and not is_open and not is_held():
+	if multiplayer.is_server() and not is_open and not is_held() and not is_locked():
 		_set_open.rpc(true)
 
 

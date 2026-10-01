@@ -16,6 +16,10 @@
 [ext_resource type="PackedScene" path="res://scenes/interactables/test_knockdown_button.tscn" id="15_knockdown"]
 [ext_resource type="PackedScene" path="res://scenes/monsters/long_man.tscn" id="16_long_man"]
 [ext_resource type="Script" path="res://scripts/environment/bake_navigation_on_start.gd" id="17_navbake"]
+[ext_resource type="Script" path="res://scripts/items/item_spawner.gd" id="18_item_spawner"]
+[ext_resource type="Script" path="res://scripts/items/item_spawn_point.gd" id="19_item_point"]
+[ext_resource type="Script" path="res://scripts/interactables/door_lock.gd" id="20_lock"]
+[ext_resource type="Script" path="res://scripts/environment/toxic_gas.gd" id="21_gas"]
 
 [sub_resource type="FastNoiseLite" id="Noise_grime"]
 frequency = 0.03
@@ -68,6 +72,15 @@ geometry_source_group_name = &"navigation_geometry"
 agent_height = 2.0
 agent_radius = 0.5
 agent_max_climb = 0.25
+
+[sub_resource type="BoxShape3D" id="Shape_gas"]
+size = Vector3(4, 3, 4)
+
+[sub_resource type="FogMaterial" id="Fog_gas"]
+density = 1.2
+albedo = Color(0.55, 0.75, 0.25, 1)
+emission = Color(0.05, 0.09, 0.02, 1)
+edge_fade = 0.4
 
 [sub_resource type="Environment" id="Env_room"]
 background_mode = 1
@@ -233,6 +246,36 @@ use_collision = true
 size = Vector3(0.9, 0.9, 0.9)
 material = SubResource("Mat_box")
 
+[node name="StorageWallA" type="CSGBox3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 1.5, 6.5)
+use_collision = true
+size = Vector3(0.6, 3, 0.3)
+material = SubResource("Mat_concrete")
+
+[node name="StorageWallB" type="CSGBox3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 1.5, 6.5)
+use_collision = true
+size = Vector3(1, 3, 0.3)
+material = SubResource("Mat_concrete")
+
+[node name="StorageWallC" type="CSGBox3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.0, 1.5, 6.5)
+use_collision = true
+size = Vector3(2, 3, 0.3)
+material = SubResource("Mat_concrete")
+
+[node name="StorageLintel" type="CSGBox3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2, 3.5, 6.5)
+use_collision = true
+size = Vector3(7.6, 1, 0.3)
+material = SubResource("Mat_concrete")
+
+[node name="StorageWallWest" type="CSGBox3D" parent="Boxes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 2, 8.25)
+use_collision = true
+size = Vector3(0.3, 4, 3.5)
+material = SubResource("Mat_concrete")
+
 [node name="Lights" type="Node3D" parent="."]
 
 [node name="CeilingLight1" type="OmniLight3D" parent="Lights" node_paths=PackedStringArray("buzz")]
@@ -346,6 +389,104 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 3)
 
 [node name="Point5" type="Marker3D" parent="Monsters/PatrolPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, 1)
+
+[node name="StorageKeycardDoor" parent="AbilityTest" instance=ExtResource("11_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 6.5)
+
+[node name="Lock" type="Node" parent="AbilityTest/StorageKeycardDoor"]
+script = ExtResource("20_lock")
+
+[node name="StorageJammedDoor" parent="AbilityTest" instance=ExtResource("11_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 6.5)
+
+[node name="Lock" type="Node" parent="AbilityTest/StorageJammedDoor"]
+script = ExtResource("20_lock")
+kind = 1
+
+[node name="ToxicGas" type="Area3D" parent="AbilityTest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.5, -8)
+script = ExtResource("21_gas")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AbilityTest/ToxicGas"]
+shape = SubResource("Shape_gas")
+
+[node name="FogVolume" type="FogVolume" parent="AbilityTest/ToxicGas"]
+size = Vector3(4, 3, 4)
+material = SubResource("Fog_gas")
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="ItemSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
+spawn_path = NodePath("../Items")
+script = ExtResource("18_item_spawner")
+spawn_points = NodePath("../ItemSpawnPoints")
+
+[node name="ItemSpawnPoints" type="Node3D" parent="."]
+
+[node name="Battery1" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.2, 6.3)
+script = ExtResource("19_item_point")
+item_id = "battery"
+
+[node name="Battery2" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.2, 6.3)
+script = ExtResource("19_item_point")
+item_id = "battery"
+
+[node name="Flare3" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.2, 6.3)
+script = ExtResource("19_item_point")
+item_id = "flare"
+
+[node name="Flare4" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.4, 0.2, 6.3)
+script = ExtResource("19_item_point")
+item_id = "flare"
+
+[node name="KeycardGreen5" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.1, -4)
+script = ExtResource("19_item_point")
+item_id = "keycard_green"
+
+[node name="Crowbar6" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.8, 0.2, 6.5)
+script = ExtResource("19_item_point")
+item_id = "crowbar"
+
+[node name="Medkit7" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.2, 5)
+script = ExtResource("19_item_point")
+item_id = "medkit"
+
+[node name="GasMask8" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.2, -4.5)
+script = ExtResource("19_item_point")
+item_id = "gas_mask"
+
+[node name="Walkie9" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.2, 5.2)
+script = ExtResource("19_item_point")
+item_id = "walkie"
+
+[node name="Walkie10" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.2, 5.2)
+script = ExtResource("19_item_point")
+item_id = "walkie"
+
+[node name="ReelTape11" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.2, 8.5)
+script = ExtResource("19_item_point")
+item_id = "reel_tape"
+
+[node name="CarBattery12" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.3, 8.8)
+script = ExtResource("19_item_point")
+item_id = "car_battery"
+
+[node name="Fuse13" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.8, 0.2, -8.8)
+script = ExtResource("19_item_point")
+item_id = "fuse"
 
 [node name="Players" type="Node3D" parent="."]
 

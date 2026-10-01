@@ -324,14 +324,14 @@ res://
 - [x] Test: the monster chases the right player and loses them when hidden
 
 ### Phase 7 — Gear and Inventory
-- [ ] Item pickup system (look at item, press E, it goes into a free slot)
-- [ ] 3-slot inventory with a simple hotbar UI; scroll or 1–3 to switch items
-- [ ] Drop item and give item to a nearby teammate
-- [ ] Heavy items that slow the carrier (except the Guard)
-- [ ] Flashlight battery drain and recharging with Batteries
-- [ ] Build each gear item from the Gear table, one at a time, testing each
-- [ ] All pickups, drops, and handoffs sync correctly in multiplayer
-- [ ] Test: two players pass items back and forth without duplicates or losses
+- [x] Item pickup system (look at item, press E, it goes into a free slot)
+- [x] 3-slot inventory with a simple hotbar UI; scroll or 1–3 to switch items
+- [x] Drop item and give item to a nearby teammate
+- [x] Heavy items that slow the carrier (except the Guard)
+- [x] Flashlight battery drain and recharging with Batteries
+- [x] Build each gear item from the Gear table, one at a time, testing each
+- [x] All pickups, drops, and handoffs sync correctly in multiplayer
+- [x] Test: two players pass items back and forth without duplicates or losses
 
 ### Phase 8 — Co-op Puzzle Pieces
 - [ ] Reusable puzzle building blocks: button, lever, keypad, key console,

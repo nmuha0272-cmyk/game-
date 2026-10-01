@@ -52,8 +52,16 @@ func _create_player(data: Dictionary) -> Node:
 
 
 func _remove_player(id: int) -> void:
-	if players.has_node(str(id)):
-		players.get_node(str(id)).queue_free()
+	if not players.has_node(str(id)):
+		return
+	var player: Player = players.get_node(str(id))
+	# Drop everything they carried so the team doesn't lose it.
+	var spawner := ItemSpawner.find(get_tree())
+	for slot in Inventory.SLOT_COUNT:
+		var item := player.inventory.server_remove(slot)
+		if spawner and not item.is_empty():
+			spawner.server_drop(item, player)
+	player.queue_free()
 
 
 ## Picks the spawn point furthest from any existing player.

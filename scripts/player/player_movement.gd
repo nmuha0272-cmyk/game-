@@ -47,6 +47,7 @@ var _head_stand_y := 0.0
 @onready var body_mesh: MeshInstance3D = $BodyMesh
 @onready var downed: DownedState = $Downed
 @onready var flashlight: Flashlight = $Head/Camera3D/Flashlight
+@onready var inventory: Inventory = $Inventory
 
 
 ## Finds the player with this network ID (or null).
@@ -101,8 +102,10 @@ func _physics_process(delta: float) -> void:
 	var direction := (transform.basis * Vector3(input.x, 0.0, input.y)).normalized()
 
 	var moving_forward := input.y < -0.1
+	# Nobody but the Guard can sprint while carrying something heavy.
+	var too_heavy := inventory.speed_multiplier() < 1.0
 	is_sprinting = Input.is_action_pressed("sprint") and moving_forward \
-			and not is_crouching and stamina.can_sprint()
+			and not is_crouching and not too_heavy and stamina.can_sprint()
 	stamina.draining = is_sprinting
 
 	var speed := walk_speed
@@ -111,6 +114,7 @@ func _physics_process(delta: float) -> void:
 	elif is_sprinting:
 		speed = sprint_speed
 	speed *= Characters.get_value(character, "speed_multiplier", 1.0) * speed_multiplier
+	speed *= inventory.speed_multiplier()
 
 	var weight := clampf(acceleration * delta, 0.0, 1.0)
 	velocity.x = lerpf(velocity.x, direction.x * speed, weight)
