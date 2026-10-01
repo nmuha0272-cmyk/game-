@@ -1,0 +1,60 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/item_socket.gd" id="1_x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+size = Vector3(1, 1.2, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.3, 0.32, 0.22, 1)
+metallic = 0.6
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(1, 1.2, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(0.12, 0.12, 0.12, 1)
+metallic = 0.3
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(0.4, 0.3, 0.05)
+
+[sub_resource type="SphereMesh" id="SphereMesh_7"]
+radius = 0.03
+height = 0.06
+
+[node name="BatteryMachine" type="StaticBody3D" node_paths=PackedStringArray("lamp")]
+script = ExtResource("1_x")
+item_id = "car_battery"
+insert_time = 2.0
+engineer_insert_time = 2.0
+lamp = NodePath("Lamp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("BoxShape3D_2")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Bay" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0.36)
+mesh = SubResource("BoxMesh_6")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Lamp" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 1, 0.36)
+mesh = SubResource("SphereMesh_7")
+cast_shadow = 0
+
+[node name="Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, 0)
+pixel_size = 0.004
+text = "EMERGENCY POWER
+needs a car battery"
+font_size = 32
+billboard = 1

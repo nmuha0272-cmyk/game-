@@ -4,6 +4,8 @@ extends Interactable
 ## and then nobody can open it (in Phase 6, monsters won't be able to either).
 
 @export var open_angle := -100.0
+## Opened and closed by a puzzle (PuzzleGate) instead of by players.
+@export var puzzle_controlled := false
 @export var swing_time := 0.6
 
 var is_open := false
@@ -17,13 +19,28 @@ func is_held() -> bool:
 	return held_by != 0
 
 
-## A DoorLock child that hasn't been unlocked yet (keycard or jammed).
+## A DoorLock child that hasn't been unlocked yet (keycard or jammed),
+## or a closed puzzle door.
 func is_locked() -> bool:
+	if puzzle_controlled and not is_open:
+		return true
 	var lock := get_node_or_null("Lock") as DoorLock
 	return lock != null and lock.is_locked
 
 
+func can_interact(_by: Player) -> bool:
+	return enabled and not (puzzle_controlled and is_open)
+
+
+## Called by a PuzzleGate on the host.
+func puzzle_set(active: bool) -> void:
+	if multiplayer.is_server() and active != is_open:
+		_set_open.rpc(active)
+
+
 func get_prompt(by: Player) -> String:
+	if puzzle_controlled:
+		return "Sealed. It opens from somewhere else."
 	if is_locked():
 		return $Lock.get_prompt(by)
 	var by_id := by.name.to_int()
@@ -38,6 +55,8 @@ func get_prompt(by: Player) -> String:
 
 
 func _on_interact(by: Player) -> void:
+	if puzzle_controlled:
+		return
 	if is_locked():
 		$Lock.server_try_unlock(by)
 	elif not is_held():

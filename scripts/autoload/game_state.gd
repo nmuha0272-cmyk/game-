@@ -42,6 +42,12 @@ func get_player_name(id: int) -> String:
 	return players[id].name if players.has(id) else "Player %d" % id
 
 
+## True if someone in the team plays this character. Puzzles use this to
+## turn on backup solutions when a character is missing.
+func team_has(character: int) -> bool:
+	return get_owner_of(character) != 0
+
+
 ## Who has picked this character (0 if nobody).
 func get_owner_of(character: int) -> int:
 	for id in players:

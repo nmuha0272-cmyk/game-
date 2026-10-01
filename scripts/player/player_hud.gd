@@ -64,6 +64,10 @@ func _process(_delta: float) -> void:
 		status_label.text = ability.status_text
 	else:
 		ability_label.text = ""
+	# Holding E on something (fuse box, darkroom table...) uses the same bar.
+	if interactor.hold_progress >= 0.0:
+		action_bar.visible = true
+		action_bar.value = interactor.hold_progress * 100.0
 
 	_show_gas_warning()
 	downed_overlay.visible = player.is_downed

@@ -2,6 +2,8 @@ class_name HeavyObject
 extends CharacterBody3D
 ## Something too heavy for most players (filing cabinets, crates).
 ## Only the Guard can move it, by holding Q while looking at it.
+## BACKUP: if there's no Guard in the team, anyone can drag it (press E to
+## grab and let go), but very slowly.
 ## The host moves it, and a MultiplayerSynchronizer shows that to everyone.
 
 @export var object_name := "filing cabinet"
@@ -25,11 +27,19 @@ func get_prompt(by: Player) -> String:
 		return "Moving the %s (let go of Q to drop)" % object_name
 	if by.character == Characters.Id.GUARD:
 		return "[Hold Q] Move the %s" % object_name
+	if not GameState.team_has(Characters.Id.GUARD):
+		return "[E] Drag the %s (no Guard, slow)" % object_name
 	return "Too heavy to move alone. The Guard can move this."
 
 
-func interact(_by: Player) -> void:
-	pass  # Pressing E does nothing. Only the Guard's Q works.
+func _ready() -> void:
+	add_to_group("heavy_objects")
+
+
+## Pressing E: grab or let go (only the no-Guard backup uses this).
+func interact(by: Player) -> void:
+	if by.character != Characters.Id.GUARD and not GameState.team_has(Characters.Id.GUARD):
+		request_move(by, mover_id != by.name.to_int())
 
 
 ## Called on the Guard's computer when he grabs or lets go.
@@ -49,7 +59,8 @@ func _request_move(move: bool) -> void:
 func _server_move(by: Player, move: bool) -> void:
 	if by == null:
 		return
-	if move and mover_id == 0 and by.character == Characters.Id.GUARD:
+	var allowed := by.character == Characters.Id.GUARD or not GameState.team_has(Characters.Id.GUARD)
+	if move and mover_id == 0 and allowed:
 		mover_id = by.name.to_int()
 		_grab_offset = by.global_transform.affine_inverse() * global_position
 		add_collision_exception_with(by)

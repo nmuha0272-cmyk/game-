@@ -18,6 +18,11 @@ func can_interact(_by: Player) -> bool:
 	return enabled
 
 
+## Seconds you must hold E to use it (0 = a normal press).
+func get_hold_time(_by: Player) -> float:
+	return 0.0
+
+
 ## The text shown on screen while looking at it.
 func get_prompt(_by: Player) -> String:
 	return "[E] " + prompt_text

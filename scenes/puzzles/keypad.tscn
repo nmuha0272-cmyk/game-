@@ -1,0 +1,278 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/keypad.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/keypad_key.gd" id="2_x"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.22, 0.23, 0.21, 1)
+metallic = 0.6
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(0.36, 0.5, 0.04)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(0.7, 0.7, 0.65, 1)
+metallic = 0.3
+roughness = 0.7
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6"]
+size = Vector3(0.08, 0.07, 0.04)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(0.075, 0.06, 0.02)
+
+[node name="Keypad" type="Node3D"]
+script = ExtResource("1_x")
+
+[node name="Panel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Display" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19, 0.045)
+pixel_size = 0.003
+text = "____"
+font_size = 48
+outline_size = 0
+
+[node name="Key1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.09, 0.05)
+script = ExtResource("2_x")
+key = "1"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key1"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key1"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "1"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Key2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0.05)
+script = ExtResource("2_x")
+key = "2"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key2"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key2"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "2"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Key3" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.09, 0.05)
+script = ExtResource("2_x")
+key = "3"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key3"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key3"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "3"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Key4" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.005, 0.05)
+script = ExtResource("2_x")
+key = "4"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key4"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key4"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "4"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Key5" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0.05)
+script = ExtResource("2_x")
+key = "5"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key5"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key5"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "5"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Key6" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.005, 0.05)
+script = ExtResource("2_x")
+key = "6"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key6"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key6"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "6"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Key7" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, -0.08, 0.05)
+script = ExtResource("2_x")
+key = "7"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key7"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key7"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "7"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Key8" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0.05)
+script = ExtResource("2_x")
+key = "8"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key8"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key8"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "8"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Key9" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, -0.08, 0.05)
+script = ExtResource("2_x")
+key = "9"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key9"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key9"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "9"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="KeyCLR" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, -0.165, 0.05)
+script = ExtResource("2_x")
+key = "CLR"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KeyCLR"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="KeyCLR"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="KeyCLR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "CLR"
+font_size = 18
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Key0" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.165, 0.05)
+script = ExtResource("2_x")
+key = "0"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Key0"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Key0"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="Key0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "0"
+font_size = 32
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="KeyENT" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, -0.165, 0.05)
+script = ExtResource("2_x")
+key = "ENT"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KeyENT"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="KeyENT"]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Label" type="Label3D" parent="KeyENT"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.012)
+pixel_size = 0.002
+text = "ENT"
+font_size = 18
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0

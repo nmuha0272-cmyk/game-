@@ -115,6 +115,7 @@ func _physics_process(delta: float) -> void:
 		speed = sprint_speed
 	speed *= Characters.get_value(character, "speed_multiplier", 1.0) * speed_multiplier
 	speed *= inventory.speed_multiplier()
+	speed *= _dragging_speed_multiplier()
 
 	var weight := clampf(acceleration * delta, 0.0, 1.0)
 	velocity.x = lerpf(velocity.x, direction.x * speed, weight)
@@ -184,3 +185,17 @@ func _apply_character_color() -> void:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = Characters.get_value(character, "color", Color(0.5, 0.5, 0.5))
 	body_mesh.material_override = material
+
+
+## Dragging heavy furniture without being the Guard (the backup) is very slow.
+## Also stops us bumping into the thing we're dragging.
+func _dragging_speed_multiplier() -> float:
+	var multiplier := 1.0
+	for heavy: HeavyObject in get_tree().get_nodes_in_group("heavy_objects"):
+		if heavy.mover_id == name.to_int():
+			add_collision_exception_with(heavy)
+			if character != Characters.Id.GUARD:
+				multiplier = 0.4
+		elif heavy in get_collision_exceptions():
+			remove_collision_exception_with(heavy)
+	return multiplier

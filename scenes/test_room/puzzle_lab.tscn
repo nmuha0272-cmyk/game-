@@ -1,0 +1,2015 @@
+[gd_scene load_steps=39 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/puzzles/button.tscn" id="1_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/key_console.tscn" id="2_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/lever.tscn" id="3_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/hold_switch.tscn" id="4_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/vent_cover.tscn" id="5_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/fuse_box.tscn" id="6_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/battery_machine.tscn" id="7_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/darkroom_table.tscn" id="8_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/pressure_plate.tscn" id="9_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/status_lamp.tscn" id="10_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/signal_light.tscn" id="11_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/keypad.tscn" id="12_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/radio.tscn" id="13_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/door.tscn" id="14_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/generator.tscn" id="15_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/filing_cabinet.tscn" id="16_x"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/long_man.tscn" id="17_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/puzzle_gate.gd" id="18_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/code_display.gd" id="19_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/puzzle_lights.gd" id="20_x"]
+[ext_resource type="Script" path="res://scripts/player/player_spawner.gd" id="21_x"]
+[ext_resource type="Script" path="res://scripts/items/item_spawner.gd" id="22_x"]
+[ext_resource type="Script" path="res://scripts/items/item_spawn_point.gd" id="23_x"]
+[ext_resource type="Script" path="res://scripts/environment/toxic_gas.gd" id="24_x"]
+[ext_resource type="Script" path="res://scripts/environment/bake_navigation_on_start.gd" id="25_x"]
+[ext_resource type="Script" path="res://scripts/environment/flickering_light.gd" id="26_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient_drone.wav" id="27_x"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_28"]
+frequency = 0.03
+fractal_octaves = 5
+
+[sub_resource type="Gradient" id="Gradient_29"]
+colors = PackedColorArray(0.55, 0.55, 0.52, 1, 1, 1, 1, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_30"]
+seamless = true
+color_ramp = SubResource("Gradient_29")
+noise = SubResource("FastNoiseLite_28")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_31"]
+albedo_color = Color(0.36, 0.37, 0.35, 1)
+albedo_texture = SubResource("NoiseTexture2D_30")
+roughness = 0.95
+uv1_scale = Vector3(0.3, 0.3, 0.3)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_32"]
+albedo_color = Color(0.3, 0.29, 0.26, 1)
+albedo_texture = SubResource("NoiseTexture2D_30")
+roughness = 0.85
+uv1_scale = Vector3(0.6, 0.6, 0.6)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_33"]
+albedo_color = Color(0.05, 0.12, 0.06, 1)
+emission_enabled = true
+emission = Color(0.05, 0.25, 0.08, 1)
+emission_energy_multiplier = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_34"]
+albedo_color = Color(0.75, 0.72, 0.6, 1)
+roughness = 1.0
+
+[sub_resource type="Environment" id="Environment_35"]
+background_mode = 1
+background_color = Color(0, 0, 0, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.2, 0.26, 0.28, 1)
+ambient_light_energy = 0.35
+tonemap_mode = 2
+tonemap_exposure = 1.2
+ssao_enabled = true
+glow_enabled = true
+glow_bloom = 0.05
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.025
+volumetric_fog_albedo = Color(0.75, 0.8, 0.8, 1)
+volumetric_fog_length = 40.0
+adjustment_enabled = true
+adjustment_contrast = 1.15
+adjustment_saturation = 0.65
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_36"]
+geometry_parsed_geometry_type = 1
+geometry_source_geometry_mode = 1
+geometry_source_group_name = &"hunted_nav"
+agent_height = 2.0
+agent_radius = 0.5
+agent_max_climb = 0.25
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_37"]
+size = Vector3(14, 3, 8)
+
+[sub_resource type="FogMaterial" id="FogMaterial_38"]
+density = 1.6
+albedo = Color(0.55, 0.75, 0.25, 1)
+emission = Color(0.05, 0.09, 0.02, 1)
+edge_fade = 0.3
+
+[node name="PuzzleLab" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_35")
+
+[node name="Drone" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("27_x")
+volume_db = -14.0
+autoplay = true
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="ItemSpawnPoints" type="Node3D" parent="."]
+
+[node name="HallFloor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.5, -0.25, 0)
+use_collision = true
+size = Vector3(77, 0.5, 6)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallCeiling" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.5, 4.25, 0)
+use_collision = true
+size = Vector3(77, 0.5, 6)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallEndWest" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 2, 0)
+use_collision = true
+size = Vector3(0.3, 4, 6.6)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallEndEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 77.15, 2, 0)
+use_collision = true
+size = Vector3(0.3, 4, 6.6)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallN0" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, 3)
+use_collision = true
+size = Vector3(8, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallN1" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, 2, 3)
+use_collision = true
+size = Vector3(13, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallN2" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.5, 2, 3)
+use_collision = true
+size = Vector3(13, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallN3" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.5, 2, 3)
+use_collision = true
+size = Vector3(13, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallN4" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61.5, 2, 3)
+use_collision = true
+size = Vector3(13, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallN5" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5, 2, 3)
+use_collision = true
+size = Vector3(7, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelN0" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.5, 3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelN1" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.5, 3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelN2" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.5, 3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelN3" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 3.5, 3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelN4" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 3.5, 3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallS0" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, -3)
+use_collision = true
+size = Vector3(8, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallS1" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, 2, -3)
+use_collision = true
+size = Vector3(13, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallS2" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.5, 2, -3)
+use_collision = true
+size = Vector3(13, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallS3" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.5, 2, -3)
+use_collision = true
+size = Vector3(13, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallS4" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61.5, 2, -3)
+use_collision = true
+size = Vector3(13, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallWallS5" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5, 2, -3)
+use_collision = true
+size = Vector3(7, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelS0" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.5, -3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelS1" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.5, -3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelS2" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.5, -3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelS3" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 3.5, -3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLintelS4" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 3.5, -3)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="HallLight0" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3.5, 0)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8.0
+script = ExtResource("26_x")
+brokenness = 0.5
+
+[node name="HallLight1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.5, 0)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8.0
+script = ExtResource("26_x")
+brokenness = 0.15
+
+[node name="HallLight2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.5, 0)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8.0
+script = ExtResource("26_x")
+brokenness = 0.15
+
+[node name="HallLight3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 3.5, 0)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8.0
+script = ExtResource("26_x")
+brokenness = 0.5
+
+[node name="HallLight4" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, 3.5, 0)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8.0
+script = ExtResource("26_x")
+brokenness = 0.15
+
+[node name="HallLight5" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 3.5, 0)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8.0
+script = ExtResource("26_x")
+brokenness = 0.15
+
+[node name="HallLight6" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64, 3.5, 0)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8.0
+script = ExtResource("26_x")
+brokenness = 0.5
+
+[node name="HallLight7" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 74, 3.5, 0)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8.0
+script = ExtResource("26_x")
+brokenness = 0.15
+
+[node name="DualKey" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="DualKey"]
+
+[node name="Floor" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -0.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 4.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2, 15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="DualKey"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, 3.75, 2.8)
+pixel_size = 0.004
+text = "1. DUAL KEY CONSOLE
+Turn both keys at the same time"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="DualKey" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2.85, 2.75)
+
+[node name="RoomWallL1" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, 5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallL2" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, 10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR1" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 2, 5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR2" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 2, 10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall1" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2, 11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall2" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 2, 11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLintel" type="CSGBox3D" parent="DualKey/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.5, 11)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLamp" parent="DualKey" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.2, 10.8)
+
+[node name="VaultDoor" parent="DualKey" instance=ExtResource("14_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 11)
+puzzle_controlled = true
+
+[node name="LightVault" type="OmniLight3D" parent="DualKey"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.2, 13.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.7
+shadow_enabled = true
+omni_range = 5
+
+[node name="LightLeft" type="OmniLight3D" parent="DualKey"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3.4, 7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightRight" type="OmniLight3D" parent="DualKey"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 3.4, 7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightCorridor" type="OmniLight3D" parent="DualKey"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.4, 6)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 5
+
+[node name="ConsoleLeft" parent="DualKey" instance=ExtResource("2_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3.2, 0, 4.5)
+
+[node name="ConsoleRight" parent="DualKey" instance=ExtResource("2_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14.8, 0, 4.5)
+
+[node name="Hint" type="Label3D" parent="DualKey"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, 2.3, 10.7)
+pixel_size = 0.004
+text = "Both launch keys within 1 second
+opens this vault."
+font_size = 28
+
+[node name="Gate" type="Node" parent="DualKey" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../../DualKey/ConsoleLeft"), NodePath("../../DualKey/ConsoleRight")]
+outputs = [NodePath("../../DualKey/HallLamp"), NodePath("../../DualKey/VaultLamp"), NodePath("../../DualKey/VaultDoor")]
+mode = 0
+latch = true
+solved_message = "Dual Key Console solved: both keys turned together!"
+
+[node name="DualKey_battery_70_105" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0.2, 13.5)
+script = ExtResource("23_x")
+item_id = "battery"
+
+[node name="SplitCode" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="SplitCode"]
+
+[node name="Floor" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, -0.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 4.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 2, 15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="SplitCode"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 24, 3.75, 2.8)
+pixel_size = 0.004
+text = "2. SPLIT CODE
+One reads the monitor, one types"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="SplitCode" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 2.85, 2.75)
+
+[node name="RoomWallL1" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2, 5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallL2" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2, 10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR1" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, 5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR2" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, 10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall1" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 2, 11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall2" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 2, 11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLintel" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.5, 11)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLamp" parent="SplitCode" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.2, 10.8)
+
+[node name="VaultDoor" parent="SplitCode" instance=ExtResource("14_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 0, 11)
+puzzle_controlled = true
+
+[node name="LightVault" type="OmniLight3D" parent="SplitCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.2, 13.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.7
+shadow_enabled = true
+omni_range = 5
+
+[node name="LightLeft" type="OmniLight3D" parent="SplitCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3.4, 7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightRight" type="OmniLight3D" parent="SplitCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 3.4, 7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightCorridor" type="OmniLight3D" parent="SplitCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.4, 6)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 5
+
+[node name="Keypad" parent="SplitCode" instance=ExtResource("12_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 30.8, 1.5, 4)
+
+[node name="MonitorPower" parent="SplitCode" instance=ExtResource("4_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 30.85, 1.3, 5)
+prompt_text = "Hold the monitor power switch ON"
+
+[node name="MonitorBox" type="CSGBox3D" parent="SplitCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.3, 1.5, 4.2)
+use_collision = true
+size = Vector3(0.4, 0.8, 1.2)
+material = SubResource("StandardMaterial3D_33")
+
+[node name="Monitor" type="Label3D" parent="SplitCode" node_paths=PackedStringArray("source", "hidden_until")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17.55, 1.5, 4.2)
+pixel_size = 0.005
+text = ""
+font_size = 64
+script = ExtResource("19_x")
+source = NodePath("../Keypad")
+hidden_until = NodePath("../MonitorPower")
+hidden_text = "NO POWER"
+template = "SECURITY CODE
+%s"
+modulate = Color(0.4, 1, 0.5, 1)
+outline_size = 0
+
+[node name="Hint" type="Label3D" parent="SplitCode"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 24, 2.3, 10.7)
+pixel_size = 0.004
+text = "The monitor (left room) shows the code
+only while someone holds its power switch
+next to the keypad (right room)."
+font_size = 28
+
+[node name="Gate" type="Node" parent="SplitCode" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../../SplitCode/Keypad")]
+outputs = [NodePath("../../SplitCode/HallLamp"), NodePath("../../SplitCode/VaultLamp"), NodePath("../../SplitCode/VaultDoor")]
+mode = 0
+latch = true
+solved_message = "Split Code solved!"
+
+[node name="SplitCode_medkit_70_105" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0.2, 13.5)
+script = ExtResource("23_x")
+item_id = "medkit"
+
+[node name="PowerRouting" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="PowerRouting"]
+
+[node name="Floor" type="CSGBox3D" parent="PowerRouting/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, -0.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="PowerRouting/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 4.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="PowerRouting/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="PowerRouting/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="PowerRouting/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 2, 15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="PowerRouting"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 39, 3.75, 2.8)
+pixel_size = 0.004
+text = "3. POWER ROUTING
+Generator + 2 fuses, breaker held off"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="PowerRouting" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 2.85, 2.75)
+
+[node name="VaultWall1" type="CSGBox3D" parent="PowerRouting/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 2, 11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall2" type="CSGBox3D" parent="PowerRouting/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 2, 11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLintel" type="CSGBox3D" parent="PowerRouting/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.5, 11)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLamp" parent="PowerRouting" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.2, 10.8)
+
+[node name="VaultDoor" parent="PowerRouting" instance=ExtResource("14_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 0, 11)
+puzzle_controlled = true
+
+[node name="LightVault" type="OmniLight3D" parent="PowerRouting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.2, 13.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.7
+shadow_enabled = true
+omni_range = 5
+
+[node name="RoomLights" type="Node3D" parent="PowerRouting"]
+script = ExtResource("20_x")
+
+[node name="Light1" type="OmniLight3D" parent="PowerRouting/RoomLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 3.4, 7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.2
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="Light2" type="OmniLight3D" parent="PowerRouting/RoomLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 3.4, 7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.2
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="EmergencyLight" type="OmniLight3D" parent="PowerRouting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.5, 4)
+light_color = Color(1, 0.1, 0.05, 1)
+light_energy = 0.6
+shadow_enabled = true
+omni_range = 9
+
+[node name="Generator" parent="PowerRouting" node_paths=PackedStringArray("lamp") instance=ExtResource("15_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 34.5, 0, 9.8)
+lamp = NodePath("../GeneratorLamp")
+
+[node name="GeneratorLamp" type="OmniLight3D" parent="PowerRouting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.5, 2.2, 9)
+light_color = Color(1, 0.8, 0.55, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 4
+
+[node name="Breaker" parent="PowerRouting" instance=ExtResource("4_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 43, 1.3, 10.8)
+prompt_text = "Hold the main breaker OFF (so fuses can go in safely)"
+
+[node name="FuseBoxLeft" parent="PowerRouting" node_paths=PackedStringArray("requires") instance=ExtResource("6_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 32.05, 1.4, 6)
+requires = NodePath("../Breaker")
+requires_message = "The breaker is live! Someone must hold it OFF first."
+
+[node name="FuseBoxRight" parent="PowerRouting" node_paths=PackedStringArray("requires") instance=ExtResource("6_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 45.95, 1.4, 6)
+requires = NodePath("../Breaker")
+requires_message = "The breaker is live! Someone must hold it OFF first."
+
+[node name="Hint" type="Label3D" parent="PowerRouting"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 39, 2.3, 10.7)
+pixel_size = 0.004
+text = "Repair the generator (Engineer)
+Put fuses in both fuse boxes
+while someone holds the breaker."
+font_size = 28
+
+[node name="Gate" type="Node" parent="PowerRouting" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../../PowerRouting/Generator"), NodePath("../../PowerRouting/FuseBoxLeft"), NodePath("../../PowerRouting/FuseBoxRight")]
+outputs = [NodePath("../../PowerRouting/HallLamp"), NodePath("../../PowerRouting/VaultLamp"), NodePath("../../PowerRouting/VaultDoor"), NodePath("../../PowerRouting/RoomLights")]
+mode = 0
+latch = true
+solved_message = "Power restored!"
+
+[node name="PowerRouting_fuse_130_65" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, 9.5)
+script = ExtResource("23_x")
+item_id = "fuse"
+
+[node name="PowerRouting_flare_70_105" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0.2, 13.5)
+script = ExtResource("23_x")
+item_id = "flare"
+
+[node name="HallFuse" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 0.2, 1.5)
+script = ExtResource("23_x")
+item_id = "fuse"
+
+[node name="WeightedPlates" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="WeightedPlates"]
+
+[node name="Floor" type="CSGBox3D" parent="WeightedPlates/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, -0.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="WeightedPlates/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 4.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="WeightedPlates/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="WeightedPlates/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="WeightedPlates/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 2, 15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="WeightedPlates"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 54, 3.75, 2.8)
+pixel_size = 0.004
+text = "4. WEIGHTED PLATES
+Both plates hold the door open"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="WeightedPlates" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 2.85, 2.75)
+
+[node name="VaultWall1" type="CSGBox3D" parent="WeightedPlates/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 2, 11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall2" type="CSGBox3D" parent="WeightedPlates/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 2, 11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLintel" type="CSGBox3D" parent="WeightedPlates/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 3.5, 11)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLamp" parent="WeightedPlates" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 3.2, 10.8)
+
+[node name="VaultDoor" parent="WeightedPlates" instance=ExtResource("14_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53, 0, 11)
+puzzle_controlled = true
+
+[node name="LightVault" type="OmniLight3D" parent="WeightedPlates"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 3.2, 13.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.7
+shadow_enabled = true
+omni_range = 5
+
+[node name="Light1" type="OmniLight3D" parent="WeightedPlates"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 3.4, 7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.0
+shadow_enabled = true
+omni_range = 9
+
+[node name="PlateLeft" parent="WeightedPlates" instance=ExtResource("9_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50.5, 0.03, 7.5)
+
+[node name="PlateRight" parent="WeightedPlates" instance=ExtResource("9_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.5, 0.03, 7.5)
+
+[node name="FilingCabinet" parent="WeightedPlates" instance=ExtResource("16_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59.6, 0, 4)
+
+[node name="ReleaseButton" parent="WeightedPlates" instance=ExtResource("1_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.8, 1.3, 11.16)
+active_time = 6.0
+prompt_text = "Emergency door release (opens for 6 s)"
+
+[node name="Hint" type="Label3D" parent="WeightedPlates"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 54, 2.3, 10.7)
+pixel_size = 0.004
+text = "The door is open only while BOTH plates
+are weighed down (players or heavy things)."
+font_size = 28
+
+[node name="PlatesGate" type="Node" parent="WeightedPlates" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../PlateLeft"), NodePath("../PlateRight")]
+outputs = []
+mode = 0
+latch = false
+
+[node name="Gate" type="Node" parent="WeightedPlates" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../PlatesGate"), NodePath("../../WeightedPlates/ReleaseButton")]
+outputs = [NodePath("../../WeightedPlates/HallLamp"), NodePath("../../WeightedPlates/VaultLamp"), NodePath("../../WeightedPlates/VaultDoor")]
+mode = 1
+latch = false
+solved_message = "Weighted Plates: the door is open!"
+
+[node name="WeightedPlates_reel_tape_70_105" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 0.2, 13.5)
+script = ExtResource("23_x")
+item_id = "reel_tape"
+
+[node name="VentCrawl" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="VentCrawl"]
+
+[node name="Floor" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, -0.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 4.25, 9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76, 2, 9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 2, 15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="VentCrawl"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 69, 3.75, 2.8)
+pixel_size = 0.004
+text = "5. VENT CRAWL
+Hold the vent open, crawl in, pull the lever"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="VentCrawl" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 2.85, 2.75)
+
+[node name="VaultWall1" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 2, 11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall2" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71.5, 2, 11)
+use_collision = true
+size = Vector3(3, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall3" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 75, 2, 11)
+use_collision = true
+size = Vector3(2, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWallTop" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5, 2.625, 11)
+use_collision = true
+size = Vector3(1, 2.75, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLintel" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 3.5, 11)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLamp" parent="VentCrawl" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 3.2, 10.8)
+
+[node name="VaultDoor" parent="VentCrawl" instance=ExtResource("14_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 68, 0, 11)
+puzzle_controlled = true
+
+[node name="LightVault" type="OmniLight3D" parent="VentCrawl"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 3.2, 13.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.7
+shadow_enabled = true
+omni_range = 5
+
+[node name="Light1" type="OmniLight3D" parent="VentCrawl"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 3.4, 7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.0
+shadow_enabled = true
+omni_range = 9
+
+[node name="VentSideL" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.75, 2, 9.925)
+use_collision = true
+size = Vector3(0.5, 4, 1.85)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VentSideR" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 74.25, 2, 9.925)
+use_collision = true
+size = Vector3(0.5, 4, 1.85)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VentTop" type="CSGBox3D" parent="VentCrawl/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5, 2.625, 9.925)
+use_collision = true
+size = Vector3(1, 2.75, 1.85)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VentCover" parent="VentCrawl" instance=ExtResource("5_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 73.5, 0, 8.98)
+
+[node name="InsideLever" parent="VentCrawl" instance=ExtResource("3_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71.5, 1.3, 11.16)
+one_way = true
+prompt_text = "Pull the door bolt"
+
+[node name="Hint" type="Label3D" parent="VentCrawl"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 69, 2.3, 10.7)
+pixel_size = 0.004
+text = "Bolted from the inside.
+One holds the vent cover up,
+the other crawls through (crouch)."
+font_size = 28
+
+[node name="Gate" type="Node" parent="VentCrawl" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../../VentCrawl/InsideLever")]
+outputs = [NodePath("../../VentCrawl/HallLamp"), NodePath("../../VentCrawl/VaultLamp"), NodePath("../../VentCrawl/VaultDoor")]
+mode = 0
+latch = true
+solved_message = "Vent Crawl solved: the door is unbolted!"
+
+[node name="VentCrawl_crowbar_70_105" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 0.2, 13.5)
+script = ExtResource("23_x")
+item_id = "crowbar"
+
+[node name="Darkroom" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="Darkroom"]
+
+[node name="Floor" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -0.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 4.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2, -15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="Darkroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.75, -2.8)
+pixel_size = 0.004
+text = "6. DARKROOM PHOTOS
+Safelight held, Journalist develops"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="Darkroom" instance=ExtResource("10_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, 2.85, -2.75)
+
+[node name="RoomWallL1" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 2, -5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallL2" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 2, -10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR1" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, -5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR2" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, -10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall1" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 2, -11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall2" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2, -11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLintel" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.5, -11)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLamp" parent="Darkroom" instance=ExtResource("10_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, 3.2, -10.8)
+
+[node name="VaultDoor" parent="Darkroom" instance=ExtResource("14_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 10, 0, -11)
+puzzle_controlled = true
+
+[node name="LightVault" type="OmniLight3D" parent="Darkroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.2, -13.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.7
+shadow_enabled = true
+omni_range = 5
+
+[node name="LightLeft" type="OmniLight3D" parent="Darkroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 3.4, -7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightRight" type="OmniLight3D" parent="Darkroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3.4, -7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightCorridor" type="OmniLight3D" parent="Darkroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.4, -6)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 5
+
+[node name="Safelights" type="Node3D" parent="Darkroom"]
+script = ExtResource("20_x")
+
+[node name="RedLight" type="OmniLight3D" parent="Darkroom/Safelights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 3, -6)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.5
+shadow_enabled = true
+omni_range = 7
+
+[node name="SafelightSwitch" parent="Darkroom" instance=ExtResource("4_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.83, 1.3, -6)
+prompt_text = "Hold the safelight switch ON"
+
+[node name="DarkroomTable" parent="Darkroom" node_paths=PackedStringArray("requires") instance=ExtResource("8_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 13.5, 0, -4)
+requires = NodePath("../SafelightSwitch")
+requires_message = "Too dark. Someone must hold the safelight switch ON (outside)."
+
+[node name="SafeKeypad" parent="Darkroom" instance=ExtResource("12_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2.2, 1.5, -4.5)
+
+[node name="PhotoBacking" type="CSGBox3D" parent="Darkroom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.815, 1.6, -7.5)
+use_collision = true
+size = Vector3(0.07, 1.4, 2.2)
+material = SubResource("StandardMaterial3D_34")
+
+[node name="PhotoBoard" type="Label3D" parent="Darkroom" node_paths=PackedStringArray("source", "hidden_until")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15.73, 1.6, -7.5)
+pixel_size = 0.005
+text = ""
+font_size = 48
+script = ExtResource("19_x")
+source = NodePath("../SafeKeypad")
+hidden_until = NodePath("../DarkroomTable")
+template = "DEVELOPED PHOTO:
+safe combination
+%s"
+modulate = Color(0.1, 0.08, 0.08, 1)
+outline_size = 0
+
+[node name="Hint" type="Label3D" parent="Darkroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2.3, -10.7)
+pixel_size = 0.004
+text = "Develop the photo (left room) while
+someone holds the safelight switch.
+The photo shows the safe code (right room)."
+font_size = 28
+
+[node name="SafelightGate" type="Node" parent="Darkroom" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../SafelightSwitch")]
+outputs = [NodePath("../Safelights")]
+mode = 0
+latch = false
+
+[node name="Gate" type="Node" parent="Darkroom" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../../Darkroom/SafeKeypad")]
+outputs = [NodePath("../../Darkroom/HallLamp"), NodePath("../../Darkroom/VaultLamp"), NodePath("../../Darkroom/VaultDoor")]
+mode = 0
+latch = true
+solved_message = "Darkroom solved: the safe is open!"
+
+[node name="Darkroom_gas_mask_70_105" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0.2, -13.5)
+script = ExtResource("23_x")
+item_id = "gas_mask"
+
+[node name="RadioFrequency" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="RadioFrequency"]
+
+[node name="Floor" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, -0.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 4.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 2, -15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="RadioFrequency"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.75, -2.8)
+pixel_size = 0.004
+text = "7. RADIO FREQUENCY
+One reads the chart, one tunes"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="RadioFrequency" instance=ExtResource("10_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 24, 2.85, -2.75)
+
+[node name="RoomWallL1" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, -5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallL2" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, -10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR1" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2, -5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR2" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2, -10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall1" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 2, -11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall2" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 2, -11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLintel" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.5, -11)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLamp" parent="RadioFrequency" instance=ExtResource("10_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 24, 3.2, -10.8)
+
+[node name="VaultDoor" parent="RadioFrequency" instance=ExtResource("14_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 25, 0, -11)
+puzzle_controlled = true
+
+[node name="LightVault" type="OmniLight3D" parent="RadioFrequency"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.2, -13.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.7
+shadow_enabled = true
+omni_range = 5
+
+[node name="LightLeft" type="OmniLight3D" parent="RadioFrequency"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 3.4, -7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightRight" type="OmniLight3D" parent="RadioFrequency"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3.4, -7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightCorridor" type="OmniLight3D" parent="RadioFrequency"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.4, -6)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 5
+
+[node name="ChartBoard" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.85, 1.6, -4.7)
+use_collision = true
+size = Vector3(0.1, 1.4, 1.8)
+material = SubResource("StandardMaterial3D_34")
+
+[node name="Chart" type="Label3D" parent="RadioFrequency" node_paths=PackedStringArray("source", "hidden_until")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 30.75, 1.6, -4.7)
+pixel_size = 0.005
+text = ""
+font_size = 48
+script = ExtResource("19_x")
+source = NodePath("../Radio")
+hidden_until = NodePath("../ChartLamp")
+hidden_text = "(too dark to read)"
+template = "STATION 7 TONIGHT:
+%s"
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="RadioTable" type="CSGBox3D" parent="RadioFrequency/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.45, -4.8)
+use_collision = true
+size = Vector3(1.2, 0.9, 1.2)
+material = SubResource("StandardMaterial3D_32")
+
+[node name="Radio" parent="RadioFrequency" instance=ExtResource("13_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 1.08, -4.8)
+
+[node name="ChartLamp" parent="RadioFrequency" instance=ExtResource("4_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17.15, 1.3, -6.2)
+prompt_text = "Hold the chart lamp switch ON"
+
+[node name="Hint" type="Label3D" parent="RadioFrequency"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 2.3, -10.7)
+pixel_size = 0.004
+text = "The chart (left room) is only lit while
+someone holds the lamp switch by the radio.
+Tune the radio (right room) to it."
+font_size = 28
+
+[node name="Gate" type="Node" parent="RadioFrequency" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../../RadioFrequency/Radio")]
+outputs = [NodePath("../../RadioFrequency/HallLamp"), NodePath("../../RadioFrequency/VaultLamp"), NodePath("../../RadioFrequency/VaultDoor")]
+mode = 0
+latch = true
+solved_message = "Radio Frequency solved!"
+
+[node name="RadioFrequency_walkie_70_105" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0.2, -13.5)
+script = ExtResource("23_x")
+item_id = "walkie"
+
+[node name="MorseCode" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="MorseCode"]
+
+[node name="Floor" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, -0.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 4.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 2, -15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="MorseCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.75, -2.8)
+pixel_size = 0.004
+text = "8. MORSE CODE
+One watches the light, one translates"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="MorseCode" instance=ExtResource("10_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 39, 2.85, -2.75)
+
+[node name="RoomWallL1" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 2, -5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallL2" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 2, -10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR1" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 2, -5.5)
+use_collision = true
+size = Vector3(0.3, 4, 5)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="RoomWallR2" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 2, -10.5)
+use_collision = true
+size = Vector3(0.3, 4, 1)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall1" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 2, -11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultWall2" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 2, -11)
+use_collision = true
+size = Vector3(6, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLintel" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.5, -11)
+use_collision = true
+size = Vector3(2, 1, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="VaultLamp" parent="MorseCode" instance=ExtResource("10_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 39, 3.2, -10.8)
+
+[node name="VaultDoor" parent="MorseCode" instance=ExtResource("14_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 40, 0, -11)
+puzzle_controlled = true
+
+[node name="LightVault" type="OmniLight3D" parent="MorseCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.2, -13.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.7
+shadow_enabled = true
+omni_range = 5
+
+[node name="LightLeft" type="OmniLight3D" parent="MorseCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.4, -7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightRight" type="OmniLight3D" parent="MorseCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 3.4, -7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="LightCorridor" type="OmniLight3D" parent="MorseCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 3.4, -6)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 5
+
+[node name="SignalLight" parent="MorseCode" node_paths=PackedStringArray("source", "powered_by") instance=ExtResource("11_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 45.7, 2, -7)
+source = NodePath("../Keypad")
+powered_by = NodePath("../SignalSwitch")
+
+[node name="SignalSwitch" parent="MorseCode" instance=ExtResource("4_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 32.15, 1.3, -6.2)
+prompt_text = "Hold the signal switch ON (the lamp is in the other room)"
+
+[node name="Keypad" parent="MorseCode" instance=ExtResource("12_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 32.2, 1.5, -5)
+code_length = 3
+
+[node name="SheetBoard" type="CSGBox3D" parent="MorseCode/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32.15, 1.7, -8)
+use_collision = true
+size = Vector3(0.1, 1.8, 2.8)
+material = SubResource("StandardMaterial3D_34")
+
+[node name="TranslationSheet" type="Label3D" parent="MorseCode"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 32.22, 1.7, -8)
+pixel_size = 0.0035
+text = "MORSE DIGITS
+1 .----   6 -....
+2 ..---   7 --...
+3 ...--   8 ---..
+4 ....-   9 ----.
+5 .....   0 -----
+(short = .  long = -)"
+font_size = 40
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Hint" type="Label3D" parent="MorseCode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 2.3, -10.7)
+pixel_size = 0.004
+text = "The lamp (left room) blinks a 3-digit code
+while the signal switch (right room) is held.
+Sheet and keypad are in the right room."
+font_size = 28
+
+[node name="Gate" type="Node" parent="MorseCode" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../../MorseCode/Keypad")]
+outputs = [NodePath("../../MorseCode/HallLamp"), NodePath("../../MorseCode/VaultLamp"), NodePath("../../MorseCode/VaultDoor")]
+mode = 0
+latch = true
+solved_message = "Morse Code solved!"
+
+[node name="MorseCode_flare_70_105" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0.2, -13.5)
+script = ExtResource("23_x")
+item_id = "flare"
+
+[node name="GasRoom" type="Node3D" parent="."]
+
+[node name="Walls" type="Node3D" parent="GasRoom"]
+
+[node name="Floor" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, -0.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 4.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 2, -15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="GasRoom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 3.75, -2.8)
+pixel_size = 0.004
+text = "9. GAS ROOM
+Mask on, a teammate reads the map"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="GasRoom" instance=ExtResource("10_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 54, 2.85, -2.75)
+
+[node name="ObsLight" type="OmniLight3D" parent="GasRoom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 3.4, -5)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 6
+
+[node name="Maze0" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53, 2, -7)
+use_collision = true
+size = Vector3(12, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Maze1" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.5, 2, -9)
+use_collision = true
+size = Vector3(11, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Maze2" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52.5, 2, -11)
+use_collision = true
+size = Vector3(11, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Maze3" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.5, 2, -13)
+use_collision = true
+size = Vector3(11, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Stub1" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 2, -7.675)
+use_collision = true
+size = Vector3(0.3, 4, 1.05)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Stub2" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56, 2, -11.625)
+use_collision = true
+size = Vector3(0.3, 4, 0.95)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Stub3" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52, 2, -13.575)
+use_collision = true
+size = Vector3(0.3, 4, 0.85)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="ToxicGas" type="Area3D" parent="GasRoom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 1.5, -11)
+script = ExtResource("24_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GasRoom/ToxicGas"]
+shape = SubResource("BoxShape3D_37")
+
+[node name="FogVolume" type="FogVolume" parent="GasRoom/ToxicGas"]
+size = Vector3(14, 3, 8)
+material = SubResource("FogMaterial_38")
+
+[node name="Pump" parent="GasRoom" instance=ExtResource("4_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57, 1.3, -6.83)
+prompt_text = "Run the ventilation pump (unlocks the valve)"
+
+[node name="Valve" parent="GasRoom" node_paths=PackedStringArray("requires") instance=ExtResource("3_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 60.83, 1.3, -14)
+requires = NodePath("../Pump")
+requires_message = "Locked. Someone must run the ventilation pump outside."
+one_way = true
+prompt_text = "Turn off the gas valve"
+
+[node name="SafeLights" type="Node3D" parent="GasRoom"]
+script = ExtResource("20_x")
+
+[node name="Green1" type="OmniLight3D" parent="GasRoom/SafeLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 3, -14)
+light_color = Color(0.3, 1, 0.4, 1)
+light_energy = 1.0
+shadow_enabled = true
+omni_range = 6
+
+[node name="MapBoard" type="CSGBox3D" parent="GasRoom/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.85, 1.8, -5)
+use_collision = true
+size = Vector3(0.1, 2, 2.8)
+material = SubResource("StandardMaterial3D_34")
+
+[node name="Map" type="Label3D" parent="GasRoom"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 60.75, 1.8, -5)
+pixel_size = 0.0035
+text = "GAS MAZE (top view)
+  ###########
+  #V    |   #   V = valve
+  ####### . #
+  #  .  |   #
+  # .#######
+  #   | .   #
+  ####### . #
+  #  |      #
+  # ########
+  ^ entrance"
+font_size = 36
+modulate = Color(0.1, 0.1, 0.1, 1)
+outline_size = 0
+
+[node name="Hint" type="Label3D" parent="GasRoom"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 54, 2.5, -3.3)
+pixel_size = 0.004
+text = "Toxic maze. The gas mask lasts 45 s.
+One goes in. The other runs the pump
+and reads them the map (left wall)."
+font_size = 28
+
+[node name="Gate" type="Node" parent="GasRoom" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../../GasRoom/Valve")]
+outputs = [NodePath("../../GasRoom/HallLamp"), NodePath("../../GasRoom/SafeLights")]
+mode = 0
+latch = true
+solved_message = "Gas Room solved: the valve is closed!"
+
+[node name="GasRoom_gas_mask_90_10" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52, 0.2, -4)
+script = ExtResource("23_x")
+item_id = "gas_mask"
+
+[node name="GasRoom_walkie_100_10" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 0.2, -4)
+script = ExtResource("23_x")
+item_id = "walkie"
+
+[node name="GasRoom_walkie_105_10" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50.5, 0.2, -4)
+script = ExtResource("23_x")
+item_id = "walkie"
+
+[node name="HuntedHallway" type="Node3D" parent="." groups=["hunted_nav"]]
+
+[node name="Walls" type="Node3D" parent="HuntedHallway"]
+
+[node name="Floor" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, -0.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Ceiling" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 4.25, -9)
+use_collision = true
+size = Vector3(14, 0.5, 12)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallLeft" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallRight" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 2, -9.075)
+use_collision = true
+size = Vector3(0.3, 4, 12.15)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="WallBack" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 2, -15)
+use_collision = true
+size = Vector3(14, 4, 0.3)
+material = SubResource("StandardMaterial3D_31")
+
+[node name="Sign" type="Label3D" parent="HuntedHallway"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 3.75, -2.8)
+pixel_size = 0.004
+text = "10. HUNTED HALLWAY
+Son senses, others carry the battery"
+font_size = 40
+modulate = Color(0.85, 0.85, 0.75, 1)
+
+[node name="HallLamp" parent="HuntedHallway" instance=ExtResource("10_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 69, 2.85, -2.75)
+
+[node name="BayLights" type="Node3D" parent="HuntedHallway"]
+script = ExtResource("20_x")
+
+[node name="Bright1" type="OmniLight3D" parent="HuntedHallway/BayLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 3.4, -7)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.2
+shadow_enabled = true
+omni_range = 9
+
+[node name="Bright2" type="OmniLight3D" parent="HuntedHallway/BayLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, 3.4, -11)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.2
+shadow_enabled = true
+omni_range = 9
+
+[node name="Dim" type="OmniLight3D" parent="HuntedHallway"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 3.5, -9)
+light_color = Color(1, 0.1, 0.05, 1)
+light_energy = 0.3
+shadow_enabled = true
+omni_range = 10
+
+[node name="Crate0" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 1.1, -7)
+use_collision = true
+size = Vector3(1, 2.2, 1)
+material = SubResource("StandardMaterial3D_32")
+
+[node name="Crate1" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 0.7, -10)
+use_collision = true
+size = Vector3(1.2, 1.4, 2.5)
+material = SubResource("StandardMaterial3D_32")
+
+[node name="Crate2" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, 1.1, -7.5)
+use_collision = true
+size = Vector3(2.5, 2.2, 1)
+material = SubResource("StandardMaterial3D_32")
+
+[node name="Crate3" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 0.7, -12)
+use_collision = true
+size = Vector3(2, 1.4, 1)
+material = SubResource("StandardMaterial3D_32")
+
+[node name="Crate4" type="CSGBox3D" parent="HuntedHallway/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 1.1, -12.5)
+use_collision = true
+size = Vector3(1, 2.2, 1)
+material = SubResource("StandardMaterial3D_32")
+
+[node name="PowerClamp" parent="HuntedHallway" instance=ExtResource("4_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 74, 1.3, -3.17)
+prompt_text = "Hold the power clamp (lets the machine take the battery)"
+
+[node name="Machine" parent="HuntedHallway" node_paths=PackedStringArray("requires") instance=ExtResource("7_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 63.5, 0, -4)
+requires = NodePath("../PowerClamp")
+requires_message = "Someone must hold the power clamp (other side of the room)."
+
+[node name="Hint" type="Label3D" parent="HuntedHallway"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 69, 2.5, -3.3)
+pixel_size = 0.004
+text = "Bring the car battery (far corner)
+to the machine (near the entrance).
+Something lives in here."
+font_size = 28
+
+[node name="Gate" type="Node" parent="HuntedHallway" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("18_x")
+inputs = [NodePath("../../HuntedHallway/Machine")]
+outputs = [NodePath("../../HuntedHallway/HallLamp"), NodePath("../../HuntedHallway/BayLights")]
+mode = 0
+latch = true
+solved_message = "Hunted Hallway solved: emergency power on!"
+
+[node name="HuntedHallway_car_battery_15_110" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 74.5, 0.3, -14)
+script = ExtResource("23_x")
+item_id = "car_battery"
+
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_36")
+script = ExtResource("25_x")
+
+[node name="Monsters" type="Node3D" parent="."]
+
+[node name="PatrolPoints" type="Node3D" parent="Monsters"]
+
+[node name="Point1" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5, 0, -5.5)
+
+[node name="Point2" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64.5, 0, -6)
+
+[node name="Point3" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64, 0, -13.5)
+
+[node name="Point4" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5, 0, -10)
+
+[node name="LongMan" parent="Monsters" node_paths=PackedStringArray("patrol_points") instance=ExtResource("17_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69, 0, -13)
+patrol_points = NodePath("../PatrolPoints")
+start_delay = 3.0
+
+[node name="Hall_battery_0" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.2, 2)
+script = ExtResource("23_x")
+item_id = "battery"
+
+[node name="Hall_battery_1" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.2, 2)
+script = ExtResource("23_x")
+item_id = "battery"
+
+[node name="Hall_flare_2" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.2, -2)
+script = ExtResource("23_x")
+item_id = "flare"
+
+[node name="Hall_flare_3" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.2, -2)
+script = ExtResource("23_x")
+item_id = "flare"
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="ItemSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
+spawn_path = NodePath("../Items")
+script = ExtResource("22_x")
+spawn_points = NodePath("../ItemSpawnPoints")
+
+[node name="Players" type="Node3D" parent="."]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
+spawn_path = NodePath("../Players")
+script = ExtResource("21_x")
+spawn_points = NodePath("../SpawnPoints")
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="Spawn1" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.5, 0, -1)
+
+[node name="Spawn2" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.5, 0, 1)
+
+[node name="Spawn3" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.5, 0, -1)
+
+[node name="Spawn4" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.5, 0, 1)

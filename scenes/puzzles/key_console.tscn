@@ -1,0 +1,66 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/puzzle_button.gd" id="1_x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+size = Vector3(0.7, 1.1, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.28, 0.3, 0.25, 1)
+metallic = 0.6
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(0.7, 1, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(0.15, 0.16, 0.14, 1)
+metallic = 0.3
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(0.6, 0.02, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
+albedo_color = Color(0.8, 0.7, 0.3, 1)
+metallic = 0.9
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_8"]
+size = Vector3(0.02, 0.08, 0.03)
+
+[sub_resource type="SphereMesh" id="SphereMesh_9"]
+radius = 0.03
+height = 0.06
+
+[node name="KeyConsole" type="StaticBody3D" node_paths=PackedStringArray("moving_part", "lamp")]
+script = ExtResource("1_x")
+prompt_text = "Turn the launch key"
+active_time = 1.2
+moving_part = NodePath("Key")
+active_rotation = Vector3(0, 0, -90)
+lamp = NodePath("Lamp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+shape = SubResource("BoxShape3D_2")
+
+[node name="Desk" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Panel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01, 0)
+mesh = SubResource("BoxMesh_6")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Key" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.06, 0.05)
+mesh = SubResource("BoxMesh_8")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="Lamp" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 1.04, 0.05)
+mesh = SubResource("SphereMesh_9")
+cast_shadow = 0

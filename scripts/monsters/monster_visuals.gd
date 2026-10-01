@@ -11,10 +11,15 @@ extends Node
 @export var footsteps: AudioStreamPlayer3D
 ## Meters between heavy footsteps.
 @export var stride := 1.1
+## BACKUP for when there's no Son (who can sense monsters): it clicks now
+## and then, so players can track it by ear instead.
+@export var click: AudioStreamPlayer3D
+@export var click_every := 2.5
 
 var _last_state := -1
 var _last_position := Vector3.ZERO
 var _walked := 0.0
+var _click_timer := 0.0
 
 
 func _ready() -> void:
@@ -43,6 +48,12 @@ func _process(delta: float) -> void:
 		_walked = 0.0
 		footsteps.pitch_scale = randf_range(0.55, 0.7)
 		footsteps.play()
+
+	if click and not GameState.team_has(Characters.Id.SON) and monster.state != Monster.State.DORMANT:
+		_click_timer -= delta
+		if _click_timer <= 0.0:
+			_click_timer = click_every
+			click.play()
 
 	# Breathing gets faster and louder during a chase.
 	var chasing := monster.state == Monster.State.CHASE

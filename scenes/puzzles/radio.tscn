@@ -1,0 +1,98 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/radio.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/tune_button.gd" id="2_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/radio_static.wav" id="3_x"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
+albedo_color = Color(0.35, 0.25, 0.15, 1)
+metallic = 0.3
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(0.6, 0.35, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
+albedo_color = Color(0.15, 0.13, 0.1, 1)
+metallic = 0.3
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(0.25, 0.22, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8"]
+albedo_color = Color(0.75, 0.7, 0.6, 1)
+metallic = 0.8
+roughness = 0.7
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_9"]
+size = Vector3(0.09, 0.08, 0.06)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_10"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 0.03
+
+[node name="Radio" type="Node3D"]
+script = ExtResource("1_x")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_5")
+surface_material_override/0 = SubResource("StandardMaterial3D_4")
+
+[node name="Grill" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0, 0.155)
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_6")
+
+[node name="Display" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, 0.07, 0.16)
+pixel_size = 0.0025
+text = "90.0 MHz"
+font_size = 40
+outline_size = 0
+
+[node name="TuneDown" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07, -0.07, 0.17)
+script = ExtResource("2_x")
+direction = -1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TuneDown"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="Knob" type="MeshInstance3D" parent="TuneDown"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)
+mesh = SubResource("CylinderMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_8")
+
+[node name="Label" type="Label3D" parent="TuneDown"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
+pixel_size = 0.003
+text = "-"
+font_size = 40
+
+[node name="TuneUp" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.21, -0.07, 0.17)
+script = ExtResource("2_x")
+direction = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TuneUp"]
+shape = SubResource("BoxShape3D_9")
+
+[node name="Knob" type="MeshInstance3D" parent="TuneUp"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)
+mesh = SubResource("CylinderMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_8")
+
+[node name="Label" type="Label3D" parent="TuneUp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
+pixel_size = 0.003
+text = "+"
+font_size = 40
+
+[node name="Static" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_x")
+volume_db = -6.0
+unit_size = 2.0
+autoplay = true

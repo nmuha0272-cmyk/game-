@@ -1,0 +1,86 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/hold_switch.gd" id="1_x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+size = Vector3(1, 1.15, 0.08)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.35, 0.36, 0.33, 1)
+metallic = 0.8
+roughness = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(0.95, 0.06, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(0.95, 0.06, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(0.95, 0.06, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(0.95, 0.06, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8"]
+size = Vector3(0.95, 0.06, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_9"]
+size = Vector3(0.95, 0.06, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_10"]
+size = Vector3(0.05, 1.15, 0.07)
+
+[sub_resource type="BoxMesh" id="BoxMesh_11"]
+size = Vector3(0.05, 1.15, 0.07)
+
+[node name="VentCover" type="StaticBody3D" node_paths=PackedStringArray("moving_part")]
+script = ExtResource("1_x")
+prompt_text = "Lift the heavy vent cover (hold it while someone crawls in)"
+moving_part = NodePath("CollisionShape3D")
+active_offset = Vector3(0, 1.3, 0)
+max_distance = 1.6
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.575, 0)
+shape = SubResource("BoxShape3D_2")
+
+[node name="Slat0" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.45, 0)
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Slat1" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0)
+mesh = SubResource("BoxMesh_5")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Slat2" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.09, 0)
+mesh = SubResource("BoxMesh_6")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Slat3" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Slat4" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.27, 0)
+mesh = SubResource("BoxMesh_8")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Slat5" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+mesh = SubResource("BoxMesh_9")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="FrameL" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.48, 0, 0)
+mesh = SubResource("BoxMesh_10")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="FrameR" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 0, 0)
+mesh = SubResource("BoxMesh_11")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")

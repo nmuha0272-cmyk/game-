@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" path="res://assets/audio/monster_shriek.wav" id="5_shriek"]
 [ext_resource type="AudioStream" path="res://assets/audio/monster_screech.wav" id="6_screech"]
 [ext_resource type="AudioStream" path="res://assets/audio/footstep_placeholder.wav" id="7_step"]
+[ext_resource type="AudioStream" path="res://assets/audio/monster_click.wav" id="8_click"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 radius = 0.35
@@ -158,7 +159,12 @@ stream = ExtResource("7_step")
 volume_db = 4.0
 unit_size = 5.0
 
-[node name="Visuals" type="Node" parent="." node_paths=PackedStringArray("monster", "body", "breath", "shriek", "screech", "footsteps")]
+[node name="Click" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+stream = ExtResource("8_click")
+unit_size = 6.0
+
+[node name="Visuals" type="Node" parent="." node_paths=PackedStringArray("monster", "body", "breath", "shriek", "screech", "footsteps", "click")]
 script = ExtResource("3_visuals")
 monster = NodePath("..")
 body = NodePath("../Body")
@@ -166,6 +172,7 @@ breath = NodePath("../Breath")
 shriek = NodePath("../Shriek")
 screech = NodePath("../Screech")
 footsteps = NodePath("../Footsteps")
+click = NodePath("../Click")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("Replication")

@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/pressure_plate.gd" id="1_x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+size = Vector3(1.2, 0.6, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(1.2, 0.06, 1.2)
+
+[node name="PressurePlate" type="Area3D" node_paths=PackedStringArray("plate_mesh")]
+script = ExtResource("1_x")
+plate_mesh = NodePath("Plate")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("BoxShape3D_2")
+
+[node name="Plate" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_3")

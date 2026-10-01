@@ -334,13 +334,13 @@ res://
 - [x] Test: two players pass items back and forth without duplicates or losses
 
 ### Phase 8 — Co-op Puzzle Pieces
-- [ ] Reusable puzzle building blocks: button, lever, keypad, key console,
+- [x] Reusable puzzle building blocks: button, lever, keypad, key console,
       pressure plate, fuse box, locked door, vent, radio, signal light
-- [ ] Build each puzzle type from the Puzzle Types table in the test room
-- [ ] Every puzzle's state is controlled by the host and synced to all players
-- [ ] Backup solutions for when a character is missing (e.g. no Engineer:
+- [x] Build each puzzle type from the Puzzle Types table in the test room
+- [x] Every puzzle's state is controlled by the host and synced to all players
+- [x] Backup solutions for when a character is missing (e.g. no Engineer:
       a slower manual crank opens the door)
-- [ ] Test: every puzzle with 2 players, and confirm none can be solved solo
+- [x] Test: every puzzle with 2 players, and confirm none can be solved solo
 
 ### Phase 9 — Core Game Systems
 - [ ] Downed and revive system (30 second timer)

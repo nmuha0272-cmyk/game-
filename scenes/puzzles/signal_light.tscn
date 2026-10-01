@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/signal_light.gd" id="1_x"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
+albedo_color = Color(0.2, 0.22, 0.2, 1)
+metallic = 0.7
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(0.4, 0.4, 0.25)
+
+[sub_resource type="SphereMesh" id="SphereMesh_4"]
+radius = 0.13
+height = 0.26
+
+[node name="SignalLight" type="Node3D"]
+script = ExtResource("1_x")
+
+[node name="Housing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+mesh = SubResource("BoxMesh_3")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="Bulb" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.08)
+mesh = SubResource("SphereMesh_4")
+cast_shadow = 0
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.35)
+light_color = Color(1, 0.85, 0.55, 1)
+light_energy = 3.0
+omni_range = 6.0

@@ -1,0 +1,52 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/hold_switch.gd" id="1_x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+size = Vector3(0.35, 0.45, 0.25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.3, 0.28, 0.18, 1)
+metallic = 0.5
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(0.3, 0.4, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(0.12, 0.12, 0.12, 1)
+metallic = 0.3
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(0.06, 0.18, 0.06)
+
+[sub_resource type="SphereMesh" id="SphereMesh_7"]
+radius = 0.03
+height = 0.06
+
+[node name="HoldSwitch" type="StaticBody3D" node_paths=PackedStringArray("moving_part", "lamp")]
+script = ExtResource("1_x")
+prompt_text = "Hold the switch down"
+moving_part = NodePath("Handle")
+active_rotation = Vector3(70, 0, 0)
+lamp = NodePath("Lamp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
+shape = SubResource("BoxShape3D_2")
+
+[node name="Box" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.05)
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Handle" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.13)
+mesh = SubResource("BoxMesh_6")
+surface_material_override/0 = SubResource("StandardMaterial3D_5")
+
+[node name="Lamp" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.15, 0.11)
+mesh = SubResource("SphereMesh_7")
+cast_shadow = 0
