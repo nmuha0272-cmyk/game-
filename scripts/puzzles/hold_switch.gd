@@ -13,12 +13,17 @@ extends PuzzleInput
 ## Only this character can hold it (-1 = anyone), like the Guard lifting a
 ## heavy gate. BACKUP: if that character isn't in the team, anyone can.
 @export var required_character := -1
+## Solo mode: when you let go, it stays propped up this many seconds
+## (so one player can lift the gate, then go find the crowbar).
+@export var solo_prop_time := 15.0
 
 ## Network ID of whoever is holding it (0 = nobody).
 var holder_id := 0
 
 var _hold_start := Vector3.ZERO
 var _hold_age := 0.0
+## Seconds left before a propped-up switch falls back (host only, solo mode).
+var _prop_left := 0.0
 
 
 func _ready() -> void:
@@ -48,6 +53,8 @@ func get_prompt(by: Player) -> String:
 		return "[E] Let go"
 	if holder_id != 0:
 		return "%s is holding it" % GameState.get_player_name(holder_id)
+	if _prop_left > 0.0:
+		return "Propped up (%ds left)   [E] Hold it again" % ceili(_prop_left)
 	return "[E] " + prompt_text
 
 
@@ -58,6 +65,7 @@ func _on_interact(by: Player) -> void:
 			return
 		_hold_start = by.global_position
 		_hold_age = 0.0
+		_prop_left = 0.0
 		_set_holder.rpc(by_id)
 		server_set_active(true)
 	elif holder_id == by_id:
@@ -65,7 +73,13 @@ func _on_interact(by: Player) -> void:
 
 
 func _process(delta: float) -> void:
-	if not multiplayer.is_server() or holder_id == 0:
+	if not multiplayer.is_server():
+		return
+	if _prop_left > 0.0:
+		_prop_left -= delta
+		if _prop_left <= 0.0:
+			server_set_active(false)
+	if holder_id == 0:
 		return
 	var holder := Player.find(get_tree(), holder_id)
 	# For the first moment, keep updating where they stand: their latest
@@ -79,8 +93,14 @@ func _process(delta: float) -> void:
 
 
 func _release() -> void:
+	var holder := Player.find(get_tree(), holder_id)
 	_set_holder.rpc(0)
-	server_set_active(false)
+	if GameState.is_solo() and holder and not holder.is_downed:
+		# Alone: wedge it in place for a little while instead of dropping it.
+		_prop_left = solo_prop_time
+		holder.inventory.server_tell("You wedge it in place. It won't stay up for long!")
+	else:
+		server_set_active(false)
 
 
 @rpc("authority", "call_local", "reliable")

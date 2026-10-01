@@ -79,14 +79,14 @@ func get_owner_of(character: int) -> int:
 	return 0
 
 
-## Every puzzle needs two people, so the real game needs at least two
-## players. Running from the Godot editor (a debug build) also allows solo,
-## so you can test things by yourself.
-const MIN_PLAYERS := 2
+## Solo mode: when you play alone, team puzzles go easier on you (heavy
+## things stay propped up for a bit, launch keys stay turned longer).
+func is_solo() -> bool:
+	return players.size() == 1
 
 
 func has_enough_players() -> bool:
-	return players.size() >= MIN_PLAYERS or OS.is_debug_build()
+	return players.size() >= 1
 
 
 func can_start() -> bool:
