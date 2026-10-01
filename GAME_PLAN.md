@@ -305,13 +305,13 @@ res://
 - [x] Each character shows their held item in first-person view (placeholder shapes)
 
 ### Phase 5 — Character Abilities
-- [ ] Base ability script with cooldown handling (shared by all four)
-- [ ] Son: Sense (monsters glow through walls)
-- [ ] Journalist: Camera Flash (stun) and photographing evidence
-- [ ] Engineer: Repair (hold to fix/hack objects with a progress bar)
-- [ ] Guard: hold doors, push heavy objects, carry downed players
-- [ ] All abilities work correctly in multiplayer
-- [ ] Test: each ability with 2+ players
+- [x] Base ability script with cooldown handling (shared by all four)
+- [x] Son: Sense (monsters glow through walls)
+- [x] Journalist: Camera Flash (stun) and photographing evidence
+- [x] Engineer: Repair (hold to fix/hack objects with a progress bar)
+- [x] Guard: hold doors, push heavy objects, carry downed players
+- [x] All abilities work correctly in multiplayer
+- [x] Test: each ability with 2+ players
 
 ### Phase 6 — Monster AI
 - [ ] One test monster using NavigationAgent3D

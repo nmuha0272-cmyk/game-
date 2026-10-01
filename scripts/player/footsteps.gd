@@ -20,6 +20,8 @@ func _on_stepped() -> void:
 		volume_db = sprint_volume_db
 	else:
 		volume_db = walk_volume_db
+	# Some characters (the Guard) are louder.
+	volume_db += Characters.get_value(player.character, "footstep_volume_db", 0.0)
 	# Small random pitch change so steps don't sound identical.
 	pitch_scale = randf_range(0.9, 1.1)
 	play()

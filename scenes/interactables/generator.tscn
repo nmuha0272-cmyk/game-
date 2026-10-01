@@ -1,0 +1,60 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/interactables/generator.gd" id="1_gen"]
+[ext_resource type="AudioStream" path="res://assets/audio/generator_hum.wav" id="2_hum"]
+
+[sub_resource type="BoxShape3D" id="Shape_gen"]
+size = Vector3(1.2, 1, 0.8)
+
+[sub_resource type="BoxMesh" id="Mesh_gen"]
+size = Vector3(1.2, 1, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="Mat_gen"]
+albedo_color = Color(0.35, 0.33, 0.22, 1)
+metallic = 0.7
+roughness = 0.6
+
+[sub_resource type="CylinderMesh" id="Mesh_exhaust"]
+top_radius = 0.08
+bottom_radius = 0.08
+height = 0.4
+
+[sub_resource type="SphereMesh" id="Mesh_indicator"]
+radius = 0.05
+height = 0.1
+
+[sub_resource type="StandardMaterial3D" id="Mat_indicator"]
+albedo_color = Color(0.6, 0.05, 0.05, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.05, 1)
+emission_energy_multiplier = 3.0
+
+[node name="Generator" type="StaticBody3D"]
+script = ExtResource("1_gen")
+object_name = "generator"
+repair_time = 4.0
+indicator_material = SubResource("Mat_indicator")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("Shape_gen")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("Mesh_gen")
+surface_material_override/0 = SubResource("Mat_gen")
+
+[node name="Exhaust" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 1.2, -0.2)
+mesh = SubResource("Mesh_exhaust")
+surface_material_override/0 = SubResource("Mat_gen")
+
+[node name="Indicator" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.8, 0.41)
+mesh = SubResource("Mesh_indicator")
+surface_material_override/0 = SubResource("Mat_indicator")
+
+[node name="Hum" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+stream = ExtResource("2_hum")
+volume_db = -6.0

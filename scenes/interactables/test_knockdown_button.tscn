@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/interactables/test_knockdown_button.gd" id="1_button"]
+
+[sub_resource type="BoxShape3D" id="Shape_button"]
+size = Vector3(0.3, 0.3, 0.2)
+
+[sub_resource type="CylinderMesh" id="Mesh_button"]
+top_radius = 0.1
+bottom_radius = 0.12
+height = 0.08
+
+[sub_resource type="StandardMaterial3D" id="Mat_button"]
+albedo_color = Color(0.7, 0.08, 0.05, 1)
+emission_enabled = true
+emission = Color(0.6, 0.05, 0.02, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_plate"]
+size = Vector3(0.3, 0.3, 0.03)
+
+[node name="TestKnockdownButton" type="StaticBody3D"]
+script = ExtResource("1_button")
+prompt_text = "TEST: Knock me down"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
+shape = SubResource("Shape_button")
+
+[node name="Plate" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.015)
+mesh = SubResource("Mesh_plate")
+
+[node name="Button" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0.06)
+mesh = SubResource("Mesh_button")
+surface_material_override/0 = SubResource("Mat_button")
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 0.03)
+pixel_size = 0.003
+modulate = Color(0.9, 0.7, 0.6, 1)
+text = "TEST: KNOCK ME DOWN"
+font_size = 40

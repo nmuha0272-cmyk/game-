@@ -12,6 +12,8 @@
 [ext_resource type="Script" path="res://scripts/player/player_ownership.gd" id="10_owner"]
 [ext_resource type="Script" path="res://scripts/player/held_item.gd" id="11_held"]
 [ext_resource type="Script" path="res://scripts/player/nameplate.gd" id="12_nameplate"]
+[ext_resource type="Script" path="res://scripts/player/downed_state.gd" id="13_downed"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_holder.gd" id="14_abilities"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 resource_local_to_scene = true
@@ -73,6 +75,9 @@ mesh = SubResource("Mesh_body")
 [node name="Stamina" type="Node" parent="."]
 script = ExtResource("2_stamina")
 
+[node name="Downed" type="Node" parent="."]
+script = ExtResource("13_downed")
+
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 script = ExtResource("3_look")
@@ -116,7 +121,13 @@ script = ExtResource("7_steps")
 player = NodePath("..")
 head_bob = NodePath("../Head/Camera3D")
 
-[node name="HUD" parent="." node_paths=PackedStringArray("stamina", "interactor") instance=ExtResource("9_hud")]
+[node name="AbilityHolder" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("14_abilities")
+player = NodePath("..")
+
+[node name="HUD" parent="." node_paths=PackedStringArray("player", "stamina", "interactor", "ability_holder") instance=ExtResource("9_hud")]
+player = NodePath("..")
+ability_holder = NodePath("../AbilityHolder")
 stamina = NodePath("../Stamina")
 interactor = NodePath("../Head/Camera3D/InteractRay")
 

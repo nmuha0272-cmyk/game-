@@ -1,5 +1,5 @@
 extends Interactable
-## A wall switch that turns a light on and off.
+## A wall switch that turns a light on and off for everyone.
 
 @export var light: Light3D
 
@@ -10,9 +10,14 @@ func _ready() -> void:
 	_update_lever()
 
 
-func _on_interact(_by: Node) -> void:
+func _on_interact(_by: Player) -> void:
 	if light:
-		light.visible = not light.visible
+		_set_light_on.rpc(not light.visible)
+
+
+@rpc("authority", "call_local", "reliable")
+func _set_light_on(is_on: bool) -> void:
+	light.visible = is_on
 	_update_lever()
 
 
