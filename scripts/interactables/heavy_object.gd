@@ -12,6 +12,7 @@ var mover_id := 0
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Where the object sits relative to the Guard when he grabbed it.
 var _grab_offset := Vector3.ZERO
+var _noise_timer := 0.0
 
 
 # Looking at it shows a hint (the Interactor calls these).
@@ -73,6 +74,11 @@ func _physics_process(delta: float) -> void:
 		var move := (to_target * 8.0).limit_length(4.0)
 		velocity.x = move.x
 		velocity.z = move.z
+		# Dragging heavy furniture is loud.
+		_noise_timer -= delta
+		if move.length() > 0.5 and _noise_timer <= 0.0:
+			_noise_timer = 0.5
+			get_tree().call_group("monsters", "hear_noise", global_position, 10.0)
 	else:
 		velocity.x = move_toward(velocity.x, 0.0, 20.0 * delta)
 		velocity.z = move_toward(velocity.z, 0.0, 20.0 * delta)

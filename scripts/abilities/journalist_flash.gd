@@ -57,6 +57,8 @@ func _server_flash(origin: Vector3, forward: Vector3) -> void:
 	_show_flash.rpc()
 	if not is_local():
 		_play_flash()
+	# The shutter and the light carry. Monsters nearby come to look.
+	get_tree().call_group("monsters", "hear_noise", origin, 15.0)
 	for monster in get_tree().get_nodes_in_group("monsters"):
 		if _is_caught_in_flash(origin, forward, monster.get_aim_point(), monster):
 			monster.stun(stun_time)

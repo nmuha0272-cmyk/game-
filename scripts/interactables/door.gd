@@ -32,6 +32,30 @@ func get_prompt(by: Player) -> String:
 func _on_interact(_by: Player) -> void:
 	if not is_held():
 		_set_open.rpc(not is_open)
+		# Doors are noisy. Monsters nearby come to look.
+		get_tree().call_group("monsters", "hear_noise", global_position, 8.0)
+
+
+## Host only: a monster shoves the door open (unless the Guard is holding it).
+func server_force_open() -> void:
+	if multiplayer.is_server() and not is_open and not is_held():
+		_set_open.rpc(true)
+
+
+## Host only: a monster bangs on the door while the Guard holds it.
+func pound() -> void:
+	if multiplayer.is_server():
+		_play_pound.rpc()
+
+
+@rpc("authority", "call_local", "reliable")
+func _play_pound() -> void:
+	$Pound.pitch_scale = randf_range(0.85, 1.1)
+	$Pound.play()
+	# Rattle the door a little.
+	var tween := create_tween()
+	tween.tween_property(self, "rotation_degrees:y", -2.5, 0.05)
+	tween.tween_property(self, "rotation_degrees:y", 0.0, 0.15)
 
 
 ## Called on the Guard's computer when he starts or stops holding the door.

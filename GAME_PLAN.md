@@ -314,14 +314,14 @@ res://
 - [x] Test: each ability with 2+ players
 
 ### Phase 6 — Monster AI
-- [ ] One test monster using NavigationAgent3D
-- [ ] States: Patrol → Hear/See player → Chase → Search → Patrol
-- [ ] Hearing: reacts to sprinting and the Guard's loud movement
-- [ ] Sight: reacts to players in its view cone, especially flashlights
-- [ ] Catching a player makes them "downed"
-- [ ] Reacts to Journalist's stun and Guard-held doors
-- [ ] Monster runs on the host and syncs to other players
-- [ ] Test: the monster chases the right player and loses them when hidden
+- [x] One test monster using NavigationAgent3D
+- [x] States: Patrol → Hear/See player → Chase → Search → Patrol
+- [x] Hearing: reacts to sprinting and the Guard's loud movement
+- [x] Sight: reacts to players in its view cone, especially flashlights
+- [x] Catching a player makes them "downed"
+- [x] Reacts to Journalist's stun and Guard-held doors
+- [x] Monster runs on the host and syncs to other players
+- [x] Test: the monster chases the right player and loses them when hidden
 
 ### Phase 7 — Gear and Inventory
 - [ ] Item pickup system (look at item, press E, it goes into a free slot)

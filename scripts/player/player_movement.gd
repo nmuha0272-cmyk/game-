@@ -20,6 +20,10 @@ extends CharacterBody3D
 var character: int = Characters.Id.NONE
 ## Extra slow-down from abilities, e.g. 0.6 while the Guard moves something heavy.
 var speed_multiplier := 1.0
+## True while this player's flashlight is on (monsters spot you more easily).
+var flashlight_on: bool:
+	get:
+		return flashlight != null and flashlight.visible
 ## True if knocked down (see downed_state.gd).
 var is_downed: bool:
 	get:
@@ -42,6 +46,7 @@ var _head_stand_y := 0.0
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var body_mesh: MeshInstance3D = $BodyMesh
 @onready var downed: DownedState = $Downed
+@onready var flashlight: Flashlight = $Head/Camera3D/Flashlight
 
 
 ## Finds the player with this network ID (or null).
@@ -61,6 +66,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	add_to_group("players")
+	_apply_character_color()
 	_head_stand_y = head.position.y
 	_apply_crouch_shape()
 	downed.changed.connect(_apply_crouch_shape)
@@ -167,3 +173,10 @@ func get_prompt(by: Player) -> String:
 
 func interact(by: Player) -> void:
 	downed.request_help_up(by)
+
+
+## Tints the placeholder body in the character's main color (from the concept art).
+func _apply_character_color() -> void:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Characters.get_value(character, "color", Color(0.5, 0.5, 0.5))
+	body_mesh.material_override = material
