@@ -398,6 +398,17 @@ Tasks:
 - [x] Balance ability cooldowns and monster speed (first pass; tune again after playtests, see PLAYTEST.md)
 - [x] Export builds for Windows (export_presets.cfg; build lands in build/windows/)
 
+### Unreal Engine 5 port (in `unreal/SubjectZero/`, see its README)
+The Godot game stays the main version until the Unreal one catches up.
+The level is shared: `tools/export_for_unreal.gd` writes Chapter 1 to
+`unreal/SubjectZero/Content/Data/chapter1.json`, and Unreal builds it from that.
+- [ ] U1: Level built from the export, Host/Join, walk/sprint/crouch, flashlight, doors (code written, needs its first build on a PC with Unreal)
+- [ ] U2: Items + inventory, keycard door, lore notes and journal
+- [ ] U3: Puzzles (hold switches, gate, keypad/monitor, vent, fuses, generator, launch keys, elevator ending)
+- [ ] U4: The Long Man, downed / help up, checkpoints
+- [ ] U5: The four characters and their abilities
+- [ ] U6: Real materials and textures, sounds, polish
+
 ### Later (after Chapter 1 is fun)
 - Steam lobbies and invites (GodotSteam)
 - Proximity voice chat

@@ -1,0 +1,17 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.4",
+	"Category": "",
+	"Description": "Subject Zero - co-op horror (Unreal port)",
+	"Modules": [
+		{
+			"Name": "SubjectZero",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": ["Engine"]
+		}
+	],
+	"Plugins": [
+		{ "Name": "GeometryScripting", "Enabled": true }
+	]
+}
