@@ -3,11 +3,12 @@ extends Node
 ## Only the host loads the level. The LevelSpawner then copies it
 ## to everyone in the lobby.
 
-## Levels the host can pick in the lobby.
-const LEVELS := {
-	"Test Room": "res://scenes/test_room/test_room.tscn",
-	"Puzzle Lab": "res://scenes/test_room/puzzle_lab.tscn",
-}
+## The game is story-based: pressing Start always begins the story, and
+## chapters follow one after another (Chapter 1 is built in Phase 10).
+## Until then, Start loads the test room.
+## DEVELOPERS: to test the Puzzle Lab with friends, temporarily change this to
+## "res://scenes/test_room/puzzle_lab.tscn" (don't commit that change).
+const STORY_START := "res://scenes/test_room/test_room.tscn"
 
 @onready var level_root: Node = $Level
 @onready var menu = $MainMenu
@@ -59,8 +60,7 @@ func _on_start_requested() -> void:
 func _on_game_started() -> void:
 	lobby.hide()
 	if multiplayer.is_server():
-		var path: String = LEVELS.get(lobby.get_selected_level(), LEVELS["Test Room"])
-		level_root.add_child(load(path).instantiate())
+		level_root.add_child(load(STORY_START).instantiate())
 
 
 func _on_leave_requested() -> void:

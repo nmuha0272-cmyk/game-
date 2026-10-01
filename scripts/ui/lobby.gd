@@ -10,13 +10,10 @@ signal leave_requested
 @onready var start_button: Button = %StartButton
 @onready var leave_button: Button = %LeaveButton
 @onready var hint_label: Label = %HintLabel
-@onready var level_picker: OptionButton = %LevelPicker
 
 
 func _ready() -> void:
 	_build_character_buttons()
-	for level_name in ["Test Room", "Puzzle Lab"]:
-		level_picker.add_item(level_name)
 	start_button.pressed.connect(func() -> void: start_requested.emit())
 	leave_button.pressed.connect(func() -> void: leave_requested.emit())
 	GameState.players_changed.connect(refresh)
@@ -73,7 +70,6 @@ func refresh() -> void:
 
 	var is_host := multiplayer.is_server()
 	start_button.visible = is_host
-	level_picker.visible = is_host
 	start_button.disabled = not GameState.can_start()
 	if GameState.get_character(my_id) == Characters.Id.NONE:
 		hint_label.text = "Pick a character."
@@ -83,8 +79,3 @@ func refresh() -> void:
 		hint_label.text = "Everyone is ready. Press Start!"
 	else:
 		hint_label.text = "Waiting for the host to start..."
-
-
-## The level the host picked (only the host's choice matters).
-func get_selected_level() -> String:
-	return level_picker.get_item_text(level_picker.selected)
