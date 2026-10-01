@@ -6,7 +6,7 @@ enum Id { NONE = -1, SON, JOURNALIST, ENGINEER, GUARD }
 
 const INFO := {
 	Id.SON: {
-		"name": "The Son",
+		"name": "The Son (Ethan)",
 		"role": "Tracker",
 		"ability": "Sense: see nearby monsters through walls.",
 		"held_item": "res://scenes/player/held_items/dog_tags.tscn",
