@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_containment_order"
+title = "Level B Containment Order"
+type = 0
+text = "BY ORDER OF THE DIRECTOR - EMERGENCY CONTAINMENT, LEVEL B\nAll lower doors are to be sealed immediately, REGARDLESS OF PERSONNEL INSIDE.\nGuard responsible: F. KOWALSKI.\n\nELEVATOR OVERRIDE: two officers must turn their launch keys at the same time."
+owner_character = -1
+voice_line = ""

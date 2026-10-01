@@ -9,6 +9,9 @@ extends PuzzleInput
 @export var max_distance := 0.8
 ## How close you must be to grab it.
 @export var reach := 2.5
+## Only this character can hold it (-1 = anyone), like the Guard lifting a
+## heavy gate. BACKUP: if that character isn't in the team, anyone can.
+@export var required_character := -1
 
 ## Network ID of whoever is holding it (0 = nobody).
 var holder_id := 0
@@ -17,7 +20,14 @@ var _hold_start := Vector3.ZERO
 var _hold_age := 0.0
 
 
+func _allowed(by: Player) -> bool:
+	return required_character < 0 or by.character == required_character \
+			or not GameState.team_has(required_character)
+
+
 func get_prompt(by: Player) -> String:
+	if holder_id == 0 and not _allowed(by):
+		return "Too heavy. Only %s is strong enough." % Characters.display_name(required_character)
 	var by_id := by.name.to_int()
 	if holder_id == by_id:
 		return "[E] Let go"
@@ -29,7 +39,7 @@ func get_prompt(by: Player) -> String:
 func _on_interact(by: Player) -> void:
 	var by_id := by.name.to_int()
 	if holder_id == 0:
-		if by.global_position.distance_to(global_position) > reach:
+		if not _allowed(by) or by.global_position.distance_to(global_position) > reach:
 			return
 		_hold_start = by.global_position
 		_hold_age = 0.0

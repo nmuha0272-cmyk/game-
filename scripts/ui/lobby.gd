@@ -17,6 +17,7 @@ func _ready() -> void:
 	start_button.pressed.connect(func() -> void: start_requested.emit())
 	leave_button.pressed.connect(func() -> void: leave_requested.emit())
 	GameState.players_changed.connect(refresh)
+	add_to_group("lobby_message")
 	visibility_changed.connect(refresh)
 	refresh()
 
@@ -79,3 +80,7 @@ func refresh() -> void:
 		hint_label.text = "Everyone is ready. Press Start!"
 	else:
 		hint_label.text = "Waiting for the host to start..."
+
+
+func show_message(text: String) -> void:
+	hint_label.text = text

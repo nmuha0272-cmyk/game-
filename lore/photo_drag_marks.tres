@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "photo_drag_marks"
+title = "Photo: Fresh Drag Marks"
+type = 2
+text = "Long drag marks in the dirt, leading from the road to the station gate.\nThey're fresh. Something still moves around here."
+owner_character = -1
+voice_line = ""

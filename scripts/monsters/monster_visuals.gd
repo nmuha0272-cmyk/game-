@@ -20,6 +20,7 @@ var _last_state := -1
 var _last_position := Vector3.ZERO
 var _walked := 0.0
 var _click_timer := 0.0
+var _fold := 0.0
 
 
 func _ready() -> void:
@@ -27,7 +28,21 @@ func _ready() -> void:
 	_last_position = monster.global_position
 
 
+## The Long Man doesn't fit in the tunnels. Under a low ceiling he folds
+## over (shorter and hunched forward).
+func _update_folding(delta: float) -> void:
+	var from := monster.global_position + Vector3.UP * 1.0
+	var query := PhysicsRayQueryParameters3D.create(from, from + Vector3.UP * 2.3)
+	query.exclude = [monster.get_rid()]
+	var low_ceiling := not monster.get_world_3d().direct_space_state.intersect_ray(query).is_empty()
+	var fold := 1.0 if low_ceiling else 0.0
+	_fold = lerpf(_fold, fold, clampf(delta * 3.0, 0.0, 1.0))
+	body.scale = Vector3(1.0, lerpf(1.0, 0.8, _fold), 1.0)
+	body.rotation_degrees.x = lerpf(0.0, -22.0, _fold)
+
+
 func _process(delta: float) -> void:
+	_update_folding(delta)
 	if monster.state != _last_state:
 		_on_state_changed(monster.state)
 		_last_state = monster.state

@@ -1,0 +1,1583 @@
+[gd_scene load_steps=101 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/puzzles/hold_switch.tscn" id="1_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/vent_cover.tscn" id="2_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/fuse_box.tscn" id="3_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/key_console.tscn" id="4_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/keypad.tscn" id="5_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/lever.tscn" id="6_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/button.tscn" id="7_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/status_lamp.tscn" id="8_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/gate_clamp.tscn" id="9_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/door.tscn" id="10_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/generator.tscn" id="11_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/filing_cabinet.tscn" id="12_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/evidence_drag_marks.tscn" id="13_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/evidence_monster_photo.tscn" id="14_x"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/long_man.tscn" id="15_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_file.tscn" id="16_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_poster.tscn" id="17_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_personal.tscn" id="18_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_paper.tscn" id="19_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/tape_machine.tscn" id="20_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/puzzle_gate.gd" id="21_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/code_display.gd" id="22_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/puzzle_lights.gd" id="23_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/puzzle_mover.gd" id="24_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/lore_check.gd" id="25_x"]
+[ext_resource type="Script" path="res://scripts/interactables/door_lock.gd" id="26_x"]
+[ext_resource type="Script" path="res://scripts/player/player_spawner.gd" id="27_x"]
+[ext_resource type="Script" path="res://scripts/items/item_spawner.gd" id="28_x"]
+[ext_resource type="Script" path="res://scripts/items/item_spawn_point.gd" id="29_x"]
+[ext_resource type="Script" path="res://scripts/environment/bake_navigation_on_start.gd" id="30_x"]
+[ext_resource type="Script" path="res://scripts/environment/flickering_light.gd" id="31_x"]
+[ext_resource type="Script" path="res://scripts/environment/pulsing_light.gd" id="32_x"]
+[ext_resource type="Script" path="res://scripts/environment/random_ambient_sounds.gd" id="33_x"]
+[ext_resource type="Script" path="res://scripts/game/team_monitor.gd" id="34_x"]
+[ext_resource type="Script" path="res://scripts/game/checkpoint.gd" id="35_x"]
+[ext_resource type="Script" path="res://scripts/chapters/chapter.gd" id="36_x"]
+[ext_resource type="Script" path="res://scripts/chapters/stinger_trigger.gd" id="37_x"]
+[ext_resource type="Script" path="res://scripts/chapters/chase_trigger.gd" id="38_x"]
+[ext_resource type="Script" path="res://scripts/chapters/flashlight_drain_trigger.gd" id="39_x"]
+[ext_resource type="Script" path="res://scripts/chapters/elevator.gd" id="40_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/wind_loop.wav" id="41_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient_drone.wav" id="42_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/water_drip.wav" id="43_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/distant_clank.wav" id="44_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/metal_creak.wav" id="45_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/stinger.wav" id="46_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/cable_snap.wav" id="47_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/elevator_hum.wav" id="48_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/fluorescent_buzz.wav" id="49_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/door_creak.wav" id="50_x"]
+[ext_resource type="Resource" path="res://lore/personal_journalist_notebook.tres" id="68_x"]
+[ext_resource type="Resource" path="res://lore/file_staff_directory.tres" id="71_x"]
+[ext_resource type="Resource" path="res://lore/personal_engineer_nameplate.tres" id="72_x"]
+[ext_resource type="Resource" path="res://lore/file_corkboard.tres" id="73_x"]
+[ext_resource type="Resource" path="res://lore/file_poster_stronger.tres" id="74_x"]
+[ext_resource type="Resource" path="res://lore/personal_guard_roster.tres" id="75_x"]
+[ext_resource type="Resource" path="res://lore/personal_son_volunteer_id.tres" id="77_x"]
+[ext_resource type="Resource" path="res://lore/file_subject7_log.tres" id="78_x"]
+[ext_resource type="Resource" path="res://lore/personal_son_drawing.tres" id="79_x"]
+[ext_resource type="Resource" path="res://lore/file_containment_order.tres" id="82_x"]
+[ext_resource type="Resource" path="res://lore/personal_engineer_blueprint.tres" id="83_x"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_51"]
+frequency = 0.03
+fractal_octaves = 5
+
+[sub_resource type="Gradient" id="Gradient_52"]
+colors = PackedColorArray(0.55, 0.55, 0.52, 1, 1, 1, 1, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_53"]
+seamless = true
+color_ramp = SubResource("Gradient_52")
+noise = SubResource("FastNoiseLite_51")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_54"]
+albedo_color = Color(0.33, 0.32, 0.3, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.9
+metallic = 0.0
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_55"]
+albedo_color = Color(0.4, 0.4, 0.38, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.9
+metallic = 0.0
+uv1_scale = Vector3(0.3, 0.3, 0.3)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_56"]
+albedo_color = Color(0.22, 0.2, 0.16, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.9
+metallic = 0.0
+uv1_scale = Vector3(0.1, 0.1, 0.1)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_57"]
+albedo_color = Color(0.48, 0.47, 0.42, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.9
+metallic = 0.0
+uv1_scale = Vector3(0.3, 0.3, 0.3)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_58"]
+albedo_color = Color(0.32, 0.22, 0.14, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.9
+metallic = 0.0
+uv1_scale = Vector3(0.8, 0.8, 0.8)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_59"]
+albedo_color = Color(0.3, 0.32, 0.3, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.5
+metallic = 0.6
+uv1_scale = Vector3(0.6, 0.6, 0.6)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_60"]
+albedo_color = Color(0.25, 0.26, 0.25, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.6
+metallic = 0.7
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+transparency = 2
+alpha_scissor_threshold = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_61"]
+albedo_color = Color(0.02, 0.04, 0.03, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.9
+metallic = 0.0
+uv1_scale = Vector3(0.05, 0.05, 0.05)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_62"]
+albedo_color = Color(0.12, 0.12, 0.13, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.9
+metallic = 0.0
+uv1_scale = Vector3(0.2, 0.2, 0.2)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_63"]
+albedo_color = Color(0.25, 0.3, 0.32, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.4
+metallic = 0.6
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_64"]
+albedo_color = Color(0.4, 0.2, 0.1, 1)
+albedo_texture = SubResource("NoiseTexture2D_53")
+roughness = 0.9
+metallic = 0.0
+uv1_scale = Vector3(0.8, 0.8, 0.8)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_65"]
+albedo_color = Color(0.03, 0.08, 0.04, 1)
+emission_enabled = true
+emission = Color(0.03, 0.2, 0.06, 1)
+emission_energy_multiplier = 1.0
+
+[sub_resource type="Environment" id="Environment_66"]
+background_mode = 1
+background_color = Color(0.01, 0.015, 0.03, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.18, 0.22, 0.28, 1)
+ambient_light_energy = 0.22
+tonemap_mode = 2
+tonemap_exposure = 1.25
+ssao_enabled = true
+glow_enabled = true
+glow_bloom = 0.05
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.03
+volumetric_fog_albedo = Color(0.7, 0.75, 0.8, 1)
+volumetric_fog_length = 45.0
+adjustment_enabled = true
+adjustment_contrast = 1.15
+adjustment_saturation = 0.6
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_67"]
+geometry_parsed_geometry_type = 1
+geometry_source_geometry_mode = 1
+geometry_source_group_name = &"chapter1_nav"
+agent_height = 2.0
+agent_radius = 0.5
+agent_max_climb = 0.25
+filter_baking_aabb = AABB(0, -10, -90, 50, 6, 56)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_69"]
+size = Vector3(3.1, 2.6, 0.12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_70"]
+size = Vector3(3.1, 2.6, 0.08)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_76"]
+size = Vector3(2.2, 3, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_80"]
+size = Vector3(9, 3, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_81"]
+size = Vector3(4, 3, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_84"]
+size = Vector3(3.8, 0.2, 5.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_85"]
+size = Vector3(3.8, 0.2, 5.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_86"]
+size = Vector3(0.1, 3, 5.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_87"]
+size = Vector3(0.1, 3, 5.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_88"]
+size = Vector3(0.1, 3, 5.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_89"]
+size = Vector3(0.1, 3, 5.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_90"]
+size = Vector3(3.8, 3, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_91"]
+size = Vector3(3.8, 3, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_92"]
+size = Vector3(3.8, 0.1, 5.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_93"]
+size = Vector3(3.8, 0.1, 5.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_94"]
+size = Vector3(3.8, 3, 0.08)
+
+[sub_resource type="BoxMesh" id="BoxMesh_95"]
+size = Vector3(3.8, 3, 0.06)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_96"]
+size = Vector3(3.6, 2.6, 5.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_97"]
+size = Vector3(10, 3, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_98"]
+size = Vector3(8, 3, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_99"]
+size = Vector3(8, 3, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_100"]
+size = Vector3(4, 3, 2)
+
+[node name="Chapter1" type="Node3D"]
+script = ExtResource("36_x")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_66")
+
+[node name="Moon" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.86603, -0.28679, 0.40958, 0, 0.81915, 0.57358, -0.5, -0.49673, 0.70941, 0, 20, 0)
+light_color = Color(0.55, 0.65, 0.9, 1)
+light_energy = 0.3
+shadow_enabled = true
+directional_shadow_max_distance = 70.0
+
+[node name="Exterior" type="Node3D" parent="."]
+
+[node name="Station" type="Node3D" parent="."]
+
+[node name="Underground" type="Node3D" parent="."]
+
+[node name="Puzzles" type="Node3D" parent="."]
+
+[node name="Lore" type="Node3D" parent="."]
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="Sound" type="Node3D" parent="."]
+
+[node name="Triggers" type="Node3D" parent="."]
+
+[node name="Checkpoints" type="Node3D" parent="."]
+
+[node name="ItemSpawnPoints" type="Node3D" parent="."]
+
+[node name="Monsters" type="Node3D" parent="."]
+
+[node name="Rock" type="CSGCombiner3D" parent="Underground" groups=["chapter1_nav"]]
+use_collision = true
+
+[node name="Mass" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, -22.5, -17.5)
+size = Vector3(90, 45, 155)
+material = SubResource("StandardMaterial3D_54")
+use_collision = true
+
+[node name="StairA" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 0.89439, 0.44729, 0, -0.44729, 0.89439, 9, -0.793, -20.6)
+size = Vector3(2, 2.7, 9.94)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="Landing" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -2.65, -26)
+size = Vector3(2, 2.7, 4.6)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="StairB" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 0.84805, 0.52992, 0, -0.52992, 0.84805, 9, -5.355, -31.716)
+size = Vector3(2, 2.7, 10.4)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="Junction" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.65, -40)
+size = Vector3(10, 2.7, 9)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="DoorSlotD1" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.475, -45)
+size = Vector3(2, 3.05, 1.2)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="TunnelT" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.65, -60.25)
+size = Vector3(4, 2.7, 29.5)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="AlcoveA1" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, -7.65, -60)
+size = Vector3(3, 2.7, 4)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="AlcoveA2" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, -7.65, -65)
+size = Vector3(3, 2.7, 4)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="CellOpening" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.65, -75.5)
+size = Vector3(2, 2.7, 1.2)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="Cell" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7, -81)
+size = Vector3(10, 4, 10)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="CrawlC1" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, -8.375, -41)
+size = Vector3(2.7, 1.25, 1)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="CrawlC2" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -8.375, -44.75)
+size = Vector3(1, 1.25, 8.5)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="CrawlC3" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3, -8.375, -48.5)
+size = Vector3(5.6, 1.25, 1)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="TunnelE" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, -7.65, -68)
+size = Vector3(20, 2.7, 2)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="DoorSlotD2" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, -7.475, -68)
+size = Vector3(0.6, 3.05, 2)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="AlcoveA3" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, -7.65, -71)
+size = Vector3(3, 2.7, 4)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="DoorSlotD3" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, -7.475, -68)
+size = Vector3(0.6, 3.05, 2)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="ElevatorRoom" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, -7, -68)
+size = Vector3(16, 4, 18)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="Shaft" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, -25, -56)
+size = Vector3(4.4, 40, 6.4)
+material = SubResource("StandardMaterial3D_54")
+operation = 2
+
+[node name="LandingFill" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -4.3, -24.45)
+size = Vector3(2, 0.6, 1.7)
+material = SubResource("StandardMaterial3D_54")
+use_collision = true
+
+[node name="JunctionFill" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -9.4, -35.65)
+size = Vector3(2, 0.8, 1.5)
+material = SubResource("StandardMaterial3D_54")
+use_collision = true
+
+[node name="Road" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 39)
+size = Vector3(44, 0.02, 6)
+material = SubResource("StandardMaterial3D_62")
+
+[node name="ForestWest" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.5, 4, 25)
+size = Vector3(1, 8, 52)
+material = SubResource("StandardMaterial3D_61")
+use_collision = true
+
+[node name="ForestEast" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.5, 4, 25)
+size = Vector3(1, 8, 52)
+material = SubResource("StandardMaterial3D_61")
+use_collision = true
+
+[node name="ForestSouth" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 50.5)
+size = Vector3(46, 8, 1)
+material = SubResource("StandardMaterial3D_61")
+use_collision = true
+
+[node name="ForestNW" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 4, -0.5)
+size = Vector3(8, 8, 1)
+material = SubResource("StandardMaterial3D_61")
+use_collision = true
+
+[node name="ForestNE" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 4, -0.5)
+size = Vector3(8, 8, 1)
+material = SubResource("StandardMaterial3D_61")
+use_collision = true
+
+[node name="FenceSouthW" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.3, 1.5, 22)
+size = Vector3(13.4, 3, 0.08)
+material = SubResource("StandardMaterial3D_60")
+use_collision = true
+
+[node name="FenceSouthE" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.3, 1.5, 22)
+size = Vector3(13.4, 3, 0.08)
+material = SubResource("StandardMaterial3D_60")
+use_collision = true
+
+[node name="FenceWest" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1.5, 11)
+size = Vector3(0.08, 3, 22)
+material = SubResource("StandardMaterial3D_60")
+use_collision = true
+
+[node name="FenceEast" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1.5, 11)
+size = Vector3(0.08, 3, 22)
+material = SubResource("StandardMaterial3D_60")
+use_collision = true
+
+[node name="FenceNW" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 1.5, 0)
+size = Vector3(5, 3, 0.08)
+material = SubResource("StandardMaterial3D_60")
+use_collision = true
+
+[node name="FenceNE" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 1.5, 0)
+size = Vector3(5, 3, 0.08)
+material = SubResource("StandardMaterial3D_60")
+use_collision = true
+
+[node name="PostS0" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="PostS1" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="PostS2" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="PostS3" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="PostS4" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="PostS5" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="PostS6" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="PostS7" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="PostS8" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="PostS9" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1.55, 22)
+size = Vector3(0.14, 3.1, 0.14)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="GatePostL" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.65, 1.55, 22)
+size = Vector3(0.2, 3.1, 0.2)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="GatePostR" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 1.55, 22)
+size = Vector3(0.2, 3.1, 0.2)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="CarBody" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0.75, 39)
+size = Vector3(4.2, 0.9, 1.9)
+material = SubResource("StandardMaterial3D_63")
+use_collision = true
+
+[node name="CarCabin" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3, 1.55, 39)
+size = Vector3(2.2, 0.7, 1.7)
+material = SubResource("StandardMaterial3D_63")
+use_collision = true
+
+[node name="InformantNotebook" parent="Lore" instance=ExtResource("18_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.4, 1.2, 39)
+entry = ExtResource("68_x")
+
+[node name="battery_64" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.2, 41)
+script = ExtResource("29_x")
+item_id = "battery"
+
+[node name="SignBoard" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.7, 22.12)
+size = Vector3(2.4, 1, 0.04)
+material = SubResource("StandardMaterial3D_64")
+use_collision = true
+
+[node name="SignText" type="Label3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.7, 22.16)
+pixel_size = 0.0035
+text = "PROPERTY OF U.S. GOVERNMENT
+NO TRESPASSING
+Blackwater Weather Station"
+font_size = 36
+modulate = Color(0.85, 0.8, 0.7, 1)
+outline_size = 0
+
+[node name="DragMarks" parent="Lore" instance=ExtResource("13_x")]
+transform = Transform3D(0.99027, 0, 0.13917, 0, 1, 0, -0.13917, 0, 0.99027, 0.6, 0, 26.5)
+
+[node name="Shed" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.25, 12)
+size = Vector3(3, 2.5, 3)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="crowbar_69" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.2, 15.5)
+script = ExtResource("29_x")
+item_id = "crowbar"
+
+[node name="LampPole" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 2.3, 6)
+size = Vector3(0.2, 4.6, 0.2)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="YardLamp" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 4.4, 6.4)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 1.4
+shadow_enabled = true
+omni_range = 12
+script = ExtResource("31_x")
+brokenness = 0.25
+
+[node name="Gate" type="AnimatableBody3D" parent="Puzzles" node_paths=PackedStringArray("sound")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22)
+script = ExtResource("24_x")
+open_offset = Vector3(0, 1.15, 0)
+move_time = 0.9
+sound = NodePath("Sound")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Puzzles/Gate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+shape = SubResource("BoxShape3D_69")
+
+[node name="Mesh" type="MeshInstance3D" parent="Puzzles/Gate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+mesh = SubResource("BoxMesh_70")
+surface_material_override/0 = SubResource("StandardMaterial3D_60")
+
+[node name="Sound" type="AudioStreamPlayer3D" parent="Puzzles/Gate"]
+stream = ExtResource("50_x")
+pitch_scale = 0.6
+unit_size = 6.0
+
+[node name="GateLift" parent="Puzzles" instance=ExtResource("1_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 1, 22.14)
+required_character = 3
+prompt_text = "Lift the gate and hold it up (the others crawl under)"
+
+[node name="GateJam" parent="Puzzles" node_paths=PackedStringArray("requires") instance=ExtResource("9_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.25, 1, 21.86)
+requires = NodePath("../GateLift")
+requires_message = "Someone has to lift the gate first."
+prompt_text = "Gate clamp"
+
+[node name="GateLogic" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../GateLift"), NodePath("../GateJam")]
+outputs = [NodePath("../Gate")]
+mode = 1
+latch = false
+solved_message = ""
+
+[node name="GateJammedMsg" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../GateJam")]
+outputs = []
+mode = 0
+latch = true
+solved_message = "The crowbar jams the gate open."
+
+[node name="Wind" type="AudioStreamPlayer3D" parent="Sound"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 28)
+stream = ExtResource("41_x")
+volume_db = -2.0
+unit_size = 30.0
+max_distance = 70.0
+autoplay = true
+
+[node name="FrontW" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.25, 1.6, 0)
+size = Vector3(9.5, 3.2, 0.3)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="FrontE" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 1.6, 0)
+size = Vector3(8.5, 3.2, 0.3)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="BackWall" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.6, -16)
+size = Vector3(18, 3.2, 0.3)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="WestWall" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1.6, -8)
+size = Vector3(0.3, 3.2, 16)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="EastWall" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.6, -8)
+size = Vector3(0.3, 3.2, 16)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="HallWestA" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.6, -10)
+size = Vector3(0.3, 3.2, 12)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="HallWestB" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.6, -1.25)
+size = Vector3(0.3, 3.2, 2.5)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="HallEastA" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.6, -13.5)
+size = Vector3(0.3, 3.2, 5)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="HallEastB" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.6, -6)
+size = Vector3(0.3, 3.2, 6)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="HallEastC" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.6, -0.75)
+size = Vector3(0.3, 3.2, 1.5)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="DirectorWall" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.6, -6.15)
+size = Vector3(8, 3.2, 0.3)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="Roof" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.35, -8)
+size = Vector3(20.6, 0.3, 16.6)
+material = SubResource("StandardMaterial3D_55")
+use_collision = true
+
+[node name="StairHouseW" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.85, 1.5, -19.2)
+size = Vector3(0.3, 3, 6.4)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="StairHouseE" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.15, 1.5, -19.2)
+size = Vector3(0.3, 3, 6.4)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="StairHouseN" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 1.5, -22.55)
+size = Vector3(2.6, 3, 0.3)
+material = SubResource("StandardMaterial3D_57")
+use_collision = true
+
+[node name="StairHouseRoof" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.15, -19.35)
+size = Vector3(2.6, 0.3, 6.7)
+material = SubResource("StandardMaterial3D_55")
+use_collision = true
+
+[node name="ComputerDesk" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0.45, -12)
+size = Vector3(1.8, 0.9, 2)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="Screen" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3, 1.275, -12)
+size = Vector3(0.1, 0.65, 1)
+material = SubResource("StandardMaterial3D_65")
+
+[node name="TapeDesk" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0.45, -9.4)
+size = Vector3(1.8, 0.9, 1.4)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="EngineerDesk" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.45, -11)
+size = Vector3(1.6, 0.9, 0.8)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="FileDesk" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.45, -5)
+size = Vector3(1.6, 0.9, 0.8)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="DirectorDesk" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.45, -10)
+size = Vector3(2, 0.9, 1)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="BreakTable" type="CSGBox3D" parent="Station"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.45, -3)
+size = Vector3(1.6, 0.9, 1.2)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="FrontDoor" parent="Station" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+
+[node name="TapeMachine" parent="Puzzles" instance=ExtResource("20_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8.5, 0.9, -9.4)
+required_lore = "tape_welcome"
+
+[node name="OfficeKeypad" parent="Puzzles" instance=ExtResource("5_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.83, 1.4, -8)
+
+[node name="MonitorPower" parent="Puzzles" instance=ExtResource("1_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.83, 1.3, -7)
+prompt_text = "Hold the monitor power switch ON"
+
+[node name="ComputerBoot" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../TapeMachine"), NodePath("../MonitorPower")]
+outputs = []
+mode = 0
+latch = false
+solved_message = ""
+
+[node name="Monitor" type="Label3D" parent="Puzzles" node_paths=PackedStringArray("source", "hidden_until")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -9.22, 1.28, -12)
+pixel_size = 0.004
+text = ""
+font_size = 48
+modulate = Color(0.4, 1, 0.5, 1)
+outline_size = 0
+script = ExtResource("22_x")
+source = NodePath("../OfficeKeypad")
+hidden_until = NodePath("../ComputerBoot")
+hidden_text = "VOICE LOCKED / NO POWER"
+template = "DIRECTOR'S TERMINAL
+DOOR CODE: %s"
+
+[node name="TerminalNote" type="Label3D" parent="Station"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -9.2, 0.75, -12)
+pixel_size = 0.0025
+text = "Voice-locked: play the
+director's welcome tape.
+Screen power: switch
+by the office door."
+font_size = 28
+modulate = Color(0.85, 0.8, 0.6, 1)
+outline_size = 0
+
+[node name="DirectorDoor" parent="Puzzles" instance=ExtResource("10_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, -9)
+puzzle_controlled = true
+
+[node name="OfficeGate" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../OfficeKeypad")]
+outputs = [NodePath("../DirectorDoor")]
+mode = 0
+latch = true
+solved_message = "The director's office unlocks."
+
+[node name="FilingCabinet" parent="Puzzles" instance=ExtResource("12_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, -15.25)
+
+[node name="StairDoor" parent="Puzzles" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -16)
+
+[node name="Lock" type="Node" parent="Puzzles/StairDoor"]
+script = ExtResource("26_x")
+
+[node name="StaffDirectory" parent="Lore" instance=ExtResource("16_x")]
+transform = Transform3D(0.93969, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.93969, -5, 0.9, -5)
+entry = ExtResource("71_x")
+
+[node name="EngineerNameplate" parent="Lore" instance=ExtResource("18_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.9, -11)
+entry = ExtResource("72_x")
+
+[node name="Corkboard" parent="Lore" instance=ExtResource("19_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.84, 1.6, -9)
+entry = ExtResource("73_x")
+
+[node name="reel_tape_119" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0.2, -14.8)
+script = ExtResource("29_x")
+item_id = "reel_tape"
+lore_id = "tape_welcome"
+
+[node name="walkie_120" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.2, -1)
+script = ExtResource("29_x")
+item_id = "walkie"
+
+[node name="walkie_121" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 0.2, -7)
+script = ExtResource("29_x")
+item_id = "walkie"
+
+[node name="keycard_green_122" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, -10)
+script = ExtResource("29_x")
+item_id = "keycard_green"
+
+[node name="battery_123" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, -3.2)
+script = ExtResource("29_x")
+item_id = "battery"
+
+[node name="flare_124" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 1, -2.8)
+script = ExtResource("29_x")
+item_id = "flare"
+
+[node name="OfficeLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 3, -8)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8
+script = ExtResource("31_x")
+brokenness = 0.3
+
+[node name="HallLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 3, -8)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.6
+shadow_enabled = true
+omni_range = 6
+script = ExtResource("31_x")
+brokenness = 0.6
+
+[node name="DirectorLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -11)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 6
+script = ExtResource("31_x")
+brokenness = 0.15
+
+[node name="BreakLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -3)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.6
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.8
+
+[node name="Buzz" type="AudioStreamPlayer3D" parent="Sound"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, -8)
+stream = ExtResource("49_x")
+volume_db = -20.0
+unit_size = 3.0
+autoplay = true
+
+[node name="TallyMarks" type="Label3D" parent="Underground"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8.05, -2.7, -25.5)
+pixel_size = 0.003
+text = "|||| |||| |||| |||| |||| |||| |||| |||| |||| 
+|||| |||| |||| |||| |||| |||| |||| |||| |||| 
+|||| |||| |||| |||| |||| |||| |||| |||| |||| 
+|||| |||| |||| |||| |||| |||| |||| |||| |||| 
+|||| |||| |||| |||| |||| |||| |||| |||| |||| 
+|||| |||| |||| |||| |||| |||| |||| |||| |||| 
+|||| |||| |||| |||| |||| |||| |||| |||| |||| 
+|||| |||| |||| |||| |||| |||| |||| |||| |||| 
+|||| |||| |||| |||| |||| |||| |||| |||| |||| "
+font_size = 32
+modulate = Color(0.75, 0.72, 0.65, 1)
+outline_size = 0
+
+[node name="Poster" parent="Lore" instance=ExtResource("17_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.95, -2.4, -25)
+entry = ExtResource("74_x")
+
+[node name="GuardRoster" parent="Lore" instance=ExtResource("18_x")]
+transform = Transform3D(0.5, 0, -0.86603, 0, 1, 0, 0.86603, 0, 0.5, 9.75, -4, -24.2)
+entry = ExtResource("75_x")
+
+[node name="battery_133" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.25, -3.8, -24)
+script = ExtResource("29_x")
+item_id = "battery"
+
+[node name="battery_134" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.25, -3.8, -24.4)
+script = ExtResource("29_x")
+item_id = "battery"
+
+[node name="flare_135" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.75, -3.8, -26.9)
+script = ExtResource("29_x")
+item_id = "flare"
+
+[node name="DyingBulb" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -1.6, -25.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.6
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.85
+
+[node name="FlashlightDrain" type="Area3D" parent="Triggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 1.4, -18.5)
+script = ExtResource("39_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/FlashlightDrain"]
+shape = SubResource("BoxShape3D_76")
+
+[node name="VentCover" parent="Puzzles" instance=ExtResource("2_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4.05, -9, -41)
+
+[node name="BoltedDoor" parent="Puzzles" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, -9, -45)
+puzzle_controlled = true
+
+[node name="DoorBolt" parent="Puzzles" instance=ExtResource("6_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 10.6, -7.7, -45.55)
+one_way = true
+prompt_text = "Slide the door bolt open"
+
+[node name="BoltGate" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../DoorBolt")]
+outputs = [NodePath("../BoltedDoor")]
+mode = 0
+latch = true
+solved_message = "The bolted door swings open."
+
+[node name="JunctionHint" type="Label3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.3, -44.4)
+pixel_size = 0.003
+text = "BOLTED FROM THE OTHER SIDE"
+font_size = 32
+modulate = Color(0.85, 0.7, 0.5, 1)
+outline_size = 4
+
+[node name="fuse_144" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, -8.8, -55)
+script = ExtResource("29_x")
+item_id = "fuse"
+
+[node name="medkit_145" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, -8.8, -59.5)
+script = ExtResource("29_x")
+item_id = "medkit"
+
+[node name="CrateA1" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, -8.7, -61.3)
+size = Vector3(1, 0.6, 1)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="VolunteerID" parent="Lore" instance=ExtResource("18_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, -8.4, -61.3)
+entry = ExtResource("77_x")
+
+[node name="CrateA2" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, -8.7, -64)
+size = Vector3(1, 0.6, 1)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="Subject7Log" parent="Lore" instance=ExtResource("16_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, -8.4, -64)
+entry = ExtResource("78_x")
+
+[node name="Locker" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.25, -8, -66.1)
+size = Vector3(0.5, 2, 1)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="CrayonDrawing" parent="Lore" instance=ExtResource("19_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4.53, -7.8, -66.1)
+entry = ExtResource("79_x")
+
+[node name="HeightChart" type="Label3D" parent="Underground"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10.95, -7.5, -52)
+pixel_size = 0.003
+text = "HEIGHT
+----- WK 31 ^^ past the ceiling ^^
+----- WK 23   9 ft 2
+----- WK 14   7 ft 11
+----- WK 6    6 ft 9
+----- WK 1    6 ft 0"
+font_size = 32
+modulate = Color(0.8, 0.1, 0.08, 1)
+outline_size = 0
+
+[node name="TunnelDoor" parent="Puzzles" instance=ExtResource("10_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 12, -9, -67)
+
+[node name="TunnelLight1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -6.6, -52)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.6
+shadow_enabled = true
+omni_range = 6
+script = ExtResource("31_x")
+brokenness = 0.5
+
+[node name="TunnelLight2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -6.6, -66)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 6
+script = ExtResource("31_x")
+brokenness = 0.9
+
+[node name="JunctionRed" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -6.7, -40)
+light_color = Color(1, 0.08, 0.04, 1)
+light_energy = 1.2
+shadow_enabled = true
+omni_range = 8
+script = ExtResource("32_x")
+
+[node name="CellGlow" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -5.6, -81)
+light_color = Color(0.3, 0.6, 0.4, 1)
+light_energy = 0.15
+shadow_enabled = false
+omni_range = 6
+
+[node name="fuse_158" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, -8.8, -72)
+script = ExtResource("29_x")
+item_id = "fuse"
+
+[node name="AlcoveA3Light" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, -6.7, -71)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.4
+shadow_enabled = true
+omni_range = 4
+script = ExtResource("31_x")
+brokenness = 0.7
+
+[node name="ELight1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, -6.6, -68)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 6
+script = ExtResource("31_x")
+brokenness = 0.5
+
+[node name="ELight2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, -6.6, -68)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 6
+script = ExtResource("31_x")
+brokenness = 0.7
+
+[node name="ElevatorRoomDoor" parent="Puzzles" instance=ExtResource("10_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 30, -9, -67)
+
+[node name="Drone" type="AudioStreamPlayer3D" parent="Sound"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, -7, -58)
+stream = ExtResource("42_x")
+volume_db = -6.0
+unit_size = 25.0
+autoplay = true
+
+[node name="TunnelSounds" type="AudioStreamPlayer3D" parent="Sound"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, -7.5, -60)
+unit_size = 8.0
+script = ExtResource("33_x")
+sounds = Array[AudioStream]([ExtResource("43_x"), ExtResource("43_x"), ExtResource("44_x"), ExtResource("45_x")])
+area_size = Vector3(40, 2, 50)
+min_delay = 4.0
+max_delay = 10.0
+
+[node name="PatrolPoints" type="Node3D" parent="Monsters"]
+
+[node name="Point1" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -9, -82)
+
+[node name="Point2" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -9, -72)
+
+[node name="Point3" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -9, -56)
+
+[node name="Point4" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, -9, -65)
+
+[node name="Point5" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, -9, -68)
+
+[node name="Point6" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, -9, -68)
+
+[node name="LongMan" parent="Monsters" node_paths=PackedStringArray("patrol_points") instance=ExtResource("15_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, -9, -82)
+patrol_points = NodePath("../PatrolPoints")
+start_delay = 99999.0
+
+[node name="Photo" parent="Monsters/LongMan" instance=ExtResource("14_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_67")
+script = ExtResource("30_x")
+
+[node name="TunnelsSting" type="Area3D" parent="Triggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.5, -38)
+script = ExtResource("37_x")
+message = "It's cold down here. Something smells like rust and old blood."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/TunnelsSting"]
+shape = SubResource("BoxShape3D_80")
+
+[node name="Sound" type="AudioStreamPlayer" parent="Triggers/TunnelsSting"]
+stream = ExtResource("46_x")
+volume_db = -4.0
+
+[node name="ChaseTrigger" type="Area3D" parent="Triggers" node_paths=PackedStringArray("monster")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.5, -67)
+script = ExtResource("38_x")
+message = "Something unfolds in the dark behind you. RUN!"
+monster = NodePath("../../Monsters/LongMan")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/ChaseTrigger"]
+shape = SubResource("BoxShape3D_81")
+
+[node name="Sound" type="AudioStreamPlayer" parent="Triggers/ChaseTrigger"]
+stream = ExtResource("46_x")
+volume_db = -4.0
+
+[node name="RoomLights" type="Node3D" parent="Puzzles"]
+script = ExtResource("23_x")
+
+[node name="Bright1" type="OmniLight3D" parent="Puzzles/RoomLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, -5.6, -64)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.2
+shadow_enabled = true
+omni_range = 10
+
+[node name="Bright2" type="OmniLight3D" parent="Puzzles/RoomLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, -5.6, -72)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 1.2
+shadow_enabled = true
+omni_range = 10
+
+[node name="ElevatorRed" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, -5.6, -68)
+light_color = Color(1, 0.08, 0.04, 1)
+light_energy = 1.0
+shadow_enabled = true
+omni_range = 12
+script = ExtResource("32_x")
+
+[node name="Generator" parent="Puzzles" node_paths=PackedStringArray("lamp") instance=ExtResource("11_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32.5, -9, -75.8)
+lamp = NodePath("../GeneratorLamp")
+
+[node name="GeneratorLamp" type="OmniLight3D" parent="Puzzles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32.5, -7, -74.8)
+light_color = Color(1, 0.8, 0.55, 1)
+light_energy = 0.8
+shadow_enabled = true
+omni_range = 4
+
+[node name="FuseBoxEast" parent="Puzzles" instance=ExtResource("3_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 45.95, -7.6, -70)
+
+[node name="FuseBoxWest" parent="Puzzles" instance=ExtResource("3_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 30.05, -7.6, -73)
+
+[node name="PowerLamp" parent="Puzzles" instance=ExtResource("8_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, -5.4, -59.2)
+
+[node name="PowerGate" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../Generator"), NodePath("../FuseBoxEast"), NodePath("../FuseBoxWest")]
+outputs = [NodePath("../RoomLights"), NodePath("../PowerLamp")]
+mode = 0
+latch = true
+solved_message = "Power restored. The elevator panel flickers on."
+
+[node name="OverrideRead" type="Node" parent="Puzzles"]
+script = ExtResource("25_x")
+lore_id = "file_containment_order"
+
+[node name="ConsolesEnabled" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../PowerGate"), NodePath("../OverrideRead")]
+outputs = []
+mode = 0
+latch = true
+solved_message = ""
+
+[node name="ConsoleWest" parent="Puzzles" node_paths=PackedStringArray("requires") instance=ExtResource("4_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31.5, -9, -61)
+requires = NodePath("../ConsolesEnabled")
+requires_message = "Dead. It needs power, and the override procedure (find the Containment Order)."
+
+[node name="ConsoleEast" parent="Puzzles" node_paths=PackedStringArray("requires") instance=ExtResource("4_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 44.5, -9, -75.5)
+requires = NodePath("../ConsolesEnabled")
+requires_message = "Dead. It needs power, and the override procedure (find the Containment Order)."
+
+[node name="DualKey" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../ConsoleWest"), NodePath("../ConsoleEast")]
+outputs = []
+mode = 0
+latch = true
+solved_message = "Override accepted. Everyone into the elevator!"
+
+[node name="ControlDesk" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, -8.55, -74)
+size = Vector3(2, 0.9, 0.8)
+material = SubResource("StandardMaterial3D_59")
+use_collision = true
+
+[node name="ContainmentOrder" parent="Lore" instance=ExtResource("16_x")]
+transform = Transform3D(0.98481, 0, -0.17365, 0, 1, 0, 0.17365, 0, 0.98481, 40, -8.1, -74)
+entry = ExtResource("82_x")
+
+[node name="Blueprint" parent="Lore" instance=ExtResource("19_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.5, -7.2, -76.95)
+entry = ExtResource("83_x")
+
+[node name="TapeTable" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, -8.55, -62.5)
+size = Vector3(1.2, 0.9, 1)
+material = SubResource("StandardMaterial3D_58")
+use_collision = true
+
+[node name="TapeMachine2" parent="Puzzles" instance=ExtResource("20_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 44, -8.1, -62.5)
+
+[node name="reel_tape_201" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, -8.8, -61)
+script = ExtResource("29_x")
+item_id = "reel_tape"
+lore_id = "tape_final_recording"
+
+[node name="Elevator" type="AnimatableBody3D" parent="Puzzles" node_paths=PackedStringArray("powered_by")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, -9, -56)
+script = ExtResource("40_x")
+powered_by = NodePath("../DualKey")
+
+[node name="FloorShape" type="CollisionShape3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("BoxShape3D_84")
+
+[node name="Floor" type="MeshInstance3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("BoxMesh_85")
+surface_material_override/0 = SubResource("StandardMaterial3D_59")
+
+[node name="WallWShape" type="CollisionShape3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 1.5, 0)
+shape = SubResource("BoxShape3D_86")
+
+[node name="WallW" type="MeshInstance3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 1.5, 0)
+mesh = SubResource("BoxMesh_87")
+surface_material_override/0 = SubResource("StandardMaterial3D_59")
+
+[node name="WallEShape" type="CollisionShape3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 1.5, 0)
+shape = SubResource("BoxShape3D_88")
+
+[node name="WallE" type="MeshInstance3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 1.5, 0)
+mesh = SubResource("BoxMesh_89")
+surface_material_override/0 = SubResource("StandardMaterial3D_59")
+
+[node name="WallBackShape" type="CollisionShape3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 2.9)
+shape = SubResource("BoxShape3D_90")
+
+[node name="WallBack" type="MeshInstance3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 2.9)
+mesh = SubResource("BoxMesh_91")
+surface_material_override/0 = SubResource("StandardMaterial3D_59")
+
+[node name="CeilingShape" type="CollisionShape3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
+shape = SubResource("BoxShape3D_92")
+
+[node name="Ceiling" type="MeshInstance3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
+mesh = SubResource("BoxMesh_93")
+surface_material_override/0 = SubResource("StandardMaterial3D_59")
+
+[node name="Gate" type="AnimatableBody3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 0, -2.95)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Puzzles/Elevator/Gate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_94")
+
+[node name="Mesh" type="MeshInstance3D" parent="Puzzles/Elevator/Gate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+mesh = SubResource("BoxMesh_95")
+surface_material_override/0 = SubResource("StandardMaterial3D_60")
+
+[node name="Inside" type="Area3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0.1)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Puzzles/Elevator/Inside"]
+shape = SubResource("BoxShape3D_96")
+
+[node name="DescendButton" parent="Puzzles/Elevator" instance=ExtResource("7_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.84, 1.3, -1.5)
+active_time = 1.0
+prompt_text = "Descend"
+
+[node name="Panel" type="Label3D" parent="Puzzles/Elevator"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 2.3, 2.84)
+pixel_size = 0.004
+text = "LEVEL B - SEALED BY ORDER"
+font_size = 36
+modulate = Color(1, 0.4, 0.25, 1)
+
+[node name="Lights" type="Node3D" parent="Puzzles/Elevator"]
+
+[node name="CarLight" type="OmniLight3D" parent="Puzzles/Elevator/Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
+light_color = Color(1, 0.9, 0.7, 1)
+light_energy = 0.9
+omni_range = 5.0
+
+[node name="Hum" type="AudioStreamPlayer3D" parent="Puzzles/Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+stream = ExtResource("48_x")
+volume_db = -6.0
+
+[node name="Snap" type="AudioStreamPlayer" parent="Puzzles/Elevator"]
+stream = ExtResource("47_x")
+volume_db = 2.0
+
+[node name="ElevatorSting" type="Area3D" parent="Triggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, -7.5, -66)
+script = ExtResource("37_x")
+message = "The elevator. The only way down."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/ElevatorSting"]
+shape = SubResource("BoxShape3D_97")
+
+[node name="Sound" type="AudioStreamPlayer" parent="Triggers/ElevatorSting"]
+stream = ExtResource("46_x")
+volume_db = -4.0
+
+[node name="Yard" type="Area3D" parent="Checkpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 17)
+script = ExtResource("35_x")
+order = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/Yard"]
+shape = SubResource("BoxShape3D_98")
+
+[node name="Spawn1" type="Marker3D" parent="Checkpoints/Yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -1.5, 0)
+
+[node name="Spawn2" type="Marker3D" parent="Checkpoints/Yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
+
+[node name="Spawn3" type="Marker3D" parent="Checkpoints/Yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, -1.5, 0)
+
+[node name="Spawn4" type="Marker3D" parent="Checkpoints/Yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 1.5)
+
+[node name="Tunnels" type="Area3D" parent="Checkpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.5, -38)
+script = ExtResource("35_x")
+order = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/Tunnels"]
+shape = SubResource("BoxShape3D_99")
+
+[node name="Spawn1" type="Marker3D" parent="Checkpoints/Tunnels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -1.5, 1)
+
+[node name="Spawn2" type="Marker3D" parent="Checkpoints/Tunnels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 1)
+
+[node name="Spawn3" type="Marker3D" parent="Checkpoints/Tunnels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, -1.5, 1)
+
+[node name="Spawn4" type="Marker3D" parent="Checkpoints/Tunnels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 2)
+
+[node name="ElevatorApproach" type="Area3D" parent="Checkpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -7.5, -68)
+script = ExtResource("35_x")
+order = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/ElevatorApproach"]
+shape = SubResource("BoxShape3D_100")
+
+[node name="Spawn1" type="Marker3D" parent="Checkpoints/ElevatorApproach"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -1.5, 0)
+
+[node name="Spawn2" type="Marker3D" parent="Checkpoints/ElevatorApproach"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
+
+[node name="Spawn3" type="Marker3D" parent="Checkpoints/ElevatorApproach"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, -1.5, 0)
+
+[node name="Spawn4" type="Marker3D" parent="Checkpoints/ElevatorApproach"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -1.5, 0)
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="ItemSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
+spawn_path = NodePath("../Items")
+script = ExtResource("28_x")
+spawn_points = NodePath("../ItemSpawnPoints")
+
+[node name="Players" type="Node3D" parent="."]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
+spawn_path = NodePath("../Players")
+script = ExtResource("27_x")
+spawn_points = NodePath("../SpawnPoints")
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="Spawn1" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 45)
+
+[node name="Spawn2" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 45)
+
+[node name="Spawn3" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 46.5)
+
+[node name="Spawn4" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 46.5)
+
+[node name="TeamMonitor" type="Node" parent="."]
+script = ExtResource("34_x")

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_subject7_log"
+title = "Medical Log: Subject 7"
+type = 0
+text = "SUBJECT 7 - SERUM H-7 (\"GROWTH\")\nWeek 1: 6 ft 0 in. Good spirits. Asks about his mother.\nWeek 6: 6 ft 9 in. Joint pain. Bones still lengthening.\nWeek 14: 7 ft 11 in. Cannot lie flat. Light is painful to him.\nWeek 23: 9 ft 2 in. No longer fits in his cell.\nWeek 31: Moved to the maintenance tunnels. Stopped answering to his name."
+owner_character = -1
+voice_line = ""

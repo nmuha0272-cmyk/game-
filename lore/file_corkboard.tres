@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_corkboard"
+title = "Corkboard: Newspaper Clippings"
+type = 0
+text = "A corkboard in the director's office, covered in newspaper clippings.\nEvery one of them is an article the Journalist wrote. Some are recent.\nRed string connects her photo to the words: CONTAINED? ASK HER SOURCE.\n\nSomeone has been watching her."
+owner_character = -1
+voice_line = ""

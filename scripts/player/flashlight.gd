@@ -40,7 +40,8 @@ func set_on(value: bool) -> void:
 func _process(delta: float) -> void:
 	if not is_multiplayer_authority() or not visible:
 		return
-	charge = maxf(charge - delta / battery_life, 0.0)
+	if GameState.flashlight_drain:
+		charge = maxf(charge - delta / battery_life, 0.0)
 	if charge <= 0.0:
 		set_on(false)
 	elif charge < low_battery and randf() < 0.08:

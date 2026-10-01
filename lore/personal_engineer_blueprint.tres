@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_engineer_blueprint"
+title = "Growth Chamber Blueprint"
+type = 3
+text = "A blueprint pinned to the wall: GROWTH CHAMBER, MK II. Serum delivery and restraint system.\nThe signature in the corner is the Engineer's."
+owner_character = 2
+voice_line = "My signature. I built this. I told myself it was for medicine."

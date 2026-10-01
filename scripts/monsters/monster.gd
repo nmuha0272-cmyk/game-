@@ -211,6 +211,15 @@ func hear_noise(noise_position: Vector3, radius: float) -> void:
 		_investigate(noise_position)
 
 
+## Host only: wake up (if asleep) and hunt this player. Used by chase
+## triggers, like the Long Man bursting out of his cell.
+func wake(target_player: Player) -> void:
+	if not multiplayer.is_server():
+		return
+	if state == State.DORMANT and is_instance_valid(target_player):
+		_chase(target_player)
+
+
 ## Host only: a burning flare nearby. Go stare at it until it burns out.
 func distract(flare_position: Vector3, seconds: float) -> void:
 	if not multiplayer.is_server() or state in [State.DORMANT, State.STUNNED]:

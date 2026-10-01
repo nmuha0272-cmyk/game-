@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_son_drawing"
+title = "Crayon Drawing"
+type = 3
+text = "A child's crayon drawing taped inside a locker: a stick figure in a uniform holding hands with a smaller stick figure.\nWritten at the bottom: COME HOME SOON DAD - LOVE ETHAN."
+owner_character = 0
+voice_line = "I drew this. I mailed it to him. He kept it... he kept it down here."

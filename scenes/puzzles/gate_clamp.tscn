@@ -1,0 +1,46 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzles/item_socket.gd" id="1_x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+size = Vector3(0.3, 0.4, 0.25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.35, 0.3, 0.25, 1)
+metallic = 0.8
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(0.2, 0.35, 0.15)
+
+[sub_resource type="SphereMesh" id="SphereMesh_5"]
+radius = 0.03
+height = 0.06
+
+[node name="GateClamp" type="StaticBody3D" node_paths=PackedStringArray("lamp")]
+script = ExtResource("1_x")
+item_id = "crowbar"
+insert_time = 2.0
+engineer_insert_time = 2.0
+lamp = NodePath("Lamp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
+shape = SubResource("BoxShape3D_2")
+
+[node name="Bracket" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.07)
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="Lamp" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22, 0.12)
+mesh = SubResource("SphereMesh_5")
+cast_shadow = 0
+
+[node name="Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0.1)
+pixel_size = 0.003
+text = "wedge something
+in here"
+font_size = 28

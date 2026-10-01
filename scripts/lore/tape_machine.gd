@@ -2,12 +2,19 @@ extends Interactable
 ## A reel-to-reel tape machine. Hold E with a Reel Tape to put it in: it
 ## plays out loud (as subtitles) for everyone nearby, and goes in the journal.
 ## Press E again later to replay the last tape.
+## It's also a puzzle input: active once a tape has been played on it
+## (or, with `required_lore` set, once that particular tape has).
+
+signal active_changed(active: bool)
+
+@export var required_lore := ""
 
 @export var hearing_range := 14.0
 @export var seconds_per_line := 4.0
 
 var _tape_lore := ""
 var _playing := false
+var is_active := false
 
 @onready var _hiss: AudioStreamPlayer3D = $Hiss
 @onready var _reels: Node3D = $Reels
@@ -47,6 +54,9 @@ func _play(lore_id: String) -> void:
 		return
 	_tape_lore = lore_id
 	_playing = true
+	if not is_active and (required_lore.is_empty() or required_lore == lore_id):
+		is_active = true
+		active_changed.emit(true)
 	_hiss.play()
 	for line in entry.text.split("\n", false):
 		var speaker := ""

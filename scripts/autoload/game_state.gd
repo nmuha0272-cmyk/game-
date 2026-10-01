@@ -27,6 +27,10 @@ var checkpoint_order := 0
 var checkpoint_inventories := {}
 ## Lore entry IDs the team has found. Shared by everyone.
 var journal: Array = []
+## Whether flashlight batteries drain (Chapter 1 turns this on in the stairwell).
+var flashlight_drain := true
+
+signal chapter_completed(text: String)
 
 
 func _ready() -> void:
@@ -218,3 +222,30 @@ func _unlock_lore(entry_id: String, finder_id: int) -> void:
 	if entry:
 		get_tree().call_group("player_hud", "show_message", "%s found: %s  (J to read)" % [
 				get_player_name(finder_id), entry.title])
+
+
+
+# --- Chapter flow --------------------------------------------------------
+
+## Host only: turn flashlight battery drain on or off for everyone.
+func server_set_flashlight_drain(value: bool) -> void:
+	if multiplayer.is_server():
+		_set_flashlight_drain.rpc(value)
+
+
+@rpc("authority", "call_local", "reliable")
+func _set_flashlight_drain(value: bool) -> void:
+	flashlight_drain = value
+	if value:
+		get_tree().call_group("player_hud", "show_message", "Your flashlight is draining. Share batteries.")
+
+
+## Host only: the chapter is over (main.gd goes back to the lobby).
+func server_complete_chapter(text: String) -> void:
+	if multiplayer.is_server():
+		_complete_chapter.rpc(text)
+
+
+@rpc("authority", "call_local", "reliable")
+func _complete_chapter(text: String) -> void:
+	chapter_completed.emit(text)

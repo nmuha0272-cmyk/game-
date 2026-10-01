@@ -241,7 +241,7 @@ needed to finish the chapter; everything else is optional to find.
 - [x] Personal item system with owner voice lines and hints for other players
 - [x] Tape machine interactable that plays Reel Tapes out loud for everyone nearby
 - [x] Journalist photo system that recognizes photographable lore targets
-- [ ] Place all Chapter 1 lore items listed above (placeholder text is fine at first)
+- [x] Place all Chapter 1 lore items listed above (placeholder text is fine at first)
 
 ---
 
@@ -370,14 +370,14 @@ Room-by-room plan (gray-box first):
    monster. Then a **Dual Key Console** starts the elevator.
 
 Tasks:
-- [ ] Gray-box all five rooms
-- [ ] Place puzzles and gear as listed above
-- [ ] Confirm every character's ability is needed at least once
-- [ ] One chase sequence through narrow tunnels
-- [ ] Lore items that introduce the facility and each character's reason for coming
-- [ ] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"
+- [x] Gray-box all five rooms
+- [x] Place puzzles and gear as listed above
+- [x] Confirm every character's ability is needed at least once
+- [x] One chase sequence through narrow tunnels
+- [x] Lore items that introduce the facility and each character's reason for coming
+- [x] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"
 - [ ] Replace placeholder art with real models, textures, and lighting
-- [ ] Horror atmosphere: flickering lights, fog, ambient sounds, music stingers
+- [x] Horror atmosphere: flickering lights, fog, ambient sounds, music stingers
 
 ### Phase 11 — Polish and Playtesting
 - [ ] Playtest with real friends and write down what's confusing or not scary

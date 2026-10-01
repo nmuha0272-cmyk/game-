@@ -4,11 +4,11 @@ extends Node
 ## to everyone in the lobby.
 
 ## The game is story-based: pressing Start always begins the story, and
-## chapters follow one after another (Chapter 1 is built in Phase 10).
-## Until then, Start loads the test room.
-## DEVELOPERS: to test the Puzzle Lab with friends, temporarily change this to
+## chapters follow one after another. Chapter 1 is the first.
+## DEVELOPERS: to test the test room or Puzzle Lab with friends, temporarily
+## change this to "res://scenes/test_room/test_room.tscn" or
 ## "res://scenes/test_room/puzzle_lab.tscn" (don't commit that change).
-const STORY_START := "res://scenes/test_room/test_room.tscn"
+const STORY_START := "res://scenes/chapters/chapter_1/chapter_1.tscn"
 
 var _current_level := STORY_START
 
@@ -30,6 +30,7 @@ func _ready() -> void:
 	NetworkManager.server_disconnected.connect(_on_server_disconnected)
 	GameState.game_started.connect(_on_game_started)
 	GameState.restart_requested.connect(_restart_level)
+	GameState.chapter_completed.connect(_on_chapter_completed)
 
 
 func _on_host_requested() -> void:
@@ -86,6 +87,23 @@ func _restart_level() -> void:
 @rpc("authority", "call_local", "reliable")
 func _fade_in_everyone() -> void:
 	get_tree().call_group("screen_fader", "fade_in")
+
+
+## The chapter ended: everyone goes back to the lobby (Chapter 2 comes later).
+func _on_chapter_completed(text: String) -> void:
+	# Only the host removes the level; that removal reaches everyone.
+	if multiplayer.is_server():
+		for child in level_root.get_children():
+			child.queue_free()
+	GameState.game_in_progress = false
+	GameState.checkpoint_name = ""
+	GameState.checkpoint_order = 0
+	GameState.checkpoint_inventories = {}
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	$ScreenFader.fade_in(1.0)
+	lobby.show()
+	lobby.refresh()
+	get_tree().call_group("lobby_message", "show_message", text)
 
 
 func _on_leave_requested() -> void:

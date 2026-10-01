@@ -14,6 +14,10 @@ var is_photographed := false
 
 func _ready() -> void:
 	add_to_group("evidence")
+	# Can be stuck on a moving monster: only the camera's ray should see it,
+	# so it doesn't bump into anything.
+	collision_layer = 8
+	collision_mask = 0
 
 
 # Only the Journalist sees a hint when looking at it.
