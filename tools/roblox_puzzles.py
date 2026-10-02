@@ -15,6 +15,11 @@ TOOLS = [("Crowbar", (8, 0.3, 15.5), (0.09, 0.09, 0.8), "#4a4038", "Jams things 
 CRAWL = [((1.4, -9.5, -41.6), (5.8, -6.5, -40.4)), ((1.4, -9.5, -49.1), (2.6, -6.5, -40.4)),
          ((1.4, -9.5, -49.1), (8.6, -6.5, -47.9))]
 ELEVATOR_BOX = ((35.8, -9.5, -59.2), (40.2, -5.5, -52.8))
+# Checkpoints (same as the PC game): walk into the box, and from then on
+# the team comes back there. (box center, box size, respawn point)
+CHECKPOINTS = [("the yard", (0, 1.5, 17), (8, 3, 4), (0, 0.5, 17)),
+               ("the tunnels", (9, -7.5, -38), (8, 3, 4), (9, -8.5, -38)),
+               ("the elevator room", (18, -7.5, -68), (4, 3, 2), (18, -8.5, -68))]
 ROOM_LIGHTS = [(34, -5.6, -64), (42, -5.6, -72)]
 CONTAINMENT = ("Level B Containment Order",
                "BY ORDER OF THE DIRECTOR - EMERGENCY CONTAINMENT, LEVEL B\n\nAll lower doors are to be sealed "
@@ -137,7 +142,9 @@ def build(part, frame, new_ref, kit):
     def in_elevator(pos):
         q = tuple(c / S for c in pos)
         return all(ELEVATOR_BOX[0][i] <= q[i] <= ELEVATOR_BOX[1][i] for i in range(3))
-    return ws, PUZZLE_SCRIPT.replace("--DATA--", data), UI_SCRIPT, in_elevator
+    cps = "local CHECKPOINTS = {\n\t" + ",\n\t".join(
+        f'{{ name = "{n}", center = {v3(g(c))}, size = {v3(g(sz))}, spawn = {v3(g(sp))} }}' for n, c, sz, sp in CHECKPOINTS) + "\n}"
+    return ws, PUZZLE_SCRIPT.replace("--DATA--", data), UI_SCRIPT, in_elevator, TEAM_SCRIPT.replace("--DATA--", cps)
 
 
 PUZZLE_SCRIPT = r'''-- CHAPTER 1 PUZZLES (Roblox version)
@@ -528,6 +535,7 @@ descend.Triggered:Connect(function(player)
 		for i, part in ipairs(car) do part.CFrame = start[i] - Vector3.new(0, drop, 0) end
 	end
 	task.wait(6)
+	workspace:SetAttribute("ChapterDone", true)
 	for _, other in ipairs(Players:GetPlayers()) do other:LoadCharacter() end
 end)
 
@@ -767,3 +775,79 @@ ReplicatedStorage:WaitForChild("ChapterEnd").OnClientEvent:Connect(function()
 	black:Destroy()
 end)
 '''
+
+
+TEAM_SCRIPT = r"""-- THE TEAM LIVES OR DIES TOGETHER.
+-- If ONE player dies (the Long Man catches them, they fall...), EVERYONE
+-- dies, and the whole team comes back at the last checkpoint.
+-- (Puzzles you already solved stay solved.)
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
+
+--DATA--
+
+local checkpoint = nil   -- nil = the start (the road)
+local wiping = false
+
+local function onDied(player)
+	if wiping then return end
+	wiping = true
+	messageEvent:FireAllClients(player.DisplayName .. " died... so EVERYONE dies. Back to " .. (checkpoint and checkpoint.name or "the start") .. "!")
+	task.wait(0.6)
+	for _, other in ipairs(Players:GetPlayers()) do
+		local humanoid = other.Character and other.Character:FindFirstChildOfClass("Humanoid")
+		if humanoid and humanoid.Health > 0 then humanoid.Health = 0 end
+	end
+	-- Everyone comes back together.
+	task.wait(Players.RespawnTime + 0.5)
+	for _, other in ipairs(Players:GetPlayers()) do
+		local humanoid = other.Character and other.Character:FindFirstChildOfClass("Humanoid")
+		if not humanoid or humanoid.Health <= 0 then other:LoadCharacter() end
+	end
+	task.wait(1)
+	wiping = false
+end
+
+local function onCharacter(player, character)
+	local humanoid = character:WaitForChild("Humanoid")
+	humanoid.Died:Connect(function() onDied(player) end)
+	if checkpoint then
+		local root = character:WaitForChild("HumanoidRootPart")
+		task.wait()
+		local spread = Vector3.new((math.random() - 0.5) * 6, 3, (math.random() - 0.5) * 6)
+		character:PivotTo(CFrame.new(checkpoint.spawn + spread) * root.CFrame.Rotation)
+	end
+end
+
+-- After the ending, start again from the road.
+workspace:GetAttributeChangedSignal("ChapterDone"):Connect(function() checkpoint = nil end)
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function(character) onCharacter(player, character) end)
+end)
+for _, player in ipairs(Players:GetPlayers()) do
+	player.CharacterAdded:Connect(function(character) onCharacter(player, character) end)
+	if player.Character then onCharacter(player, player.Character) end
+end
+
+-- Checkpoint boxes (invisible).
+for i, cp in ipairs(CHECKPOINTS) do
+	local box = Instance.new("Part")
+	box.Name = "Checkpoint" .. i
+	box.Anchored = true
+	box.CanCollide = false
+	box.CanQuery = false
+	box.Transparency = 1
+	box.Size = cp.size
+	box.Position = cp.center
+	box.Parent = workspace
+	box.Touched:Connect(function(hit)
+		local player = Players:GetPlayerFromCharacter(hit:FindFirstAncestorOfClass("Model"))
+		if player and not wiping and (checkpoint == nil or table.find(CHECKPOINTS, checkpoint) < i) then
+			checkpoint = cp
+			messageEvent:FireAllClients("Checkpoint: " .. cp.name)
+		end
+	end)
+end
+"""

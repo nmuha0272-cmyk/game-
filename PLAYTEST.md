@@ -91,7 +91,7 @@ was scary. Tick the questions.
 | After catching someone | walks away, ignores everyone for 6 s | `catch_cooldown` in `monster.gd` |
 | Journalist flash | stuns 3 s (2 s x1.5 light hate), 12 s cooldown | `scripts/abilities/journalist_flash.gd` |
 | Son Sense | 4 s glow, 25 m range, 15 s cooldown | `scripts/abilities/son_sense.gd` |
-| Downed bleed-out | 30 s (help up takes 3 s) | `scripts/player/downed_state.gd` |
+| Downed bleed-out | 30 s (help up takes 3 s). If ANYONE bleeds out, the whole team restarts at the checkpoint | `scripts/player/downed_state.gd` |
 
 Rules of thumb:
 - **The chase was way too easy:** raise `chase_speed` a little (4.2 → 4.5).

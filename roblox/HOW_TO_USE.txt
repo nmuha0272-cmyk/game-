@@ -57,7 +57,7 @@ What's in this first Roblox version:
   * When he SEES you he stops, tilts his head and stares... then charges.
     Your flashlight ON makes him see you from further away!
   * Lights and flashlights flicker when he is close.
-  * If he catches you: JUMP SCARE, and you respawn at the start.
+  * If he catches you: JUMP SCARE... and the whole team dies with you!
     Then he crawls away for a few seconds.
   * To test fast: in Studio press Play, then walk to the tunnels
     (down the hidden stairs) and past his cell.
@@ -67,6 +67,9 @@ What's in this first Roblox version:
     with the value  rbxassetid://YOUR_NUMBER
   * Want him faster or slower? Open Workspace > LongMan > LongManBrain
     and change CHASE_SPEED (17). Walking is 14, sprinting is 22.
+- THE TEAM LIVES OR DIES TOGETHER: if ONE player dies, EVERYONE dies,
+  and the whole team comes back at the last checkpoint (the yard, the
+  tunnels, or the elevator room). Puzzles you solved stay solved.
 - THE PUZZLES (the same as the PC game). Each one needs 2 people:
   1. The gate: one person LIFTS it and holds it (stay still!). Another
      finds the CROWBAR by the shed and jams the gate open.

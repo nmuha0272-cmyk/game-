@@ -80,7 +80,7 @@ func _process(_delta: float) -> void:
 		status_label.text = "You bled out. You'll be back at the next checkpoint." + \
 				("\nWatching %s (click to switch)" % watching if not watching.is_empty() else "")
 	elif player.is_downed:
-		status_label.text = "You are down! %ds left. A teammate can help you up (hold E)." % \
+		status_label.text = "You are down! %ds left. A teammate can help you up (hold E).\nIf time runs out, EVERYONE goes back to the checkpoint!" % \
 				ceili(player.downed.time_left)
 
 	if _subtitle_left > 0.0:

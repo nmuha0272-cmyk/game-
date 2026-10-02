@@ -1094,6 +1094,7 @@ descend.Triggered:Connect(function(player)
 		for i, part in ipairs(car) do part.CFrame = start[i] - Vector3.new(0, drop, 0) end
 	end
 	task.wait(6)
+	workspace:SetAttribute("ChapterDone", true)
 	for _, other in ipairs(Players:GetPlayers()) do other:LoadCharacter() end
 end)
 
@@ -1137,6 +1138,84 @@ Players.PlayerAdded:Connect(function(player)
 		end
 	end)
 end)
+]]></ProtectedString></Properties></Item>
+<Item class="Script" referent="RBX6064"><Properties><string name="Name">TeamLivesOrDies</string><ProtectedString name="Source"><![CDATA[-- THE TEAM LIVES OR DIES TOGETHER.
+-- If ONE player dies (the Long Man catches them, they fall...), EVERYONE
+-- dies, and the whole team comes back at the last checkpoint.
+-- (Puzzles you already solved stay solved.)
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
+
+local CHECKPOINTS = {
+	{ name = "the yard", center = Vector3.new(0.000, 4.800, 54.400), size = Vector3.new(25.600, 9.600, 12.800), spawn = Vector3.new(0.000, 1.600, 54.400) },
+	{ name = "the tunnels", center = Vector3.new(28.800, -24.000, -121.600), size = Vector3.new(25.600, 9.600, 12.800), spawn = Vector3.new(28.800, -27.200, -121.600) },
+	{ name = "the elevator room", center = Vector3.new(57.600, -24.000, -217.600), size = Vector3.new(12.800, 9.600, 6.400), spawn = Vector3.new(57.600, -27.200, -217.600) }
+}
+
+local checkpoint = nil   -- nil = the start (the road)
+local wiping = false
+
+local function onDied(player)
+	if wiping then return end
+	wiping = true
+	messageEvent:FireAllClients(player.DisplayName .. " died... so EVERYONE dies. Back to " .. (checkpoint and checkpoint.name or "the start") .. "!")
+	task.wait(0.6)
+	for _, other in ipairs(Players:GetPlayers()) do
+		local humanoid = other.Character and other.Character:FindFirstChildOfClass("Humanoid")
+		if humanoid and humanoid.Health > 0 then humanoid.Health = 0 end
+	end
+	-- Everyone comes back together.
+	task.wait(Players.RespawnTime + 0.5)
+	for _, other in ipairs(Players:GetPlayers()) do
+		local humanoid = other.Character and other.Character:FindFirstChildOfClass("Humanoid")
+		if not humanoid or humanoid.Health <= 0 then other:LoadCharacter() end
+	end
+	task.wait(1)
+	wiping = false
+end
+
+local function onCharacter(player, character)
+	local humanoid = character:WaitForChild("Humanoid")
+	humanoid.Died:Connect(function() onDied(player) end)
+	if checkpoint then
+		local root = character:WaitForChild("HumanoidRootPart")
+		task.wait()
+		local spread = Vector3.new((math.random() - 0.5) * 6, 3, (math.random() - 0.5) * 6)
+		character:PivotTo(CFrame.new(checkpoint.spawn + spread) * root.CFrame.Rotation)
+	end
+end
+
+-- After the ending, start again from the road.
+workspace:GetAttributeChangedSignal("ChapterDone"):Connect(function() checkpoint = nil end)
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function(character) onCharacter(player, character) end)
+end)
+for _, player in ipairs(Players:GetPlayers()) do
+	player.CharacterAdded:Connect(function(character) onCharacter(player, character) end)
+	if player.Character then onCharacter(player, player.Character) end
+end
+
+-- Checkpoint boxes (invisible).
+for i, cp in ipairs(CHECKPOINTS) do
+	local box = Instance.new("Part")
+	box.Name = "Checkpoint" .. i
+	box.Anchored = true
+	box.CanCollide = false
+	box.CanQuery = false
+	box.Transparency = 1
+	box.Size = cp.size
+	box.Position = cp.center
+	box.Parent = workspace
+	box.Touched:Connect(function(hit)
+		local player = Players:GetPlayerFromCharacter(hit:FindFirstAncestorOfClass("Model"))
+		if player and not wiping and (checkpoint == nil or table.find(CHECKPOINTS, checkpoint) < i) then
+			checkpoint = cp
+			messageEvent:FireAllClients("Checkpoint: " .. cp.name)
+		end
+	end)
+end
 ]]></ProtectedString></Properties></Item>
 </Item>
 </roblox>

@@ -88,7 +88,7 @@ def rot_cyl(axes):
     return (u, tuple(-c for c in r), b)
 
 
-puzzle_xml, PUZZLE_SRC, PUZZLE_UI, in_elevator = PZ.build(part, frame, new_ref, d)
+puzzle_xml, PUZZLE_SRC, PUZZLE_UI, in_elevator, TEAM_SRC = PZ.build(part, frame, new_ref, d)
 parts, elevator = [], []
 for i, s in enumerate(d["shapes"]):
     if s.get("door") in PZ.PUZZLE_DOORS:
@@ -255,7 +255,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        script("LocalScript", "LongManEffects", LM.EFFECTS_SCRIPT.replace("--SHOTS--", LM.reveal_shots())),
        script("LocalScript", "PuzzleUI", PUZZLE_UI), "</Item></Item>",
        f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>',
-       script("Script", "FlickeringLights", FLICKER), script("Script", "Puzzles", PUZZLE_SRC), "</Item>",
+       script("Script", "FlickeringLights", FLICKER), script("Script", "Puzzles", PUZZLE_SRC), script("Script", "TeamLivesOrDies", TEAM_SRC), "</Item>",
        "</roblox>"]
 open(OUT, "w").write("\n".join(xml))
 print(f"wrote {OUT}: {len(parts)} parts, {len(elevator)} elevator parts, {len(lights)} lights, {len(spawns)} spawns")

@@ -6,7 +6,7 @@ extends Node
 ## When downed, a 30-second timer starts (it pauses while the Guard carries
 ## you). A teammate holds E for 3 seconds to help you up (a Med Kit does it
 ## instantly). If the timer runs out you "bleed out": you can't be helped up,
-## and you come back when the team reaches the next checkpoint.
+## and the WHOLE TEAM restarts from the last checkpoint (team_monitor.gd).
 
 signal changed
 

@@ -196,15 +196,15 @@ func server_reach_checkpoint(checkpoint: Checkpoint) -> void:
 
 
 ## Host only: everyone is down. Fade out on every screen, then restart.
-func server_team_wiped() -> void:
-	_show_wipe.rpc()
+func server_team_wiped(text := "Everyone is down...\nBack to the last checkpoint.") -> void:
+	_show_wipe.rpc(text)
 	await get_tree().create_timer(3.0).timeout
 	restart_requested.emit()
 
 
 @rpc("authority", "call_local", "reliable")
-func _show_wipe() -> void:
-	get_tree().call_group("screen_fader", "fade_out", "Everyone is down...\nBack to the last checkpoint.")
+func _show_wipe(text: String) -> void:
+	get_tree().call_group("screen_fader", "fade_out", text)
 
 
 @rpc("authority", "call_local", "reliable")
