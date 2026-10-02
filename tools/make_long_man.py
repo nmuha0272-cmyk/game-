@@ -112,3 +112,58 @@ save_obj(OUT + "long_man_head.obj", [
     ("hole", HOLE, mesh(inside, hlo, hhi, 0.004, 1500, smooth=1)),
 ])
 print("head done")
+
+# ---------------------------------------------------------------- crawling pose
+# He usually crawls on all fours like a spider: body low and level, knees up
+# high, long arms reaching forward. Split into parts so the game can move the
+# arms and legs (pivots at the shoulders and hips).
+CRAWL = {"shoulder_l": (-0.27, 1.05, -0.55), "shoulder_r": (0.27, 1.05, -0.55),
+         "hip_l": (-0.14, 1.0, 0.45), "hip_r": (0.14, 1.0, 0.45), "head": (0, 1.08, -0.82)}
+
+torso = [ellipsoid((0, 1.12, -0.32), (0.17, 0.13, 0.27)),                    # ribcage, now level
+         capsule((0, 1.12, -0.1), (0, 1.02, 0.42), 0.11, 0.1),               # spine to hips
+         ellipsoid((0, 1.0, 0.45), (0.17, 0.11, 0.1)),                       # hips
+         capsule((0, 1.12, -0.55), (0, 1.1, -0.8), 0.05, 0.043)]             # neck reaching forward
+for k in range(6):                                                           # ribs underneath
+    z = -0.52 + k * 0.065
+    for x in (-1, 1):
+        torso.append(capsule((0.16 * x, 1.12, z), (0.02 * x, 0.98, z + 0.02), 0.017))
+for k in range(9):                                                           # spine knobs along the back
+    torso.append(sphere((0, 1.24 - 0.01 * k, -0.48 + k * 0.11), 0.03))
+for x in (-1, 1):
+    torso.append(sphere((0.27 * x, 1.06, -0.55), 0.06))
+crawl_tear = bumpy(ellipsoid((0.01, 0.98, 0.05), (0.07, 0.06, 0.11)), 0.01, 70, 9)
+crawl_body = cut(bumpy(blend(torso, 0.035), 0.004, 45, 3), crawl_tear)
+crawl_guts = union([capsule((0.04 * math.sin(i), 0.97 - 0.01 * math.cos(i * 1.7), -0.05 + i * 0.022), (0.04 * math.sin(i + 1), 0.97, -0.05 + (i + 1) * 0.022), 0.017) for i in range(8)]
+                   + [capsule((0.02, 0.97, 0.06), (0.03, 0.82, 0.08), 0.017), capsule((0.03, 0.82, 0.08), (0.0, 0.85, 0.12), 0.017)])
+crawl_gown = cut(bumpy(cylinder_y((0, 0.98, 0.3), 0.2, 0.09, 0.03), 0.01, 25, 5),
+                 cylinder_y((0, 0.98, 0.3), 0.17, 0.2, 0.01))                 # gown bunched around the hips
+clo, chi = (-0.35, 0.7, -0.95), (0.35, 1.35, 0.65)
+save_obj(OUT + "long_man_crawl_body.obj", [
+    ("skin", SKIN, mesh(crawl_body, clo, chi, 0.007, 16000, smooth=2)),
+    ("gown", GOWN, mesh(crawl_gown, clo, chi, 0.005, 3000, smooth=1)),
+    ("guts", (0.32, 0.06, 0.05), mesh(crawl_guts, (-0.12, 0.75, -0.12), (0.12, 1.05, 0.2), 0.003, 3000, smooth=1)),
+])
+print("crawl body done")
+
+for side, x in (("l", -1), ("r", 1)):
+    sh = CRAWL["shoulder_" + side]
+    elbow = (0.5 * x, 0.95, -0.9); wrist = (0.42 * x, 0.08, -1.2)
+    arm = [capsule(sh, elbow, 0.05, 0.037), sphere(elbow, 0.045), capsule(elbow, wrist, 0.037, 0.027),
+           ellipsoid((0.42 * x, 0.04, -1.27), (0.045, 0.025, 0.085))]
+    for f in range(4):                                                       # fingers splayed on the floor
+        fx = 0.42 * x + (f - 1.5) * 0.028
+        arm.append(capsule((fx, 0.03, -1.32), (fx + (f - 1.5) * 0.03, 0.015, -1.55 + abs(f - 1.5) * 0.04), 0.01, 0.006))
+    if side == "l":
+        arm.append(torus_y((-0.43, 0.2, -1.17), 0.034, 0.008))               # ID bracelet
+    lo = (min(sh[0], wrist[0]) - 0.2, -0.02, -1.65); hi = (max(sh[0], wrist[0]) + 0.2, 1.15, -0.45)
+    save_obj(OUT + f"long_man_crawl_arm_{side}.obj", [("skin", SKIN, mesh(bumpy(blend(arm, 0.03), 0.003, 45, 4), lo, hi, 0.006, 5000, smooth=2))], pivot=sh)
+    hp = CRAWL["hip_" + side]
+    knee = (0.42 * x, 1.4, 0.75); ankle = (0.36 * x, 0.08, 0.95)
+    leg = [capsule(hp, knee, 0.072, 0.048), sphere(knee, 0.06), capsule(knee, ankle, 0.048, 0.032),
+           ellipsoid((0.36 * x, 0.035, 0.85), (0.05, 0.03, 0.16))]
+    lo = (min(hp[0], knee[0]) - 0.2, -0.02, 0.3); hi = (max(hp[0], knee[0]) + 0.2, 1.5, 1.15)
+    save_obj(OUT + f"long_man_crawl_leg_{side}.obj", [("skin", SKIN, mesh(bumpy(blend(leg, 0.03), 0.003, 45, 5), lo, hi, 0.006, 5000, smooth=2))], pivot=hp)
+print("crawl limbs done")
+import json
+json.dump(CRAWL, open(OUT + "long_man_crawl_rig.json", "w"), indent=1)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://scripts/monsters/monster.gd" id="1_monster"]
 [ext_resource type="Script" path="res://scripts/monsters/monster_senses.gd" id="2_senses"]
@@ -12,6 +12,11 @@
 [ext_resource type="Texture2D" path="res://assets/textures/concrete_wall_albedo.jpg" id="lm_cloth"]
 [ext_resource type="ArrayMesh" path="res://assets/models/long_man_body.obj" id="lm_body_mesh"]
 [ext_resource type="ArrayMesh" path="res://assets/models/long_man_head.obj" id="lm_head_mesh"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_body.obj" id="lm_crawl_body"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_arm_l.obj" id="lm_crawl_arm_l"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_arm_r.obj" id="lm_crawl_arm_r"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_leg_l.obj" id="lm_crawl_leg_l"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_leg_r.obj" id="lm_crawl_leg_r"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 radius = 0.35
@@ -138,6 +143,67 @@ mesh = SubResource("Mesh_eye")
 surface_material_override/0 = SubResource("Mat_eye")
 
 [node name="EyeRight" type="MeshInstance3D" parent="Body/HeadPivot"]
+transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, 0.046, 0.101, -0.106)
+mesh = SubResource("Mesh_eye")
+surface_material_override/0 = SubResource("Mat_eye")
+
+[node name="CrawlBody" type="Node3D" parent="."]
+visible = false
+
+[node name="Sculpt" type="MeshInstance3D" parent="CrawlBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_crawl_body")
+surface_material_override/0 = SubResource("Mat_skin")
+surface_material_override/1 = SubResource("Mat_gown")
+surface_material_override/2 = SubResource("Mat_guts")
+
+[node name="ArmL" type="Node3D" parent="CrawlBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27, 1.05, -0.55)
+
+[node name="Mesh" type="MeshInstance3D" parent="CrawlBody/ArmL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_crawl_arm_l")
+surface_material_override/0 = SubResource("Mat_skin")
+
+[node name="ArmR" type="Node3D" parent="CrawlBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.27, 1.05, -0.55)
+
+[node name="Mesh" type="MeshInstance3D" parent="CrawlBody/ArmR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_crawl_arm_r")
+surface_material_override/0 = SubResource("Mat_skin")
+
+[node name="LegL" type="Node3D" parent="CrawlBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, 1, 0.45)
+
+[node name="Mesh" type="MeshInstance3D" parent="CrawlBody/LegL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_crawl_leg_l")
+surface_material_override/0 = SubResource("Mat_skin")
+
+[node name="LegR" type="Node3D" parent="CrawlBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, 1, 0.45)
+
+[node name="Mesh" type="MeshInstance3D" parent="CrawlBody/LegR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_crawl_leg_r")
+surface_material_override/0 = SubResource("Mat_skin")
+
+[node name="HeadPivot" type="Node3D" parent="CrawlBody"]
+transform = Transform3D(0.98481, -0.17365, 0, 0.15738, 0.89254, -0.42262, 0.07339, 0.4162, 0.90631, 0, 1.08, -0.82)
+
+[node name="Head" type="MeshInstance3D" parent="CrawlBody/HeadPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_head_mesh")
+surface_material_override/0 = SubResource("Mat_skin")
+surface_material_override/1 = SubResource("Mat_hole")
+
+[node name="EyeLeft" type="MeshInstance3D" parent="CrawlBody/HeadPivot"]
+transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, -0.046, 0.101, -0.106)
+mesh = SubResource("Mesh_eye")
+surface_material_override/0 = SubResource("Mat_eye")
+
+[node name="EyeRight" type="MeshInstance3D" parent="CrawlBody/HeadPivot"]
 transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, 0.046, 0.101, -0.106)
 mesh = SubResource("Mesh_eye")
 surface_material_override/0 = SubResource("Mat_eye")

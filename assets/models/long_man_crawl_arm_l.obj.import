@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://nlmylhfxlfmp"
+path="res://.godot/imported/long_man_crawl_arm_l.obj-6d00ed6f5d0613432f002f6bdd8b0f3d.mesh"
+
+[deps]
+
+files=["res://.godot/imported/long_man_crawl_arm_l.obj-6d00ed6f5d0613432f002f6bdd8b0f3d.mesh"]
+
+source_file="res://assets/models/long_man_crawl_arm_l.obj"
+dest_files=["res://.godot/imported/long_man_crawl_arm_l.obj-6d00ed6f5d0613432f002f6bdd8b0f3d.mesh", "res://.godot/imported/long_man_crawl_arm_l.obj-6d00ed6f5d0613432f002f6bdd8b0f3d.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

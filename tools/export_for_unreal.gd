@@ -141,6 +141,17 @@ func _add_mesh(node: MeshInstance3D, collide: bool) -> void:
 		var kind := "cone" if mesh.top_radius < 0.01 else "cylinder"
 		var r: float = maxf(mesh.top_radius, mesh.bottom_radius)
 		_shape(kind, node, Vector3(r * 2, mesh.height, r * 2), mat, false)
+	elif mesh is ArrayMesh and String(mesh.resource_path).contains("/prop_"):
+		# A sculpted prop (barrel, crate, desk...): send a simple stand-in shape
+		# of the same size (barrels as cylinders, the rest as boxes).
+		var box := mesh.get_aabb()
+		var holder := Node3D.new()
+		node.add_child(holder)
+		holder.position = box.get_center()
+		var kind := "cylinder" if String(mesh.resource_path).contains("barrel") else "cube"
+		var solid: bool = node.get_parent() is StaticBody3D and node.get_parent().get_child_count() > 1
+		_shape(kind, holder, box.size, mat, solid)
+		holder.queue_free()
 
 
 ## The forest: every tree part becomes a list of instances.

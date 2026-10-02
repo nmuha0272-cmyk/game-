@@ -1,7 +1,8 @@
 extends Node
 ## Everything you see and hear from the monster: twitching when stunned,
-## breathing, heavy footsteps and shrieks. Runs on every computer, using the
-## state and position the host sends.
+## breathing, heavy footsteps and shrieks, crawling on all fours, and the
+## jump scare when it catches you. Runs on every computer, using the state
+## and position the host sends.
 
 @export var monster: Monster
 @export var body: Node3D
@@ -24,6 +25,13 @@ var _fold := 0.0
 var _twitch_timer := 2.0
 var _head_roll := 14.0
 @onready var _head: Node3D = body.get_node_or_null("HeadPivot")
+## The all-fours body (optional: a monster without one just walks).
+@onready var _crawl: Node3D = monster.get_node_or_null("CrawlBody")
+@onready var _crawl_head: Node3D = _crawl.get_node_or_null("HeadPivot") if _crawl else null
+var _crawl_phase := 0.0
+var _speed := 0.0
+
+const JUMP_SCARE_SOUND := preload("res://assets/audio/monster_screech.wav")
 
 
 func _ready() -> void:
@@ -34,14 +42,84 @@ func _ready() -> void:
 ## Every few seconds the head snaps to a new angle, then settles. (Each
 ## computer twitches on its own; it's just for looks.)
 func _update_head(delta: float) -> void:
-	if _head == null:
+	var head := _crawl_head if monster.is_crawling() else _head
+	if head == null:
 		return
 	_twitch_timer -= delta
 	if _twitch_timer <= 0.0:
 		_twitch_timer = randf_range(1.5, 5.0) * (0.4 if monster.state == Monster.State.CHASE else 1.0)
 		_head_roll = randf_range(-35.0, 35.0) if randf() < 0.6 else 14.0
-		_head.rotation_degrees.z = _head_roll  # the snap
-	_head.rotation_degrees.z = lerpf(_head.rotation_degrees.z, _head_roll * 0.8, clampf(delta * 2.0, 0.0, 1.0))
+		head.rotation_degrees.z = _head_roll  # the snap
+	head.rotation_degrees.z = lerpf(head.rotation_degrees.z, _head_roll * 0.8, clampf(delta * 2.0, 0.0, 1.0))
+
+
+## Switches between standing and crawling, and moves the arms and legs like
+## a spider: left arm with right leg, then right arm with left leg.
+func _update_crawl(delta: float) -> void:
+	if _crawl == null:
+		return
+	var crawling := monster.is_crawling()
+	_crawl.visible = crawling
+	body.visible = not crawling
+	if not crawling:
+		return
+	_crawl_phase += delta * clampf(_speed, 0.0, 6.0) * 2.4
+	var swing := sin(_crawl_phase) * clampf(_speed / 2.0, 0.0, 1.0) * 24.0
+	var lift := maxf(0.0, cos(_crawl_phase)) * clampf(_speed / 2.0, 0.0, 1.0) * 14.0
+	_crawl.get_node("ArmL").rotation_degrees = Vector3(swing + lift, 0, 0)
+	_crawl.get_node("LegR").rotation_degrees = Vector3(swing - lift, 0, 0)
+	_crawl.get_node("ArmR").rotation_degrees = Vector3(-swing + lift, 0, 0)
+	_crawl.get_node("LegL").rotation_degrees = Vector3(-swing - lift, 0, 0)
+	_crawl.position.y = absf(sin(_crawl_phase)) * 0.05 * clampf(_speed / 2.0, 0.0, 1.0)
+
+
+## Only on the caught player's computer: its face lunges at your screen,
+## a screech, a red flash, the screen shakes.
+func play_jump_scare() -> void:
+	var camera := get_viewport().get_camera_3d()
+	if camera == null:
+		return
+	var source: Node3D = _crawl_head if (monster.is_crawling() and _crawl_head) else _head
+	if source == null:
+		source = body
+	var face: Node3D = source.duplicate()
+	face.transform = Transform3D(Basis(Vector3.UP, PI).scaled(Vector3.ONE * 1.5), Vector3(0, -0.05, -1.6))
+	face.rotation_degrees.z = randf_range(-25.0, 25.0)
+	camera.add_child(face)
+	# A pale light from below so you see every detail of it.
+	var light := OmniLight3D.new()
+	light.light_color = Color(0.85, 0.9, 1.0)
+	light.light_energy = 2.5
+	light.omni_range = 2.0
+	light.position = Vector3(0, -0.35, -0.3)
+	camera.add_child(light)
+	var sound := AudioStreamPlayer.new()
+	sound.stream = JUMP_SCARE_SOUND
+	sound.volume_db = 6.0
+	sound.pitch_scale = 0.8
+	camera.add_child(sound)
+	sound.play()
+	var layer := CanvasLayer.new()
+	layer.layer = 40
+	var flash := ColorRect.new()
+	flash.color = Color(0.7, 0.0, 0.0, 0.4)
+	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(flash)
+	add_child(layer)
+	var tween := create_tween()
+	tween.tween_property(face, "position", Vector3(0, -0.1, -0.8), 0.12).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(flash, "color:a", 0.0, 0.45)
+	# Shake while it's in your face.
+	for i in 12:
+		tween.tween_property(face, "position", Vector3(randf_range(-0.05, 0.05), -0.1 + randf_range(-0.04, 0.04), -0.8), 0.04)
+	tween.tween_property(face, "position", Vector3(0, -0.3, -0.45), 0.15)
+	await tween.finished
+	face.queue_free()
+	light.queue_free()
+	layer.queue_free()
+	await get_tree().create_timer(1.5).timeout
+	sound.queue_free()
 
 
 ## The Long Man doesn't fit in the tunnels. Under a low ceiling he folds
@@ -59,6 +137,7 @@ func _update_folding(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	_update_folding(delta)
+	_update_crawl(delta)
 	if monster.state != _last_state:
 		_on_state_changed(monster.state)
 		_last_state = monster.state
@@ -75,6 +154,7 @@ func _process(delta: float) -> void:
 	var moved := monster.global_position - _last_position
 	moved.y = 0.0
 	_last_position = monster.global_position
+	_speed = lerpf(_speed, moved.length() / maxf(delta, 0.001), clampf(delta * 8.0, 0.0, 1.0))
 	if moved.length() < 1.0:  # ignore teleports
 		_walked += moved.length()
 	if _walked >= stride:

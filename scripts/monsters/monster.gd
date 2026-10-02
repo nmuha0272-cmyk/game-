@@ -142,6 +142,7 @@ func _think_chase(delta: float) -> void:
 	nav.target_position = _last_known_position
 	if global_position.distance_to(target.global_position) <= catch_distance:
 		target.downed.server_set_downed(true)
+		_jump_scare.rpc_id(target.name.to_int())
 		_wander_off()
 
 
@@ -360,9 +361,21 @@ func _wander_near(center: Vector3) -> void:
 
 # ---------------------------------------------------------------- used by abilities
 
+## True while it's on all fours (hunting). It stands up while waiting,
+## pounding on a door, or flashed.
+func is_crawling() -> bool:
+	return has_node("CrawlBody") and not (state in [State.DORMANT, State.BLOCKED, State.STUNNED])
+
+
 ## The point the camera flash aims at (its head).
 func get_aim_point() -> Vector3:
-	return global_position + Vector3(0.0, 2.3, 0.0)
+	return global_position + Vector3(0.0, 1.1 if is_crawling() else 2.3, 0.0)
+
+
+## Sent by the host to the player it just caught.
+@rpc("authority", "call_local", "reliable")
+func _jump_scare() -> void:
+	$Visuals.play_jump_scare()
 
 
 ## Only the Son's computer calls this, so only he sees the glow.
