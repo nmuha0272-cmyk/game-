@@ -35,6 +35,7 @@ for x in (-1, 1):
     skin += [sphere((0.27 * x, 2.47, -0.18), 0.06), capsule((0.27 * x, 2.47, -0.2), (0.02 * x, 2.45, -0.27), 0.022)]
 skin += [capsule((0, 2.48, -0.22), (0, 2.82, -0.38), 0.05, 0.042),
          capsule((-0.03, 2.5, -0.25), (-0.02, 2.78, -0.4), 0.015), capsule((0.03, 2.5, -0.25), (0.02, 2.78, -0.4), 0.015)]
+claws = []
 # Very long arms with knobby elbows, hands almost to the ground, spindly fingers.
 for x in (-1, 1):
     sh = (0.28 * x, 2.46, -0.18); el = (0.34 * x, 1.66, -0.25); wr = (0.37 * x, 0.83, -0.3)
@@ -46,6 +47,7 @@ for x in (-1, 1):
         mid = (fx + (f - 1.5) * 0.008, 0.66 - length * 0.55, -0.32)
         tip = (fx + (f - 1.5) * 0.012, 0.66 - length, -0.35)
         skin += [capsule((fx, 0.66, -0.31), mid, 0.011, 0.009), capsule(mid, tip, 0.009, 0.005), sphere(mid, 0.012)]
+        claws.append(capsule(tip, (tip[0] + (f - 1.5) * 0.004, tip[1] - 0.045, tip[2] - 0.012), 0.006, 0.0008))
     skin.append(capsule((0.36 * x, 0.72, -0.34), (0.36 * x - 0.01 * x, 0.55, -0.37), 0.01))  # thumb
 
 # About 9 feet (2.75 m) tall, like the art guide says.
@@ -62,6 +64,8 @@ for i in range(60):
 path += [(0.02, 1.63, -0.15), (0.035, 1.57, -0.175), (0.03, 1.52, -0.19), (0.01, 1.53, -0.185), (-0.01, 1.58, -0.17), (-0.015, 1.64, -0.15)]
 intestines = [capsule(a, b, 0.017) for a, b in zip(path, path[1:])]
 guts = transformed(bumpy(union(intestines), 0.002, 120, 11), scale=SCALE)
+# Blood that ran down from the wound over his belly.
+blood_body = transformed(union([capsule((-0.04 + 0.025 * k, 1.62, -0.165 + 0.01 * abs(k - 2)), (-0.045 + 0.027 * k, 1.42 - 0.04 * (k % 3), -0.15), 0.008, 0.004) for k in range(5)]), scale=SCALE)
 # The dark, wet inside of the wound behind them.
 flesh = transformed(bumpy(ellipsoid((0.01, 1.72, -0.1), (0.07, 0.108, 0.05)), 0.006, 60, 12), scale=SCALE)
 # What's left of a military ID bracelet on his left wrist.
@@ -87,6 +91,8 @@ save_obj(OUT + "long_man_body.obj", [
     ("gown", GOWN, mesh(transformed(bumpy(gown, 0.006, 25, 5), scale=SCALE), lo, hi, 0.005, 9000, smooth=1)),
     ("bracelet", (0.45, 0.45, 0.42), mesh(bracelet, (-0.42, 0.65, -0.36), (-0.25, 0.85, -0.2), 0.003, 800, smooth=0)),
     ("guts", (0.32, 0.06, 0.05), mesh(guts, (-0.13, 1.27, -0.3), (0.13, 1.68, -0.02), 0.003, 7000, smooth=1)),
+    ("claws", (0.08, 0.07, 0.06), mesh(transformed(union(claws), scale=SCALE), (-0.45, 0.25, -0.42), (0.45, 0.65, -0.25), 0.002, 1500, smooth=0)),
+    ("blood", (0.2, 0.02, 0.02), mesh(blood_body, (-0.15, 1.1, -0.3), (0.15, 1.62, -0.05), 0.003, 2500, smooth=1)),
     ("flesh", (0.12, 0.02, 0.02), mesh(flesh, (-0.13, 1.27, -0.3), (0.13, 1.68, -0.02), 0.004, 2000, smooth=1)),
 ])
 print("body done")
@@ -94,22 +100,51 @@ print("body done")
 # The head, built around its own pivot (where the neck meets it).
 skull = blend([
     ellipsoid((0, 0.09, 0.0), (0.11, 0.19, 0.13)),                     # long skull
-    ellipsoid((0, -0.08, -0.025), (0.07, 0.11, 0.075)),                # long hanging jaw
+    ellipsoid((0, -0.08, -0.025), (0.075, 0.12, 0.075)),               # long hanging jaw
     ellipsoid((-0.07, 0.05, -0.07), (0.035, 0.03, 0.04)), ellipsoid((0.07, 0.05, -0.07), (0.035, 0.03, 0.04)),  # cheekbones
-], 0.04)
+    capsule((-0.065, 0.155, -0.105), (0.065, 0.155, -0.105), 0.022),  # heavy brow
+], 0.035)
 holes = union([
-    ellipsoid((-0.05, 0.11, -0.125), (0.032, 0.026, 0.04)), ellipsoid((0.05, 0.11, -0.125), (0.032, 0.026, 0.04)),  # sockets
-    ellipsoid((0, -0.1, -0.1), (0.024, 0.065, 0.05)),                  # open mouth
+    ellipsoid((-0.05, 0.11, -0.125), (0.032, 0.028, 0.045)), ellipsoid((0.05, 0.11, -0.125), (0.032, 0.028, 0.045)),  # deep sockets
+    ellipsoid((0, -0.09, -0.105), (0.045, 0.08, 0.06)),               # stretched open mouth
+    capsule((-0.035, -0.06, -0.11), (-0.08, -0.015, -0.075), 0.009),  # ripped mouth corners
+    capsule((0.035, -0.06, -0.11), (0.08, -0.015, -0.075), 0.009),
+    capsule((-0.012, 0.04, -0.14), (-0.008, 0.015, -0.13), 0.006),    # nose slits, no nose
+    capsule((0.012, 0.04, -0.14), (0.008, 0.015, -0.13), 0.006),
     ellipsoid((-0.09, -0.01, -0.06), (0.025, 0.04, 0.04)), ellipsoid((0.09, -0.01, -0.06), (0.025, 0.04, 0.04)),  # sunken cheeks
 ])
-head = transformed(bumpy(cut(skull, holes), 0.003, 60, 7), scale=(0.92, 0.92, 0.92))
-inside = union([ellipsoid((-0.05, 0.11, -0.105), (0.03, 0.024, 0.03)), ellipsoid((0.05, 0.11, -0.105), (0.03, 0.024, 0.03)),
-                ellipsoid((0, -0.1, -0.075), (0.022, 0.06, 0.04))])
-inside = transformed(inside, scale=(0.92, 0.92, 0.92))
-hlo, hhi = (-0.2, -0.3, -0.25), (0.2, 0.32, 0.2)
+SC = (0.92, 0.92, 0.92)
+head = transformed(bumpy(cut(skull, holes), 0.004, 70, 7), scale=SC)
+inside = transformed(union([ellipsoid((-0.05, 0.11, -0.1), (0.03, 0.026, 0.03)), ellipsoid((0.05, 0.11, -0.1), (0.03, 0.026, 0.03)),
+                            ellipsoid((0, -0.09, -0.075), (0.042, 0.075, 0.045))]), scale=SC)
+# Crooked teeth along the top and bottom of the mouth, pointing in.
+teeth = []
+for row, y, dy in (("top", -0.025, -0.03), ("bottom", -0.158, 0.03)):
+    for k in range(8):
+        x = -0.035 + k * 0.01
+        jitter = ((k * 37 + (3 if row == "top" else 7)) % 5 - 2) * 0.003
+        teeth.append(capsule((x, y, -0.113 + abs(x) * 0.6), (x + jitter, y + dy * (0.8 + (k % 3) * 0.2), -0.12 + abs(x) * 0.6), 0.0045, 0.0008))
+teeth = transformed(union(teeth), scale=SC)
+eyeballs = transformed(union([sphere((-0.05, 0.11, -0.105), 0.021), sphere((0.05, 0.11, -0.105), 0.021)]), scale=SC)
+# Thin stringy hair hanging from the back of the scalp.
+strands = []
+for k in range(14):
+    a = -1.3 + k * 0.2
+    top = (math.sin(a) * 0.1, 0.24 - abs(a) * 0.03, math.cos(a) * 0.09 + 0.01)
+    bottom = (math.sin(a) * 0.14 + 0.01 * (k % 3), -0.12 - (k % 4) * 0.05, math.cos(a) * 0.13 + 0.03)
+    strands.append(capsule(top, bottom, 0.0035, 0.002))
+hair = transformed(union(strands), scale=SC)
+# Dried blood running from the corners of his mouth.
+blood_head = transformed(union([capsule((-0.042, -0.125, -0.096), (-0.046, -0.175, -0.083), 0.0035, 0.002),
+                                capsule((0.038, -0.13, -0.096), (0.041, -0.19, -0.08), 0.003, 0.0015)]), scale=SC)
+hlo, hhi = (-0.22, -0.34, -0.25), (0.22, 0.32, 0.22)
 save_obj(OUT + "long_man_head.obj", [
-    ("skin", SKIN, mesh(head, hlo, hhi, 0.004, 9000, smooth=1)),
+    ("skin", SKIN, mesh(head, hlo, hhi, 0.003, 14000, smooth=1)),
     ("hole", HOLE, mesh(inside, hlo, hhi, 0.004, 1500, smooth=1)),
+    ("teeth", (0.62, 0.56, 0.4), mesh(teeth, (-0.06, -0.2, -0.16), (0.06, 0.0, -0.08), 0.0015, 2500, smooth=0)),
+    ("eyeball", (0.7, 0.66, 0.5), mesh(eyeballs, (-0.09, 0.06, -0.14), (0.09, 0.15, -0.06), 0.002, 1200, smooth=1)),
+    ("hair", (0.12, 0.12, 0.11), mesh(hair, hlo, hhi, 0.002, 3000, smooth=0)),
+    ("blood", (0.2, 0.02, 0.02), mesh(blood_head, (-0.08, -0.26, -0.14), (0.08, -0.05, -0.03), 0.002, 800, smooth=1)),
 ])
 print("head done")
 
@@ -151,13 +186,17 @@ for side, x in (("l", -1), ("r", 1)):
     elbow = (0.5 * x, 0.95, -0.9); wrist = (0.42 * x, 0.08, -1.2)
     arm = [capsule(sh, elbow, 0.05, 0.037), sphere(elbow, 0.045), capsule(elbow, wrist, 0.037, 0.027),
            ellipsoid((0.42 * x, 0.04, -1.27), (0.045, 0.025, 0.085))]
+    arm_claws = []
     for f in range(4):                                                       # fingers splayed on the floor
         fx = 0.42 * x + (f - 1.5) * 0.028
-        arm.append(capsule((fx, 0.03, -1.32), (fx + (f - 1.5) * 0.03, 0.015, -1.55 + abs(f - 1.5) * 0.04), 0.01, 0.006))
+        tip = (fx + (f - 1.5) * 0.03, 0.015, -1.55 + abs(f - 1.5) * 0.04)
+        arm.append(capsule((fx, 0.03, -1.32), tip, 0.01, 0.006))
+        arm_claws.append(capsule(tip, (tip[0] + (f - 1.5) * 0.006, 0.004, tip[2] - 0.045), 0.006, 0.0008))
     if side == "l":
         arm.append(torus_y((-0.43, 0.2, -1.17), 0.034, 0.008))               # ID bracelet
     lo = (min(sh[0], wrist[0]) - 0.2, -0.02, -1.65); hi = (max(sh[0], wrist[0]) + 0.2, 1.15, -0.45)
-    save_obj(OUT + f"long_man_crawl_arm_{side}.obj", [("skin", SKIN, mesh(bumpy(blend(arm, 0.03), 0.003, 45, 4), lo, hi, 0.006, 5000, smooth=2))], pivot=sh)
+    save_obj(OUT + f"long_man_crawl_arm_{side}.obj", [("skin", SKIN, mesh(bumpy(blend(arm, 0.03), 0.003, 45, 4), lo, hi, 0.006, 5000, smooth=2)),
+                                                      ("claws", (0.08, 0.07, 0.06), mesh(union(arm_claws), (wrist[0] - 0.2, -0.02, -1.7), (wrist[0] + 0.2, 0.08, -1.4), 0.002, 800, smooth=0))], pivot=sh)
     hp = CRAWL["hip_" + side]
     knee = (0.42 * x, 1.4, 0.75); ankle = (0.36 * x, 0.08, 0.95)
     leg = [capsule(hp, knee, 0.072, 0.048), sphere(knee, 0.06), capsule(knee, ankle, 0.048, 0.032),

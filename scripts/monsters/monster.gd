@@ -12,8 +12,10 @@ extends CharacterBody3D
 ## BLOCKED (it pounds on the door, then gives up). A locked door does too.
 ## A burning flare puts it in DISTRACTED: it stares at the flare and ignores
 ## players until it burns out. Catching a player downs them.
+## STARE: when it first spots you, it rises up to its full height and stares
+## for a moment... then drops to all fours and charges.
 
-enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED, DISTRACTED }
+enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED, DISTRACTED, STARE }
 
 ## Marker3D points it walks between while patrolling.
 @export var patrol_points: Node3D
@@ -43,6 +45,8 @@ enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED, DIST
 @export var catch_cooldown := 6.0
 ## The Long Man hates light: flash stuns last this many times longer.
 @export var light_sensitivity := 1.5
+## How long it stares at you after spotting you, before it charges.
+@export var stare_time := 1.4
 
 ## Synced to everyone so they can play the right sounds.
 var state: State = State.DORMANT
@@ -103,6 +107,9 @@ func _think(delta: float) -> void:
 			if _timer <= 0.0:
 				_start_search(_last_known_position)
 			return
+		State.STARE:
+			_think_stare()
+			return
 
 	if _ignore_players_time > 0.0:
 		_ignore_players_time -= delta
@@ -115,7 +122,10 @@ func _think(delta: float) -> void:
 	else:
 		var seen := senses.find_visible_player()
 		if seen:
-			_chase(seen)
+			if state == State.CHASE:
+				_chase(seen)
+			else:
+				_start_stare(seen)
 
 	match state:
 		State.CHASE:
@@ -125,6 +135,26 @@ func _think(delta: float) -> void:
 			if heard:
 				_investigate(heard.global_position)
 			_think_wander()
+
+
+## Standing tall, staring at the player it just found. Then the chase begins.
+func _think_stare() -> void:
+	if not is_instance_valid(target) or target.is_downed:
+		_start_search(_last_known_position)
+		return
+	_last_known_position = target.global_position
+	var to_target := target.global_position - global_position
+	rotation.y = lerp_angle(rotation.y, atan2(-to_target.x, -to_target.z), 0.15)
+	if _timer <= 0.0:
+		_chase(target)
+
+
+func _start_stare(player: Player) -> void:
+	state = State.STARE
+	target = player
+	_timer = stare_time
+	_last_known_position = player.global_position
+	velocity = Vector3.ZERO
 
 
 func _think_chase(delta: float) -> void:
@@ -234,11 +264,16 @@ func hear_noise(noise_position: Vector3, radius: float) -> void:
 
 ## Host only: wake up (if asleep) and hunt this player. Used by chase
 ## triggers, like the Long Man bursting out of his cell.
-func wake(target_player: Player) -> void:
+## stare_seconds > 0: it first stands and stares at them that long.
+func wake(target_player: Player, stare_seconds := 0.0) -> void:
 	if not multiplayer.is_server():
 		return
 	if state == State.DORMANT and is_instance_valid(target_player):
-		_chase(target_player)
+		if stare_seconds > 0.0:
+			_start_stare(target_player)
+			_timer = stare_seconds
+		else:
+			_chase(target_player)
 
 
 ## Host only: a burning flare nearby. Go stare at it until it burns out.
@@ -364,7 +399,7 @@ func _wander_near(center: Vector3) -> void:
 ## True while it's on all fours (hunting). It stands up while waiting,
 ## pounding on a door, or flashed.
 func is_crawling() -> bool:
-	return has_node("CrawlBody") and not (state in [State.DORMANT, State.BLOCKED, State.STUNNED])
+	return has_node("CrawlBody") and not (state in [State.DORMANT, State.BLOCKED, State.STUNNED, State.STARE])
 
 
 ## The point the camera flash aims at (its head).

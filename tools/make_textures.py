@@ -188,3 +188,16 @@ col = colorize(fine, (0.25, 0.25, 0.24), (0.55, 0.53, 0.5))
 rgba = np.dstack([col, wire[..., None]])
 Image.fromarray((np.clip(rgba, 0, 1) * 255).astype(np.uint8), "RGBA").save(OUT + "chainlink_albedo.png", optimize=True)
 print("made chainlink")
+
+# --- The Long Man's skin: pale and grayish, with dark veins, bruises and grime.
+n = 1024
+base = noise(n, 60, 4); fine = noise(n, 1.5, 3)
+veins = cracks(n, 60, 1.6) + 0.6 * cracks(n, 140, 1.0)
+veins = ndimage.gaussian_filter(np.clip(veins, 0, 1), 1.0, mode="wrap")
+bruise = np.clip((noise(n, 90, 4) - 0.6) * 3, 0, 1)
+grime = np.clip((noise(n, 40, 5) - 0.55) * 2.5, 0, 1)
+skin = colorize(0.75 + 0.25 * base, (0.55, 0.53, 0.48), (0.78, 0.76, 0.70))
+skin = skin * (1 - 0.55 * veins[..., None]) + np.array([0.22, 0.24, 0.36]) * 0.55 * veins[..., None]   # bluish veins
+skin = skin * (1 - 0.35 * bruise[..., None]) + np.array([0.35, 0.22, 0.32]) * 0.35 * bruise[..., None]  # purple bruises
+skin = skin * (1 - 0.4 * grime[..., None])
+save("longman_skin", skin * (0.92 + 0.08 * fine[..., None]), fine * 0.4 - veins * 0.5 + base * 0.2, 0.55 + 0.3 * grime)

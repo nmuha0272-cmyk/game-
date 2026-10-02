@@ -37,12 +37,17 @@ func _process(delta: float) -> void:
 
 
 func _pick_next_state() -> void:
-	if _lit and randf() < brokenness:
+	# When a monster is close, every broken light nearly dies.
+	var broken := brokenness
+	for monster in get_tree().get_nodes_in_group("monsters"):
+		if monster.global_position.distance_to(global_position) < 9.0:
+			broken = maxf(brokenness, 0.85)
+	if _lit and randf() < broken:
 		# Cut out for a moment. Very broken lights stay dark longer.
 		_lit = false
-		_timer = randf_range(0.03, 0.12) + randf() * brokenness * 1.5
+		_timer = randf_range(0.03, 0.12) + randf() * broken * 1.5
 	else:
 		# Come back on (sometimes only for a split second).
 		_lit = true
-		_timer = randf_range(0.05, 0.4) if randf() < 0.5 else randf_range(0.5, 4.0 * (1.0 - brokenness) + 0.5)
+		_timer = randf_range(0.05, 0.4) if randf() < 0.5 else randf_range(0.5, 4.0 * (1.0 - broken) + 0.5)
 		light_energy = _base_energy * randf_range(0.85, 1.0)

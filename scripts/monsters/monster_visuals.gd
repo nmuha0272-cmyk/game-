@@ -32,11 +32,25 @@ var _crawl_phase := 0.0
 var _speed := 0.0
 
 const JUMP_SCARE_SOUND := preload("res://assets/audio/monster_screech.wav")
+const NECK_CRACK := preload("res://assets/audio/neck_crack.wav")
+const SKITTER := preload("res://assets/audio/skitter.wav")
+var _crack: AudioStreamPlayer3D
+var _skitter: AudioStreamPlayer3D
 
 
 func _ready() -> void:
 	monster.get_node("SenseGlow").visible = false
 	_last_position = monster.global_position
+	_crack = AudioStreamPlayer3D.new()
+	_crack.stream = NECK_CRACK
+	_crack.unit_size = 6.0
+	_crack.position = Vector3(0, 2.4, -0.3)
+	monster.add_child.call_deferred(_crack)
+	_skitter = AudioStreamPlayer3D.new()
+	_skitter.stream = SKITTER
+	_skitter.unit_size = 5.0
+	_skitter.position = Vector3(0, 0.2, -0.8)
+	monster.add_child.call_deferred(_skitter)
 
 
 ## Every few seconds the head snaps to a new angle, then settles. (Each
@@ -45,11 +59,19 @@ func _update_head(delta: float) -> void:
 	var head := _crawl_head if monster.is_crawling() else _head
 	if head == null:
 		return
+	if monster.state == Monster.State.STARE:
+		# Staring at you: the head slowly tips over sideways. Wrong.
+		head.rotation_degrees.z = lerpf(head.rotation_degrees.z, 75.0, clampf(delta * 1.2, 0.0, 1.0))
+		_twitch_timer = 0.3
+		return
 	_twitch_timer -= delta
 	if _twitch_timer <= 0.0:
 		_twitch_timer = randf_range(1.5, 5.0) * (0.4 if monster.state == Monster.State.CHASE else 1.0)
 		_head_roll = randf_range(-35.0, 35.0) if randf() < 0.6 else 14.0
 		head.rotation_degrees.z = _head_roll  # the snap
+		if randf() < 0.6 and _crack and _crack.is_inside_tree():
+			_crack.pitch_scale = randf_range(0.8, 1.2)
+			_crack.play()
 	head.rotation_degrees.z = lerpf(head.rotation_degrees.z, _head_roll * 0.8, clampf(delta * 2.0, 0.0, 1.0))
 
 
@@ -157,10 +179,16 @@ func _process(delta: float) -> void:
 	_speed = lerpf(_speed, moved.length() / maxf(delta, 0.001), clampf(delta * 8.0, 0.0, 1.0))
 	if moved.length() < 1.0:  # ignore teleports
 		_walked += moved.length()
-	if _walked >= stride:
+	var crawling := monster.is_crawling()
+	if _walked >= (stride * 0.45 if crawling else stride):
 		_walked = 0.0
-		footsteps.pitch_scale = randf_range(0.55, 0.7)
-		footsteps.play()
+		if crawling and _skitter and _skitter.is_inside_tree():
+			# Fast, dry taps of bony hands and feet on concrete.
+			_skitter.pitch_scale = randf_range(0.8, 1.35)
+			_skitter.play()
+		else:
+			footsteps.pitch_scale = randf_range(0.55, 0.7)
+			footsteps.play()
 
 	if click and not GameState.team_has(Characters.Id.SON) and monster.state != Monster.State.DORMANT:
 		_click_timer -= delta
@@ -178,5 +206,8 @@ func _on_state_changed(new_state: int) -> void:
 	match new_state:
 		Monster.State.CHASE:
 			shriek.play()
+		Monster.State.STARE:
+			breath.pitch_scale = 0.6
+			breath.volume_db = 4.0
 		Monster.State.STUNNED:
 			screech.play()

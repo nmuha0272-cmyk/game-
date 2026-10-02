@@ -22,6 +22,13 @@ S_NAV=SC("res://scripts/environment/bake_navigation_on_start.gd"); S_FLICK=SC("r
 S_RAND=SC("res://scripts/environment/random_ambient_sounds.gd"); S_TEAM=SC("res://scripts/game/team_monitor.gd"); S_CP=SC("res://scripts/game/checkpoint.gd")
 S_CHAPTER=SC("res://scripts/chapters/chapter.gd"); S_STING=SC("res://scripts/chapters/stinger_trigger.gd"); S_CHASE=SC("res://scripts/chapters/chase_trigger.gd")
 S_DRAIN=SC("res://scripts/chapters/flashlight_drain_trigger.gd"); S_ELEV=SC("res://scripts/chapters/elevator.gd")
+S_CUT=SC("res://scripts/chapters/cutscene.gd")
+def shots(*items):
+    """Cutscene shots: (from, look_from, to, look_to, seconds, caption)."""
+    out=[]
+    for a,la,b,lb,t,text in items:
+        out.append("{"+f'"from": {v3(*a)}, "from_look": {v3(*la)}, "to": {v3(*b)}, "to_look": {v3(*lb)}, "time": {t}, "text": {S(text)}'+"}")
+    return "["+", ".join(out)+"]"
 A=lambda k: sc.ext("AudioStream","res://assets/audio/"+k)
 WIND=A("wind_loop.wav"); DRONE=A("ambient_drone.wav"); DRIP=A("water_drip.wav"); CLANK=A("distant_clank.wav"); CREAK=A("metal_creak.wav")
 STING=A("stinger.wav"); SNAP=A("cable_snap.wav"); HUM=A("elevator_hum.wav"); BUZZ=A("fluorescent_buzz.wav"); CREAKDOOR=A("door_creak.wav")
@@ -392,7 +399,17 @@ inst("mphoto","Photo","Monsters/LongMan",(0,0,0),0)
 sc.node("Navigation","NavigationRegion3D",".",navigation_mesh=SR(navmesh),script=ER(S_NAV))
 
 stinger("TunnelsSting",(9,-7.5,-38),(9,3,5),msg="It's cold down here. Something smells like rust and old blood.")
-stinger("ChaseTrigger",(9,-7.5,-67),(4,3,4),msg="Something unfolds in the dark behind you. RUN!",script=S_CHASE,np=["monster"],monster=NP("../../Monsters/LongMan"))
+# Cutscenes: the intro over the station, and Subject 7 rising in his cell.
+sc.node("Cutscenes","Node",".")
+sc.node("Intro","Node","Cutscenes",script=ER(S_CUT),play_on_start="true",shots=shots(
+    ((-14,9,62),(0,2,-6),(-6,6.5,50),(0,2,-8),5.0,"1999. Site 12 was sealed... with people still inside."),
+    ((-6.5,1.8,27),(-4,1.7,22),(-4.6,1.7,24.6),(-4,1.7,22),3.5,"Officially, it was only ever a weather station."),
+    ((7,2.2,15),(-5,3.4,-9),(3,2.8,9),(-5,3.4,-9),4.0,"2015. Four strangers came looking for answers."),
+    ((0.5,1.7,30),(0,1.4,22),(0.2,1.65,26),(0,1.3,22),2.5,"CHAPTER 1  -  THE SURFACE")))
+sc.node("Reveal","Node","Cutscenes",script=ER(S_CUT),shots=shots(
+    ((9.4,-7.7,-73.2),(9,-6.9,-82),(9.15,-7.6,-75.2),(9,-6.7,-82),1.8,"SUBJECT 7"),
+    ((9.25,-6.35,-80.1),(9,-6.45,-81.7),(9.08,-6.42,-80.7),(9,-6.45,-81.7),1.6,"")))
+stinger("ChaseTrigger",(9,-7.5,-67),(4,3,4),msg="RUN!",script=S_CHASE,np=["monster","cutscene"],monster=NP("../../Monsters/LongMan"),cutscene=NP("../../Cutscenes/Reveal"))
 
 # ============================================================ ROOM 5: ELEVATOR ROOM
 sc.node("RoomLights","Node3D","Puzzles",script=ER(S_LIGHTS))

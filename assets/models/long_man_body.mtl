@@ -18,6 +18,16 @@ Kd 0.3200 0.0600 0.0500
 Ns 10
 d 1
 
+newmtl claws
+Kd 0.0800 0.0700 0.0600
+Ns 10
+d 1
+
+newmtl blood
+Kd 0.2000 0.0200 0.0200
+Ns 10
+d 1
+
 newmtl flesh
 Kd 0.1200 0.0200 0.0200
 Ns 10

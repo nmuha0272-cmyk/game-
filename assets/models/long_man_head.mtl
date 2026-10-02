@@ -8,3 +8,23 @@ Kd 0.0300 0.0000 0.0000
 Ns 10
 d 1
 
+newmtl teeth
+Kd 0.6200 0.5600 0.4000
+Ns 10
+d 1
+
+newmtl eyeball
+Kd 0.7000 0.6600 0.5000
+Ns 10
+d 1
+
+newmtl hair
+Kd 0.1200 0.1200 0.1100
+Ns 10
+d 1
+
+newmtl blood
+Kd 0.2000 0.0200 0.0200
+Ns 10
+d 1
+

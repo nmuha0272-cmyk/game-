@@ -46,8 +46,18 @@ func _process(delta: float) -> void:
 		set_on(false)
 	elif charge < low_battery and randf() < 0.08:
 		light_energy = _base_energy * randf_range(0.1, 0.6)  # Dying battery flicker.
+	elif _monster_near(7.0) and randf() < 0.12:
+		light_energy = _base_energy * randf_range(0.0, 0.3)  # Something is close...
 	else:
 		light_energy = _base_energy * (0.6 + 0.4 * minf(charge / low_battery, 1.0))
+
+
+## True if a monster is within this many meters (the flashlight starts to act up).
+func _monster_near(meters: float) -> bool:
+	for monster in get_tree().get_nodes_in_group("monsters"):
+		if monster.global_position.distance_to(global_position) < meters:
+			return true
+	return false
 
 
 ## Host only: a Battery item was used on this flashlight.

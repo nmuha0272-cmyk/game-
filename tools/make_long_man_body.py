@@ -12,11 +12,13 @@ s = open(PATH).read()
 s = re.sub(r'\[node name="[^"]+" type="\w+" parent="(?:Crawl)?Body[^"]*"\]\n(?:[^\[\n].*\n|\n)*?(?=\[node)', "", s)
 s = re.sub(r'\[node name="CrawlBody" type="Node3D" parent="\."\]\n(?:[^\[\n].*\n|\n)*?(?=\[node)', "", s)
 # 2. Drop old part meshes/material we replace (keep Mat_eye and Mesh_eye).
-for sid in ["Mat_skin", "Mat_gown", "Mat_hole", "Mat_bracelet", "Mat_guts", "Mat_flesh", "Mesh_torso", "Mesh_leg", "Mesh_arm", "Mesh_head", r"LM_\w+"]:
+for sid in ["Mat_skin", "Mat_gown", "Mat_hole", "Mat_bracelet", "Mat_guts", "Mat_flesh", "Mat_teeth", "Mat_eyeball", "Mat_hair", "Mat_blood", "Mat_claws", "Mesh_torso", "Mesh_leg", "Mesh_arm", "Mesh_head", r"LM_\w+"]:
     s = re.sub(r'\[sub_resource type="\w+" id="%s"\]\n(?:[^\[\n].*\n)*\n?' % sid, "", s)
 s = re.sub(r'\[ext_resource [^\n]*id="lm_\w+"\]\n', "", s)
 EXT = ('[ext_resource type="Texture2D" path="res://assets/textures/rock_normal.jpg" id="lm_skin_n"]\n'
        '[ext_resource type="Texture2D" path="res://assets/textures/concrete_wall_albedo.jpg" id="lm_cloth"]\n'
+       '[ext_resource type="Texture2D" path="res://assets/textures/longman_skin_albedo.jpg" id="lm_skin_tex"]\n'
+       '[ext_resource type="Texture2D" path="res://assets/textures/longman_skin_normal.jpg" id="lm_skin_nrm"]\n'
        '[ext_resource type="ArrayMesh" path="res://assets/models/long_man_body.obj" id="lm_body_mesh"]\n'
        '[ext_resource type="ArrayMesh" path="res://assets/models/long_man_head.obj" id="lm_head_mesh"]\n'
        + "".join(f'[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_{p}.obj" id="lm_crawl_{p}"]\n'
@@ -26,12 +28,12 @@ last = s.index("\n", last) + 1
 s = s[:last] + EXT + s[last:]
 
 subs = '''[sub_resource type="StandardMaterial3D" id="Mat_skin"]
-albedo_color = Color(0.62, 0.57, 0.52, 1)
-albedo_texture = ExtResource("lm_cloth")
+albedo_color = Color(0.6, 0.6, 0.58, 1)
+albedo_texture = ExtResource("lm_skin_tex")
 roughness = 0.6
 normal_enabled = true
 normal_scale = 0.5
-normal_texture = ExtResource("lm_skin_n")
+normal_texture = ExtResource("lm_skin_nrm")
 rim_enabled = true
 rim = 0.3
 rim_tint = 0.1
@@ -62,6 +64,28 @@ rim = 0.2
 albedo_color = Color(0.1, 0.015, 0.015, 1)
 roughness = 0.3
 
+[sub_resource type="StandardMaterial3D" id="Mat_teeth"]
+albedo_color = Color(0.62, 0.55, 0.38, 1)
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="Mat_eyeball"]
+albedo_color = Color(0.72, 0.68, 0.5, 1)
+roughness = 0.1
+metallic_specular = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_hair"]
+albedo_color = Color(0.1, 0.1, 0.09, 1)
+roughness = 0.6
+cull_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="Mat_blood"]
+albedo_color = Color(0.17, 0.02, 0.02, 1)
+roughness = 0.25
+
+[sub_resource type="StandardMaterial3D" id="Mat_claws"]
+albedo_color = Color(0.06, 0.05, 0.04, 1)
+roughness = 0.3
+
 [sub_resource type="StandardMaterial3D" id="Mat_hole"]
 albedo_color = Color(0.02, 0.0, 0.0, 1)
 roughness = 1.0
@@ -79,10 +103,10 @@ def mesh_node(name, mesh_id, materials, pos=(0, 0, 0), parent="Body", roll=0):
 
 nodes = [mesh_node("Sculpt", "lm_body_mesh", ["Mat_skin", "Mat_gown", "Mat_bracelet", "Mat_guts", "Mat_flesh", "Mat_flesh"]),
          '[node name="HeadPivot" type="Node3D" parent="Body"]\n' + f"transform = {xform((0, 2.567, -0.386), 0, 0, 14)}\n",
-         mesh_node("Head", "lm_head_mesh", ["Mat_skin", "Mat_hole"], parent="Body/HeadPivot")]
+         mesh_node("Head", "lm_head_mesh", ["Mat_skin", "Mat_hole", "Mat_teeth", "Mat_eyeball", "Mat_hair", "Mat_blood"], parent="Body/HeadPivot")]
 for side, x in (("Left", -1), ("Right", 1)):
     nodes.append(f'[node name="Eye{side}" type="MeshInstance3D" parent="Body/HeadPivot"]\n'
-                 f"transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, {0.046 * x:g}, 0.101, -0.106)\n"
+                 f"transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, {0.046 * x:g}, 0.101, -0.115)\n"
                  'mesh = SubResource("Mesh_eye")\nsurface_material_override/0 = SubResource("Mat_eye")\n')
 
 # The crawling body (shown while he hunts; monster_visuals.gd switches between them).
@@ -92,12 +116,13 @@ crawl = ['[node name="CrawlBody" type="Node3D" parent="."]\nvisible = false\n',
          mesh_node("Sculpt", "lm_crawl_body", ["Mat_skin", "Mat_gown", "Mat_guts"], parent="CrawlBody")]
 for limb, key in (("ArmL", "shoulder_l"), ("ArmR", "shoulder_r"), ("LegL", "hip_l"), ("LegR", "hip_r")):
     crawl.append(f'[node name="{limb}" type="Node3D" parent="CrawlBody"]\ntransform = {xform(tuple(rig[key]))}\n')
-    crawl.append(mesh_node("Mesh", "lm_crawl_" + key.replace("shoulder", "arm").replace("hip", "leg"), ["Mat_skin"], parent="CrawlBody/" + limb))
+    crawl.append(mesh_node("Mesh", "lm_crawl_" + key.replace("shoulder", "arm").replace("hip", "leg"),
+                           ["Mat_skin", "Mat_claws"] if limb.startswith("Arm") else ["Mat_skin"], parent="CrawlBody/" + limb))
 crawl.append('[node name="HeadPivot" type="Node3D" parent="CrawlBody"]\n' + f"transform = {xform(tuple(rig['head']), 0, 25, 10)}\n")
-crawl.append(mesh_node("Head", "lm_head_mesh", ["Mat_skin", "Mat_hole"], parent="CrawlBody/HeadPivot"))
+crawl.append(mesh_node("Head", "lm_head_mesh", ["Mat_skin", "Mat_hole", "Mat_teeth", "Mat_eyeball", "Mat_hair", "Mat_blood"], parent="CrawlBody/HeadPivot"))
 for side, x in (("Left", -1), ("Right", 1)):
     crawl.append(f'[node name="Eye{side}" type="MeshInstance3D" parent="CrawlBody/HeadPivot"]\n'
-                 f"transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, {0.046 * x:g}, 0.101, -0.106)\n"
+                 f"transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, {0.046 * x:g}, 0.101, -0.115)\n"
                  'mesh = SubResource("Mesh_eye")\nsurface_material_override/0 = SubResource("Mat_eye")\n')
 nodes += crawl
 
@@ -106,6 +131,9 @@ i = s.index(body_hdr) + len(body_hdr)
 # Skip any properties of Body itself.
 j = s.index("\n[node", i - 1) + 1
 s = s[:j] + "\n".join(nodes) + "\n" + s[j:]
+# Bright pinprick eyes you can see glowing in a dark tunnel.
+s = re.sub(r'(\[sub_resource type="StandardMaterial3D" id="Mat_eye"\]\n)(?:[^\[\n].*\n)*',
+           r'\1albedo_color = Color(1, 0.95, 0.75, 1)\nemission_enabled = true\nemission = Color(1, 0.85, 0.55, 1)\nemission_energy_multiplier = 9.0\n\n', s, 1)
 s = re.sub(r"load_steps=\d+", "load_steps=%d" % (s.count("[ext_resource") + s.count("[sub_resource") + 1), s, 1)
 open(PATH, "w").write(s)
 print("Long Man body rebuilt:", len(nodes), "parts")
