@@ -59,16 +59,20 @@ local function dressUp(player, character)
 end
 
 pickEvent.OnServerEvent:Connect(function(player, id)
-	if typeof(id) ~= "string" or not ROLES[id] then return end
+	if typeof(id) ~= "string" or not ROLES[id] or player:GetAttribute("InGame") then return end
 	local other = takenBy(id)
 	if other and other ~= player then return end
 	player:SetAttribute("Character", id)
-	if player.Character then dressUp(player, player.Character) end
-	messageEvent:FireAllClients(player.DisplayName .. " is " .. ROLES[id].name .. ".")
 end)
 
+-- Picked (at a stand in the waiting room): name tag on, and tell everyone.
 Players.PlayerAdded:Connect(function(player)
 	player.CharacterAdded:Connect(function(character) dressUp(player, character) end)
+	player:GetAttributeChangedSignal("Character"):Connect(function()
+		local id = player:GetAttribute("Character")
+		if player.Character then dressUp(player, player.Character) end
+		if id then messageEvent:FireAllClients(player.DisplayName .. " picked " .. ROLES[id].name .. ".") end
+	end)
 end)
 
 -- The Journalist's camera flash.
@@ -106,16 +110,14 @@ abilityEvent.OnServerEvent:Connect(function(player)
 end)
 '''
 
-ROLES_UI = r'''-- The character pick screen, your ability button, and what the Son's
--- Sense and the Journalist's flash look like on your screen.
+ROLES_UI = r'''-- Your ability button, and what the Son's Sense and the Journalist's
+-- flash look like on your screen.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
-local GuiService = game:GetService("GuiService")
 local TweenService = game:GetService("TweenService")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local player = Players.LocalPlayer
-local pickEvent = ReplicatedStorage:WaitForChild("PickCharacter")
 local abilityEvent = ReplicatedStorage:WaitForChild("UseAbility")
 
 local ROLES = {
@@ -143,88 +145,11 @@ local function make(class, props, parent)
 	return thing
 end
 
--- THE PICK SCREEN ------------------------------------------------------------
-local screen = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(6, 6, 7), BackgroundTransparency = 0, Visible = false }, gui)
-make("TextLabel", { Size = UDim2.new(1, 0, 0.05, 0), Position = UDim2.fromScale(0, 0.93), BackgroundTransparency = 1,
-	Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(140, 135, 120),
-	Text = "SUBJECT ZERO  -  a co-op horror game for 2-4 players. Each player picks a different character." }, screen)
-make("TextLabel", { Size = UDim2.new(1, 0, 0.1, 0), Position = UDim2.fromScale(0, 0.05), BackgroundTransparency = 1,
-	Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(225, 215, 195), Text = "CHOOSE YOUR CHARACTER" }, screen)
-local row = make("Frame", { Size = UDim2.fromScale(0.94, 0.72), Position = UDim2.fromScale(0.03, 0.2), BackgroundTransparency = 1 }, screen)
-make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0.015, 0),
-	HorizontalAlignment = Enum.HorizontalAlignment.Center }, row)
-local buttons = {}
-local clickedAt = nil
-local function choose(id)
-	clickedAt = os.clock()
-	pickEvent:FireServer(id)
-end
-for _, role in ipairs(ROLES) do
-	-- The whole card is a button: click anywhere on it to pick.
-	local card = make("TextButton", { Size = UDim2.fromScale(0.235, 1), BackgroundColor3 = Color3.fromRGB(28, 28, 26),
-		Text = "", AutoButtonColor = true }, row)
-	card.Activated:Connect(function() choose(role.id) end)
-	make("Frame", { Size = UDim2.fromScale(1, 0.03), BackgroundColor3 = role.color, BorderSizePixel = 0 }, card)
-	make("TextLabel", { Size = UDim2.fromScale(0.9, 0.1), Position = UDim2.fromScale(0.05, 0.06), BackgroundTransparency = 1,
-		Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = role.color, Text = role.name }, card)
-	make("TextLabel", { Size = UDim2.fromScale(0.9, 0.06), Position = UDim2.fromScale(0.05, 0.16), BackgroundTransparency = 1,
-		Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(170, 165, 150), Text = role.who }, card)
-	make("TextLabel", { Size = UDim2.fromScale(0.9, 0.12), Position = UDim2.fromScale(0.05, 0.25), BackgroundTransparency = 1,
-		Font = Enum.Font.SpecialElite, TextScaled = true, TextWrapped = true, TextColor3 = Color3.fromRGB(210, 205, 190),
-		Text = role.trait }, card)
-	make("TextLabel", { Size = UDim2.fromScale(0.9, 0.36), Position = UDim2.fromScale(0.05, 0.4), BackgroundTransparency = 1,
-		Font = Enum.Font.SpecialElite, TextScaled = true, TextWrapped = true, TextColor3 = Color3.fromRGB(235, 228, 205),
-		TextYAlignment = Enum.TextYAlignment.Top, Text = role.ability }, card)
-	local b = make("TextButton", { Size = UDim2.fromScale(0.8, 0.11), Position = UDim2.fromScale(0.1, 0.84),
-		BackgroundColor3 = role.color, Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.new(0, 0, 0), Text = "PICK" }, card)
-	b.Activated:Connect(function() choose(role.id) end)
-	buttons[role.id] = b
-end
-
-local function refresh()
-	for _, role in ipairs(ROLES) do
-		local owner = nil
-		for _, p in ipairs(Players:GetPlayers()) do
-			if p:GetAttribute("Character") == role.id then owner = p end
-		end
-		local b = buttons[role.id]
-		if owner then
-			b.Text = owner == player and "YOU" or ("TAKEN: " .. owner.DisplayName)
-			b.AutoButtonColor = false
-			b.BackgroundColor3 = Color3.fromRGB(70, 68, 62)
-		else
-			b.Text = "PICK"
-			b.AutoButtonColor = true
-			b.BackgroundColor3 = role.color
-		end
-	end
-end
-local function watch(p)
-	p:GetAttributeChangedSignal("Character"):Connect(refresh)
-end
-for _, p in ipairs(Players:GetPlayers()) do watch(p) end
-Players.PlayerAdded:Connect(function(p) watch(p) refresh() end)
-Players.PlayerRemoving:Connect(function() task.defer(refresh) end)
-refresh()
-
--- Pick FIRST, before the game starts (the opening cutscene plays after).
-local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")):GetControls()
-if not player:GetAttribute("Character") then
-	controls:Disable()
-	screen.Visible = true
-	if GuiService:IsTenFootInterface() or UserInputService.GamepadEnabled then GuiService.SelectedObject = buttons.Son end
-	-- Close as soon as the server says you got it (or 3 seconds after you
-	-- clicked, so you can never get stuck on this screen).
-	while not player:GetAttribute("Character") and not (clickedAt and os.clock() - clickedAt > 3) do task.wait(0.1) end
-	task.wait(0.6)
-	screen.Visible = false
-	GuiService.SelectedObject = nil
-	controls:Enable()
-end
-
 -- YOUR ABILITY -----------------------------------------------------------------
+-- (You pick your character at the stands in the waiting room. Your
+-- ability button shows up when you go into the game.)
 local myRole
-if not player:GetAttribute("Character") then player:GetAttributeChangedSignal("Character"):Wait() end
+while not (player:GetAttribute("InGame") and player:GetAttribute("Character")) do task.wait(0.2) end
 for _, role in ipairs(ROLES) do
 	if role.id == player:GetAttribute("Character") then myRole = role end
 end

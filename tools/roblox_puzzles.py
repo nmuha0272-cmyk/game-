@@ -538,7 +538,9 @@ descend.Triggered:Connect(function(player)
 	end
 	task.wait(6)
 	workspace:SetAttribute("ChapterDone", true)
-	for _, other in ipairs(Players:GetPlayers()) do other:LoadCharacter() end
+	for _, other in ipairs(Players:GetPlayers()) do other:SetAttribute("InGame", false) end
+	task.wait(0.5)
+	for _, other in ipairs(Players:GetPlayers()) do other:LoadCharacter() end  -- back to the waiting room
 end)
 
 -- Signs and notes on the walls.
@@ -792,21 +794,22 @@ local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
 
 local checkpoint = nil   -- nil = the start (the road)
 local wiping = false
+local ROAD = Vector3.new(0, 1, 45 * 3.2)
 
 local function onDied(player)
-	if wiping then return end
+	if wiping or not player:GetAttribute("InGame") then return end
 	wiping = true
 	messageEvent:FireAllClients(player.DisplayName .. " died... so EVERYONE dies. Back to " .. (checkpoint and checkpoint.name or "the start") .. "!")
 	task.wait(0.6)
 	for _, other in ipairs(Players:GetPlayers()) do
 		local humanoid = other.Character and other.Character:FindFirstChildOfClass("Humanoid")
-		if humanoid and humanoid.Health > 0 then humanoid.Health = 0 end
+		if other:GetAttribute("InGame") and humanoid and humanoid.Health > 0 then humanoid.Health = 0 end
 	end
 	-- Everyone comes back together.
 	task.wait(Players.RespawnTime + 0.5)
 	for _, other in ipairs(Players:GetPlayers()) do
 		local humanoid = other.Character and other.Character:FindFirstChildOfClass("Humanoid")
-		if not humanoid or humanoid.Health <= 0 then other:LoadCharacter() end
+		if other:GetAttribute("InGame") and (not humanoid or humanoid.Health <= 0) then other:LoadCharacter() end
 	end
 	task.wait(1)
 	wiping = false
@@ -815,16 +818,21 @@ end
 local function onCharacter(player, character)
 	local humanoid = character:WaitForChild("Humanoid")
 	humanoid.Died:Connect(function() onDied(player) end)
-	if checkpoint then
+	-- In the game: come back at the checkpoint (or the road). Not in the game
+	-- yet: you appear in the waiting room.
+	if player:GetAttribute("InGame") then
 		local root = character:WaitForChild("HumanoidRootPart")
 		task.wait()
 		local spread = Vector3.new((math.random() - 0.5) * 6, 3, (math.random() - 0.5) * 6)
-		character:PivotTo(CFrame.new(checkpoint.spawn + spread) * root.CFrame.Rotation)
+		character:PivotTo(CFrame.new((checkpoint and checkpoint.spawn or ROAD) + spread) * root.CFrame.Rotation)
 	end
 end
 
 -- After the ending, start again from the road.
-workspace:GetAttributeChangedSignal("ChapterDone"):Connect(function() checkpoint = nil end)
+workspace:GetAttributeChangedSignal("ChapterDone"):Connect(function()
+	checkpoint = nil
+	workspace:SetAttribute("RespawnPoint", nil)
+end)
 Players.PlayerAdded:Connect(function(player)
 	player.CharacterAdded:Connect(function(character) onCharacter(player, character) end)
 end)
@@ -848,6 +856,7 @@ for i, cp in ipairs(CHECKPOINTS) do
 		local player = Players:GetPlayerFromCharacter(hit:FindFirstAncestorOfClass("Model"))
 		if player and not wiping and (checkpoint == nil or table.find(CHECKPOINTS, checkpoint) < i) then
 			checkpoint = cp
+			workspace:SetAttribute("RespawnPoint", cp.spawn)  -- late joiners come in here
 			messageEvent:FireAllClients("Checkpoint: " .. cp.name)
 		end
 	end)

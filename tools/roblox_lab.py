@@ -219,8 +219,8 @@ def intro_shots():
     return ", ".join("{" + f"{v(a)}, {v(la)}, {v(b)}, {v(lb)}, {t}, {q(txt)}" + "}" for a, la, b, lb, t, txt in INTRO_SHOTS)
 
 
-INTRO_SCRIPT = r'''-- THE OPENING CUTSCENE: plays once when you join, right after you pick
--- your character.
+INTRO_SCRIPT = r'''-- THE OPENING CUTSCENE: plays once, when you leave the waiting room and
+-- go into the game.
 -- Skip it: Space, A / Cross, or click "Skip".
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -232,8 +232,9 @@ local camera = workspace.CurrentCamera
 local SHOTS = { --SHOTS-- }
 
 if not player.Character then player.CharacterAdded:Wait() end
--- First everyone picks a character (CharacterPick script), THEN the opening plays.
-if not player:GetAttribute("Character") then player:GetAttributeChangedSignal("Character"):Wait() end
+-- First everyone picks a character in the waiting room. The opening plays
+-- when the team goes into the game.
+while not player:GetAttribute("InGame") do task.wait(0.2) end
 task.wait(1)
 local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")):GetControls()
 controls:Disable()

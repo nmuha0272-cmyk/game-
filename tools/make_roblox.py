@@ -14,6 +14,7 @@ import roblox_puzzles as PZ
 import roblox_lab as LAB
 import roblox_roles as ROLES
 import roblox_outdoors as OD
+import roblox_lobby as LOBBY
 from xml.sax.saxutils import escape
 
 KIT = "unreal_easy/SubjectZero_Kit/level.json"
@@ -278,7 +279,7 @@ model = lambda name, items: (f'<Item class="Model" referent="{new_ref()}"><Prope
 xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
        'xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">',
        f'<Item class="Workspace" referent="{new_ref()}"><Properties><string name="Name">Workspace</string></Properties>',
-       model("Chapter1_Level", parts), model("Chapter1_Lights", lights), model("Spawns", spawns),
+       model("Chapter1_Level", parts), model("Chapter1_Lights", lights), LOBBY.build(part, new_ref),
        model("Elevator", elevator), model("Lab", lab_parts), puzzle_xml, LM.build(part, script, new_ref), "</Item>",
        f'<Item class="ReplicatedStorage" referent="{new_ref()}"><Properties><string name="Name">ReplicatedStorage</string></Properties>'
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManJumpScare</string></Properties></Item>'
@@ -330,7 +331,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>',
        script("Script", "FlickeringLights", FLICKER), script("Script", "Puzzles", PUZZLE_SRC), script("Script", "TeamLivesOrDies", TEAM_SRC),
        script("Script", "Characters", ROLES.ROLES_SERVER),
-       script("Script", "Outdoors", OD.script()), "</Item>",
+       script("Script", "Outdoors", OD.script()), script("Script", "WaitingRoom", LOBBY.script()), "</Item>",
        "</roblox>"]
 open(OUT, "w").write("\n".join(xml))
 print(f"wrote {OUT}: {len(lab_parts)} lab parts, {len(parts)} parts, {len(elevator)} elevator parts, {len(lights)} lights, {len(spawns)} spawns")
