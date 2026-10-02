@@ -154,8 +154,16 @@ local row = make("Frame", { Size = UDim2.fromScale(0.94, 0.72), Position = UDim2
 make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0.015, 0),
 	HorizontalAlignment = Enum.HorizontalAlignment.Center }, row)
 local buttons = {}
+local clickedAt = nil
+local function choose(id)
+	clickedAt = os.clock()
+	pickEvent:FireServer(id)
+end
 for _, role in ipairs(ROLES) do
-	local card = make("Frame", { Size = UDim2.fromScale(0.235, 1), BackgroundColor3 = Color3.fromRGB(28, 28, 26) }, row)
+	-- The whole card is a button: click anywhere on it to pick.
+	local card = make("TextButton", { Size = UDim2.fromScale(0.235, 1), BackgroundColor3 = Color3.fromRGB(28, 28, 26),
+		Text = "", AutoButtonColor = true }, row)
+	card.Activated:Connect(function() choose(role.id) end)
 	make("Frame", { Size = UDim2.fromScale(1, 0.03), BackgroundColor3 = role.color, BorderSizePixel = 0 }, card)
 	make("TextLabel", { Size = UDim2.fromScale(0.9, 0.1), Position = UDim2.fromScale(0.05, 0.06), BackgroundTransparency = 1,
 		Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = role.color, Text = role.name }, card)
@@ -169,7 +177,7 @@ for _, role in ipairs(ROLES) do
 		TextYAlignment = Enum.TextYAlignment.Top, Text = role.ability }, card)
 	local b = make("TextButton", { Size = UDim2.fromScale(0.8, 0.11), Position = UDim2.fromScale(0.1, 0.84),
 		BackgroundColor3 = role.color, Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.new(0, 0, 0), Text = "PICK" }, card)
-	b.Activated:Connect(function() pickEvent:FireServer(role.id) end)
+	b.Activated:Connect(function() choose(role.id) end)
 	buttons[role.id] = b
 end
 
@@ -205,8 +213,10 @@ if not player:GetAttribute("Character") then
 	controls:Disable()
 	screen.Visible = true
 	if GuiService:IsTenFootInterface() or UserInputService.GamepadEnabled then GuiService.SelectedObject = buttons.Son end
-	player:GetAttributeChangedSignal("Character"):Wait()
-	task.wait(0.8)
+	-- Close as soon as the server says you got it (or 3 seconds after you
+	-- clicked, so you can never get stuck on this screen).
+	while not player:GetAttribute("Character") and not (clickedAt and os.clock() - clickedAt > 3) do task.wait(0.1) end
+	task.wait(0.6)
 	screen.Visible = false
 	GuiService.SelectedObject = nil
 	controls:Enable()
@@ -214,6 +224,7 @@ end
 
 -- YOUR ABILITY -----------------------------------------------------------------
 local myRole
+if not player:GetAttribute("Character") then player:GetAttributeChangedSignal("Character"):Wait() end
 for _, role in ipairs(ROLES) do
 	if role.id == player:GetAttribute("Character") then myRole = role end
 end
