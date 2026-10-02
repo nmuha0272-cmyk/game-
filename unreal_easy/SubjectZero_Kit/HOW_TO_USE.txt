@@ -1,0 +1,29 @@
+SUBJECT ZERO - put Chapter 1 in Unreal (no coding, no Visual Studio)
+=====================================================================
+
+1. Install the Epic Games Launcher (epicgames.com), open it, then:
+   Unreal Engine (left side) -> Library -> yellow "+" -> Install.
+
+2. Open Unreal. Make a new project:
+   GAMES -> First Person -> pick "Blueprint" (NOT C++) -> name it SubjectZero -> Create.
+
+3. Turn on Python (one time):
+   Edit -> Plugins -> type "Python" in the search box ->
+   tick "Python Editor Script Plugin" -> click "Restart Now".
+
+4. Build Chapter 1:
+   Tools -> Execute Python Script...   (in some versions it's under File)
+   -> open this folder -> pick  build_chapter1.py
+   Wait 1-3 minutes while the bar fills up.
+
+5. Press the green Play button at the top. You're on the road outside the station.
+
+Controls: WASD move, mouse look, Space jump, Shift sprint (if the template has it).
+Your flashlight is always on.
+
+This is the "walk around" version: the whole level is there (forest, station,
+stairs, tunnels, the cell, the elevator room) with textures and lights.
+Puzzles and the Long Man are only in the Godot version for now.
+
+Something went wrong?  Window -> Output Log, look for lines starting with
+[SubjectZero], and copy them to Claude.
