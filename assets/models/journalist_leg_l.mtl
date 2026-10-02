@@ -1,0 +1,10 @@
+newmtl pants
+Kd 0.0800 0.0800 0.0900
+Ns 10
+d 1
+
+newmtl boots
+Kd 0.1000 0.0800 0.0700
+Ns 10
+d 1
+

@@ -1,0 +1,10 @@
+newmtl skin
+Kd 0.5000 0.4600 0.4200
+Ns 10
+d 1
+
+newmtl hole
+Kd 0.0300 0.0000 0.0000
+Ns 10
+d 1
+

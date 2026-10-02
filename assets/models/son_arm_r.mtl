@@ -1,0 +1,10 @@
+newmtl sleeve
+Kd 0.3600 0.2300 0.1300
+Ns 10
+d 1
+
+newmtl skin
+Kd 0.8000 0.6200 0.5000
+Ns 10
+d 1
+

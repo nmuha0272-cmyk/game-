@@ -44,7 +44,7 @@ var _head_stand_y := 0.0
 @onready var stamina: Stamina = $Stamina
 @onready var head: Node3D = $Head
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
-@onready var body_mesh: MeshInstance3D = $BodyMesh
+@onready var body_mesh: CharacterModel = $BodyMesh
 @onready var downed: DownedState = $Downed
 @onready var flashlight: Flashlight = $Head/Camera3D/Flashlight
 @onready var inventory: Inventory = $Inventory
@@ -152,14 +152,15 @@ func _apply_crouch_shape() -> void:
 	# Keep the bottom of the capsule on the floor.
 	collision_shape.position.y = height / 2.0
 	if is_downed:
-		# Lie on the floor.
+		# Lie on the floor, on our back.
 		body_mesh.scale.y = 1.0
-		body_mesh.rotation_degrees = Vector3(0, 0, 90)
-		body_mesh.position.y = 0.35
+		body_mesh.rotation_degrees = Vector3(90, 0, 0)
+		body_mesh.position = Vector3(0, 0.14, -0.9)
 	else:
+		# The model stands on the floor; crouching squashes it down.
 		body_mesh.rotation_degrees = Vector3.ZERO
 		body_mesh.scale.y = height / stand_height
-		body_mesh.position.y = height / 2.0
+		body_mesh.position = Vector3.ZERO
 
 
 ## True if there is room above our head to stand back up.
@@ -193,11 +194,9 @@ func interact(by: Player) -> void:
 	downed.request_help_up(by)
 
 
-## Tints the placeholder body in the character's main color (from the concept art).
+## Builds this character's 3D model (Ethan, the Journalist, the Engineer or Frank).
 func _apply_character_color() -> void:
-	var material := StandardMaterial3D.new()
-	material.albedo_color = Characters.get_value(character, "color", Color(0.5, 0.5, 0.5))
-	body_mesh.material_override = material
+	body_mesh.setup(character, is_multiplayer_authority())
 
 
 ## Dragging heavy furniture without being the Guard (the backup) is very slow.

@@ -72,13 +72,7 @@ func _process(_delta: float) -> void:
 		action_bar.value = interactor.hold_progress * 100.0
 
 	if status_label.text.is_empty() and HoldSwitch.held_by(player):
-		status_label.text = "Holding it up. Stay still!   [E] Let go" + \
-				(" (it stays propped for a bit)" if GameState.is_solo() else "")
-	elif status_label.text.is_empty():
-		# Solo mode: count down anything we left propped up.
-		for hold_switch in get_tree().get_nodes_in_group("hold_switches"):
-			if hold_switch._prop_left > 0.0:
-				status_label.text = "Propped up: %ds before it falls!" % ceili(hold_switch._prop_left)
+		status_label.text = "Holding it up. Stay still!   [E] Let go"
 	_show_gas_warning()
 	downed_overlay.visible = player.is_downed
 	if player.downed.is_out:

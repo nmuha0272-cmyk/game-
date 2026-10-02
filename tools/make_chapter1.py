@@ -71,6 +71,29 @@ def mi(name,parent,pos,m,mat,yaw=0,pitch=0,roll=0,shadow=True):
     props["surface_material_override/0"]=mat
     if not shadow: props["cast_shadow"]="0"
     sc.node(name,"MeshInstance3D",parent,**props)
+def sxform(pos,yaw=0,scale=(1,1,1),pitch=0,roll=0):
+    """Like xform, but scaled (scale is along the object's own x, y, z)."""
+    t=xform(pos,yaw,pitch,roll); v=[float(x) for x in t[len("Transform3D("):-1].split(",")]
+    for r in range(3):
+        for c in range(3): v[r*3+c]*=scale[c]
+    return "Transform3D("+", ".join(f"{x:g}" for x in v)+")"
+def prop(name,parent,model,pos,yaw=0,scale=(1,1,1),mat=None,collide=None,roll=0):
+    """A sculpted prop (tools/make_props.py) with a simple invisible collision shape.
+    collide: ("box", size, center) or ("cyl", radius, height, center) in the prop's own space, or None."""
+    sc.node(name,"StaticBody3D",parent,transform=xform(pos,yaw,0,roll))
+    me=f"{parent}/{name}"
+    m=ER(sc.ext("ArrayMesh",f"res://assets/models/prop_{model}.obj"))
+    sc.node("Mesh","MeshInstance3D",me,transform=sxform((0,0,0),0,scale),mesh=m,**{"surface_material_override/0":mat or METAL})
+    if collide:
+        if collide[0]=="box":
+            sh=sc.sub("BoxShape3D",size=v3(*collide[1])); c=collide[2]
+        else:
+            sh=sc.sub("CylinderShape3D",radius=str(collide[1]),height=str(collide[2])); c=collide[3]
+        sc.node("CollisionShape3D","CollisionShape3D",me,transform=xform(c),shape=SR(sh))
+def barrel(name,parent,x,y,z):
+    prop(name,parent,"barrel",(x,y,z),random.uniform(0,360),collide=("cyl",0.32,0.9,(0,0.45,0)))
+def crate(name,parent,x,y,z,size,yaw=0):
+    prop(name,parent,"crate",(x,y+size/2,z),yaw,(size,size,size),WOOD,("box",(size,size,size),(0,0,0)))
 def light(name,parent,pos,color=(0.8,1,0.88),energy=1.0,rng=7.0,flicker=None,pulse=False,shadow=True,fixture="auto"):
     """A light plus the thing it comes from: a caged bulb underground, a
     fluorescent tube indoors. Each gets its own glow material so it can
@@ -206,7 +229,7 @@ inst("drag","DragMarks","Lore",(0.6,0,26.5),8)
 BX("Shed",E,8.5,11.5,0,2.5,10.5,13.5,WOOD)
 BX("ShedRoof",E,8.3,11.7,2.5,2.65,10.3,13.7,METAL)
 for k,(bx,bz) in enumerate([(7.8,10.6),(7.3,11.5),(12.2,14.2)]):
-    sc.node(f"Barrel{k}","CSGCylinder3D",E,transform=xform((bx,0.45,bz)),radius="0.32",height="0.9",sides="12",use_collision="true",material=METAL)
+    barrel(f"Barrel{k}",E,bx,0,bz)
 sc.node("RadarDome","CSGSphere3D","Station",transform=xform((-5,3.5,-9)),radius="2.2",radial_segments="16",rings="8",material=WHITE)
 B("Mast","Station",(6,7.5,-4),(0.15,8,0.15),METAL,collide=False)
 for k,y in enumerate([5,8,10.5]):
@@ -242,17 +265,14 @@ BX("StairHouseW",St,7.7,8.0,0,3.0,-22.4,-16,WALL); BX("StairHouseE",St,10.0,10.3
 BX("StairHouseN",St,7.7,10.3,0,3.0,-22.7,-22.4,WALL); BX("StairHouseRoof",St,7.7,10.3,3.0,3.3,-22.7,-16,CONC)
 # furniture
 def desk(name,x1,x2,z1,z2):
-    """A desk: a top on four legs (things sit on top at y = 0.9)."""
-    BX(name,St,x1,x2,0.85,0.9,z1,z2,WOOD)
-    for k,(lx,lz) in enumerate([(x1+0.06,z1+0.06),(x1+0.06,z2-0.06),(x2-0.06,z1+0.06),(x2-0.06,z2-0.06)]):
-        BX(f"{name}Leg{k}",St,lx-0.04,lx+0.04,0,0.85,lz-0.04,lz+0.04,WOOD)
+    """An old office desk with drawers (things sit on top at y = 0.9).
+    Long side along x: drawers face -z. Long side along z: turned to face +x."""
+    w,d=x2-x1,z2-z1
+    if w>=d: yaw,scale=0,(w,1,d/0.6)
+    else: yaw,scale=90,(d,1,w/0.6)
+    prop(name,St,"desk",((x1+x2)/2,0,(z1+z2)/2),yaw,scale,WOOD,("box",(scale[0]*1.0,0.9,0.6*scale[2]),(0,0.45,0)))
 def chair(name,x,z,yaw,tipped=False):
-    sc.node(name,"Node3D",St,transform=xform((x,0.25 if tipped else 0,z),yaw,0,80 if tipped else 0))
-    me=f"{St}/{name}"
-    mi("Seat",me,(0,0.45,0),mesh("BoxMesh",size=v3(0.45,0.05,0.45)),METAL)
-    mi("Back",me,(0,0.75,0.2),mesh("BoxMesh",size=v3(0.45,0.5,0.04)),METAL)
-    mi("Post",me,(0,0.22,0),mesh("CylinderMesh",top_radius="0.03",bottom_radius="0.03",height="0.45",radial_segments="6",rings="1"),BLACK)
-    mi("Foot",me,(0,0.02,0),mesh("CylinderMesh",top_radius="0.25",bottom_radius="0.25",height="0.04",radial_segments="10",rings="1"),BLACK)
+    prop(name,St,"chair",(x,0.27 if tipped else 0,z),yaw,roll=80 if tipped else 0)
 BX("OfficeFloor",St,-10,10,0,0.02,-16,0,LINO,collide=False)
 desk("ComputerDesk",-9.4,-7.6,-13,-11); BX("Screen",St,-9.35,-9.25,0.95,1.6,-12.5,-11.5,SCREEN,collide=False)
 BX("Monitor",St,-9.75,-9.3,0.9,1.65,-12.6,-11.4,BLACK)
@@ -261,7 +281,7 @@ desk("FileDesk",-5.8,-4.2,-5.4,-4.6); desk("DirectorDesk",5,7,-10.5,-9.5); desk(
 chair("ChairEng",-4,-10,180); chair("ChairFile",-5,-4,0); chair("ChairDirector",6,-9,0); chair("ChairTipped",-7,-7,40,tipped=True)
 chair("ChairBreak1",5.5,-4,0); chair("ChairBreak2",6.7,-2,200,tipped=True)
 for k,z in enumerate([-2.2,-2.9,-3.6]):
-    BX(f"Cabinet{k}",St,-9.8,-9.2,0,1.35,z-0.33,z+0.33,METAL)
+    prop(f"Cabinet{k}",St,"cabinet",(-9.5,0,z),-90,collide=("box",(0.6,1.35,0.65),(0,0.675,0)))
 BX("Bookshelf",St,2.2,2.6,0,2.0,-14.5,-12.5,DWOOD)
 for k,y in enumerate([0.5,1.0,1.5]):
     BX(f"Books{k}",St,2.25,2.55,y,y+0.3,-14.4,-12.6+(-0.4 if k==1 else 0),CAR,collide=False)
@@ -352,9 +372,9 @@ pipe("PipeE1",(14.5,-6.75,-67.25),(28,-6.75,-67.25)); pipe("PipeE2",(14.5,-7.05,
 pipe("PipeJ1",(4.25,-6.7,-44.3),(13.8,-6.7,-44.3))
 pipe("PipeRoom1",(30.3,-5.6,-76.6),(45.7,-5.6,-76.6),0.14); pipe("PipeRoom2",(30.3,-5.3,-59.4),(45.7,-5.3,-59.4),0.1)
 for k,(x,z) in enumerate([(13.1,-43.6),(13.3,-36.6),(12.6,-36.3),(41.8,-76.4),(42.5,-76.5),(30.7,-64.5)]):
-    sc.node(f"Barrel{k}","CSGCylinder3D",NPROP,transform=xform((x,-8.55,z)),radius="0.32",height="0.9",sides="12",use_collision="true",material=METAL)
+    barrel(f"Barrel{k}",NPROP,x,-9,z)
 for k,(x,z,sz,yaw) in enumerate([(4.8,-36.3,0.9,10),(45.1,-66.2,1.0,0),(45.2,-64.9,0.7,25),(36,-76.3,0.8,0)]):
-    sc.node(f"Crate{k}","CSGBox3D",NPROP,transform=xform((x,-9+sz/2,z),yaw),size=v3(sz,sz,sz),use_collision="true",material=WOOD)
+    crate(f"Crate{k}",NPROP,x,-9,z,sz,yaw)
 # The cell: a bed frame with straps, where Subject 7 was kept.
 sc.node("CellBed","CSGBox3D",NPROP,transform=xform((12.6,-8.6,-83.5)),size=v3(1.0,0.12,2.1),use_collision="true",material=METAL)
 for k,(dx,dz) in enumerate([(-0.45,-1.0),(0.45,-1.0),(-0.45,1.0),(0.45,1.0)]):

@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="Script" path="res://scripts/monsters/monster.gd" id="1_monster"]
 [ext_resource type="Script" path="res://scripts/monsters/monster_senses.gd" id="2_senses"]
@@ -10,97 +10,53 @@
 [ext_resource type="AudioStream" path="res://assets/audio/monster_click.wav" id="8_click"]
 [ext_resource type="Texture2D" path="res://assets/textures/rock_normal.jpg" id="lm_skin_n"]
 [ext_resource type="Texture2D" path="res://assets/textures/concrete_wall_albedo.jpg" id="lm_cloth"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_body.obj" id="lm_body_mesh"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_head.obj" id="lm_head_mesh"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 radius = 0.35
 height = 2.6
 
 [sub_resource type="StandardMaterial3D" id="Mat_skin"]
-albedo_color = Color(0.5, 0.45, 0.42, 1)
+albedo_color = Color(0.62, 0.57, 0.52, 1)
 albedo_texture = ExtResource("lm_cloth")
-roughness = 0.7
+roughness = 0.6
 normal_enabled = true
-normal_scale = 0.6
+normal_scale = 0.5
 normal_texture = ExtResource("lm_skin_n")
 rim_enabled = true
-rim = 0.25
+rim = 0.3
 rim_tint = 0.1
 uv1_scale = Vector3(3, 3, 3)
 uv1_triplanar = true
 
 [sub_resource type="StandardMaterial3D" id="Mat_gown"]
-albedo_color = Color(0.55, 0.62, 0.55, 1)
+albedo_color = Color(0.62, 0.68, 0.6, 1)
 albedo_texture = ExtResource("lm_cloth")
 roughness = 0.95
 cull_mode = 2
 uv1_scale = Vector3(2, 2, 2)
 uv1_triplanar = true
 
+[sub_resource type="StandardMaterial3D" id="Mat_bracelet"]
+albedo_color = Color(0.5, 0.5, 0.47, 1)
+metallic = 0.8
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="Mat_guts"]
+albedo_color = Color(0.26, 0.07, 0.06, 1)
+roughness = 0.35
+metallic_specular = 0.7
+rim_enabled = true
+rim = 0.2
+
+[sub_resource type="StandardMaterial3D" id="Mat_flesh"]
+albedo_color = Color(0.1, 0.015, 0.015, 1)
+roughness = 0.3
+
 [sub_resource type="StandardMaterial3D" id="Mat_hole"]
 albedo_color = Color(0.02, 0.0, 0.0, 1)
 roughness = 1.0
-
-[sub_resource type="CapsuleMesh" id="LM_thigh"]
-radius = 0.07
-height = 0.78
-
-[sub_resource type="CapsuleMesh" id="LM_shin"]
-radius = 0.055
-height = 0.72
-
-[sub_resource type="BoxMesh" id="LM_foot"]
-size = Vector3(0.1, 0.05, 0.3)
-
-[sub_resource type="CylinderMesh" id="LM_gown"]
-top_radius = 0.2
-bottom_radius = 0.31
-height = 1.0
-radial_segments = 12
-rings = 1
-
-[sub_resource type="BoxMesh" id="LM_strip"]
-size = Vector3(0.07, 0.4, 0.01)
-
-[sub_resource type="CapsuleMesh" id="LM_chest"]
-radius = 0.16
-height = 0.8
-
-[sub_resource type="CapsuleMesh" id="LM_rib"]
-radius = 0.016
-height = 0.3
-
-[sub_resource type="CylinderMesh" id="LM_neck"]
-top_radius = 0.045
-bottom_radius = 0.06
-height = 0.42
-radial_segments = 8
-rings = 1
-
-[sub_resource type="SphereMesh" id="LM_skull"]
-radius = 0.17
-height = 0.34
-
-[sub_resource type="SphereMesh" id="LM_hole"]
-radius = 0.045
-height = 0.09
-
-[sub_resource type="CapsuleMesh" id="LM_upper_arm"]
-radius = 0.05
-height = 0.88
-
-[sub_resource type="CapsuleMesh" id="LM_forearm"]
-radius = 0.04
-height = 0.92
-
-[sub_resource type="BoxMesh" id="LM_palm"]
-size = Vector3(0.08, 0.15, 0.04)
-
-[sub_resource type="CylinderMesh" id="LM_finger"]
-top_radius = 0.004
-bottom_radius = 0.009
-height = 0.34
-radial_segments = 5
-rings = 1
 
 [sub_resource type="SphereMesh" id="Mesh_eye"]
 radius = 0.025
@@ -157,211 +113,32 @@ radius = 0.45
 
 [node name="Body" type="Node3D" parent="."]
 
-[node name="ThighL" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 0.99027, -0.13917, 0, 0.13917, 0.99027, -0.12, 0.97, -0.03)
-mesh = SubResource("LM_thigh")
+[node name="Sculpt" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_body_mesh")
 surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="ShinL" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 0.99452, 0.10453, 0, -0.10453, 0.99452, -0.13, 0.33, 0)
-mesh = SubResource("LM_shin")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FootL" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13, 0.03, -0.09)
-mesh = SubResource("LM_foot")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="UpperArmL" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99756, 0.06976, 0, -0.06949, 0.99377, -0.08716, -0.00608, 0.08694, 0.99619, -0.3, 2.09, -0.19)
-mesh = SubResource("LM_upper_arm")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="ForearmL" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99939, 0.0349, 0, -0.03456, 0.98966, -0.13917, -0.00486, 0.13909, 0.99027, -0.35, 1.24, -0.27)
-mesh = SubResource("LM_forearm")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="PalmL" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.37, 0.72, -0.31)
-mesh = SubResource("LM_palm")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FingerL0" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99452, 0.10453, 0, -0.10224, 0.97279, 0.20791, 0.02173, -0.20677, 0.97815, -0.403, 0.435, -0.31)
-mesh = SubResource("LM_finger")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FingerL1" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99939, 0.0349, 0, -0.03414, 0.97755, 0.20791, 0.00726, -0.20779, 0.97815, -0.381, 0.465, -0.31)
-mesh = SubResource("LM_finger")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FingerL2" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99939, -0.0349, 0, 0.03414, 0.97755, 0.20791, -0.00726, -0.20779, 0.97815, -0.359, 0.465, -0.31)
-mesh = SubResource("LM_finger")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FingerL3" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99452, -0.10453, 0, 0.10224, 0.97279, 0.20791, -0.02173, -0.20677, 0.97815, -0.337, 0.435, -0.31)
-mesh = SubResource("LM_finger")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="ThighR" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 0.99027, -0.13917, 0, 0.13917, 0.99027, 0.12, 0.97, -0.03)
-mesh = SubResource("LM_thigh")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="ShinR" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 0.99452, 0.10453, 0, -0.10453, 0.99452, 0.13, 0.33, 0)
-mesh = SubResource("LM_shin")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FootR" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13, 0.03, -0.09)
-mesh = SubResource("LM_foot")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="UpperArmR" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99756, -0.06976, 0, 0.06949, 0.99377, -0.08716, 0.00608, 0.08694, 0.99619, 0.3, 2.09, -0.19)
-mesh = SubResource("LM_upper_arm")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="ForearmR" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99939, -0.0349, 0, 0.03456, 0.98966, -0.13917, 0.00486, 0.13909, 0.99027, 0.35, 1.24, -0.27)
-mesh = SubResource("LM_forearm")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="PalmR" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37, 0.72, -0.31)
-mesh = SubResource("LM_palm")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FingerR0" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99452, 0.10453, 0, -0.10224, 0.97279, 0.20791, 0.02173, -0.20677, 0.97815, 0.337, 0.435, -0.31)
-mesh = SubResource("LM_finger")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FingerR1" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99939, 0.0349, 0, -0.03414, 0.97755, 0.20791, 0.00726, -0.20779, 0.97815, 0.359, 0.465, -0.31)
-mesh = SubResource("LM_finger")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FingerR2" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99939, -0.0349, 0, 0.03414, 0.97755, 0.20791, -0.00726, -0.20779, 0.97815, 0.381, 0.465, -0.31)
-mesh = SubResource("LM_finger")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="FingerR3" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.99452, -0.10453, 0, 0.10224, 0.97279, 0.20791, -0.02173, -0.20677, 0.97815, 0.403, 0.435, -0.31)
-mesh = SubResource("LM_finger")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="Gown" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 0.99756, 0.06976, 0, -0.06976, 0.99756, 0, 1.55, -0.03)
-mesh = SubResource("LM_gown")
-surface_material_override/0 = SubResource("Mat_gown")
-
-[node name="GownStrip0" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.98125, 0.19272, 0, -0.19272, 0.98125, 0, 0, 0, 1, 0, 0.891674, 0.26)
-mesh = SubResource("LM_strip")
-surface_material_override/0 = SubResource("Mat_gown")
-
-[node name="GownStrip1" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.69708, 0.11866, 0.70711, -0.16781, 0.98582, 0, -0.69708, -0.11866, 0.70711, 0.205061, 0.872473, 0.175061)
-mesh = SubResource("LM_strip")
-surface_material_override/0 = SubResource("Mat_gown")
-
-[node name="GownStrip2" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0, 0, 1, -0.04807, 0.99884, 0, -0.99884, -0.04807, 0, 0.29, 0.912018, -0.03)
-mesh = SubResource("LM_strip")
-surface_material_override/0 = SubResource("Mat_gown")
-
-[node name="GownStrip3" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(-0.6995, 0.10345, 0.70711, 0.1463, 0.98924, 0, -0.6995, 0.10345, -0.70711, 0.205061, 0.809845, -0.235061)
-mesh = SubResource("LM_strip")
-surface_material_override/0 = SubResource("Mat_gown")
-
-[node name="GownStrip4" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(-0.99078, -0.13547, 0, -0.13547, 0.99078, 0, 0, 0, -1, 3.55148e-17, 0.82818, -0.32)
-mesh = SubResource("LM_strip")
-surface_material_override/0 = SubResource("Mat_gown")
-
-[node name="GownStrip5" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(-0.7029, -0.07702, -0.70711, -0.10892, 0.99405, 0, 0.7029, 0.07702, -0.70711, -0.205061, 0.855598, -0.235061)
-mesh = SubResource("LM_strip")
-surface_material_override/0 = SubResource("Mat_gown")
-
-[node name="GownStrip6" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0, 0, -1, -0.19127, 0.98154, 0, 0.98154, 0.19127, 0, -0.29, 0.89928, -0.03)
-mesh = SubResource("LM_strip")
-surface_material_override/0 = SubResource("Mat_gown")
-
-[node name="GownStrip7" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0.69173, -0.14665, -0.70711, 0.20739, 0.97826, 0, 0.69173, -0.14665, 0.70711, -0.205061, 0.894272, 0.175061)
-mesh = SubResource("LM_strip")
-surface_material_override/0 = SubResource("Mat_gown")
-
-[node name="Chest" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 0.95106, 0.30902, 0, -0.30902, 0.95106, 0, 2.25, -0.1)
-mesh = SubResource("LM_chest")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="Rib0" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 2.12, -0.235)
-mesh = SubResource("LM_rib")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="Rib1" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 2.195, -0.255)
-mesh = SubResource("LM_rib")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="Rib2" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 2.27, -0.275)
-mesh = SubResource("LM_rib")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="Rib3" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 2.345, -0.295)
-mesh = SubResource("LM_rib")
-surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="Neck" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 0.78801, 0.61566, 0, -0.61566, 0.78801, 0, 2.72, -0.3)
-mesh = SubResource("LM_neck")
-surface_material_override/0 = SubResource("Mat_skin")
+surface_material_override/1 = SubResource("Mat_gown")
+surface_material_override/2 = SubResource("Mat_bracelet")
+surface_material_override/3 = SubResource("Mat_guts")
+surface_material_override/4 = SubResource("Mat_flesh")
+surface_material_override/5 = SubResource("Mat_flesh")
 
 [node name="HeadPivot" type="Node3D" parent="Body"]
-transform = Transform3D(0.9703, -0.24192, 0, 0.24192, 0.9703, 0, 0, 0, 1, 0, 2.9, -0.42)
+transform = Transform3D(0.9703, -0.24192, 0, 0.24192, 0.9703, 0, 0, 0, 1, 0, 2.567, -0.386)
 
-[node name="Skull" type="MeshInstance3D" parent="Body/HeadPivot"]
-transform = Transform3D(0.85, 0, 0, 0, 1.4, 0, 0, 0, 1, 0, 0.08, 0)
-mesh = SubResource("LM_skull")
+[node name="Head" type="MeshInstance3D" parent="Body/HeadPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_head_mesh")
 surface_material_override/0 = SubResource("Mat_skin")
-
-[node name="Jaw" type="MeshInstance3D" parent="Body/HeadPivot"]
-transform = Transform3D(0.6, 0, 0, 0, 1.5, 0, 0, 0, 0.45, 0, -0.07, -0.14)
-mesh = SubResource("LM_hole")
-surface_material_override/0 = SubResource("Mat_hole")
-
-[node name="SocketLeft" type="MeshInstance3D" parent="Body/HeadPivot"]
-transform = Transform3D(0.845721, -0.239414, 0, 0.307818, 0.657783, 0, 0, 0, 0.5, -0.055, 0.11, -0.135)
-mesh = SubResource("LM_hole")
-surface_material_override/0 = SubResource("Mat_hole")
+surface_material_override/1 = SubResource("Mat_hole")
 
 [node name="EyeLeft" type="MeshInstance3D" parent="Body/HeadPivot"]
-transform = Transform3D(0.35, 0, 0, 0, 0.35, 0, 0, 0, 0.35, -0.055, 0.11, -0.158)
+transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, -0.046, 0.101, -0.106)
 mesh = SubResource("Mesh_eye")
 surface_material_override/0 = SubResource("Mat_eye")
 
-[node name="SocketRight" type="MeshInstance3D" parent="Body/HeadPivot"]
-transform = Transform3D(0.845721, 0.239414, 0, -0.307818, 0.657783, 0, 0, 0, 0.5, 0.055, 0.11, -0.135)
-mesh = SubResource("LM_hole")
-surface_material_override/0 = SubResource("Mat_hole")
-
 [node name="EyeRight" type="MeshInstance3D" parent="Body/HeadPivot"]
-transform = Transform3D(0.35, 0, 0, 0, 0.35, 0, 0, 0, 0.35, 0.055, 0.11, -0.158)
+transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, 0.046, 0.101, -0.106)
 mesh = SubResource("Mesh_eye")
 surface_material_override/0 = SubResource("Mat_eye")
 

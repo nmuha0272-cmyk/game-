@@ -79,14 +79,13 @@ func get_owner_of(character: int) -> int:
 	return 0
 
 
-## Solo mode: when you play alone, team puzzles go easier on you (heavy
-## things stay propped up for a bit, launch keys stay turned longer).
-func is_solo() -> bool:
-	return players.size() == 1
+## Subject Zero is online co-op only: 2 to 4 players (every puzzle needs
+## at least two people).
+const MIN_PLAYERS := 2
 
 
 func has_enough_players() -> bool:
-	return players.size() >= 1
+	return players.size() >= MIN_PLAYERS
 
 
 func can_start() -> bool:

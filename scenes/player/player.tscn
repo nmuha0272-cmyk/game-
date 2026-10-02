@@ -1,5 +1,6 @@
 [gd_scene load_steps=16 format=3]
 
+[ext_resource type="Script" path="res://scripts/player/character_model.gd" id="cm_script"]
 [ext_resource type="Script" path="res://scripts/player/player_movement.gd" id="1_move"]
 [ext_resource type="Script" path="res://scripts/player/stamina.gd" id="2_stamina"]
 [ext_resource type="Script" path="res://scripts/player/player_look.gd" id="3_look"]
@@ -72,10 +73,8 @@ script = ExtResource("1_move")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Shape_body")
 
-[node name="BodyMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-cast_shadow = 0
-mesh = SubResource("Mesh_body")
+[node name="BodyMesh" type="Node3D" parent="."]
+script = ExtResource("cm_script")
 
 [node name="Stamina" type="Node" parent="."]
 script = ExtResource("2_stamina")

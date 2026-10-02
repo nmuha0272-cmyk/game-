@@ -1,6 +1,6 @@
 # GAME_PLAN.md — Working Title: "Subject Zero"
 
-A first-person, chapter-based, 1–4 player co-op horror game set in an abandoned
+A first-person, chapter-based, 2–4 player online co-op horror game set in an abandoned
 Cold War research facility. This file is the master plan for building the game
 with Claude Code. Work through it **one phase at a time**.
 
@@ -77,8 +77,7 @@ from the last checkpoint.
 Every level, puzzle, and encounter must follow these rules:
 
 1. **No solo solutions.** Every puzzle needs at least 2 players to solve.
-   (Exception: solo mode, when someone plays alone, props things up for a
-   few seconds so one person can still finish.)
+   The game is online co-op only: 2 to 4 players, no single-player mode.
 2. **Everyone matters.** Each chapter must have moments where each of the four
    abilities is needed. If a character is missing (fewer than 4 players),
    provide a slower backup solution so the game is still beatable.
@@ -391,9 +390,7 @@ Tasks:
       (Automated check done: in a team game no Chapter 1 section can be
       finished by one player. Still needs real players for the "did they
       talk" part.)
-- [x] Solo mode: playing alone, hold switches stay propped for 15 s after
-      you let go and launch keys stay turned for 10 s, so one player can
-      finish Chapter 1. Team games are unchanged.
+- [x] Online co-op only: Start needs at least 2 players (solo mode removed)
 - [x] Fix bugs, especially multiplayer sync problems
 - [x] Balance ability cooldowns and monster speed (first pass; tune again after playtests, see PLAYTEST.md)
 - [x] Export builds for Windows (export_presets.cfg; build lands in build/windows/)

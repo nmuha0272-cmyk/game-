@@ -16,9 +16,8 @@ get stuck is the whole point.
      use the IP that app shows. (Or the host can forward port **7777 UDP**
      on their router.)
    - Windows may ask to allow the game through the firewall: click **Allow**.
-3. Everyone picks a character. Playing alone works too (solo mode: things
-   you hold up stay propped for 15 s, and launch keys stay turned for 10 s),
-   but test with friends too: that's how the game is meant to be played.
+3. Everyone picks a character. You need **at least 2 players** (up to 4).
+   There is no single-player mode: it's a co-op game.
 
 Controls: WASD move, Shift sprint, Ctrl crouch, E interact (hold for some
 things), Q ability, F flashlight, Left Mouse use item, G drop, T give,

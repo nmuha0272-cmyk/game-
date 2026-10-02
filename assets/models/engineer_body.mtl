@@ -1,0 +1,30 @@
+newmtl top
+Kd 0.1400 0.1800 0.3000
+Ns 10
+d 1
+
+newmtl skin
+Kd 0.8000 0.6500 0.5700
+Ns 10
+d 1
+
+newmtl hair
+Kd 0.6200 0.6200 0.6000
+Ns 10
+d 1
+
+newmtl brows
+Kd 0.6200 0.6200 0.6000
+Ns 10
+d 1
+
+newmtl eyes
+Kd 0.0500 0.0400 0.0350
+Ns 10
+d 1
+
+newmtl extra
+Kd 0.3000 0.2000 0.1100
+Ns 10
+d 1
+
