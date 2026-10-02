@@ -5,9 +5,11 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
 2. Open Roblox Studio, sign in.
 3. File -> Open from File... -> pick  SubjectZero_Chapter1.rbxlx
    (it takes a little while: it's a big map).
-4. Press Play (or F5). You spawn on the road as YOUR OWN AVATAR.
-   - F (keyboard), Y (Xbox), Triangle (PlayStation): flashlight on/off
-   - Mouse wheel: zoom in to first person, or out to see your avatar
+4. Press Play (or F5). The OPENING CUTSCENE plays (Space / A to skip),
+   then you're on the road as YOUR OWN AVATAR, in FIRST PERSON.
+   - Your FLASHLIGHT is in your inventory (the bar at the bottom).
+     Press 1 (or F, Y on Xbox, Triangle on PlayStation) to take it out:
+     it turns on. Click (or R2) to switch it off and on.
    - Shift (keyboard), left stick click (controller): SPRINT (about 4 seconds)
    - E (keyboard), X (Xbox), Square (PlayStation): use things / hold things
    - Walk into an item to pick it up (you don't have to hold it to use it).
@@ -26,7 +28,9 @@ The game already works with a controller:
    Left stick ........ walk          Right stick ... look around
    A / Cross ......... jump          L3 (click left stick) ... sprint
    X / Square ........ use / hold things (gate, switches, fuses, keys...)
-   Y / Triangle ...... flashlight    D-pad UP ...... use the keypad
+   Y / Triangle ...... take out the flashlight / switch it on and off
+   R2 ................ switch the flashlight off and on
+   D-pad UP .......... use the keypad
    On the keypad and notes: move with the stick, A / Cross to press,
    B / Circle to close. Text is bigger on a TV.
 
@@ -46,7 +50,11 @@ Test it with a controller first: plug an Xbox or PS controller into your
 PC and press Play in Studio. Or: Test tab -> Device -> pick "Xbox One"
 to see how the screen looks on a TV.
 
-What's in this first Roblox version:
+What's in this Roblox version:
+- The opening cutscene, then first person (like the PC game)
+- An old 1960s lab underground: green and cream tiled walls, checkered
+  floors, lab benches with specimen jars, glowing growth tanks, old
+  reel-to-reel computers, a gurney, pipes, warning signs, and a padded cell
 - The whole Chapter 1 map (forest, station, stairs, tunnels, cell, elevator room)
 - Night, fog, flickering and pulsing lights
 - Your own avatar with a flashlight

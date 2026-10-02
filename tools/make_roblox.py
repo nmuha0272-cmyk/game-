@@ -11,6 +11,7 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import roblox_long_man as LM
 import roblox_puzzles as PZ
+import roblox_lab as LAB
 from xml.sax.saxutils import escape
 
 KIT = "unreal_easy/SubjectZero_Kit/level.json"
@@ -66,9 +67,19 @@ def color_of(m):
     return COLOR.get(m, (128, 128, 128))
 
 
+SPECIAL = {"fabric": 1312, "glass": 1568}  # "glass:#rrggbb" = that material in that color
+
+
 def part(name, pos, axes, size, m, collide=True, shape=1, transparency=0.0, cls="Part", children="", extra="", anchored=True):
+    special = None
+    if ":" in m:
+        special, m = m.split(":")
+        if special == "glass":
+            transparency = max(transparency, 0.55)
     c = color_of(m)
-    mat = 288 if m.startswith("!") else MATERIAL.get(m, 272)
+    mat = SPECIAL[special] if special else 288 if m.startswith("!") else MATERIAL.get(m, 272)
+    if not collide:
+        extra += '<bool name="CanQuery">false</bool>'  # decoration: rays and the Long Man's eyes pass through
     if m == "chainlink":
         transparency = 0.55
     rgb = 0xFF000000 | (c[0] << 16) | (c[1] << 8) | c[2]
@@ -88,6 +99,8 @@ def rot_cyl(axes):
     return (u, tuple(-c for c in r), b)
 
 
+lab_parts, lab_labels = LAB.build(part)
+d["labels"] += lab_labels
 puzzle_xml, PUZZLE_SRC, PUZZLE_UI, in_elevator, TEAM_SRC = PZ.build(part, frame, new_ref, d)
 parts, elevator = [], []
 for i, s in enumerate(d["shapes"]):
@@ -138,10 +151,13 @@ def script(cls, name, source):
             f'<ProtectedString name="Source"><![CDATA[{source}]]></ProtectedString></Properties></Item>')
 
 
-FLASHLIGHT = '''-- Every player's avatar gets a flashlight on its head.
--- Press F (keyboard), Y (Xbox) or Triangle (PlayStation) to switch it.
+FLASHLIGHT = '''-- Every player starts with a FLASHLIGHT in their inventory (the hotbar).
+-- Take it out (press 1, click it, or press F / Y / Triangle) and it turns
+-- on. Click (or R2) to switch it off and on. Put it away and it goes off.
+-- The light shines from your head, so it points where you look.
 local character = script.Parent
 local head = character:WaitForChild("Head")
+local humanoid = character:WaitForChild("Humanoid")
 local player = game.Players:GetPlayerFromCharacter(character)
 
 local light = Instance.new("SpotLight")
@@ -151,14 +167,39 @@ light.Angle = 50
 light.Range = 45
 light.Brightness = 4
 light.Shadows = true
+light.Enabled = false
 light.Parent = head
+
+local connected = {}
+local function holding()
+	local tool = character:FindFirstChild("Flashlight")
+	return tool and tool:IsA("Tool")
+end
+character.ChildAdded:Connect(function(thing)
+	if thing:IsA("Tool") and thing.Name == "Flashlight" then
+		light.Enabled = true
+		if not connected[thing] then
+			connected[thing] = true
+			thing.Activated:Connect(function()
+				if holding() then light.Enabled = not light.Enabled end
+			end)
+		end
+	end
+end)
+character.ChildRemoved:Connect(function(thing)
+	if thing:IsA("Tool") and thing.Name == "Flashlight" then light.Enabled = false end
+end)
 
 local toggle = Instance.new("RemoteEvent")
 toggle.Name = "ToggleFlashlight"
 toggle.Parent = character
 toggle.OnServerEvent:Connect(function(who)
-	if who == player then
+	if who ~= player then return end
+	if holding() then
 		light.Enabled = not light.Enabled
+	else
+		local tool = player.Backpack:FindFirstChild("Flashlight")
+		if tool then humanoid:EquipTool(tool) end
 	end
 end)
 '''
@@ -232,7 +273,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        'xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">',
        f'<Item class="Workspace" referent="{new_ref()}"><Properties><string name="Name">Workspace</string></Properties>',
        model("Chapter1_Level", parts), model("Chapter1_Lights", lights), model("Spawns", spawns),
-       model("Elevator", elevator), puzzle_xml, LM.build(part, script, new_ref), "</Item>",
+       model("Elevator", elevator), model("Lab", lab_parts), puzzle_xml, LM.build(part, script, new_ref), "</Item>",
        f'<Item class="ReplicatedStorage" referent="{new_ref()}"><Properties><string name="Name">ReplicatedStorage</string></Properties>'
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManJumpScare</string></Properties></Item>'
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManReveal</string></Properties></Item>'
@@ -246,16 +287,23 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        '<Color3 name="FogColor"><R>0.03</R><G>0.035</G><B>0.05</B></Color3>'
        '<bool name="GlobalShadows">true</bool></Properties></Item>',
        f'<Item class="StarterPlayer" referent="{new_ref()}"><Properties><string name="Name">StarterPlayer</string>'
-       '<token name="CameraMode">0</token><float name="CameraMaxZoomDistance">14</float>'
+       '<token name="CameraMode">1</token><float name="CameraMaxZoomDistance">0.5</float>'
        '<float name="CharacterWalkSpeed">14</float></Properties>',
        f'<Item class="StarterCharacterScripts" referent="{new_ref()}"><Properties><string name="Name">StarterCharacterScripts</string></Properties>',
        script("Script", "Flashlight", FLASHLIGHT), script("LocalScript", "FlashlightKey", FLASHLIGHT_KEY),
        script("LocalScript", "Sprint", LM.SPRINT_SCRIPT), "</Item>",
        f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>',
        script("LocalScript", "LongManEffects", LM.EFFECTS_SCRIPT.replace("--SHOTS--", LM.reveal_shots())),
-       script("LocalScript", "PuzzleUI", PUZZLE_UI), "</Item></Item>",
+       script("LocalScript", "PuzzleUI", PUZZLE_UI),
+       script("LocalScript", "OpeningCutscene", LAB.INTRO_SCRIPT.replace("--SHOTS--", LAB.intro_shots())), "</Item></Item>",
+       f'<Item class="StarterPack" referent="{new_ref()}"><Properties><string name="Name">StarterPack</string></Properties>'
+       f'<Item class="Tool" referent="{new_ref()}"><Properties><string name="Name">Flashlight</string>'
+       '<string name="ToolTip">Flashlight (click to switch off and on)</string><bool name="CanBeDropped">false</bool>'
+       '<bool name="RequiresHandle">true</bool></Properties>'
+       + part("Handle", (0, 0, 0), ((1, 0, 0), (0, 1, 0), (0, 0, 1)), (0.35, 0.35, 1.3), "#1f1f1d", False, 1, anchored=False)
+       + "</Item></Item>",
        f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>',
        script("Script", "FlickeringLights", FLICKER), script("Script", "Puzzles", PUZZLE_SRC), script("Script", "TeamLivesOrDies", TEAM_SRC), "</Item>",
        "</roblox>"]
 open(OUT, "w").write("\n".join(xml))
-print(f"wrote {OUT}: {len(parts)} parts, {len(elevator)} elevator parts, {len(lights)} lights, {len(spawns)} spawns")
+print(f"wrote {OUT}: {len(lab_parts)} lab parts, {len(parts)} parts, {len(elevator)} elevator parts, {len(lights)} lights, {len(spawns)} spawns")
