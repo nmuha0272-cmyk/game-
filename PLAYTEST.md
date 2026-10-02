@@ -56,7 +56,7 @@ was scary. Tick the questions.
 - [ ] Did they figure out the vent: one holds, one crawls, opens the bolt?
 - [ ] The chase: scary? Too hard? Too easy?
 - [ ] Did the Son use Sense / the Journalist use the flash / Frank hold the door?
-- [ ] If someone got caught, did the others come back to help them up?
+- [ ] When someone got caught (and everyone died), did the team blame each other or laugh?
 - Time / notes:
 
 ### 5. Elevator room (fuses, generator, Containment Order, two keys)
@@ -91,7 +91,7 @@ was scary. Tick the questions.
 | After catching someone | walks away, ignores everyone for 6 s | `catch_cooldown` in `monster.gd` |
 | Journalist flash | stuns 3 s (2 s x1.5 light hate), 12 s cooldown | `scripts/abilities/journalist_flash.gd` |
 | Son Sense | 4 s glow, 25 m range, 15 s cooldown | `scripts/abilities/son_sense.gd` |
-| Downed bleed-out | 30 s (help up takes 3 s). If ANYONE bleeds out, the whole team restarts at the checkpoint | `scripts/player/downed_state.gd` |
+| Going down | No knocking down: if ANYONE goes down, everyone dies and the team restarts at the checkpoint | `scripts/game/team_monitor.gd` |
 
 Rules of thumb:
 - **The chase was way too easy:** raise `chase_speed` a little (4.2 → 4.5).
