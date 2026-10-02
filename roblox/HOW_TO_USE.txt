@@ -8,6 +8,7 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
 4. Press Play (or F5). You spawn on the road as YOUR OWN AVATAR.
    - F (keyboard), Y (Xbox), Triangle (PlayStation): flashlight on/off
    - Mouse wheel / right stick: zoom in to first person, or out to see your avatar
+   - Shift (keyboard), left stick click (controller): SPRINT (about 4 seconds)
 
 To let friends play (PC, phone, Xbox, PlayStation):
 5. File -> Publish to Roblox -> give it a name.
@@ -22,6 +23,23 @@ What's in this first Roblox version:
 - The whole Chapter 1 map (forest, station, stairs, tunnels, cell, elevator room)
 - Night, fog, flickering and pulsing lights
 - Your own avatar with a flashlight
-Not yet: puzzles, the Long Man, the four roles (coming in the next steps).
+- THE LONG MAN (Subject 7), crawling on all fours:
+  * He waits in his cell in the tunnels. Walk past it and everyone sees
+    the "SUBJECT 7" reveal... then he hunts.
+  * He crawls along his route and finds his way around walls.
+  * When he SEES you he stops, tilts his head and stares... then charges.
+    Your flashlight ON makes him see you from further away!
+  * Lights and flashlights flicker when he is close.
+  * If he catches you: JUMP SCARE, and you respawn at the start.
+    Then he crawls away for a few seconds.
+  * To test fast: in Studio press Play, then walk to the tunnels
+    (down the hidden stairs) and past his cell.
+  * Want a scream sound? Upload a sound to Roblox (Creator Hub),
+    then in Studio click StarterPlayer > StarterPlayerScripts >
+    LongManEffects, and add an Attribute named ScreamSoundId (string)
+    with the value  rbxassetid://YOUR_NUMBER
+  * Want him faster or slower? Open Workspace > LongMan > LongManBrain
+    and change CHASE_SPEED (17). Walking is 14, sprinting is 22.
+Not yet: puzzles, the four roles (coming in the next steps).
 
 Made by tools/make_roblox.py from the same level as the PC game.

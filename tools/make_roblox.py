@@ -7,6 +7,9 @@ plain blocks, stairs as steps). Run after tools/make_unreal_easy.py:
     python3 tools/make_roblox.py
 """
 import json, math
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import roblox_long_man as LM
 from xml.sax.saxutils import escape
 
 KIT = "unreal_easy/SubjectZero_Kit/level.json"
@@ -169,9 +172,18 @@ end)
 '''
 FLICKER = '''-- Makes the station's broken lights flicker and the warning lights pulse.
 -- (A light's holder part is named FlickerLight_<how broken 0-1> or PulseLight.)
+-- Lights go crazy when the Long Man is near (any light, broken or not).
+local function longManNear(light)
+	local longMan = workspace:FindFirstChild("LongMan")
+	local root = longMan and longMan:FindFirstChild("Root")
+	return root and light.Parent and (root.Position - light.Parent.Position).Magnitude < 30
+end
+
 local function flicker(light, brokenness)
 	local base = light.Brightness
+	local normal = brokenness
 	while light.Parent do
+		brokenness = longManNear(light) and 0.85 or normal
 		if math.random() < brokenness then
 			light.Brightness = 0
 			task.wait(0.03 + math.random() * 0.1 + math.random() * brokenness * 1.5)
@@ -200,6 +212,8 @@ for _, thing in ipairs(workspace:GetDescendants()) do
 		local brokenness = tonumber(string.match(thing.Parent.Name, "^FlickerLight_([%d%.]+)$"))
 		if brokenness then
 			task.spawn(flicker, thing, brokenness)
+		elseif thing.Parent.Name == "Light" then
+			task.spawn(flicker, thing, 0)
 		elseif thing.Parent.Name == "PulseLight" then
 			task.spawn(pulse, thing)
 		end
@@ -212,7 +226,11 @@ model = lambda name, items: (f'<Item class="Model" referent="{new_ref()}"><Prope
 xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
        'xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">',
        f'<Item class="Workspace" referent="{new_ref()}"><Properties><string name="Name">Workspace</string></Properties>',
-       model("Chapter1_Level", parts), model("Chapter1_Lights", lights), model("Spawns", spawns), "</Item>",
+       model("Chapter1_Level", parts), model("Chapter1_Lights", lights), model("Spawns", spawns),
+       LM.build(part, script, new_ref), "</Item>",
+       f'<Item class="ReplicatedStorage" referent="{new_ref()}"><Properties><string name="Name">ReplicatedStorage</string></Properties>'
+       f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManJumpScare</string></Properties></Item>'
+       f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManReveal</string></Properties></Item></Item>',
        f'<Item class="Lighting" referent="{new_ref()}"><Properties><string name="Name">Lighting</string>'
        '<float name="ClockTime">0</float><float name="Brightness">0.6</float><token name="Technology">4</token>'
        '<Color3 name="Ambient"><R>0.05</R><G>0.05</G><B>0.07</B></Color3>'
@@ -225,7 +243,9 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        '<float name="CharacterWalkSpeed">14</float></Properties>',
        f'<Item class="StarterCharacterScripts" referent="{new_ref()}"><Properties><string name="Name">StarterCharacterScripts</string></Properties>',
        script("Script", "Flashlight", FLASHLIGHT), script("LocalScript", "FlashlightKey", FLASHLIGHT_KEY),
-       "</Item></Item>",
+       script("LocalScript", "Sprint", LM.SPRINT_SCRIPT), "</Item>",
+       f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>',
+       script("LocalScript", "LongManEffects", LM.EFFECTS_SCRIPT.replace("--SHOTS--", LM.reveal_shots())), "</Item></Item>",
        f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>',
        script("Script", "FlickeringLights", FLICKER), "</Item>",
        "</roblox>"]
