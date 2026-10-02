@@ -291,6 +291,9 @@ skipKey:Disconnect()
 camera.CameraType = Enum.CameraType.Custom
 controls:Enable()
 gui:Destroy()
+player:SetAttribute("IntroDone", true)  -- now the character pick screen shows
+if not player:GetAttribute("Character") then player:GetAttributeChangedSignal("Character"):Wait() end
+task.wait(1)
 
 -- A reminder about the flashlight.
 local hint = Instance.new("ScreenGui")

@@ -12,6 +12,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import roblox_long_man as LM
 import roblox_puzzles as PZ
 import roblox_lab as LAB
+import roblox_roles as ROLES
+import roblox_outdoors as OD
 from xml.sax.saxutils import escape
 
 KIT = "unreal_easy/SubjectZero_Kit/level.json"
@@ -88,7 +90,8 @@ def part(name, pos, axes, size, m, collide=True, shape=1, transparency=0.0, cls=
             f'<bool name="CanCollide">{"true" if collide else "false"}</bool>'
             f'<bool name="CastShadow">{"true" if transparency < 0.9 else "false"}</bool>'
             f'<Color3uint8 name="Color3uint8">{rgb}</Color3uint8><token name="Material">{mat}</token>'
-            f'<token name="shape">{shape}</token><token name="TopSurface">0</token><token name="BottomSurface">0</token>'
+            + (f'<token name="shape">{shape}</token>' if cls in ("Part", "SpawnLocation") else "") +
+            f'<token name="TopSurface">0</token><token name="BottomSurface">0</token>'
             f'<Vector3 name="size"><X>{max(size[0], 0.05):.3f}</X><Y>{max(size[1], 0.05):.3f}</Y><Z>{max(size[2], 0.05):.3f}</Z></Vector3>'
             f'<float name="Transparency">{transparency}</float>{extra}</Properties>{children}</Item>')
 
@@ -116,14 +119,10 @@ for i, s in enumerate(d["shapes"]):
     elif kind == "cylinder":
         target.append(part("Cylinder", pos, rot_cyl(axes), (size[1], size[0], size[2]), m, col, shape=2))
     elif kind == "cone":
-        # No cones in Roblox: stack three shrinking discs (pine tree tiers).
-        h, rad = size[1], size[0]
-        up = axes[1]
-        for k in range(3):
-            t = (k + 0.5) / 3
-            p = tuple(pos[j] + up[j] * (t - 0.5) * h for j in range(3))
-            r_k = rad * (1 - t * 0.85)
-            target.append(part("Needles", p, rot_cyl(axes), (h / 3, r_k, r_k), m, False, shape=2))
+        # No cones in Roblox: a pine crown out of wedges (see roblox_outdoors.py).
+        h = size[1]
+        base = (pos[0], pos[1] - h / 2, pos[2])
+        target.extend(OD.pine(part, base, h, size[0] / 2, i))
 
 lights = []
 for L in d["lights"]:
@@ -285,7 +284,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManJumpScare</string></Properties></Item>'
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManReveal</string></Properties></Item>'
        + "".join(f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">{n}</string></Properties></Item>'
-                 for n in ("PuzzleMessage", "PuzzleKeypad", "PuzzleRead", "ChapterEnd"))
+                 for n in ("PuzzleMessage", "PuzzleKeypad", "PuzzleRead", "ChapterEnd", "PickCharacter", "UseAbility", "CameraFlash"))
        + f'<Item class="Folder" referent="{new_ref()}"><Properties><string name="Name">LongManSounds</string></Properties>'
        + "".join(f'<Item class="StringValue" referent="{new_ref()}"><Properties><string name="Name">{n}</string>'
                  '<string name="Value"></string></Properties></Item>'
@@ -294,10 +293,24 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="Lighting" referent="{new_ref()}"><Properties><string name="Name">Lighting</string>'
        '<float name="ClockTime">0</float><float name="Brightness">0.6</float><token name="Technology">4</token>'
        '<Color3 name="Ambient"><R>0.05</R><G>0.05</G><B>0.07</B></Color3>'
-       '<Color3 name="OutdoorAmbient"><R>0.12</R><G>0.13</G><B>0.18</B></Color3>'
+       '<Color3 name="OutdoorAmbient"><R>0.16</R><G>0.18</G><B>0.25</B></Color3>'
        '<float name="FogEnd">220</float><float name="FogStart">10</float>'
        '<Color3 name="FogColor"><R>0.03</R><G>0.035</G><B>0.05</B></Color3>'
-       '<bool name="GlobalShadows">true</bool></Properties></Item>',
+       '<bool name="GlobalShadows">true</bool></Properties>'
+       # A misty, cold, moonlit night.
+       f'<Item class="Atmosphere" referent="{new_ref()}"><Properties><string name="Name">Atmosphere</string>'
+       '<float name="Density">0.42</float><float name="Offset">0.15</float><float name="Glare">0</float><float name="Haze">2.2</float>'
+       '<Color3 name="Color"><R>0.3</R><G>0.34</G><B>0.43</B></Color3><Color3 name="Decay"><R>0.08</R><G>0.1</G><B>0.15</B></Color3>'
+       '</Properties></Item>'
+       f'<Item class="Sky" referent="{new_ref()}"><Properties><string name="Name">Sky</string>'
+       '<int name="StarCount">4000</int><bool name="CelestialBodiesShown">true</bool><float name="MoonAngularSize">16</float>'
+       '</Properties></Item>'
+       f'<Item class="ColorCorrectionEffect" referent="{new_ref()}"><Properties><string name="Name">ColdNight</string>'
+       '<float name="Brightness">0.02</float><float name="Contrast">0.12</float><float name="Saturation">-0.3</float>'
+       '<Color3 name="TintColor"><R>0.88</R><G>0.93</G><B>1</B></Color3></Properties></Item>'
+       f'<Item class="BloomEffect" referent="{new_ref()}"><Properties><string name="Name">Glow</string>'
+       '<float name="Intensity">0.6</float><float name="Size">24</float><float name="Threshold">1.4</float></Properties></Item>'
+       '</Item>',
        f'<Item class="StarterPlayer" referent="{new_ref()}"><Properties><string name="Name">StarterPlayer</string>'
        '<token name="CameraMode">1</token><float name="CameraMaxZoomDistance">0.5</float>'
        '<float name="CharacterWalkSpeed">14</float></Properties>',
@@ -306,7 +319,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        script("LocalScript", "Sprint", LM.SPRINT_SCRIPT), "</Item>",
        f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>',
        script("LocalScript", "LongManEffects", LM.EFFECTS_SCRIPT.replace("--SHOTS--", LM.reveal_shots())),
-       script("LocalScript", "PuzzleUI", PUZZLE_UI),
+       script("LocalScript", "PuzzleUI", PUZZLE_UI), script("LocalScript", "CharacterPick", ROLES.ROLES_UI),
        script("LocalScript", "OpeningCutscene", LAB.INTRO_SCRIPT.replace("--SHOTS--", LAB.intro_shots())), "</Item></Item>",
        f'<Item class="StarterPack" referent="{new_ref()}"><Properties><string name="Name">StarterPack</string></Properties>'
        f'<Item class="Tool" referent="{new_ref()}"><Properties><string name="Name">Flashlight</string>'
@@ -315,7 +328,9 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        + part("Handle", (0, 0, 0), ((1, 0, 0), (0, 1, 0), (0, 0, 1)), (0.35, 0.35, 1.3), "#1f1f1d", False, 1, anchored=False)
        + "</Item></Item>",
        f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>',
-       script("Script", "FlickeringLights", FLICKER), script("Script", "Puzzles", PUZZLE_SRC), script("Script", "TeamLivesOrDies", TEAM_SRC), "</Item>",
+       script("Script", "FlickeringLights", FLICKER), script("Script", "Puzzles", PUZZLE_SRC), script("Script", "TeamLivesOrDies", TEAM_SRC),
+       script("Script", "Characters", ROLES.ROLES_SERVER),
+       script("Script", "Outdoors", OD.script()), "</Item>",
        "</roblox>"]
 open(OUT, "w").write("\n".join(xml))
 print(f"wrote {OUT}: {len(lab_parts)} lab parts, {len(parts)} parts, {len(elevator)} elevator parts, {len(lights)} lights, {len(spawns)} spawns")

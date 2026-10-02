@@ -5,8 +5,21 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
 2. Open Roblox Studio, sign in.
 3. File -> Open from File... -> pick  SubjectZero_Chapter1.rbxlx
    (it takes a little while: it's a big map).
-4. Press Play (or F5). The OPENING CUTSCENE plays (Space / A to skip),
-   then you're on the road as YOUR OWN AVATAR, in FIRST PERSON.
+4. Press Play (or F5). The OPENING CUTSCENE plays (Space / A to skip).
+   Then CHOOSE YOUR CHARACTER (each player a different one):
+     THE SON (Ethan) ... SENSE [Q]: see the Long Man and useful things
+                         through walls for 4 seconds.
+     THE JOURNALIST .... CAMERA FLASH [Q]: point it at the Long Man to
+                         blind him for 3 seconds.
+     THE ENGINEER ...... FIXER: repairs the generator and puts in fuses
+                         3x faster.
+     THE GUARD (Frank) . STRONG: moves the heavy cabinet alone.
+                         TOUGH: once per life, shoves the Long Man off.
+                         A bit slower.
+   (On a controller the ability button is B / Circle. On a phone, tap
+   the ability button on the screen.)
+   Then you're on the road as YOUR OWN AVATAR, in FIRST PERSON, with
+   your character's name over your head.
    - Your FLASHLIGHT is in your inventory (the bar at the bottom).
      Press 1 (or F, Y on Xbox, Triangle on PlayStation) to take it out:
      it turns on. Click (or R2) to switch it off and on.
@@ -52,6 +65,11 @@ to see how the screen looks on a TV.
 
 What's in this Roblox version:
 - The opening cutscene, then first person (like the PC game)
+- The four characters with their own abilities
+- A new outside: real terrain (grass, a dirt yard, a cracked path, the
+  road with muddy edges, rocks, rolling hills), pine trees, drifting
+  ground mist, and a misty moonlit sky with stars
+  (the terrain appears when you press Play)
 - An old 1960s lab underground: green and cream tiled walls, checkered
   floors, lab benches with specimen jars, glowing growth tanks, old
   reel-to-reel computers, a gurney, pipes, warning signs, and a padded cell

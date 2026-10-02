@@ -362,8 +362,8 @@ push.Triggered:Connect(function(player)
 	for other in pairs(pushers) do
 		if other ~= player and other.Parent then count += 1 end
 	end
-	if count < 2 then
-		say(player, "It's too heavy for one person. Get someone to push with you at the same time!")
+	if count < 2 and player:GetAttribute("Character") ~= "Guard" then
+		say(player, "It's too heavy for one person. Push it together at the same time (or Frank, the Guard, can move it alone)!")
 		return
 	end
 	if cabinetMoved then return end
@@ -446,6 +446,7 @@ end
 for name in pairs(fuses) do
 	local box = P[name]
 	local p = prompt(box, "Put in a fuse", "Fuse box", 1.5)
+	p:SetAttribute("EngineerHold", 0.4)  -- the Engineer is quicker
 	p.Triggered:Connect(function(player)
 		local fuse = findTool(player, "Fuse")
 		if not fuse then say(player, "The fuse is missing. There must be spare fuses in the tunnels.") return end
@@ -458,6 +459,7 @@ for name in pairs(fuses) do
 	end)
 end
 local generator = prompt(P.Generator, "Repair the generator", "Broken generator", 6)
+generator:SetAttribute("EngineerHold", 2)  -- the Engineer is quicker
 generator.Triggered:Connect(function()
 	generator:Destroy()
 	generatorFixed = true

@@ -302,6 +302,16 @@ local function think(dt)
 	ignorePlayers -= dt
 	if state == "DORMANT" then
 		return
+	end
+	-- Blinded by the Journalist's camera flash: he stops, screams, shakes his head.
+	local stunUntil = model:GetAttribute("StunUntil")
+	if stunUntil and workspace:GetServerTimeNow() < stunUntil then
+		state = "STUNNED"
+		return
+	elseif state == "STUNNED" then
+		ignorePlayers = 1.5
+		startPatrol()
+		return
 	elseif state == "STARE" then
 		local head = target and headOf(target)
 		if not head then startPatrol() return end
@@ -330,10 +340,18 @@ local function think(dt)
 		local burst = 0.75 + 0.55 * math.max(0, math.sin(os.clock() * 2.7))
 		moveAlong(CHASE_SPEED * burst, dt)
 		if (head.Position - eyePosition()).Magnitude < CATCH_RANGE + 2 then
-			-- Caught! A jump scare on their screen, then they respawn.
-			jumpScare:FireClient(target)
-			local humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
-			task.delay(0.8, function() if humanoid then humanoid.Health = 0 end end)
+			-- Caught! A jump scare on their screen... and they die (so the team dies).
+			-- Except Frank the Guard: once per life he shoves him off.
+			local character = target.Character
+			if character and character:GetAttribute("Tough") then
+				character:SetAttribute("Tough", false)
+				ReplicatedStorage.PuzzleMessage:FireAllClients(target.DisplayName .. " (Frank) SHOVES the Long Man off! He can only do that once...")
+				model:SetAttribute("StunUntil", workspace:GetServerTimeNow() + 1.5)
+			else
+				jumpScare:FireClient(target)
+				local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+				task.delay(0.8, function() if humanoid then humanoid.Health = 0 end end)
+			end
 			-- He crawls off to the far end of his route for a while.
 			ignorePlayers = 6
 			local far, best = 1, -1
@@ -368,11 +386,13 @@ local function pose(dt)
 		root:SetAttribute("State", state)
 	end
 	-- While he stares he slowly RISES UP to his full height, head tipping over.
-	local wantRear = state == "STARE" and 1 or 0
+	local wantRear = state == "STARE" and 1 or state == "STUNNED" and 0.35 or 0
 	rear += (wantRear - rear) * math.min(1, dt * (wantRear > rear and 1.6 or 4))
-	local wantJaw = (state == "STARE" or state == "CHASE") and 0.65 or 0.12 + math.random() * 0.05
+	local wantJaw = state == "STUNNED" and 0.9 or (state == "STARE" or state == "CHASE") and 0.65 or 0.12 + math.random() * 0.05
 	jaw += (wantJaw - jaw) * math.min(1, dt * 6)
-	if state == "STARE" then
+	if state == "STUNNED" then
+		headRoll = math.sin(os.clock() * 28) * 0.5  -- shaking his head, blinded
+	elseif state == "STARE" then
 		headRoll += (1.05 - headRoll) * math.min(1, dt * 1.5)
 	elseif twitchTimer <= 0 then
 		twitchTimer = math.random() * (state == "CHASE" and 1.5 or 4) + 0.5
@@ -636,7 +656,11 @@ UserInputService.InputEnded:Connect(function(input)
 	if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.ButtonL3 then wantRun = false end
 end)
 
+local player = game:GetService("Players"):GetPlayerFromCharacter(script.Parent)
 RunService.Heartbeat:Connect(function(dt)
+	-- Frank the Guard is big: a bit slower.
+	local big = player and player:GetAttribute("Character") == "Guard"
+	WALK, RUN = big and 12.5 or 14, big and 19.5 or 22
 	if humanoid:GetAttribute("Frozen") then
 		humanoid.WalkSpeed = 0  -- holding something up: stay still
 		return
