@@ -105,6 +105,8 @@ Roblox only plays sounds that are uploaded to Roblox, so:
     ReplicatedStorage -> LongManSounds in the Explorer.
     That's it: the game finds them by their names (LongMan_Scream,
     LongMan_Breath, ...).
+    If dragging doesn't work: RIGHT-CLICK each sound -> Insert. It goes
+    into Workspace, and the game finds it there too (keep its name).
  4. File -> Publish to Roblox again.
 (Or: paste a sound's ID, like rbxassetid://123456, into the Value of the
 matching item in LongManSounds. Both ways work.)

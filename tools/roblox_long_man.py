@@ -129,13 +129,23 @@ local soundIds = ReplicatedStorage:WaitForChild("LongManSounds")
 
 -- A sound's ID: either typed into the value with that name, or a Sound you
 -- dragged into the LongManSounds folder whose name has that word in it
--- (like "LongMan_Scream").
+-- (like "LongMan_Scream"), or a Sound called "LongMan_Scream" anywhere
+-- in Workspace or SoundService.
 local function findSoundId(name)
 	local value = soundIds:FindFirstChild(name)
 	if value and value:IsA("StringValue") and value.Value ~= "" then return value.Value end
 	for _, thing in ipairs(soundIds:GetDescendants()) do
 		if thing:IsA("Sound") and string.find(string.lower(thing.Name), string.lower(name), 1, true) then
 			return thing.SoundId
+		end
+	end
+	-- Inserted somewhere else (Workspace, SoundService...)? Still find it,
+	-- as long as its name is like "LongMan_Scream".
+	for _, place in ipairs({ workspace, game:GetService("SoundService"), game:GetService("ReplicatedStorage") }) do
+		for _, thing in ipairs(place:GetDescendants()) do
+			if thing:IsA("Sound") and string.lower(thing.Name) == "longman_" .. string.lower(name) then
+				return thing.SoundId
+			end
 		end
 	end
 	return ""
@@ -526,13 +536,23 @@ end)
 local soundIds = ReplicatedStorage:WaitForChild("LongManSounds")
 -- A sound's ID: either typed into the value with that name, or a Sound you
 -- dragged into the LongManSounds folder whose name has that word in it
--- (like "LongMan_Scream").
+-- (like "LongMan_Scream"), or a Sound called "LongMan_Scream" anywhere
+-- in Workspace or SoundService.
 local function findSoundId(name)
 	local value = soundIds:FindFirstChild(name)
 	if value and value:IsA("StringValue") and value.Value ~= "" then return value.Value end
 	for _, thing in ipairs(soundIds:GetDescendants()) do
 		if thing:IsA("Sound") and string.find(string.lower(thing.Name), string.lower(name), 1, true) then
 			return thing.SoundId
+		end
+	end
+	-- Inserted somewhere else (Workspace, SoundService...)? Still find it,
+	-- as long as its name is like "LongMan_Scream".
+	for _, place in ipairs({ workspace, game:GetService("SoundService"), game:GetService("ReplicatedStorage") }) do
+		for _, thing in ipairs(place:GetDescendants()) do
+			if thing:IsA("Sound") and string.lower(thing.Name) == "longman_" .. string.lower(name) then
+				return thing.SoundId
+			end
 		end
 	end
 	return ""
