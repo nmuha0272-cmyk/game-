@@ -69,10 +69,27 @@ What's in this Roblox version:
     Then he crawls away for a few seconds.
   * To test fast: in Studio press Play, then walk to the tunnels
     (down the hidden stairs) and past his cell.
-  * Want a scream sound? Upload a sound to Roblox (Creator Hub),
-    then in Studio click StarterPlayer > StarterPlayerScripts >
-    LongManEffects, and add an Attribute named ScreamSoundId (string)
-    with the value  rbxassetid://YOUR_NUMBER
+  * When he STARES at you, he slowly RISES UP to his full 9 feet, his
+    head tipping over sideways, his jaw falling open. Then he charges,
+    in sudden lunges.
+  * His red eyes glow in the dark. Lights go OUT when he's right there.
+  * When he's hunting you: the screen darkens and goes red at the edges,
+    your view shakes, and you hear your heartbeat speeding up.
+
+HIS SOUNDS (do this once, it makes him MUCH scarier)
+Roblox only plays sounds that are uploaded to Roblox, so:
+ 1. Go to create.roblox.com -> Creations -> Development Items -> Audio
+    -> Upload Asset. Upload each file from the "sounds" folder in this zip
+    (LongMan_Scream.ogg, LongMan_Shriek.ogg, ... 7 files).
+ 2. For each one, copy its ID number (the number in its web address).
+ 3. In Studio: Explorer -> ReplicatedStorage -> LongManSounds.
+    Click a value (for example "Scream"), and in Properties set
+    Value to   rbxassetid://THE_NUMBER
+    Do that for all 7: Scream, Shriek, NeckCrack, Skitter, Breath,
+    Click, Heartbeat.
+ 4. File -> Publish to Roblox. Done!
+(The game works without them too, just silent.)
+
   * Want him faster or slower? Open Workspace > LongMan > LongManBrain
     and change CHASE_SPEED (17). Walking is 14, sprinting is 22.
 - THE TEAM LIVES OR DIES TOGETHER: if ONE player dies, EVERYONE dies,

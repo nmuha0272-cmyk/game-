@@ -219,10 +219,14 @@ end)
 FLICKER = '''-- Makes the station's broken lights flicker and the warning lights pulse.
 -- (A light's holder part is named FlickerLight_<how broken 0-1> or PulseLight.)
 -- Lights go crazy when the Long Man is near (any light, broken or not).
-local function longManNear(light)
+-- (Right next to him they go out completely.)
+local function longManDistance(light)
 	local longMan = workspace:FindFirstChild("LongMan")
 	local root = longMan and longMan:FindFirstChild("Root")
-	return root and light.Parent and (root.Position - light.Parent.Position).Magnitude < 30
+	return (root and light.Parent) and (root.Position - light.Parent.Position).Magnitude or math.huge
+end
+local function longManNear(light)
+	return longManDistance(light) < 30
 end
 
 local function flicker(light, brokenness)
@@ -230,7 +234,10 @@ local function flicker(light, brokenness)
 	local normal = brokenness
 	while light.Parent do
 		brokenness = longManNear(light) and 0.85 or normal
-		if math.random() < brokenness then
+		if longManDistance(light) < 14 then
+			light.Brightness = 0
+			task.wait(0.2)
+		elseif math.random() < brokenness then
 			light.Brightness = 0
 			task.wait(0.03 + math.random() * 0.1 + math.random() * brokenness * 1.5)
 		else
@@ -278,7 +285,12 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManJumpScare</string></Properties></Item>'
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManReveal</string></Properties></Item>'
        + "".join(f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">{n}</string></Properties></Item>'
-                 for n in ("PuzzleMessage", "PuzzleKeypad", "PuzzleRead", "ChapterEnd")) + '</Item>',
+                 for n in ("PuzzleMessage", "PuzzleKeypad", "PuzzleRead", "ChapterEnd"))
+       + f'<Item class="Folder" referent="{new_ref()}"><Properties><string name="Name">LongManSounds</string></Properties>'
+       + "".join(f'<Item class="StringValue" referent="{new_ref()}"><Properties><string name="Name">{n}</string>'
+                 '<string name="Value"></string></Properties></Item>'
+                 for n in ("Scream", "Shriek", "NeckCrack", "Skitter", "Breath", "Click", "Heartbeat"))
+       + '</Item></Item>',
        f'<Item class="Lighting" referent="{new_ref()}"><Properties><string name="Name">Lighting</string>'
        '<float name="ClockTime">0</float><float name="Brightness">0.6</float><token name="Technology">4</token>'
        '<Color3 name="Ambient"><R>0.05</R><G>0.05</G><B>0.07</B></Color3>'
