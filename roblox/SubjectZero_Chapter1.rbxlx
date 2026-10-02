@@ -875,7 +875,10 @@ local function make(class, props, parent)
 end
 
 -- THE PICK SCREEN ------------------------------------------------------------
-local screen = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.15, Visible = false }, gui)
+local screen = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(6, 6, 7), BackgroundTransparency = 0, Visible = false }, gui)
+make("TextLabel", { Size = UDim2.new(1, 0, 0.05, 0), Position = UDim2.fromScale(0, 0.93), BackgroundTransparency = 1,
+	Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(140, 135, 120),
+	Text = "SUBJECT ZERO  -  a co-op horror game for 2-4 players. Each player picks a different character." }, screen)
 make("TextLabel", { Size = UDim2.new(1, 0, 0.1, 0), Position = UDim2.fromScale(0, 0.05), BackgroundTransparency = 1,
 	Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(225, 215, 195), Text = "CHOOSE YOUR CHARACTER" }, screen)
 local row = make("Frame", { Size = UDim2.fromScale(0.94, 0.72), Position = UDim2.fromScale(0.03, 0.2), BackgroundTransparency = 1 }, screen)
@@ -927,8 +930,7 @@ Players.PlayerAdded:Connect(function(p) watch(p) refresh() end)
 Players.PlayerRemoving:Connect(function() task.defer(refresh) end)
 refresh()
 
--- Wait for the opening cutscene, then pick.
-if not player:GetAttribute("IntroDone") then player:GetAttributeChangedSignal("IntroDone"):Wait() end
+-- Pick FIRST, before the game starts (the opening cutscene plays after).
 local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")):GetControls()
 if not player:GetAttribute("Character") then
 	controls:Disable()
@@ -1023,7 +1025,8 @@ ReplicatedStorage:WaitForChild("CameraFlash").OnClientEvent:Connect(function(pos
 	task.delay(0.8, function() white:Destroy() end)
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="LocalScript" referent="RBX8930"><Properties><string name="Name">OpeningCutscene</string><ProtectedString name="Source"><![CDATA[-- THE OPENING CUTSCENE: plays once when you join.
+<Item class="LocalScript" referent="RBX8930"><Properties><string name="Name">OpeningCutscene</string><ProtectedString name="Source"><![CDATA[-- THE OPENING CUTSCENE: plays once when you join, right after you pick
+-- your character.
 -- Skip it: Space, A / Cross, or click "Skip".
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -1034,7 +1037,9 @@ local camera = workspace.CurrentCamera
 
 local SHOTS = { {Vector3.new(-44.80, 28.80, 198.40), Vector3.new(0.00, 6.40, -19.20), Vector3.new(-19.20, 20.80, 160.00), Vector3.new(0.00, 6.40, -25.60), 5.0, "1999. Site 12 was sealed... with people still inside."}, {Vector3.new(-20.80, 5.76, 86.40), Vector3.new(-12.80, 5.44, 70.40), Vector3.new(-14.72, 5.44, 78.72), Vector3.new(-12.80, 5.44, 70.40), 3.5, "Officially, it was only ever a weather station."}, {Vector3.new(22.40, 7.04, 48.00), Vector3.new(-16.00, 10.88, -28.80), Vector3.new(9.60, 8.96, 28.80), Vector3.new(-16.00, 10.88, -28.80), 4.0, "2015. You came looking for answers."}, {Vector3.new(1.60, 5.44, 96.00), Vector3.new(0.00, 4.48, 70.40), Vector3.new(0.64, 5.28, 83.20), Vector3.new(0.00, 4.16, 70.40), 2.5, "CHAPTER 1  -  THE SURFACE"} }
 
-player.CharacterAdded:Wait()
+if not player.Character then player.CharacterAdded:Wait() end
+-- First everyone picks a character (CharacterPick script), THEN the opening plays.
+if not player:GetAttribute("Character") then player:GetAttributeChangedSignal("Character"):Wait() end
 task.wait(1)
 local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")):GetControls()
 controls:Disable()
@@ -1095,8 +1100,6 @@ skipKey:Disconnect()
 camera.CameraType = Enum.CameraType.Custom
 controls:Enable()
 gui:Destroy()
-player:SetAttribute("IntroDone", true)  -- now the character pick screen shows
-if not player:GetAttribute("Character") then player:GetAttributeChangedSignal("Character"):Wait() end
 task.wait(1)
 
 -- A reminder about the flashlight.

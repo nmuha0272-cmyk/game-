@@ -144,7 +144,10 @@ local function make(class, props, parent)
 end
 
 -- THE PICK SCREEN ------------------------------------------------------------
-local screen = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.15, Visible = false }, gui)
+local screen = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(6, 6, 7), BackgroundTransparency = 0, Visible = false }, gui)
+make("TextLabel", { Size = UDim2.new(1, 0, 0.05, 0), Position = UDim2.fromScale(0, 0.93), BackgroundTransparency = 1,
+	Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(140, 135, 120),
+	Text = "SUBJECT ZERO  -  a co-op horror game for 2-4 players. Each player picks a different character." }, screen)
 make("TextLabel", { Size = UDim2.new(1, 0, 0.1, 0), Position = UDim2.fromScale(0, 0.05), BackgroundTransparency = 1,
 	Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(225, 215, 195), Text = "CHOOSE YOUR CHARACTER" }, screen)
 local row = make("Frame", { Size = UDim2.fromScale(0.94, 0.72), Position = UDim2.fromScale(0.03, 0.2), BackgroundTransparency = 1 }, screen)
@@ -196,8 +199,7 @@ Players.PlayerAdded:Connect(function(p) watch(p) refresh() end)
 Players.PlayerRemoving:Connect(function() task.defer(refresh) end)
 refresh()
 
--- Wait for the opening cutscene, then pick.
-if not player:GetAttribute("IntroDone") then player:GetAttributeChangedSignal("IntroDone"):Wait() end
+-- Pick FIRST, before the game starts (the opening cutscene plays after).
 local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")):GetControls()
 if not player:GetAttribute("Character") then
 	controls:Disable()

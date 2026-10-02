@@ -219,7 +219,8 @@ def intro_shots():
     return ", ".join("{" + f"{v(a)}, {v(la)}, {v(b)}, {v(lb)}, {t}, {q(txt)}" + "}" for a, la, b, lb, t, txt in INTRO_SHOTS)
 
 
-INTRO_SCRIPT = r'''-- THE OPENING CUTSCENE: plays once when you join.
+INTRO_SCRIPT = r'''-- THE OPENING CUTSCENE: plays once when you join, right after you pick
+-- your character.
 -- Skip it: Space, A / Cross, or click "Skip".
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -230,7 +231,9 @@ local camera = workspace.CurrentCamera
 
 local SHOTS = { --SHOTS-- }
 
-player.CharacterAdded:Wait()
+if not player.Character then player.CharacterAdded:Wait() end
+-- First everyone picks a character (CharacterPick script), THEN the opening plays.
+if not player:GetAttribute("Character") then player:GetAttributeChangedSignal("Character"):Wait() end
 task.wait(1)
 local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")):GetControls()
 controls:Disable()
@@ -291,8 +294,6 @@ skipKey:Disconnect()
 camera.CameraType = Enum.CameraType.Custom
 controls:Enable()
 gui:Destroy()
-player:SetAttribute("IntroDone", true)  -- now the character pick screen shows
-if not player:GetAttribute("Character") then player:GetAttributeChangedSignal("Character"):Wait() end
 task.wait(1)
 
 -- A reminder about the flashlight.
