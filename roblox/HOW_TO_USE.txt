@@ -7,10 +7,10 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
    (it takes a little while: it's a big map).
 4. Press Play (or F5). You spawn on the road as YOUR OWN AVATAR.
    - F (keyboard), Y (Xbox), Triangle (PlayStation): flashlight on/off
-   - Mouse wheel / right stick: zoom in to first person, or out to see your avatar
+   - Mouse wheel: zoom in to first person, or out to see your avatar
    - Shift (keyboard), left stick click (controller): SPRINT (about 4 seconds)
    - E (keyboard), X (Xbox), Square (PlayStation): use things / hold things
-   - Walk into an item to pick it up. 1-9 or click it in the bar to hold it.
+   - Walk into an item to pick it up (you don't have to hold it to use it).
 
 To let friends play (PC, phone, Xbox, PlayStation):
 5. File -> Publish to Roblox -> give it a name.
@@ -18,8 +18,33 @@ To let friends play (PC, phone, Xbox, PlayStation):
    - Places: Server size / "Max players" = 4 (it's a 4-player co-op game)
    - Avatar: leave "Player choice" ON so everyone keeps their own avatar
    - Permissions: Public (or Friends) when you're ready
-   - To be on Xbox/PlayStation the experience needs an age/content
-     maturity questionnaire filled in (Roblox asks for it in Game Settings).
+   - For Xbox / PlayStation, see "XBOX AND PS5" below.
+
+XBOX AND PS5
+------------
+The game already works with a controller:
+   Left stick ........ walk          Right stick ... look around
+   A / Cross ......... jump          L3 (click left stick) ... sprint
+   X / Square ........ use / hold things (gate, switches, fuses, keys...)
+   Y / Triangle ...... flashlight    D-pad UP ...... use the keypad
+   On the keypad and notes: move with the stick, A / Cross to press,
+   B / Circle to close. Text is bigger on a TV.
+
+To put it ON Xbox and PlayStation (after "Publish to Roblox"):
+ a. Studio: Home -> Game Settings -> Basic Info -> "Playable Devices":
+    tick  Console  (keep Computer, Phone and Tablet ticked too). Save.
+ b. Go to create.roblox.com -> Creations -> your game ->
+    "Experience Questionnaire" (also called Maturity & Compliance).
+    Answer it honestly (it's a horror game: say yes to "scary" /
+    "fear" content). Consoles only show games that have this filled in.
+    It will probably be rated "Mild" or "Moderate", so very young players
+    won't see it.
+ c. Make the game Public (Game Settings -> Permissions).
+ d. On the Xbox / PS5: open the Roblox app and search for your game's name.
+    (Friends on PC, phone, Xbox and PS5 can all play together.)
+Test it with a controller first: plug an Xbox or PS controller into your
+PC and press Play in Studio. Or: Test tab -> Device -> pick "Xbox One"
+to see how the screen looks on a TV.
 
 What's in this first Roblox version:
 - The whole Chapter 1 map (forest, station, stairs, tunnels, cell, elevator room)
@@ -48,7 +73,7 @@ What's in this first Roblox version:
   2. The door code: put the WELCOME TAPE in the tape machine, and someone
      HOLDS the monitor switch by the office door. The screen in the west
      office shows the code. Shout it to the person at the keypad
-     (press R at the keypad).
+     (at the keypad press R, or D-pad UP on a controller).
   3. The GREEN KEYCARD is in the director's office. The filing cabinet
      hides a door: TWO people push it at the same time.
   4. Tunnels: one person holds the VENT cover up, the others crawl in

@@ -221,7 +221,7 @@ local function openDoor(name)
 end
 
 -- Something one person holds (and has to stand still for).
--- Press E to grab it, E again (or walk away) to let go.
+-- Press E / X / Square to grab it, again (or walk away) to let go.
 local function holdSwitch(part, action, onChange)
 	local p = prompt(part, action, "")
 	local holder = nil
@@ -239,7 +239,7 @@ local function holdSwitch(part, action, onChange)
 			setHolder(nil)
 		elseif holder == nil then
 			setHolder(player)
-			say(player, "Holding it. Stay still!  (Press E again to let go.)")
+			say(player, "Holding it. Stay still!  (Use it again to let go.)")
 		else
 			say(player, holder.DisplayName .. " is already holding it.")
 		end
@@ -326,7 +326,7 @@ local keypad = prompt(P.OfficeKeypad, "Type the code", "Keypad")
 -- A different button from the switch next to it, so whoever holds the
 -- switch can still use the keypad.
 keypad.KeyboardKeyCode = Enum.KeyCode.R
-keypad.GamepadKeyCode = Enum.KeyCode.ButtonB
+keypad.GamepadKeyCode = Enum.KeyCode.DPadUp
 keypad.Triggered:Connect(function(player) keypadEvent:FireClient(player, "open") end)
 keypadEvent.OnServerEvent:Connect(function(player, code)
 	if officeOpen or typeof(code) ~= "string" then return end
@@ -580,7 +580,16 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local GuiService = game:GetService("GuiService")
 local player = Players.LocalPlayer
+
+-- Xbox / PlayStation: when a panel opens, the controller selects its
+-- buttons (move with the stick or D-pad, A / Cross to press, B / Circle
+-- to close). Bigger text on a TV.
+local function onConsole()
+	return GuiService:IsTenFootInterface() or UserInputService:GetLastInputType().Name:sub(1, 7) == "Gamepad"
+end
+local TEXT = GuiService:IsTenFootInterface() and 1.35 or 1
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "PuzzleUI"
@@ -599,9 +608,9 @@ local INK = Color3.fromRGB(40, 34, 28)
 
 -- Messages at the bottom of the screen.
 local message = make("TextLabel", {
-	AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 0.84, 0), Size = UDim2.new(0.8, 0, 0, 34),
+	AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 0.84, 0), Size = UDim2.new(0.8, 0, 0, 34 * TEXT),
 	BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(235, 228, 205), TextStrokeTransparency = 0.3,
-	Font = Enum.Font.SpecialElite, TextSize = 26, TextWrapped = true, Text = "", TextTransparency = 1,
+	Font = Enum.Font.SpecialElite, TextSize = 26 * TEXT, TextWrapped = true, Text = "", TextTransparency = 1,
 }, gui)
 local messageId = 0
 ReplicatedStorage:WaitForChild("PuzzleMessage").OnClientEvent:Connect(function(text)
@@ -629,18 +638,23 @@ local noteTitle = make("TextLabel", {
 }, note)
 local noteText = make("TextLabel", {
 	Position = UDim2.fromScale(0.06, 0.17), Size = UDim2.fromScale(0.88, 0.66), BackgroundTransparency = 1,
-	Font = Enum.Font.SpecialElite, TextSize = 20, TextWrapped = true, TextColor3 = INK,
+	Font = Enum.Font.SpecialElite, TextSize = 20 * TEXT, TextWrapped = true, TextColor3 = INK,
 	TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top,
 }, note)
 local close = make("TextButton", {
 	AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.fromScale(0.5, 0.96), Size = UDim2.fromScale(0.3, 0.1),
 	BackgroundColor3 = INK, TextColor3 = PAPER, Font = Enum.Font.SpecialElite, TextScaled = true, Text = "Close",
 }, note)
-close.Activated:Connect(function() note.Visible = false end)
+local function closeNote()
+	note.Visible = false
+	if GuiService.SelectedObject and GuiService.SelectedObject:IsDescendantOf(note) then GuiService.SelectedObject = nil end
+end
+close.Activated:Connect(closeNote)
 ReplicatedStorage:WaitForChild("PuzzleRead").OnClientEvent:Connect(function(title, text)
 	noteTitle.Text = title
 	noteText.Text = text
 	note.Visible = true
+	if onConsole() then GuiService.SelectedObject = close end
 end)
 
 -- The keypad.
@@ -678,7 +692,18 @@ local leave = make("TextButton", {
 	BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(200, 195, 175), Font = Enum.Font.SpecialElite,
 	TextSize = 18, Text = "(walk away to close)",
 }, pad)
-leave.Activated:Connect(function() pad.Visible = false end)
+local firstKey = pad:FindFirstChildWhichIsA("TextButton")
+local function closePad()
+	pad.Visible = false
+	if GuiService.SelectedObject and GuiService.SelectedObject:IsDescendantOf(pad) then GuiService.SelectedObject = nil end
+end
+leave.Activated:Connect(closePad)
+UserInputService.InputBegan:Connect(function(input)
+	if input.KeyCode == Enum.KeyCode.ButtonB then
+		if pad.Visible then closePad() end
+		if note.Visible then closeNote() end
+	end
+end)
 UserInputService.InputBegan:Connect(function(input, typing)
 	if typing or not pad.Visible then return end
 	local names = { Zero = "0", One = "1", Two = "2", Three = "3", Four = "4", Five = "5", Six = "6", Seven = "7", Eight = "8", Nine = "9" }
@@ -694,6 +719,8 @@ ReplicatedStorage:WaitForChild("PuzzleKeypad").OnClientEvent:Connect(function(wh
 		typed = ""
 		show()
 		pad.Visible = true
+		leave.Text = onConsole() and "(B / Circle to close)" or "(walk away to close)"
+		if onConsole() then GuiService.SelectedObject = firstKey end
 	elseif what == "wrong" then
 		display.Text = "WRONG"
 		display.TextColor3 = Color3.fromRGB(255, 70, 50)
@@ -704,13 +731,13 @@ ReplicatedStorage:WaitForChild("PuzzleKeypad").OnClientEvent:Connect(function(wh
 		end)
 	elseif what == "right" then
 		display.Text = "OPEN"
-		task.delay(0.8, function() pad.Visible = false end)
+		task.delay(0.8, closePad)
 	end
 end)
 RunService.Heartbeat:Connect(function()
 	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-	if pad.Visible and (not root or (root.Position - keypadPart.Position).Magnitude > 12) then pad.Visible = false end
-	if note.Visible and root and root.AssemblyLinearVelocity.Magnitude > 20 then note.Visible = false end
+	if pad.Visible and (not root or (root.Position - keypadPart.Position).Magnitude > 12) then closePad() end
+	if note.Visible and root and root.AssemblyLinearVelocity.Magnitude > 20 then closeNote() end
 end)
 
 -- The end of chapter 1: the elevator goes down... and the cable snaps.
