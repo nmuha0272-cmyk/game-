@@ -97,16 +97,17 @@ What's in this Roblox version:
 
 HIS SOUNDS (do this once, it makes him MUCH scarier)
 Roblox only plays sounds that are uploaded to Roblox, so:
- 1. Go to create.roblox.com -> Creations -> Development Items -> Audio
-    -> Upload Asset. Upload each file from the "sounds" folder in this zip
-    (LongMan_Scream.ogg, LongMan_Shriek.ogg, ... 7 files).
- 2. For each one, copy its ID number (the number in its web address).
- 3. In Studio: Explorer -> ReplicatedStorage -> LongManSounds.
-    Click a value (for example "Scream"), and in Properties set
-    Value to   rbxassetid://THE_NUMBER
-    Do that for all 7: Scream, Shriek, NeckCrack, Skitter, Breath,
-    Click, Heartbeat.
- 4. File -> Publish to Roblox. Done!
+ 1. Publish the game first (File -> Publish to Roblox).
+ 2. View -> Asset Manager -> Import (the up-arrow button). Pick all 7
+    files from the "sounds" folder in this zip. Wait for them to upload
+    (Roblox checks them first; it can take a few minutes).
+ 3. In the Asset Manager, open Audio. DRAG each sound onto
+    ReplicatedStorage -> LongManSounds in the Explorer.
+    That's it: the game finds them by their names (LongMan_Scream,
+    LongMan_Breath, ...).
+ 4. File -> Publish to Roblox again.
+(Or: paste a sound's ID, like rbxassetid://123456, into the Value of the
+matching item in LongManSounds. Both ways work.)
 (The game works without them too, just silent.)
 
   * Want him faster or slower? Open Workspace > LongMan > LongManBrain

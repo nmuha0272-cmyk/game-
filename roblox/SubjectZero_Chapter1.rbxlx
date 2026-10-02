@@ -24,12 +24,25 @@ local jumpScare = ReplicatedStorage:WaitForChild("LongManJumpScare")
 local reveal = ReplicatedStorage:WaitForChild("LongManReveal")
 local soundIds = ReplicatedStorage:WaitForChild("LongManSounds")
 
+-- A sound's ID: either typed into the value with that name, or a Sound you
+-- dragged into the LongManSounds folder whose name has that word in it
+-- (like "LongMan_Scream").
+local function findSoundId(name)
+	local value = soundIds:FindFirstChild(name)
+	if value and value:IsA("StringValue") and value.Value ~= "" then return value.Value end
+	for _, thing in ipairs(soundIds:GetDescendants()) do
+		if thing:IsA("Sound") and string.find(string.lower(thing.Name), string.lower(name), 1, true) then
+			return thing.SoundId
+		end
+	end
+	return ""
+end
+
 -- His sounds (they play once you've uploaded them: see HOW_TO_USE.txt).
 local function makeSound(name, looped, volume)
-	local value = soundIds:FindFirstChild(name)
 	local sound = Instance.new("Sound")
 	sound.Name = name
-	sound.SoundId = value and value.Value or ""
+	sound.SoundId = findSoundId(name)
 	sound.Looped = looped
 	sound.Volume = volume
 	sound.RollOffMode = Enum.RollOffMode.InverseTapered
@@ -516,10 +529,20 @@ end)
 -- darkens at the edges, goes a little red, the view tightens and shakes,
 -- and you hear your heartbeat getting faster.
 local soundIds = ReplicatedStorage:WaitForChild("LongManSounds")
-local function soundId(name)
+-- A sound's ID: either typed into the value with that name, or a Sound you
+-- dragged into the LongManSounds folder whose name has that word in it
+-- (like "LongMan_Scream").
+local function findSoundId(name)
 	local value = soundIds:FindFirstChild(name)
-	return value and value.Value or ""
+	if value and value:IsA("StringValue") and value.Value ~= "" then return value.Value end
+	for _, thing in ipairs(soundIds:GetDescendants()) do
+		if thing:IsA("Sound") and string.find(string.lower(thing.Name), string.lower(name), 1, true) then
+			return thing.SoundId
+		end
+	end
+	return ""
 end
+local soundId = findSoundId
 local fearGui = makeGui()
 fearGui.DisplayOrder = -1
 local edges = {}
