@@ -99,9 +99,9 @@ for door in d["doors"]:
     hx, hy, hz = door["p"]
     cx = hx - math.sin(yaw) * 100; cy = hy + math.cos(yaw) * 100
     shapes.append({"t": "cube", "p": [cx, cy, hz + 150], "x": [math.cos(yaw), math.sin(yaw), 0], "z": [0, 0, 1],
-                   "s": [12, 200, 300], "m": "rusty_metal", "c": True})
+                   "s": [12, 200, 300], "m": "rusty_metal", "c": True, "door": door["name"]})
 
-kit = {"shapes": shapes, "lights": d["lights"], "labels": d["labels"], "moon": d["moon"], "spawns": d["spawns"]}
+kit = {"shapes": shapes, "lights": d["lights"], "labels": d["labels"], "moon": d["moon"], "spawns": d["spawns"], "doors": d["doors"]}
 os.makedirs(OUT + "/Textures", exist_ok=True)
 json.dump(kit, open(OUT + "/level.json", "w"))
 for f in os.listdir("assets/textures"):

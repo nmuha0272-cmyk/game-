@@ -10,6 +10,7 @@ import json, math
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import roblox_long_man as LM
+import roblox_puzzles as PZ
 from xml.sax.saxutils import escape
 
 KIT = "unreal_easy/SubjectZero_Kit/level.json"
@@ -65,14 +66,14 @@ def color_of(m):
     return COLOR.get(m, (128, 128, 128))
 
 
-def part(name, pos, axes, size, m, collide=True, shape=1, transparency=0.0, cls="Part", children="", extra=""):
+def part(name, pos, axes, size, m, collide=True, shape=1, transparency=0.0, cls="Part", children="", extra="", anchored=True):
     c = color_of(m)
     mat = 288 if m.startswith("!") else MATERIAL.get(m, 272)
     if m == "chainlink":
         transparency = 0.55
     rgb = 0xFF000000 | (c[0] << 16) | (c[1] << 8) | c[2]
     return (f'<Item class="{cls}" referent="{new_ref()}"><Properties>'
-            f'<string name="Name">{escape(name)}</string><bool name="Anchored">true</bool>{cframe(pos, axes)}'
+            f'<string name="Name">{escape(name)}</string><bool name="Anchored">{"true" if anchored else "false"}</bool>{cframe(pos, axes)}'
             f'<bool name="CanCollide">{"true" if collide else "false"}</bool>'
             f'<bool name="CastShadow">{"true" if transparency < 0.9 else "false"}</bool>'
             f'<Color3uint8 name="Color3uint8">{rgb}</Color3uint8><token name="Material">{mat}</token>'
@@ -87,16 +88,20 @@ def rot_cyl(axes):
     return (u, tuple(-c for c in r), b)
 
 
-parts = []
+puzzle_xml, PUZZLE_SRC, PUZZLE_UI, in_elevator = PZ.build(part, frame, new_ref, d)
+parts, elevator = [], []
 for i, s in enumerate(d["shapes"]):
+    if s.get("door") in PZ.PUZZLE_DOORS:
+        continue  # the puzzles put a closed door here instead
     pos, axes, size = frame(s)
+    target = elevator if in_elevator(pos) else parts
     kind, m, col = s["t"], s["m"], s["c"]
     if kind == "cube":
-        parts.append(part("Block", pos, axes, size, m, col))
+        target.append(part("Block", pos, axes, size, m, col))
     elif kind == "sphere":
-        parts.append(part("Ball", pos, axes, size, m, col, shape=0))
+        target.append(part("Ball", pos, axes, size, m, col, shape=0))
     elif kind == "cylinder":
-        parts.append(part("Cylinder", pos, rot_cyl(axes), (size[1], size[0], size[2]), m, col, shape=2))
+        target.append(part("Cylinder", pos, rot_cyl(axes), (size[1], size[0], size[2]), m, col, shape=2))
     elif kind == "cone":
         # No cones in Roblox: stack three shrinking discs (pine tree tiers).
         h, rad = size[1], size[0]
@@ -105,7 +110,7 @@ for i, s in enumerate(d["shapes"]):
             t = (k + 0.5) / 3
             p = tuple(pos[j] + up[j] * (t - 0.5) * h for j in range(3))
             r_k = rad * (1 - t * 0.85)
-            parts.append(part("Needles", p, rot_cyl(axes), (h / 3, r_k, r_k), m, False, shape=2))
+            target.append(part("Needles", p, rot_cyl(axes), (h / 3, r_k, r_k), m, False, shape=2))
 
 lights = []
 for L in d["lights"]:
@@ -227,10 +232,12 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        'xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">',
        f'<Item class="Workspace" referent="{new_ref()}"><Properties><string name="Name">Workspace</string></Properties>',
        model("Chapter1_Level", parts), model("Chapter1_Lights", lights), model("Spawns", spawns),
-       LM.build(part, script, new_ref), "</Item>",
+       model("Elevator", elevator), puzzle_xml, LM.build(part, script, new_ref), "</Item>",
        f'<Item class="ReplicatedStorage" referent="{new_ref()}"><Properties><string name="Name">ReplicatedStorage</string></Properties>'
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManJumpScare</string></Properties></Item>'
-       f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManReveal</string></Properties></Item></Item>',
+       f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManReveal</string></Properties></Item>'
+       + "".join(f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">{n}</string></Properties></Item>'
+                 for n in ("PuzzleMessage", "PuzzleKeypad", "PuzzleRead", "ChapterEnd")) + '</Item>',
        f'<Item class="Lighting" referent="{new_ref()}"><Properties><string name="Name">Lighting</string>'
        '<float name="ClockTime">0</float><float name="Brightness">0.6</float><token name="Technology">4</token>'
        '<Color3 name="Ambient"><R>0.05</R><G>0.05</G><B>0.07</B></Color3>'
@@ -245,9 +252,10 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        script("Script", "Flashlight", FLASHLIGHT), script("LocalScript", "FlashlightKey", FLASHLIGHT_KEY),
        script("LocalScript", "Sprint", LM.SPRINT_SCRIPT), "</Item>",
        f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>',
-       script("LocalScript", "LongManEffects", LM.EFFECTS_SCRIPT.replace("--SHOTS--", LM.reveal_shots())), "</Item></Item>",
+       script("LocalScript", "LongManEffects", LM.EFFECTS_SCRIPT.replace("--SHOTS--", LM.reveal_shots())),
+       script("LocalScript", "PuzzleUI", PUZZLE_UI), "</Item></Item>",
        f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>',
-       script("Script", "FlickeringLights", FLICKER), "</Item>",
+       script("Script", "FlickeringLights", FLICKER), script("Script", "Puzzles", PUZZLE_SRC), "</Item>",
        "</roblox>"]
 open(OUT, "w").write("\n".join(xml))
-print(f"wrote {OUT}: {len(parts)} parts, {len(lights)} lights, {len(spawns)} spawns")
+print(f"wrote {OUT}: {len(parts)} parts, {len(elevator)} elevator parts, {len(lights)} lights, {len(spawns)} spawns")

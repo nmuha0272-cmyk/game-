@@ -9,6 +9,8 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
    - F (keyboard), Y (Xbox), Triangle (PlayStation): flashlight on/off
    - Mouse wheel / right stick: zoom in to first person, or out to see your avatar
    - Shift (keyboard), left stick click (controller): SPRINT (about 4 seconds)
+   - E (keyboard), X (Xbox), Square (PlayStation): use things / hold things
+   - Walk into an item to pick it up. 1-9 or click it in the bar to hold it.
 
 To let friends play (PC, phone, Xbox, PlayStation):
 5. File -> Publish to Roblox -> give it a name.
@@ -40,6 +42,22 @@ What's in this first Roblox version:
     with the value  rbxassetid://YOUR_NUMBER
   * Want him faster or slower? Open Workspace > LongMan > LongManBrain
     and change CHASE_SPEED (17). Walking is 14, sprinting is 22.
-Not yet: puzzles, the four roles (coming in the next steps).
+- THE PUZZLES (the same as the PC game). Each one needs 2 people:
+  1. The gate: one person LIFTS it and holds it (stay still!). Another
+     finds the CROWBAR by the shed and jams the gate open.
+  2. The door code: put the WELCOME TAPE in the tape machine, and someone
+     HOLDS the monitor switch by the office door. The screen in the west
+     office shows the code. Shout it to the person at the keypad
+     (press R at the keypad).
+  3. The GREEN KEYCARD is in the director's office. The filing cabinet
+     hides a door: TWO people push it at the same time.
+  4. Tunnels: one person holds the VENT cover up, the others crawl in
+     (you shrink to fit!) and slide open the bolt on the other side.
+  5. Elevator room: find 2 FUSES in the tunnels and put them in the fuse
+     boxes, repair the GENERATOR, read the CONTAINMENT ORDER on the desk,
+     then turn both LAUNCH KEYS at the same time ("3, 2, 1, now!").
+  6. Everyone gets in the elevator. Press Descend... END OF CHAPTER 1.
+  The door code is new every time you play.
+Not yet: the four roles (coming in the next steps).
 
 Made by tools/make_roblox.py from the same level as the PC game.

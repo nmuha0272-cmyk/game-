@@ -482,6 +482,10 @@ UserInputService.InputEnded:Connect(function(input)
 end)
 
 RunService.Heartbeat:Connect(function(dt)
+	if humanoid:GetAttribute("Frozen") then
+		humanoid.WalkSpeed = 0  -- holding something up: stay still
+		return
+	end
 	local moving = humanoid.MoveDirection.Magnitude > 0.1
 	if wantRun and moving and stamina > 0 then
 		stamina = math.max(0, stamina - dt)
