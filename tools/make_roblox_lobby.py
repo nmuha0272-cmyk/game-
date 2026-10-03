@@ -189,19 +189,52 @@ box("Bench", (4, 0.45, 3), (4, 0.1, 0.7), "#4a3420")
 for _ in range(14):
     rbox("Paper", (rng.uniform(-12, 12), 0.015, rng.uniform(-6, 9)), (0.22, 0.01, 0.3), rng.choice(["#cfc8b0", "#bdb59a"]), rot(rng.uniform(0, 360)))
 
-# 4 elevators (cages) along the back wall.
+# 4 elevators along the back wall: rusty old freight cages with bars,
+# blood on the floor, a dying red bulb, and a shutter that SLAMS down.
+RUST = 1040; PLATE = 1056
 for i, x in enumerate(ELEVATOR_X, 1):
     z0, z1 = -d / 2, -d / 2 + 4.2
     zc = (z0 + z1) / 2
-    box(f"ElevatorFloor{i}", (x, 0.06, zc), (4, 0.12, 4.2), "#4a4d44", material=1056)
+    box(f"ElevatorFloor{i}", (x, 0.06, zc), (4, 0.12, 4.2), "#2e2a24", material=PLATE)
     box(f"ElevatorPad{i}", (x, 1.5, zc), (3.8, 3, 4), "#000000", False, transparency=1.0)
+    # Hazard stripes along the front edge.
+    for k in range(8):
+        box(f"ElevatorStripe{i}", (x - 1.75 + k * 0.5, 0.125, z1 - 0.12), (0.5, 0.01, 0.2), "#c9a017" if k % 2 == 0 else "#151515", False)
+    # The back wall and frame: rusty.
+    box(f"ElevatorBack{i}", (x, 1.75, z0 + 0.08), (4.0, 3.5, 0.12), "#4a3020", material=RUST)
     for side in (-1, 1):
-        box(f"ElevatorSide{i}", (x + side * 2.05, 1.75, zc), (0.1, 3.5, 4.2), "#3c3f38", transparency=0.45, material=1056)
-    box(f"ElevatorRoof{i}", (x, 3.55, zc), (4.2, 0.12, 4.2), "#3c3f38", material=1056)
-    box(f"ElevatorLamp{i}", (x, 3.42, zc), (0.8, 0.06, 0.8), "!fff0c8", False, children=light("PointLight", 1.2, 14))
-    box(f"ElevatorGate{i}", (x, 5.35, z1 + 0.05), (4, 3.4, 0.08), "#2e302a", False, transparency=0.4, material=1056)
-    box(f"ElevatorSign{i}", (x, 4.25, z1 + 0.06), (4.0, 1.2, 0.05), "#141412", False)
-    box(f"ElevatorStatusLamp{i}", (x, 3.75, z1 + 0.1), (0.25, 0.25, 0.1), "!40ff60", False,
+        box(f"ElevatorPost{i}", (x + side * 2.05, 1.75, z1 - 0.05), (0.18, 3.5, 0.18), "#5a3a28", material=RUST)
+        box(f"ElevatorPost{i}", (x + side * 2.05, 1.75, z0 + 0.1), (0.18, 3.5, 0.18), "#5a3a28", material=RUST)
+        # Bars instead of walls.
+        for k in range(7):
+            box(f"ElevatorBar{i}", (x + side * 2.05, 1.75, z0 + 0.5 + k * 0.53), (0.06, 3.5, 0.06), "#3b2a1e", material=RUST)
+        box(f"ElevatorRail{i}", (x + side * 2.05, 1.2, zc), (0.08, 0.08, 4.2), "#3b2a1e", material=RUST)
+    box(f"ElevatorRoof{i}", (x, 3.55, zc), (4.3, 0.15, 4.3), "#3b2a1e", material=RUST)
+    # A dying bulb in a cage (it flickers; see the Haunting script).
+    box(f"ElevatorLamp{i}", (x, 3.3, zc), (0.22, 0.22, 0.22), "!ffb070", False, shape=0,
+        children=light("PointLight", 0.9, 13, (1, 0.55, 0.3)))
+    for k in range(4):
+        box(f"ElevatorLampCage{i}", (x + (-0.15 if k % 2 else 0.15) * (k < 2), 3.3, zc + (-0.15 if k % 2 else 0.15) * (k >= 2)),
+            (0.03, 0.35, 0.03), "#222222", False)
+    # Old cables hanging from the roof, swaying in the dark.
+    for k, (dx, dz, ln) in enumerate(((-1.2, -1.0, 1.4), (1.3, 0.6, 0.9), (0.4, -1.4, 1.8))):
+        box(f"ElevatorCable{i}", (x + dx, 3.45 - ln / 2, zc + dz), (0.04, ln, 0.04), "#111111", False)
+    # Blood on the floor, drag marks to the back, and claw scratches on the back wall.
+    box(f"ElevatorBlood{i}", (x + rng.uniform(-0.8, 0.8), 0.125, zc + rng.uniform(-0.6, 0.6)), (rng.uniform(0.6, 1.1), 0.01, rng.uniform(0.5, 0.9)), "#3d0604", False)
+    for k in range(3):
+        box(f"ElevatorDrag{i}", (x - 0.3 + k * 0.25, 0.125, zc - 0.6), (0.08, 0.01, 1.6), "#2e0403", False)
+    for k in range(4):
+        rbox(f"ElevatorScratch{i}", (x - 0.8 + k * 0.13, 1.6 + k * 0.1, z0 + 0.15), (1.2, 0.03, 0.02), "#0c0a08", rot(0, 0, -40))
+    # A broken button panel: one button still glowing red.
+    box(f"ElevatorPanel{i}", (x + 1.9, 1.3, z1 - 0.5), (0.06, 0.6, 0.3), "#2a2a26", material=PLATE)
+    for k in range(3):
+        box(f"ElevatorButton{i}", (x + 1.86, 1.45 - k * 0.15, z1 - 0.5), (0.03, 0.08, 0.08), "!ff2010" if k == 2 else "#555550", False)
+    # The shutter (it slams down when the elevator leaves) and the sign.
+    box(f"ElevatorGate{i}", (x, 5.35, z1 + 0.05), (4, 3.4, 0.1), "#4a3020", False, material=RUST)
+    for k in range(6):
+        box(f"ElevatorGateRib{i}", (x, 3.85 + k * 0.5, z1 + 0.11), (4, 0.05, 0.03), "#2e1e14", False)
+    box(f"ElevatorSign{i}", (x, 4.25, z1 + 0.13), (4.0, 1.2, 0.05), "#141412", False)
+    box(f"ElevatorStatusLamp{i}", (x, 3.75, z1 + 0.16), (0.25, 0.25, 0.1), "!40ff60", False,
         children=light("PointLight", 1, 10, (0.3, 1, 0.4)))
 
 # The four characters on show along the front wall (you pick yours in the game's waiting room).
@@ -308,6 +341,10 @@ for i = 1, 4 do
 		lamp = hall:WaitForChild("ElevatorStatusLamp" .. i), members = {}, friendsOnly = false, countdown = nil, leaving = false,
 	}
 	e.gateUp = e.gate.CFrame
+	e.ribs, e.ribsUp = {}, {}
+	for _, rib in ipairs(hall:GetChildren()) do
+		if rib.Name == "ElevatorGateRib" .. i then table.insert(e.ribs, rib) e.ribsUp[rib] = rib.CFrame end
+	end
 	e.label = sign(hall:WaitForChild("ElevatorSign" .. i), Enum.NormalId.Back, Color3.fromRGB(230, 220, 195))
 	elevators[i] = e
 end
@@ -355,7 +392,19 @@ end
 local function launch(e)
 	e.leaving = true
 	local group = table.clone(e.members)
-	TweenService:Create(e.gate, TweenInfo.new(1.2), { CFrame = e.gateUp - Vector3.new(0, 3.5 * 3.2, 0) }):Play()
+	-- The lights go crazy, then the shutter SLAMS down.
+	local lamp = hall:FindFirstChild("ElevatorLamp" .. e.index)
+	local bulb = lamp and lamp:FindFirstChildOfClass("PointLight")
+	for _ = 1, 10 do
+		if bulb then bulb.Enabled = not bulb.Enabled end
+		task.wait(0.08)
+	end
+	if bulb then bulb.Enabled = true bulb.Color = Color3.fromRGB(255, 40, 20) end
+	local drop = Vector3.new(0, 3.5 * 3.2, 0)
+	TweenService:Create(e.gate, TweenInfo.new(0.35, Enum.EasingStyle.Bounce), { CFrame = e.gateUp - drop }):Play()
+	for _, rib in ipairs(e.ribs) do
+		TweenService:Create(rib, TweenInfo.new(0.35, Enum.EasingStyle.Bounce), { CFrame = e.ribsUp[rib] - drop }):Play()
+	end
 	e.label.Text = "ELEVATOR " .. e.index .. "\nGOING DOWN..."
 	task.wait(1.5)
 	local placeId = gamePlaceId()
@@ -376,6 +425,8 @@ local function launch(e)
 		task.wait(8)
 	end
 	TweenService:Create(e.gate, TweenInfo.new(1.2), { CFrame = e.gateUp }):Play()
+	for _, rib in ipairs(e.ribs) do TweenService:Create(rib, TweenInfo.new(1.2), { CFrame = e.ribsUp[rib] }):Play() end
+	if bulb then bulb.Color = Color3.fromRGB(255, 140, 76) end
 	e.leaving = false
 	e.countdown = nil
 end
@@ -472,7 +523,7 @@ local function flicker(light, broken)
 	end
 end
 for _, part in ipairs(hall:GetChildren()) do
-	if part.Name == "Lamp" then
+	if part.Name == "Lamp" or string.sub(part.Name, 1, 12) == "ElevatorLamp" and not string.find(part.Name, "Cage") then
 		local light = part:FindFirstChildOfClass("PointLight")
 		if light then task.spawn(flicker, light, math.random() < 0.5 and 0.35 or 0.15) end
 	end
