@@ -314,7 +314,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        '<float name="Intensity">0.6</float><float name="Size">24</float><float name="Threshold">1.4</float></Properties></Item>'
        '</Item>',
        f'<Item class="StarterPlayer" referent="{new_ref()}"><Properties><string name="Name">StarterPlayer</string>'
-       '<token name="CameraMode">1</token><float name="CameraMaxZoomDistance">0.5</float>'
+       '<token name="CameraMode">0</token><float name="CameraMaxZoomDistance">14</float>'  # first person once you pick (CharacterPick)
        '<float name="CharacterWalkSpeed">14</float></Properties>',
        f'<Item class="StarterCharacterScripts" referent="{new_ref()}"><Properties><string name="Name">StarterCharacterScripts</string></Properties>',
        script("Script", "Flashlight", FLASHLIGHT), script("LocalScript", "FlashlightKey", FLASHLIGHT_KEY),

@@ -362,7 +362,7 @@ end)
 </Item>
 <Item class="ReplicatedStorage" referent="RBX9116"><Properties><string name="Name">ReplicatedStorage</string></Properties><Item class="RemoteEvent" referent="RBX9117"><Properties><string name="Name">LongManJumpScare</string></Properties></Item><Item class="RemoteEvent" referent="RBX9118"><Properties><string name="Name">LongManReveal</string></Properties></Item><Item class="RemoteEvent" referent="RBX9119"><Properties><string name="Name">PuzzleMessage</string></Properties></Item><Item class="RemoteEvent" referent="RBX9120"><Properties><string name="Name">PuzzleKeypad</string></Properties></Item><Item class="RemoteEvent" referent="RBX9121"><Properties><string name="Name">PuzzleRead</string></Properties></Item><Item class="RemoteEvent" referent="RBX9122"><Properties><string name="Name">ChapterEnd</string></Properties></Item><Item class="RemoteEvent" referent="RBX9123"><Properties><string name="Name">PickCharacter</string></Properties></Item><Item class="RemoteEvent" referent="RBX9124"><Properties><string name="Name">UseAbility</string></Properties></Item><Item class="RemoteEvent" referent="RBX9125"><Properties><string name="Name">CameraFlash</string></Properties></Item><Item class="RemoteEvent" referent="RBX9126"><Properties><string name="Name">LobbyMessage</string></Properties></Item><Item class="RemoteEvent" referent="RBX9127"><Properties><string name="Name">ElevatorAction</string></Properties></Item><Item class="Folder" referent="RBX9128"><Properties><string name="Name">LongManSounds</string></Properties><Item class="StringValue" referent="RBX9129"><Properties><string name="Name">Scream</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9130"><Properties><string name="Name">Shriek</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9131"><Properties><string name="Name">NeckCrack</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9132"><Properties><string name="Name">Skitter</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9133"><Properties><string name="Name">Breath</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9134"><Properties><string name="Name">Click</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9135"><Properties><string name="Name">Heartbeat</string><string name="Value"></string></Properties></Item></Item></Item>
 <Item class="Lighting" referent="RBX9136"><Properties><string name="Name">Lighting</string><float name="ClockTime">0</float><float name="Brightness">0.6</float><token name="Technology">4</token><Color3 name="Ambient"><R>0.05</R><G>0.05</G><B>0.07</B></Color3><Color3 name="OutdoorAmbient"><R>0.16</R><G>0.18</G><B>0.25</B></Color3><float name="FogEnd">220</float><float name="FogStart">10</float><Color3 name="FogColor"><R>0.03</R><G>0.035</G><B>0.05</B></Color3><bool name="GlobalShadows">true</bool></Properties><Item class="Atmosphere" referent="RBX9137"><Properties><string name="Name">Atmosphere</string><float name="Density">0.42</float><float name="Offset">0.15</float><float name="Glare">0</float><float name="Haze">2.2</float><Color3 name="Color"><R>0.3</R><G>0.34</G><B>0.43</B></Color3><Color3 name="Decay"><R>0.08</R><G>0.1</G><B>0.15</B></Color3></Properties></Item><Item class="Sky" referent="RBX9138"><Properties><string name="Name">Sky</string><int name="StarCount">4000</int><bool name="CelestialBodiesShown">true</bool><float name="MoonAngularSize">16</float></Properties></Item><Item class="ColorCorrectionEffect" referent="RBX9139"><Properties><string name="Name">ColdNight</string><float name="Brightness">0.02</float><float name="Contrast">0.12</float><float name="Saturation">-0.3</float><Color3 name="TintColor"><R>0.88</R><G>0.93</G><B>1</B></Color3></Properties></Item><Item class="BloomEffect" referent="RBX9140"><Properties><string name="Name">Glow</string><float name="Intensity">0.6</float><float name="Size">24</float><float name="Threshold">1.4</float></Properties></Item></Item>
-<Item class="StarterPlayer" referent="RBX9141"><Properties><string name="Name">StarterPlayer</string><token name="CameraMode">1</token><float name="CameraMaxZoomDistance">0.5</float><float name="CharacterWalkSpeed">14</float></Properties>
+<Item class="StarterPlayer" referent="RBX9141"><Properties><string name="Name">StarterPlayer</string><token name="CameraMode">0</token><float name="CameraMaxZoomDistance">14</float><float name="CharacterWalkSpeed">14</float></Properties>
 <Item class="StarterCharacterScripts" referent="RBX9142"><Properties><string name="Name">StarterCharacterScripts</string></Properties>
 <Item class="Script" referent="RBX9143"><Properties><string name="Name">Flashlight</string><ProtectedString name="Source"><![CDATA[-- Every player starts with a FLASHLIGHT in their inventory (the hotbar).
 -- Take it out (press 1, click it, or press F / Y / Triangle) and it turns
@@ -916,52 +916,103 @@ local function make(class, props, parent)
 	return thing
 end
 
--- PICK BUTTONS (in the waiting room) ---------------------------------------
--- Big buttons at the bottom of the screen: click one to pick that character.
--- (You can also walk onto a stand, or press E at it.) You keep your avatar.
+-- CHOOSE YOUR CHARACTER ----------------------------------------------------
+-- A big screen pops up as soon as you join (in the lobby and in the game's
+-- waiting room): click a character card and you're done. You keep your own
+-- avatar. Until you pick you see yourself from behind; once you pick, the
+-- camera goes FIRST PERSON. "Change character" (bottom left) opens it again.
+local GuiService = game:GetService("GuiService")
 local pickEvent = ReplicatedStorage:WaitForChild("PickCharacter")
-local picker = make("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -95),
-	Size = UDim2.new(0.92, 0, 0, 150), BackgroundColor3 = Color3.fromRGB(10, 10, 10), BackgroundTransparency = 0.25 }, gui)
-make("UISizeConstraint", { MaxSize = Vector2.new(980, 150) }, picker)
-local header = make("TextLabel", { Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, Font = Enum.Font.SpecialElite,
-	TextSize = 22, TextColor3 = Color3.fromRGB(230, 220, 195), Text = "PICK YOUR CHARACTER  (you keep your own avatar)" }, picker)
-local row = make("Frame", { Position = UDim2.new(0, 8, 0, 34), Size = UDim2.new(1, -16, 1, -42), BackgroundTransparency = 1 }, picker)
-make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 8),
-	HorizontalAlignment = Enum.HorizontalAlignment.Center }, row)
-local pickButtons = {}
-local SHORT = { Son = "Sees the monster through walls", Journalist = "Camera flash blinds him",
-	Engineer = "Fixes things 3x faster", Guard = "Strong + survives one catch" }
+local SHORT = { Son = "Sees the monster\nthrough walls", Journalist = "Camera flash\nblinds him",
+	Engineer = "Fixes things\n3x faster", Guard = "Strong, and survives\none catch" }
+local screen = make("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(5, 5, 6),
+	BackgroundTransparency = 0.12, Visible = false }, gui)
+make("TextLabel", { Size = UDim2.new(1, 0, 0.11, 0), Position = UDim2.fromScale(0, 0.06), BackgroundTransparency = 1,
+	Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(230, 220, 195), Text = "CHOOSE YOUR CHARACTER" }, screen)
+make("TextLabel", { Size = UDim2.new(1, 0, 0.045, 0), Position = UDim2.fromScale(0, 0.17), BackgroundTransparency = 1,
+	Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(160, 155, 140),
+	Text = "Click one. You keep your own avatar." }, screen)
+local cardRow = make("Frame", { Size = UDim2.fromScale(0.94, 0.62), Position = UDim2.fromScale(0.03, 0.26), BackgroundTransparency = 1 }, screen)
+make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0.015, 0),
+	HorizontalAlignment = Enum.HorizontalAlignment.Center }, cardRow)
+local cards, cardStatus = {}, {}
 for _, role in ipairs(ROLES) do
-	local b = make("TextButton", { Size = UDim2.new(0.25, -6, 1, 0), BackgroundColor3 = role.color, AutoButtonColor = true,
-		Font = Enum.Font.SpecialElite, TextSize = 20, TextWrapped = true, TextColor3 = Color3.new(0, 0, 0),
-		Text = role.name .. "\n" .. SHORT[role.id] }, row)
-	b.Activated:Connect(function() pickEvent:FireServer(role.id) end)
-	pickButtons[role.id] = b
+	local card = make("TextButton", { Size = UDim2.fromScale(0.235, 1), BackgroundColor3 = Color3.fromRGB(26, 26, 24),
+		AutoButtonColor = true, Text = "" }, cardRow)
+	make("UIStroke", { Color = role.color, Thickness = 3 }, card)
+	make("Frame", { Size = UDim2.fromScale(1, 0.05), BackgroundColor3 = role.color, BorderSizePixel = 0 }, card)
+	make("TextLabel", { Size = UDim2.fromScale(0.9, 0.14), Position = UDim2.fromScale(0.05, 0.1), BackgroundTransparency = 1,
+		Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = role.color, Text = role.name }, card)
+	make("TextLabel", { Size = UDim2.fromScale(0.9, 0.08), Position = UDim2.fromScale(0.05, 0.25), BackgroundTransparency = 1,
+		Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.fromRGB(170, 165, 150), Text = role.who }, card)
+	make("TextLabel", { Size = UDim2.fromScale(0.9, 0.3), Position = UDim2.fromScale(0.05, 0.38), BackgroundTransparency = 1,
+		Font = Enum.Font.SpecialElite, TextScaled = true, TextWrapped = true, TextColor3 = Color3.fromRGB(240, 232, 210),
+		Text = SHORT[role.id] }, card)
+	cardStatus[role.id] = make("TextLabel", { Size = UDim2.fromScale(0.8, 0.13), Position = UDim2.fromScale(0.1, 0.8),
+		BackgroundColor3 = role.color, Font = Enum.Font.SpecialElite, TextScaled = true, TextColor3 = Color3.new(0, 0, 0),
+		Text = "PICK" }, card)
+	card.Activated:Connect(function() pickEvent:FireServer(role.id) end)
+	cards[role.id] = card
 end
+local changeButton = make("TextButton", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 20, 1, -210),
+	Size = UDim2.fromOffset(200, 46), BackgroundColor3 = Color3.fromRGB(40, 40, 36), Font = Enum.Font.SpecialElite,
+	TextSize = 20, TextColor3 = Color3.fromRGB(230, 220, 195), Text = "Change character", Visible = false }, gui)
+
+local function setCamera()
+	if player:GetAttribute("Character") then
+		player.CameraMaxZoomDistance = 0.5
+		player.CameraMode = Enum.CameraMode.LockFirstPerson
+	else
+		player.CameraMode = Enum.CameraMode.Classic
+		player.CameraMaxZoomDistance = 14
+		player.CameraMinZoomDistance = 6
+		task.defer(function() player.CameraMinZoomDistance = 0.5 end)
+	end
+end
+local function openScreen(open)
+	screen.Visible = open
+	if open and (GuiService:IsTenFootInterface() or UserInputService.GamepadEnabled) then GuiService.SelectedObject = cards.Son end
+	if not open and GuiService.SelectedObject and GuiService.SelectedObject:IsDescendantOf(screen) then GuiService.SelectedObject = nil end
+end
+changeButton.Activated:Connect(function() openScreen(true) end)
+
 local function refreshPicker()
-	picker.Visible = not player:GetAttribute("InGame")
 	local mine = player:GetAttribute("Character")
+	local inGame = player:GetAttribute("InGame")
 	local inLobby = workspace:GetAttribute("Mode") == "Lobby"
-	header.Text = mine and ("You are " .. mine:upper() .. (inLobby and "  -  now walk into an ELEVATOR!" or "  -  click another one to change"))
-		or "PICK YOUR CHARACTER  (you keep your own avatar)"
 	for _, role in ipairs(ROLES) do
 		local owner
 		for _, p in ipairs(Players:GetPlayers()) do
 			if p:GetAttribute("Character") == role.id and (p == player or not inLobby) then owner = p end
 		end
-		local b = pickButtons[role.id]
+		local status = cardStatus[role.id]
 		if owner == player then
-			b.Text = "YOU: " .. role.name .. "\n" .. SHORT[role.id]
-			b.BackgroundColor3 = role.color:Lerp(Color3.new(1, 1, 1), 0.35)
+			status.Text = "YOU"
+			status.BackgroundColor3 = Color3.fromRGB(235, 230, 215)
 		elseif owner then
-			b.Text = role.name .. "\nTAKEN by " .. owner.DisplayName
-			b.BackgroundColor3 = Color3.fromRGB(70, 68, 62)
+			status.Text = "TAKEN: " .. owner.DisplayName
+			status.BackgroundColor3 = Color3.fromRGB(70, 68, 62)
 		else
-			b.Text = role.name .. "\n" .. SHORT[role.id]
-			b.BackgroundColor3 = role.color
+			status.Text = "PICK"
+			status.BackgroundColor3 = role.color
 		end
 	end
+	changeButton.Visible = mine ~= nil and not inGame and not screen.Visible
+	if inGame then openScreen(false) end
+	setCamera()
 end
+local lastPick = player:GetAttribute("Character")
+player:GetAttributeChangedSignal("Character"):Connect(function()
+	-- Picked (or changed): close the screen, go first person.
+	if player:GetAttribute("Character") ~= lastPick then
+		lastPick = player:GetAttribute("Character")
+		openScreen(false)
+		if workspace:GetAttribute("Mode") == "Lobby" then
+			changeButton.Text = "Change character"
+		end
+	end
+	refreshPicker()
+end)
 local function watchPicks(p)
 	p:GetAttributeChangedSignal("Character"):Connect(refreshPicker)
 	p:GetAttributeChangedSignal("InGame"):Connect(refreshPicker)
@@ -969,6 +1020,11 @@ end
 for _, p in ipairs(Players:GetPlayers()) do watchPicks(p) end
 Players.PlayerAdded:Connect(function(p) watchPicks(p) refreshPicker() end)
 Players.PlayerRemoving:Connect(function() task.defer(refreshPicker) end)
+screen:GetPropertyChangedSignal("Visible"):Connect(refreshPicker)
+player.CharacterAdded:Connect(function() task.wait(0.2) setCamera() end)
+-- Show the screen when you join (if you haven't picked yet, e.g. in the lobby).
+task.wait(1)
+if not player:GetAttribute("Character") and not player:GetAttribute("InGame") then openScreen(true) end
 refreshPicker()
 
 -- YOUR ABILITY -----------------------------------------------------------------

@@ -6,8 +6,9 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
 3. File -> Open from File... -> pick  SubjectZero.rbxlx
    (it takes a little while: it's a big map).
 4. Press Play (or F5). You start in the WAITING ROOM.
-   PICK A CHARACTER, the easy way: click one of the 4 big buttons at
-   the bottom of the screen. (Or walk onto a stand, or press E at it.)
+   PICK A CHARACTER, the easy way: click a card on the big "CHOOSE YOUR
+   CHARACTER" screen. (Or walk onto a stand, or press E at it.)
+   After you pick, the camera goes first person.
    Each player a different one; click another free one to change.
    You stay as your own avatar.
    The board on the wall shows who picked what. When EVERYONE has picked
@@ -41,8 +42,9 @@ THE LOBBY (so people can find each other and play together)
 It's all in ONE file: SubjectZero.rbxlx. Just publish it (File -> Publish
 to Roblox). When people play it from the Roblox website or app:
   * They arrive in the LOBBY: a dark, abandoned hall with 4 ELEVATORS.
-  * They PICK A CHARACTER with the big buttons at the bottom of the
-    screen (they keep their own avatar).
+  * A big "CHOOSE YOUR CHARACTER" screen pops up: click a card (they keep
+    their own avatar). Then the camera goes FIRST PERSON. "Change
+    character" (bottom left) opens the screen again.
   * They walk into an elevator with friends (or anyone!). When 2-4
     players are in it, it counts down 15 seconds and takes that group to
     their OWN PRIVATE GAME (a private copy of the same place).
