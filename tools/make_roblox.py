@@ -1,4 +1,4 @@
-"""Builds the Roblox version's place file: roblox/SubjectZero_Chapter1.rbxlx.
+"""Builds the Roblox version's place file: roblox/SubjectZero.rbxlx (the lobby AND the game).
 Open it in Roblox Studio (File -> Open from File). Everyone plays as their
 own Roblox avatar (that's Roblox's default), with a flashlight.
 
@@ -15,10 +15,11 @@ import roblox_lab as LAB
 import roblox_roles as ROLES
 import roblox_outdoors as OD
 import roblox_lobby as LOBBY
+import make_roblox_lobby as HUB
 from xml.sax.saxutils import escape
 
 KIT = "unreal_easy/SubjectZero_Kit/level.json"
-OUT = "roblox/SubjectZero_Chapter1.rbxlx"
+OUT = "roblox/SubjectZero.rbxlx"
 S = 3.2  # studs per meter (a Roblox avatar is about 5 studs tall)
 
 # Roblox Enum.Material values for our surfaces.
@@ -146,9 +147,9 @@ for sp in d["spawns"]:
                        cls="SpawnLocation", extra='<bool name="Neutral">true</bool><bool name="AllowTeamChangeOnTouch">false</bool>'))
 
 
-def script(cls, name, source):
+def script(cls, name, source, children=""):
     return (f'<Item class="{cls}" referent="{new_ref()}"><Properties><string name="Name">{name}</string>'
-            f'<ProtectedString name="Source"><![CDATA[{source}]]></ProtectedString></Properties></Item>')
+            f'<ProtectedString name="Source"><![CDATA[{source}]]></ProtectedString></Properties>{children}</Item>')
 
 
 FLASHLIGHT = '''-- Every player starts with a FLASHLIGHT in their inventory (the hotbar).
@@ -279,13 +280,13 @@ model = lambda name, items: (f'<Item class="Model" referent="{new_ref()}"><Prope
 xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
        'xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">',
        f'<Item class="Workspace" referent="{new_ref()}"><Properties><string name="Name">Workspace</string></Properties>',
-       model("Chapter1_Level", parts), model("Chapter1_Lights", lights), LOBBY.build(part, new_ref),
+       model("Chapter1_Level", parts), model("Chapter1_Lights", lights), LOBBY.build(part, new_ref), HUB.hall_xml(),
        model("Elevator", elevator), model("Lab", lab_parts), puzzle_xml, LM.build(part, script, new_ref), "</Item>",
        f'<Item class="ReplicatedStorage" referent="{new_ref()}"><Properties><string name="Name">ReplicatedStorage</string></Properties>'
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManJumpScare</string></Properties></Item>'
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManReveal</string></Properties></Item>'
        + "".join(f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">{n}</string></Properties></Item>'
-                 for n in ("PuzzleMessage", "PuzzleKeypad", "PuzzleRead", "ChapterEnd", "PickCharacter", "UseAbility", "CameraFlash"))
+                 for n in ("PuzzleMessage", "PuzzleKeypad", "PuzzleRead", "ChapterEnd", "PickCharacter", "UseAbility", "CameraFlash", "LobbyMessage", "ElevatorAction"))
        + f'<Item class="Folder" referent="{new_ref()}"><Properties><string name="Name">LongManSounds</string></Properties>'
        + "".join(f'<Item class="StringValue" referent="{new_ref()}"><Properties><string name="Name">{n}</string>'
                  '<string name="Value"></string></Properties></Item>'
@@ -321,6 +322,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>',
        script("LocalScript", "LongManEffects", LM.EFFECTS_SCRIPT.replace("--SHOTS--", LM.reveal_shots())),
        script("LocalScript", "PuzzleUI", PUZZLE_UI), script("LocalScript", "CharacterPick", ROLES.ROLES_UI),
+       script("LocalScript", "LobbyButtons", HUB.LOBBY_UI),
        script("LocalScript", "OpeningCutscene", LAB.INTRO_SCRIPT.replace("--SHOTS--", LAB.intro_shots())), "</Item></Item>",
        f'<Item class="StarterPack" referent="{new_ref()}"><Properties><string name="Name">StarterPack</string></Properties>'
        f'<Item class="Tool" referent="{new_ref()}"><Properties><string name="Name">Flashlight</string>'
@@ -331,7 +333,10 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>',
        script("Script", "FlickeringLights", FLICKER), script("Script", "Puzzles", PUZZLE_SRC), script("Script", "TeamLivesOrDies", TEAM_SRC),
        script("Script", "Characters", ROLES.ROLES_SERVER),
-       script("Script", "Outdoors", OD.script()), script("Script", "WaitingRoom", LOBBY.script()), "</Item>",
+       script("Script", "Outdoors", OD.script()), script("Script", "WaitingRoom", LOBBY.script()),
+       script("Script", "Mode", HUB.MODE, f'<Item class="BoolValue" referent="{new_ref()}"><Properties>'
+              '<string name="Name">TestLobbyInStudio</string><bool name="Value">false</bool></Properties></Item>'),
+       script("Script", "Elevators", HUB.MATCHMAKING), script("Script", "Haunting", HUB.HAUNTING), "</Item>",
        "</roblox>"]
 open(OUT, "w").write("\n".join(xml))
 print(f"wrote {OUT}: {len(lab_parts)} lab parts, {len(parts)} parts, {len(elevator)} elevator parts, {len(lights)} lights, {len(spawns)} spawns")

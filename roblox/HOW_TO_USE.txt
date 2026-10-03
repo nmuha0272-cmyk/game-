@@ -3,7 +3,7 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
 
 1. Install Roblox Studio (free): create.roblox.com -> "Start Creating".
 2. Open Roblox Studio, sign in.
-3. File -> Open from File... -> pick  SubjectZero_Chapter1.rbxlx
+3. File -> Open from File... -> pick  SubjectZero.rbxlx
    (it takes a little while: it's a big map).
 4. Press Play (or F5). You start in the WAITING ROOM.
    PICK A CHARACTER, the easy way: click one of the 4 big buttons at
@@ -38,38 +38,21 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
 
 THE LOBBY (so people can find each other and play together)
 -----------------------------------------------------------
-There are TWO files:
-  SubjectZero_Lobby.rbxlx ..... the LOBBY: a big hall where everyone
-                                arrives, with 4 ELEVATORS.
-  SubjectZero_Chapter1.rbxlx .. the GAME.
-The lobby is an abandoned Site 12 visitor hall: flickering lights, blood,
-claw marks... and an OBSERVATION WINDOW. Something in there watches you.
-Sometimes it slams against the glass.
-In the lobby, PICK YOUR CHARACTER with the big buttons at the bottom of the
-screen (you keep your own avatar). Then walk into an elevator with your
-friends (or with anyone!). Your pick comes with you into the game (if a
-teammate picked the same one, you choose again in the game's waiting room).
-When 2-4 players are in it, it counts down 15 seconds and takes that group
-to their OWN private game. The first person in an elevator can press
-"Make it friends only". There's an "Invite friends" button too.
-After the ending, everyone comes back to the lobby.
-
-Set it up once (both files go into ONE Roblox game):
- 1. Open SubjectZero_Lobby.rbxlx in Studio.
-    File -> Publish to Roblox -> "Create new game" -> give it a name.
-    (The lobby is now the place people arrive in.)
- 2. Still in the lobby: View -> Asset Manager -> Places.
-    Right-click in the empty space -> "Add New Place".
- 3. Open SubjectZero_Chapter1.rbxlx.
-    File -> Publish to Roblox As... -> pick YOUR game -> pick the new
-    place (not the lobby!) -> Publish / Overwrite.
- 4. That's it: the elevators find the game place by themselves.
-    Game Settings (in the lobby) -> Places: set the lobby's server size
-    to 20 or 30, and Chapter 1's server size to 4.
- 5. To test: play it from the Roblox website or app (not Studio: Roblox
-    only moves players between places in the real game). Ask a friend
-    to join, or open a second Roblox window.
-(In Studio you can still test each file on its own.)
+It's all in ONE file: SubjectZero.rbxlx. Just publish it (File -> Publish
+to Roblox). When people play it from the Roblox website or app:
+  * They arrive in the LOBBY: a dark, abandoned hall with 4 ELEVATORS.
+  * They PICK A CHARACTER with the big buttons at the bottom of the
+    screen (they keep their own avatar).
+  * They walk into an elevator with friends (or anyone!). When 2-4
+    players are in it, it counts down 15 seconds and takes that group to
+    their OWN PRIVATE GAME (a private copy of the same place).
+  * The first person in an elevator can press "Make it friends only".
+    There's an "Invite friends" button too.
+  * After the ending, everyone comes back to the lobby.
+No second place, no setup: Roblox does the private copies by itself.
+(The elevators only work in the real game, not in Studio.)
+In Studio, Play tests the GAME. To look at the lobby in Studio: Explorer ->
+ServerScriptService -> Mode -> TestLobbyInStudio -> tick Value.
 
 To let friends play (PC, phone, Xbox, PlayStation):
 5. File -> Publish to Roblox -> give it a name.

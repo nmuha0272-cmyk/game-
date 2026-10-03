@@ -164,6 +164,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
 local lobby = workspace:WaitForChild("Lobby")
+-- Only in the GAME (not in the lobby hall: see the Mode script).
+while not workspace:GetAttribute("Mode") do task.wait() end
+if workspace:GetAttribute("Mode") ~= "Game" then return end
 
 local ROAD = { --ROAD-- }
 local NAMES = { Son = "THE SON (Ethan)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }

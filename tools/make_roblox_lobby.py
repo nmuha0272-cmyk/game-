@@ -1,4 +1,6 @@
-"""Builds the Roblox LOBBY place: roblox/SubjectZero_Lobby.rbxlx.
+"""The LOBBY hall for the Roblox version (part of roblox/SubjectZero.rbxlx,
+built by make_roblox.py). Running this file alone writes a lobby-only test
+place: roblox/SubjectZero_Lobby.rbxlx.
 
 A visitor hall where everyone arrives. Walk into one of the 4 elevators:
 when 2-4 players are in it, it counts down and takes that group to their
@@ -62,7 +64,9 @@ def light(cls, brightness, rng, color=(1, 0.88, 0.7), extra=""):
 
 
 parts = []
+HUB_X = -300  # the hall sits far away from the Chapter 1 map (in the same place)
 def box(name, c, s, color, collide=True, shape=1, children="", transparency=0.0, material=None):
+    c = (c[0] + HUB_X, c[1], c[2])
     parts.append(part(name, tuple(v * S for v in c), W, tuple(v * S for v in s), color, collide, shape, transparency,
                       children=children, material=material))
 
@@ -83,6 +87,7 @@ def rot(yaw=0.0, pitch=0.0, roll=0.0):
 
 
 def rbox(name, c, s, color, axes, collide=False, transparency=0.0, material=None, children=""):
+    c = (c[0] + HUB_X, c[1], c[2])
     parts.append(part(name, tuple(v * S for v in c), axes, tuple(v * S for v in s), color, collide, 1, transparency,
                       children=children, material=material))
 
@@ -249,24 +254,53 @@ box("TitleBoard", (-w / 2 + 0.05, 3.4, 0), (0.06, 2.2, 10), "#10140f", False)
 box("HowToBoard", (w / 2 - 0.05, 2.4, -8), (0.06, 3.4, 5.6), "#10140f", False)
 box("Scrawl1", (-w / 2 + 0.05, 1.0, 8.5), (0.04, 0.9, 3.4), "#000000", False, transparency=1.0)
 box("Scrawl2", (-1.5, 4.6, -d / 2 + 0.03), (5, 0.9, 0.04), "#000000", False, transparency=1.0)
-parts.append(part("Spawn", (0, 0.3 * S, 1.0 * S), W, (10 * S, 1, 6 * S), "#262824", False, 1, 1.0, cls="SpawnLocation",
-                  extra='<bool name="Neutral">true</bool>'))
+parts.append(part("HallSpawn", (HUB_X * S, 0.3 * S, 1.0 * S), W, (10 * S, 1, 6 * S), "#262824", False, 1, 1.0, cls="SpawnLocation",
+                  extra='<bool name="Neutral">true</bool><bool name="Enabled">false</bool>'))
+
+
+def hall_xml():
+    return f'<Item class="Model" referent="{new_ref()}"><Properties><string name="Name">Hall</string></Properties>' + "".join(parts) + "</Item>"
+
+
+MODE = r'''-- LOBBY OR GAME?
+-- This one place is BOTH the lobby and the game:
+--  * A normal server (what you join from the Roblox page) is the LOBBY:
+--    the dark hall with the elevators.
+--  * When an elevator leaves, Roblox makes a PRIVATE copy of this place
+--    just for that group: that copy is the GAME (Chapter 1).
+-- In Studio, Play tests the GAME. To test the lobby in Studio, tick
+-- TestLobbyInStudio (inside this script).
+local RunService = game:GetService("RunService")
+local reserved = game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0
+local testLobby = script:FindFirstChild("TestLobbyInStudio")
+local mode
+if reserved then
+	mode = "Game"
+elseif RunService:IsStudio() then
+	mode = (testLobby and testLobby.Value) and "Lobby" or "Game"
+else
+	mode = "Lobby"
+end
+workspace:FindFirstChild("Lobby"):FindFirstChild("LobbySpawn").Enabled = mode == "Game"
+workspace:FindFirstChild("Hall"):FindFirstChild("HallSpawn").Enabled = mode == "Lobby"
+workspace:SetAttribute("Mode", mode)
+'''
 
 MATCHMAKING = r'''-- THE LOBBY: elevators that take a group to their own game.
 -- Walk into an elevator. When 2-4 players are in it, it counts down
 -- and everyone in it goes to a private Chapter 1 game together.
 -- The first person in an elevator can make it FRIENDS ONLY.
 --
--- Which place is the game? This finds it by itself (the other place in
--- this experience). If you have more places, put the game's place ID in
--- the GamePlaceId value inside this script.
+-- The game is a PRIVATE COPY of this same place (see the Mode script),
+-- so nothing to set up.
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
-local AssetService = game:GetService("AssetService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local hall = workspace:WaitForChild("Hall")
+while not workspace:GetAttribute("Mode") do task.wait() end
+if workspace:GetAttribute("Mode") ~= "Lobby" then return end
 local messageEvent = ReplicatedStorage:WaitForChild("LobbyMessage")
 local actionEvent = ReplicatedStorage:WaitForChild("ElevatorAction")
 
@@ -297,18 +331,7 @@ local function sign(part, face, color, size)
 end
 
 local function gamePlaceId()
-	local value = script:FindFirstChild("GamePlaceId")
-	if value and value.Value ~= 0 then return value.Value end
-	local ok, pages = pcall(function() return AssetService:GetGamePlacesAsync() end)
-	if not ok then return nil end
-	while true do
-		for _, place in ipairs(pages:GetCurrentPage()) do
-			if place.PlaceId ~= game.PlaceId then return place.PlaceId end
-		end
-		if pages.IsFinished then break end
-		pages:AdvanceToNextPageAsync()
-	end
-	return nil
+	return game.PlaceId  -- the game is a private copy of this same place
 end
 
 -- Signs.
@@ -433,15 +456,8 @@ local function launch(e)
 	e.countdown = nil
 end
 
--- Characters picked here in the lobby travel with you into the game.
-local ROLE_IDS = { Son = true, Journalist = true, Engineer = true, Guard = true }
-ReplicatedStorage:WaitForChild("PickCharacter").OnServerEvent:Connect(function(player, id)
-	if typeof(id) == "string" and ROLE_IDS[id] then
-		player:SetAttribute("Character", id)
-		say(player, "You'll be " .. NAMES[id] .. ". (If a teammate picked it too, you choose again in the game.)")
-	end
-end)
-
+-- (Picking a character in the lobby: the Characters script. The picks
+-- travel with the group into the game.)
 actionEvent.OnServerEvent:Connect(function(player, action)
 	local index = player:GetAttribute("Elevator")
 	local e = index and elevators[index]
@@ -603,6 +619,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SocialService = game:GetService("SocialService")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
+while not workspace:GetAttribute("Mode") do task.wait() end
+if workspace:GetAttribute("Mode") ~= "Lobby" then return end
 local actionEvent = ReplicatedStorage:WaitForChild("ElevatorAction")
 
 local gui = Instance.new("ScreenGui")
@@ -640,68 +658,6 @@ player:GetAttributeChangedSignal("Elevator"):Connect(refresh)
 player:GetAttributeChangedSignal("ElevatorOwner"):Connect(refresh)
 refresh()
 
--- PICK YOUR CHARACTER: big buttons at the bottom (you keep your own avatar).
-local pickEvent = ReplicatedStorage:WaitForChild("PickCharacter")
-local ROLES = {
-	{ id = "Son", name = "THE SON", power = "Sees the monster through walls", color = Color3.fromRGB(150, 100, 60) },
-	{ id = "Journalist", name = "THE JOURNALIST", power = "Camera flash blinds him", color = Color3.fromRGB(205, 175, 125) },
-	{ id = "Engineer", name = "THE ENGINEER", power = "Fixes things 3x faster", color = Color3.fromRGB(90, 120, 200) },
-	{ id = "Guard", name = "THE GUARD", power = "Strong + survives one catch", color = Color3.fromRGB(130, 150, 90) },
-}
-local panel = Instance.new("Frame")
-panel.AnchorPoint = Vector2.new(0.5, 1)
-panel.Position = UDim2.new(0.5, 0, 1, -95)
-panel.Size = UDim2.new(0.6, 0, 0, 130)
-panel.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-panel.BackgroundTransparency = 0.25
-panel.Parent = gui
-local sizeLimit = Instance.new("UISizeConstraint")
-sizeLimit.MaxSize = Vector2.new(900, 130)
-sizeLimit.MinSize = Vector2.new(420, 130)
-sizeLimit.Parent = panel
-local header = Instance.new("TextLabel")
-header.Size = UDim2.new(1, 0, 0, 28)
-header.BackgroundTransparency = 1
-header.Font = Enum.Font.SpecialElite
-header.TextSize = 20
-header.TextColor3 = Color3.fromRGB(230, 220, 195)
-header.Text = "PICK YOUR CHARACTER  (you keep your own avatar)"
-header.Parent = panel
-local row = Instance.new("Frame")
-row.Position = UDim2.new(0, 8, 0, 32)
-row.Size = UDim2.new(1, -16, 1, -40)
-row.BackgroundTransparency = 1
-row.Parent = panel
-local layout = Instance.new("UIListLayout")
-layout.FillDirection = Enum.FillDirection.Horizontal
-layout.Padding = UDim.new(0, 8)
-layout.Parent = row
-local pickButtons = {}
-for _, role in ipairs(ROLES) do
-	local b = Instance.new("TextButton")
-	b.Size = UDim2.new(0.25, -6, 1, 0)
-	b.BackgroundColor3 = role.color
-	b.Font = Enum.Font.SpecialElite
-	b.TextSize = 17
-	b.TextWrapped = true
-	b.TextColor3 = Color3.new(0, 0, 0)
-	b.Text = role.name .. "\n" .. role.power
-	b.Parent = row
-	b.Activated:Connect(function() pickEvent:FireServer(role.id) end)
-	pickButtons[role.id] = b
-end
-local function refreshPick()
-	local mine = player:GetAttribute("Character")
-	for _, role in ipairs(ROLES) do
-		local b = pickButtons[role.id]
-		b.Text = (mine == role.id and "YOU: " or "") .. role.name .. "\n" .. role.power
-		b.BackgroundColor3 = mine == role.id and role.color:Lerp(Color3.new(1, 1, 1), 0.4) or role.color
-	end
-	header.Text = mine and "Picked! Now walk into an elevator." or "PICK YOUR CHARACTER  (you keep your own avatar)"
-end
-player:GetAttributeChangedSignal("Character"):Connect(refreshPick)
-refreshPick()
-
 local message = Instance.new("TextLabel")
 message.AnchorPoint = Vector2.new(0.5, 1)
 message.Position = UDim2.new(0.5, 0, 0.85, 0)
@@ -726,33 +682,34 @@ ReplicatedStorage:WaitForChild("LobbyMessage").OnClientEvent:Connect(function(te
 end)
 '''
 
-xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
-       'xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">',
-       f'<Item class="Workspace" referent="{new_ref()}"><Properties><string name="Name">Workspace</string></Properties>',
-       f'<Item class="Model" referent="{new_ref()}"><Properties><string name="Name">Hall</string></Properties>' + "".join(parts) + "</Item>",
-       "</Item>",
-       f'<Item class="Lighting" referent="{new_ref()}"><Properties><string name="Name">Lighting</string>'
-       '<float name="ClockTime">0</float><float name="Brightness">0</float><token name="Technology">4</token>'
-       '<Color3 name="Ambient"><R>0.03</R><G>0.03</G><B>0.035</B></Color3>'
-       '<Color3 name="OutdoorAmbient"><R>0.12</R><G>0.13</G><B>0.18</B></Color3></Properties>'
-       f'<Item class="ColorCorrectionEffect" referent="{new_ref()}"><Properties><string name="Name">Cold</string>'
-       '<float name="Contrast">0.2</float><float name="Saturation">-0.35</float>'
-       '<Color3 name="TintColor"><R>0.92</R><G>0.95</G><B>1</B></Color3></Properties></Item>'
-       f'<Item class="Atmosphere" referent="{new_ref()}"><Properties><string name="Name">Haze</string>'
-       '<float name="Density">0.35</float><float name="Haze">1.5</float>'
-       '<Color3 name="Color"><R>0.12</R><G>0.12</G><B>0.11</B></Color3><Color3 name="Decay"><R>0.05</R><G>0.05</G><B>0.05</B></Color3>'
-       '</Properties></Item></Item>',
-       f'<Item class="ReplicatedStorage" referent="{new_ref()}"><Properties><string name="Name">ReplicatedStorage</string></Properties>'
-       + "".join(f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">{n}</string></Properties></Item>'
-                 for n in ("LobbyMessage", "ElevatorAction", "PickCharacter")) + "</Item>",
-       f'<Item class="StarterPlayer" referent="{new_ref()}"><Properties><string name="Name">StarterPlayer</string>'
-       '<token name="CameraMode">0</token><float name="CameraMaxZoomDistance">16</float></Properties>'
-       f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>'
-       + script("LocalScript", "LobbyButtons", LOBBY_UI) + "</Item></Item>",
-       f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>'
-       + script("Script", "Haunting", HAUNTING) + script("Script", "Elevators", MATCHMAKING,
-                f'<Item class="IntValue" referent="{new_ref()}"><Properties><string name="Name">GamePlaceId</string>'
-                '<int64 name="Value">0</int64></Properties></Item>') + "</Item>",
-       "</roblox>"]
-open(OUT, "w").write("\n".join(xml))
-print(f"wrote {OUT}: {len(parts)} parts")
+if __name__ == "__main__":
+  xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+         'xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">',
+         f'<Item class="Workspace" referent="{new_ref()}"><Properties><string name="Name">Workspace</string></Properties>',
+         f'<Item class="Model" referent="{new_ref()}"><Properties><string name="Name">Hall</string></Properties>' + "".join(parts) + "</Item>",
+         "</Item>",
+         f'<Item class="Lighting" referent="{new_ref()}"><Properties><string name="Name">Lighting</string>'
+         '<float name="ClockTime">0</float><float name="Brightness">0</float><token name="Technology">4</token>'
+         '<Color3 name="Ambient"><R>0.03</R><G>0.03</G><B>0.035</B></Color3>'
+         '<Color3 name="OutdoorAmbient"><R>0.12</R><G>0.13</G><B>0.18</B></Color3></Properties>'
+         f'<Item class="ColorCorrectionEffect" referent="{new_ref()}"><Properties><string name="Name">Cold</string>'
+         '<float name="Contrast">0.2</float><float name="Saturation">-0.35</float>'
+         '<Color3 name="TintColor"><R>0.92</R><G>0.95</G><B>1</B></Color3></Properties></Item>'
+         f'<Item class="Atmosphere" referent="{new_ref()}"><Properties><string name="Name">Haze</string>'
+         '<float name="Density">0.35</float><float name="Haze">1.5</float>'
+         '<Color3 name="Color"><R>0.12</R><G>0.12</G><B>0.11</B></Color3><Color3 name="Decay"><R>0.05</R><G>0.05</G><B>0.05</B></Color3>'
+         '</Properties></Item></Item>',
+         f'<Item class="ReplicatedStorage" referent="{new_ref()}"><Properties><string name="Name">ReplicatedStorage</string></Properties>'
+         + "".join(f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">{n}</string></Properties></Item>'
+                   for n in ("LobbyMessage", "ElevatorAction", "PickCharacter")) + "</Item>",
+         f'<Item class="StarterPlayer" referent="{new_ref()}"><Properties><string name="Name">StarterPlayer</string>'
+         '<token name="CameraMode">0</token><float name="CameraMaxZoomDistance">16</float></Properties>'
+         f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>'
+         + script("LocalScript", "LobbyButtons", LOBBY_UI) + "</Item></Item>",
+         f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>'
+         + script("Script", "Haunting", HAUNTING) + script("Script", "Elevators", MATCHMAKING,
+                  f'<Item class="IntValue" referent="{new_ref()}"><Properties><string name="Name">GamePlaceId</string>'
+                  '<int64 name="Value">0</int64></Properties></Item>') + "</Item>",
+         "</roblox>"]
+  open(OUT, "w").write("\n".join(xml))
+  print(f"wrote {OUT}: {len(parts)} parts")

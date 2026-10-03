@@ -60,7 +60,8 @@ end
 
 pickEvent.OnServerEvent:Connect(function(player, id)
 	if typeof(id) ~= "string" or not ROLES[id] or player:GetAttribute("InGame") then return end
-	local other = takenBy(id)
+	-- In the lobby anyone can pick anything (you're not a team yet).
+	local other = workspace:GetAttribute("Mode") ~= "Lobby" and takenBy(id)
 	if other and other ~= player then return end
 	player:SetAttribute("Character", id)
 end)
@@ -71,7 +72,7 @@ Players.PlayerAdded:Connect(function(player)
 	player:GetAttributeChangedSignal("Character"):Connect(function()
 		local id = player:GetAttribute("Character")
 		if player.Character then dressUp(player, player.Character) end
-		if id then messageEvent:FireAllClients(player.DisplayName .. " picked " .. ROLES[id].name .. ".") end
+		if id and workspace:GetAttribute("Mode") ~= "Lobby" then messageEvent:FireAllClients(player.DisplayName .. " picked " .. ROLES[id].name .. ".") end
 	end)
 end)
 
@@ -170,11 +171,13 @@ end
 local function refreshPicker()
 	picker.Visible = not player:GetAttribute("InGame")
 	local mine = player:GetAttribute("Character")
-	header.Text = mine and ("You are " .. mine:upper() .. "  -  click another one to change") or "PICK YOUR CHARACTER  (you keep your own avatar)"
+	local inLobby = workspace:GetAttribute("Mode") == "Lobby"
+	header.Text = mine and ("You are " .. mine:upper() .. (inLobby and "  -  now walk into an ELEVATOR!" or "  -  click another one to change"))
+		or "PICK YOUR CHARACTER  (you keep your own avatar)"
 	for _, role in ipairs(ROLES) do
 		local owner
 		for _, p in ipairs(Players:GetPlayers()) do
-			if p:GetAttribute("Character") == role.id then owner = p end
+			if p:GetAttribute("Character") == role.id and (p == player or not inLobby) then owner = p end
 		end
 		local b = pickButtons[role.id]
 		if owner == player then
