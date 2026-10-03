@@ -70,13 +70,12 @@ def build(part, new_ref):
             + "".join(out) + "</Item>")
 
 
-def figure(box, role, x, color):
-    """A simple standing figure of the character (Roblox parts)."""
-    z = -5.6
+def figure(box, role, x, color, z=-5.6, face=1):
+    """A simple standing figure of the character (Roblox parts).
+    face = 1: it faces +z, face = -1: it faces -z."""
     big = 1.15 if role == "Guard" else 0.92 if role == "Engineer" else 1.0
     def P(name, c, s, col, shape=1):
-        # (front = +z, so the figures face into the room)
-        box(f"Figure_{role}_{name}", (x - c[0] * big, 0.3 + c[1] * big, z - c[2] * big), tuple(v * big for v in s), col, False, shape)
+        box(f"Figure_{role}_{name}", (x - c[0] * big * face, 0.3 + c[1] * big, z - c[2] * big * face), tuple(v * big for v in s), col, False, shape)
     skin = "#c9a58a" if role != "Guard" else "#b98f74"
     pants = {"Son": "#3d4a63", "Journalist": "#22201e", "Engineer": "#2a3350", "Guard": "#4b4a3a"}[role]
     P("LegL", (-0.13, 0.42, 0), (0.2, 0.84, 0.24), pants); P("LegR", (0.13, 0.42, 0), (0.2, 0.84, 0.24), pants)
@@ -118,8 +117,22 @@ LOBBY_SCRIPT = r'''-- THE WAITING ROOM.
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
 local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
 local lobby = workspace:WaitForChild("Lobby")
+
+-- Came from the LOBBY place (the elevators)? Remember it, so we can go back.
+local function rememberLobby(player)
+	local ok, data = pcall(function() return player:GetJoinData().TeleportData end)
+	if ok and type(data) == "table" and data.lobby then workspace:SetAttribute("LobbyPlaceId", data.lobby) end
+end
+Players.PlayerAdded:Connect(rememberLobby)
+for _, p in ipairs(Players:GetPlayers()) do rememberLobby(p) end
+local function backToLobby(players)
+	local lobbyId = workspace:GetAttribute("LobbyPlaceId")
+	if not lobbyId then return false end
+	return pcall(function() TeleportService:TeleportAsync(lobbyId, players) end)
+end
 
 local ROAD = { --ROAD-- }
 local NAMES = { Son = "THE SON (Ethan)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
@@ -180,6 +193,18 @@ for _, id in ipairs(ORDER) do
 	end)
 end
 sign(lobby:WaitForChild("DoorSign"), Enum.NormalId.Left, "TO SITE 12", Color3.fromRGB(220, 60, 40))
+-- The door: back to the lobby (if you came from there).
+local doorPrompt = Instance.new("ProximityPrompt")
+doorPrompt.ActionText = "Back to the lobby"
+doorPrompt.ObjectText = "Door"
+doorPrompt.HoldDuration = 1
+doorPrompt.RequiresLineOfSight = false
+doorPrompt.Parent = lobby:WaitForChild("Door")
+doorPrompt.Triggered:Connect(function(player)
+	if not backToLobby({ player }) then
+		messageEvent:FireClient(player, "There's no lobby to go back to (this game was started on its own).")
+	end
+end)
 local board = sign(lobby:WaitForChild("Board"), Enum.NormalId.Right, "", Color3.fromRGB(110, 255, 140), 34)
 board.Font = Enum.Font.Code
 board.TextXAlignment = Enum.TextXAlignment.Left
@@ -262,8 +287,17 @@ while not workspace:GetAttribute("GameStarted") do
 	end
 end
 workspace:GetAttributeChangedSignal("ChapterDone"):Connect(function()
-	status = "CHAPTER 1 COMPLETE!\nThanks for playing. Rejoin to play again."
+	status = "CHAPTER 1 COMPLETE!\nThanks for playing."
 	for _, p in ipairs(Players:GetPlayers()) do p:SetAttribute("InGame", false) end
 	boardText()
+	-- Everyone goes back to the lobby together.
+	task.wait(6)
+	if workspace:GetAttribute("LobbyPlaceId") then
+		messageEvent:FireAllClients("Going back to the lobby...")
+		backToLobby(Players:GetPlayers())
+	else
+		status = "CHAPTER 1 COMPLETE!\nThanks for playing. Rejoin to play again."
+		boardText()
+	end
 end)
 '''
