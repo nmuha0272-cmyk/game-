@@ -40,6 +40,9 @@ There are TWO files:
   SubjectZero_Lobby.rbxlx ..... the LOBBY: a big hall where everyone
                                 arrives, with 4 ELEVATORS.
   SubjectZero_Chapter1.rbxlx .. the GAME.
+The lobby is an abandoned Site 12 visitor hall: flickering lights, blood,
+claw marks... and an OBSERVATION WINDOW. Something in there watches you.
+Sometimes it slams against the glass.
 In the lobby, walk into an elevator with your friends (or with anyone!).
 When 2-4 players are in it, it counts down 15 seconds and takes that group
 to their OWN private game. The first person in an elevator can press

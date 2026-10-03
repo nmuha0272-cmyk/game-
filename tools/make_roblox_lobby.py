@@ -10,7 +10,7 @@ lobby and Chapter 1 must be two places in the same experience: see
 roblox/HOW_TO_USE.txt ("THE LOBBY").
     python3 tools/make_roblox_lobby.py
 """
-import os, sys
+import math, os, random, sys
 from xml.sax.saxutils import escape
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import roblox_lobby
@@ -68,21 +68,126 @@ def box(name, c, s, color, collide=True, shape=1, children="", transparency=0.0,
 
 
 w, h, d = HALL
-# The hall: checkered floor, green-and-cream walls, ceiling lamps.
-box("Floor", (0, -0.1, 0), (w, 0.2, d), "#262824")
+rng = random.Random(13)
+
+
+def rot(yaw=0.0, pitch=0.0, roll=0.0):
+    """Axes (right, up, back) for a part turned by yaw (Y), pitch (X), roll (Z), in degrees."""
+    cy, sy = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
+    cp, sp = math.cos(math.radians(pitch)), math.sin(math.radians(pitch))
+    cr, sr = math.cos(math.radians(roll)), math.sin(math.radians(roll))
+    Ry = ((cy, 0, sy), (0, 1, 0), (-sy, 0, cy)); Rx = ((1, 0, 0), (0, cp, -sp), (0, sp, cp)); Rz = ((cr, -sr, 0), (sr, cr, 0), (0, 0, 1))
+    mul = lambda A, B: tuple(tuple(sum(A[i][k] * B[k][j] for k in range(3)) for j in range(3)) for i in range(3))
+    R = mul(mul(Ry, Rx), Rz)
+    return tuple(tuple(R[i][j] for i in range(3)) for j in range(3))
+
+
+def rbox(name, c, s, color, axes, collide=False, transparency=0.0, material=None, children=""):
+    parts.append(part(name, tuple(v * S for v in c), axes, tuple(v * S for v in s), color, collide, 1, transparency,
+                      children=children, material=material))
+
+
+# The hall: a checkered floor with broken tiles, grimy green-and-cream walls.
+box("Floor", (0, -0.1, 0), (w, 0.2, d), "#1c1d1a")
 for i in range(int(w / 2)):
     for k in range(int(d / 2)):
         if (i + k) % 2 == 0:
-            box("FloorTile", (-w / 2 + 1 + i * 2, 0.005, -d / 2 + 1 + k * 2), (2, 0.01, 2), "#d6d1bd", False)
-box("Ceiling", (0, h + 0.1, 0), (w, 0.2, d), "#8f8b7c")
-for name, c, s in (("WallN", (0, 0, -d / 2 - 0.15), (w + 0.6, 0, 0.3)), ("WallS", (0, 0, d / 2 + 0.15), (w + 0.6, 0, 0.3)),
-                   ("WallW", (-w / 2 - 0.15, 0, 0), (0.3, 0, d)), ("WallE", (w / 2 + 0.15, 0, 0), (0.3, 0, d))):
-    box(name + "Low", (c[0], 0.55, c[2]), (s[0], 1.1, s[2]), "#3f5a47")
-    box(name + "Stripe", (c[0], 1.13, c[2]), (s[0] + (0.04 if s[0] < 1 else 0), 0.06, s[2] + (0.04 if s[2] < 1 else 0)), "#1d2a22")
-    box(name + "High", (c[0], 1.16 + (h - 1.16) / 2, c[2]), (s[0], h - 1.16, s[2]), "#b9b49f")
-for x in (-10, 0, 10):
-    for z in (-3, 6):
-        box("Lamp", (x, h - 0.05, z), (1.4, 0.08, 0.4), "!ffe6b8", False, children=light("PointLight", 1.4, 44))
+            x, z = -w / 2 + 1 + i * 2, -d / 2 + 1 + k * 2
+            if rng.random() < 0.12:  # a broken tile: rubble instead
+                for _ in range(3):
+                    box("Rubble", (x + rng.uniform(-0.7, 0.7), 0.04, z + rng.uniform(-0.7, 0.7)), (0.25, 0.08, 0.2), "#b8b3a0", False)
+                continue
+            box("FloorTile", (x, 0.005, z), (2, 0.01, 2), rng.choice(["#cfcab5", "#c2bca6", "#b5ae96"]), False)
+box("Ceiling", (0, h + 0.1, 0), (w, 0.2, d), "#5e5b51")
+WIN = (-2.0, 4.0, 0.9, 3.0)   # the observation window in the east wall: z1, z2, y1, y2
+def wall(name, c, s):
+    box(name + "Low", (c[0], 0.55, c[2]), (s[0], 1.1, s[2]), "#34493a")
+    box(name + "Stripe", (c[0], 1.13, c[2]), (s[0] + (0.04 if s[0] < 1 else 0), 0.06, s[2] + (0.04 if s[2] < 1 else 0)), "#16211b")
+    box(name + "High", (c[0], 1.16 + (h - 1.16) / 2, c[2]), (s[0], h - 1.16, s[2]), "#a19c88")
+wall("WallN", (0, 0, -d / 2 - 0.15), (w + 0.6, 0, 0.3))
+wall("WallS", (0, 0, d / 2 + 0.15), (w + 0.6, 0, 0.3))
+wall("WallW", (-w / 2 - 0.15, 0, 0), (0.3, 0, d))
+ex = w / 2 + 0.15
+wall("WallE_A", (ex, 0, (-d / 2 + WIN[0]) / 2), (0.3, 0, WIN[0] + d / 2))
+wall("WallE_B", (ex, 0, (WIN[1] + d / 2) / 2), (0.3, 0, d / 2 - WIN[1]))
+wz = (WIN[0] + WIN[1]) / 2; ww = WIN[1] - WIN[0]
+box("WallE_UnderWindow", (ex, WIN[2] / 2, wz), (0.3, WIN[2], ww), "#34493a")
+box("WallE_OverWindow", (ex, (WIN[3] + h) / 2, wz), (0.3, h - WIN[3], ww), "#a19c88")
+# Grime and damp stains on the walls.
+for _ in range(26):
+    side = rng.choice(["N", "S", "W"])
+    sw, sh = rng.uniform(0.6, 2.5), rng.uniform(0.4, 2.0)
+    y = rng.uniform(0.3, h - 0.5)
+    if side == "N":
+        box("Grime", (rng.uniform(-14, 14), y, -d / 2 + 0.01), (sw, sh, 0.02), "#1a1712", False, transparency=0.55)
+    elif side == "S":
+        box("Grime", (rng.uniform(-14, 14), y, d / 2 - 0.01), (sw, sh, 0.02), "#1a1712", False, transparency=0.55)
+    else:
+        box("Grime", (-w / 2 + 0.01, y, rng.uniform(-11, 11)), (0.02, sh, sw), "#1a1712", False, transparency=0.55)
+# Claw scratches (long, in sets of four) and bloody hand smears.
+for (x, y, z, face) in ((-12.5, 2.0, -d / 2 + 0.02, "N"), (-15 + 0.02, 1.6, 7.5, "W"), (8.5, 1.4, d / 2 - 0.02, "S"), (-15 + 0.02, 1.2, -6, "W")):
+    for k in range(4):
+        if face == "W":
+            rbox("Scratch", (x, y + k * 0.12, z + k * 0.12), (0.02, 0.035, 1.6), "#0c0a08", rot(0, 35, 0))
+        else:
+            rbox("Scratch", (x + k * 0.12, y + k * 0.12, z), (1.6, 0.035, 0.02), "#0c0a08", rot(0, 0, -35))
+for (x, y, z) in ((-6, 0.9, -d / 2 + 0.02), (-5.6, 1.15, -d / 2 + 0.02), (12.2, 0.8, d / 2 - 0.02)):
+    rbox("BloodSmear", (x, y, z), (0.25, 0.7, 0.02), "#4a0705", rot(0, 0, rng.uniform(-25, 25)))
+# A blood trail dragged across the floor, from the window to the elevators.
+for k in range(16):
+    t = k / 15
+    x, z = 14 - t * 9, 1 - t * 6.5
+    box("BloodTrail", (x + rng.uniform(-0.2, 0.2), 0.012, z + rng.uniform(-0.2, 0.2)), (rng.uniform(0.3, 0.7), 0.01, rng.uniform(0.3, 0.6)),
+        rng.choice(["#3d0604", "#4a0705", "#2e0403"]), False)
+# Ceiling lamps: some dead, one hanging by a wire, all of them flickering.
+for (x, z, kind) in ((-10, -3, "Lamp"), (0, -3, "DeadLamp"), (10, -3, "Lamp"), (-10, 6, "DeadLamp"), (0, 6, "Lamp"), (10, 6, "Hanging")):
+    if kind == "DeadLamp":
+        box("DeadLamp", (x, h - 0.05, z), (1.4, 0.08, 0.4), "#3a3a36", False)
+    elif kind == "Hanging":
+        rbox("Lamp", (x, h - 0.9, z), (1.4, 0.08, 0.4), "!ffe6b8", rot(20, 0, 28), children=light("PointLight", 1.0, 30))
+        box("LampWire", (x - 0.45, h - 0.45, z), (0.02, 0.9, 0.02), "#111111", False)
+    else:
+        box("Lamp", (x, h - 0.05, z), (1.4, 0.08, 0.4), "!ffe6b8", False, children=light("PointLight", 1.0, 34))
+# A red emergency light over the elevators.
+box("EmergencyLight", (0, h - 0.3, -d / 2 + 0.3), (0.5, 0.3, 0.3), "!ff2010", False,
+    children=light("PointLight", 1.6, 40, (1, 0.1, 0.05)))
+
+# THE OBSERVATION ROOM, behind the window. Something is in there.
+ox1, ox2 = w / 2 + 0.3, w / 2 + 5.5
+box("ObsFloor", ((ox1 + ox2) / 2, -0.1, wz), (ox2 - ox1, 0.2, ww + 4), "#151513")
+box("ObsCeiling", ((ox1 + ox2) / 2, 4.1, wz), (ox2 - ox1, 0.2, ww + 4), "#151513")
+box("ObsBack", (ox2 + 0.15, 2, wz), (0.3, 4.2, ww + 4), "#22241f")
+box("ObsSide1", ((ox1 + ox2) / 2, 2, WIN[0] - 2.15), (ox2 - ox1, 4.2, 0.3), "#22241f")
+box("ObsSide2", ((ox1 + ox2) / 2, 2, WIN[1] + 2.15), (ox2 - ox1, 4.2, 0.3), "#22241f")
+box("ObsRedLight", (ox2 - 0.3, 3.6, wz), (0.2, 0.2, 0.2), "!5a0a06", False, children=light("PointLight", 0.6, 22, (1, 0.12, 0.06)))
+box("ObsGlass", (ex, (WIN[2] + WIN[3]) / 2, wz), (0.06, WIN[3] - WIN[2], ww), "#3a4a44", True, transparency=0.4, material=1568)
+for k in range(5):
+    rbox("GlassCrack", (ex - 0.05, 2.3 - k * 0.05, 2.4 + k * 0.05), (0.01, 0.02, rng.uniform(0.6, 1.4)), "#0a0a0a",
+         rot(0, rng.uniform(-50, 50), 0))
+for (y, z) in ((1.6, -0.6), (1.9, -0.2), (1.3, 2.9)):
+    box("HandPrint", (ex - 0.05, y, z), (0.01, 0.22, 0.16), "#4a0705", False)
+box("ObsSign", (ex - 0.05, 3.5, wz), (0.05, 0.5, 4), "#141412", False)
+rbox("ObsChair", (ox1 + 2.5, 0.25, wz - 1.5), (0.6, 0.5, 0.6), "#3a3d34", rot(30, 0, 80), collide=True)
+for k in range(3):
+    box("ObsChain", (ox1 + 3.5, 3.2, WIN[0] + 1.2 + k * 2), (0.05, 1.6, 0.05), "#55554f", False)
+# The watcher: tall, thin, and dark, with red eyes.
+for name, c, s2, col in (("Torso", (0, 1.9, 0), (0.35, 1.3, 0.22), "#0b0b0a"), ("Head", (0, 2.75, -0.05), (0.26, 0.36, 0.28), "#0b0b0a"),
+                        ("ArmL", (-0.3, 1.45, 0), (0.1, 1.9, 0.1), "#0b0b0a"), ("ArmR", (0.3, 1.45, 0), (0.1, 1.9, 0.1), "#0b0b0a"),
+                        ("LegL", (-0.12, 0.65, 0), (0.12, 1.3, 0.12), "#0b0b0a"), ("LegR", (0.12, 0.65, 0), (0.12, 1.3, 0.12), "#0b0b0a"),
+                        ("EyeL", (-0.06, 2.8, -0.2), (0.04, 0.025, 0.02), "!ff1a0a"), ("EyeR", (0.06, 2.8, -0.2), (0.04, 0.025, 0.02), "!ff1a0a")):
+    # (turned to face the window: -x)
+    rbox("Watcher_" + name, (ox2 - 1.2 + c[2], c[1], wz + 2.5 - c[0]), s2, col, rot(90, 0, 0))
+# A gurney with a stained sheet, an overturned bench, papers everywhere.
+box("Gurney", (11.5, 0.8, 7.5), (0.8, 0.08, 2.0), "#8a8c86", True)
+box("GurneySheet", (11.5, 0.86, 7.6), (0.82, 0.05, 1.6), "#bdb6a2", False)
+box("GurneyStain", (11.5, 0.89, 7.3), (0.4, 0.01, 0.5), "#3d0604", False)
+for dx in (-0.33, 0.33):
+    for dz in (-0.85, 0.85):
+        box("GurneyLeg", (11.5 + dx, 0.38, 7.5 + dz), (0.04, 0.76, 0.04), "#5a5c56", False)
+rbox("BenchFallen", (-4, 0.36, 3.3), (4, 0.1, 0.7), "#4a3420", rot(8, 0, 90), collide=True)
+box("Bench", (4, 0.45, 3), (4, 0.1, 0.7), "#4a3420")
+for _ in range(14):
+    rbox("Paper", (rng.uniform(-12, 12), 0.015, rng.uniform(-6, 9)), (0.22, 0.01, 0.3), rng.choice(["#cfc8b0", "#bdb59a"]), rot(rng.uniform(0, 360)))
 
 # 4 elevators (cages) along the back wall.
 for i, x in enumerate(ELEVATOR_X, 1):
@@ -105,9 +210,12 @@ for role, x, color in roblox_lobby.STANDS:
     roblox_lobby.figure(lambda name, c, s, col, collide=False, shape=1: box(name, c, s, col, collide, shape),
                         role, x * 1.2, color, z=d / 2 - 2.2, face=-1)
     box(f"PedestalSign_{role}", (x * 1.2, 2.7, d / 2 - 0.02), (2.4, 0.7, 0.05), "#141412", False)
+    box(f"PedestalLamp_{role}", (x * 1.2, h - 0.1, d / 2 - 2.2), (0.3, 0.1, 0.3), "#222220", False,
+        children=light("SpotLight", 2.5, 18, (1, 0.9, 0.75), '<float name="Angle">35</float><token name="Face">4</token>'))
 box("TitleBoard", (-w / 2 + 0.05, 3.4, 0), (0.06, 2.2, 10), "#10140f", False)
-box("HowToBoard", (w / 2 - 0.05, 2.6, 0), (0.06, 3.2, 8), "#10140f", False)
-box("Bench", (-4, 0.45, 3), (4, 0.1, 0.7), "#5c4128"); box("Bench", (4, 0.45, 3), (4, 0.1, 0.7), "#5c4128")
+box("HowToBoard", (w / 2 - 0.05, 2.4, -8), (0.06, 3.4, 5.6), "#10140f", False)
+box("Scrawl1", (-w / 2 + 0.05, 1.0, 8.5), (0.04, 0.9, 3.4), "#000000", False, transparency=1.0)
+box("Scrawl2", (-1.5, 4.6, -d / 2 + 0.03), (5, 0.9, 0.04), "#000000", False, transparency=1.0)
 parts.append(part("Spawn", (0, 0.3 * S, 1.0 * S), W, (10 * S, 1, 6 * S), "#262824", False, 1, 1.0, cls="SpawnLocation",
                   extra='<bool name="Neutral">true</bool>'))
 
@@ -173,15 +281,23 @@ end
 -- Signs.
 local title = sign(hall:WaitForChild("TitleBoard"), Enum.NormalId.Right, Color3.fromRGB(220, 60, 40))
 title.Text = "SUBJECT ZERO\nSITE 12 - VISITOR CENTER"
-local howTo = sign(hall:WaitForChild("HowToBoard"), Enum.NormalId.Left, Color3.fromRGB(110, 255, 140), 30)
+local howTo = sign(hall:WaitForChild("HowToBoard"), Enum.NormalId.Left, Color3.fromRGB(110, 255, 140))
 howTo.Font = Enum.Font.Code
 howTo.TextXAlignment = Enum.TextXAlignment.Left
 howTo.TextYAlignment = Enum.TextYAlignment.Top
 howTo.Text = "HOW TO PLAY\n\n1. Walk into an ELEVATOR\n   with your friends\n   (or with anyone!).\n\n2. 2-4 players: it leaves\n   in " .. WAIT_TIME .. " seconds.\n\n3. Pick your character,\n   then survive Chapter 1\n   TOGETHER.\n\nFRIENDS ONLY: the first\nperson in can lock it\nto their friends.\n\nInvite friends: button\non the left of your screen."
+-- Writing on the walls.
+local scrawl = sign(hall:WaitForChild("Scrawl1"), Enum.NormalId.Right, Color3.fromRGB(120, 10, 6))
+scrawl.Text = "LET ME OUT"
+scrawl.Font = Enum.Font.Creepster
+local scrawl2 = sign(hall:WaitForChild("Scrawl2"), Enum.NormalId.Back, Color3.fromRGB(110, 12, 8))
+scrawl2.Text = "IT CAN SEE YOU"
+scrawl2.Font = Enum.Font.Creepster
+sign(hall:WaitForChild("ObsSign"), Enum.NormalId.Left, Color3.fromRGB(200, 60, 40)).Text = "OBSERVATION  -  SUBJECT 7"
 local NAMES = { Son = "THE SON (Ethan)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
 for id, name in pairs(NAMES) do
 	local s = hall:FindFirstChild("PedestalSign_" .. id)
-	if s then sign(s, Enum.NormalId.Front, Color3.fromRGB(230, 220, 195)).Text = name end
+	if s then sign(s, Enum.NormalId.Front, Color3.fromRGB(230, 220, 195)).Text = name .. "\n(pick in the game - you keep your avatar)" end
 end
 
 -- The elevators.
@@ -337,6 +453,87 @@ while true do
 end
 '''
 
+
+HAUNTING = r'''-- THE LOBBY IS NOT SAFE: flickering lamps, a pulsing red emergency
+-- light, and something in the observation room that watches you... and
+-- sometimes slams against the glass.
+local hall = workspace:WaitForChild("Hall")
+
+local function flicker(light, broken)
+	local base = light.Brightness
+	while true do
+		if math.random() < broken then
+			light.Brightness = 0
+			task.wait(0.03 + math.random() * 0.15)
+		else
+			light.Brightness = base * (0.75 + math.random() * 0.25)
+			task.wait(math.random() < 0.5 and (0.05 + math.random() * 0.3) or (0.6 + math.random() * 3))
+		end
+	end
+end
+for _, part in ipairs(hall:GetChildren()) do
+	if part.Name == "Lamp" then
+		local light = part:FindFirstChildOfClass("PointLight")
+		if light then task.spawn(flicker, light, math.random() < 0.5 and 0.35 or 0.15) end
+	end
+end
+local emergency = hall:WaitForChild("EmergencyLight"):FindFirstChildOfClass("PointLight")
+task.spawn(function()
+	local t = 0
+	while true do
+		t += task.wait(0.05)
+		emergency.Brightness = 0.4 + 1.4 * math.max(0, math.sin(t * 2.2))
+	end
+end)
+
+-- The watcher in the observation room.
+local watcher = {}
+for _, part in ipairs(hall:GetChildren()) do
+	if string.sub(part.Name, 1, 8) == "Watcher_" then table.insert(watcher, part) end
+end
+local torso = hall:WaitForChild("Watcher_Torso")
+local glass = hall:WaitForChild("ObsGlass")
+local redLight = hall:WaitForChild("ObsRedLight"):FindFirstChildOfClass("PointLight")
+local home = torso.Position
+local function moveTo(target)
+	local delta = target - torso.Position
+	for _, part in ipairs(watcher) do part.CFrame = part.CFrame + delta end
+end
+local function show(visible)
+	for _, part in ipairs(watcher) do part.LocalTransparencyModifier = 0 part.Transparency = visible and 0 or 1 end
+end
+local SPOTS = {}
+for _, dz in ipairs({ -2.6, 0, 2.6 }) do
+	for _, dx in ipairs({ 0, 1.2 }) do
+		table.insert(SPOTS, home + Vector3.new(dx * 3.2 * 0.5, 0, dz * 3.2) - Vector3.new(0, 0, 2.5 * 3.2))
+	end
+end
+while true do
+	task.wait(6 + math.random() * 9)
+	show(false)
+	task.wait(0.4 + math.random())
+	if math.random() < 0.25 then
+		-- SLAM against the glass: lights die, red flash, then gone.
+		local z = glass.Position.Z + (math.random() - 0.5) * glass.Size.Z * 0.6
+		moveTo(Vector3.new(glass.Position.X + 1.4, home.Y, z))
+		show(true)
+		redLight.Brightness = 6
+		for _, part in ipairs(hall:GetChildren()) do
+			if part.Name == "Lamp" then
+				local l = part:FindFirstChildOfClass("PointLight")
+				if l then l.Enabled = false task.delay(0.6, function() l.Enabled = true end) end
+			end
+		end
+		task.wait(1.2)
+		redLight.Brightness = 0.6
+		show(false)
+		task.wait(1)
+	end
+	moveTo(SPOTS[math.random(1, #SPOTS)])
+	show(true)
+end
+'''
+
 LOBBY_UI = r'''-- Lobby buttons: Invite friends (always), and Leave / Friends only when
 -- you're in an elevator. Plus messages.
 local Players = game:GetService("Players")
@@ -411,12 +608,16 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="Model" referent="{new_ref()}"><Properties><string name="Name">Hall</string></Properties>' + "".join(parts) + "</Item>",
        "</Item>",
        f'<Item class="Lighting" referent="{new_ref()}"><Properties><string name="Name">Lighting</string>'
-       '<float name="ClockTime">0</float><float name="Brightness">0.5</float><token name="Technology">4</token>'
-       '<Color3 name="Ambient"><R>0.12</R><G>0.12</G><B>0.13</B></Color3>'
+       '<float name="ClockTime">0</float><float name="Brightness">0</float><token name="Technology">4</token>'
+       '<Color3 name="Ambient"><R>0.03</R><G>0.03</G><B>0.035</B></Color3>'
        '<Color3 name="OutdoorAmbient"><R>0.12</R><G>0.13</G><B>0.18</B></Color3></Properties>'
        f'<Item class="ColorCorrectionEffect" referent="{new_ref()}"><Properties><string name="Name">Cold</string>'
-       '<float name="Contrast">0.1</float><float name="Saturation">-0.2</float>'
-       '<Color3 name="TintColor"><R>0.94</R><G>0.96</G><B>1</B></Color3></Properties></Item></Item>',
+       '<float name="Contrast">0.2</float><float name="Saturation">-0.35</float>'
+       '<Color3 name="TintColor"><R>0.92</R><G>0.95</G><B>1</B></Color3></Properties></Item>'
+       f'<Item class="Atmosphere" referent="{new_ref()}"><Properties><string name="Name">Haze</string>'
+       '<float name="Density">0.35</float><float name="Haze">1.5</float>'
+       '<Color3 name="Color"><R>0.12</R><G>0.12</G><B>0.11</B></Color3><Color3 name="Decay"><R>0.05</R><G>0.05</G><B>0.05</B></Color3>'
+       '</Properties></Item></Item>',
        f'<Item class="ReplicatedStorage" referent="{new_ref()}"><Properties><string name="Name">ReplicatedStorage</string></Properties>'
        + "".join(f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">{n}</string></Properties></Item>'
                  for n in ("LobbyMessage", "ElevatorAction")) + "</Item>",
@@ -425,7 +626,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>'
        + script("LocalScript", "LobbyButtons", LOBBY_UI) + "</Item></Item>",
        f'<Item class="ServerScriptService" referent="{new_ref()}"><Properties><string name="Name">ServerScriptService</string></Properties>'
-       + script("Script", "Elevators", MATCHMAKING,
+       + script("Script", "Haunting", HAUNTING) + script("Script", "Elevators", MATCHMAKING,
                 f'<Item class="IntValue" referent="{new_ref()}"><Properties><string name="Name">GamePlaceId</string>'
                 '<int64 name="Value">0</int64></Properties></Item>') + "</Item>",
        "</roblox>"]

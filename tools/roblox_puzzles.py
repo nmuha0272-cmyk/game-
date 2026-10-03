@@ -53,8 +53,18 @@ def build(part, frame, new_ref, kit):
         out.append(part(name, g(pos), yaw_axes(yaw), g(size), color, collide, shape))
 
     box("Gate", (0, 1.3, 22), (3.1, 2.6, 0.08), "chainlink")
-    box("GateLift", (-2.25, 1.0, 22.14), (0.12, 0.4, 0.12), "#6b6b60")
-    box("GateJam", (2.25, 1.0, 21.86), (0.3, 0.4, 0.25), "#594d40")
+    # Invisible walls above the fence and the gate, up to 8 m, so nobody can
+    # jump over them (from a box, the sign, or the gate clamp). You can still
+    # crawl under the gate when someone lifts it.
+    top = 8.0
+    for x1, x2, z1, z2 in ((-15, -1.55, 21.9, 22.1), (1.55, 15, 21.9, 22.1), (-15.1, -14.9, 0, 22), (14.9, 15.1, 0, 22),
+                           (-15, -10, -0.1, 0.1), (10, 15, -0.1, 0.1)):
+        y1 = 2.9
+        out.append(part("NoClimb", g(((x1 + x2) / 2, (y1 + top) / 2, (z1 + z2) / 2)), W, g((x2 - x1, top - y1, z2 - z1)),
+                        "#000000", True, 1, 1.0))
+    out.append(part("NoClimbGate", g((0, (2.6 + top) / 2, 22)), W, g((3.2, top - 2.6, 0.3)), "#000000", True, 1, 1.0))
+    box("GateLift", (-2.25, 1.0, 22.14), (0.12, 0.4, 0.12), "#6b6b60", collide=False)
+    box("GateJam", (2.25, 1.0, 21.86), (0.3, 0.4, 0.25), "#594d40", collide=False)
     box("TapeMachine", (-8.5, 1.05, -9.4), (0.4, 0.3, 0.5), "#3a3630")
     for k, z in enumerate((-9.52, -9.28)):
         out.append(part(f"TapeReel{k}", g((-8.29, 1.12, z)), W, g((0.03, 0.2, 0.2)), "#1a1816", False, 2))

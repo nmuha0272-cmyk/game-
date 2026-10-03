@@ -213,7 +213,7 @@ board.TextYAlignment = Enum.TextYAlignment.Top
 local function updateSigns()
 	for _, id in ipairs(ORDER) do
 		local owner = takenBy(id)
-		standLabels[id].Text = NAMES[id] .. "\n" .. (owner and ("- " .. owner.DisplayName .. " -") or "[E] to pick")
+		standLabels[id].Text = NAMES[id] .. "\n" .. (owner and ("- " .. owner.DisplayName .. " -") or "[E] to pick\n(you keep your own avatar)")
 	end
 end
 
