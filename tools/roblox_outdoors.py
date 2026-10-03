@@ -56,6 +56,23 @@ def fills():
     return out
 
 
+def patches():
+    """Flat leafy / muddy patches where you walk: (material, x1, x2, z1, z2)."""
+    out = []
+    for _ in range(110):
+        x, z = rng.uniform(-23, 23), rng.uniform(-1, 51)
+        r = rng.uniform(0.8, 2.0)
+        rect = (x - r, x + r, z - r, z + r)
+        bad = False
+        for a1, a2, b1, b2 in (STATION, SHED, PATH, STAIRS, (ROAD[0], ROAD[1], ROAD[2] - 1, ROAD[3] + 1)):
+            if rect[0] < a2 and rect[1] > a1 and rect[2] < b2 and rect[3] > b1:
+                bad = True
+        if not bad:
+            inside_yard = -15 < x < 15 and 0 < z < 22
+            out.append((rng.choice(["Mud", "Ground"] if inside_yard else ["LeafyGrass", "LeafyGrass", "Ground", "Mud"]),) + rect)
+    return out
+
+
 def outside_walls(x, z):
     return abs(x) > 24 or z > 52 or z < -18
 
@@ -68,24 +85,23 @@ def blobs():
             if a1 - pad < x < a2 + pad and b1 - pad < z < b2 + pad:
                 return False
         return not (-1.6 < x < 1.6 and 20 < z < 24)  # the gate
-    # Leafy, muddy patches in the forest and the yard.
-    for _ in range(140):
-        x, z = rng.uniform(-23, 23), rng.uniform(-1, 51)
-        if free(x, z, 1.5):
-            inside_yard = -15 < x < 15 and 0 < z < 22
-            out.append((rng.choice(["Mud", "Ground"] if inside_yard else ["LeafyGrass", "LeafyGrass", "Ground", "Mud"]),
-                        x, -0.35, z, rng.uniform(0.8, 2.0)))
-    # Rocks in the forest (not in the yard).
+    # (Where you walk the ground is FLAT: the patches are flat squares, see
+    # patches(). Rocks only out past the walls.)
     for _ in range(45):
-        x, z = rng.uniform(-22, 22), rng.uniform(-1, 50)
-        if free(x, z, 2.0) and not (-15.5 < x < 15.5 and -0.5 < z < 22.5):
-            out.append(("Rock", x, -0.2, z, rng.uniform(0.35, 1.1)))
+        x, z = rng.uniform(-40, 40), rng.uniform(-20, 70)
+        if outside_walls(x, z) and free(x, z, 2.0) and not (ROAD[2] - 2 < z < ROAD[3] + 2):
+            out.append(("Rock", x, -0.2, z, rng.uniform(0.5, 1.4)))
     # Rolling hills outside the walkable area (and behind the station).
     for _ in range(90):
         x, z = rng.uniform(-70, 70), rng.uniform(-45, 85)
         u = UNDERGROUND
+        r = rng.uniform(8, 15)
+        # how far the hill's center is from the flat play area (it must not reach in)
+        dx = max(-23 - x, 0, x - 23); dz = max(-1 - z, 0, z - 51)
+        if (dx * dx + dz * dz) ** 0.5 < r + 1:
+            continue
         if outside_walls(x, z) and not (ROAD[2] - 3 < z < ROAD[3] + 3) and not (u[0] - 16 < x < u[1] + 16 and u[2] - 16 < z < u[3] + 16):
-            out.append((rng.choice(["Grass", "Grass", "LeafyGrass", "Rock"]), x, rng.uniform(-9, -3), z, rng.uniform(8, 15)))
+            out.append((rng.choice(["Grass", "Grass", "LeafyGrass", "Rock"]), x, rng.uniform(-9, -3), z, r))
     return out
 
 
@@ -102,7 +118,7 @@ def v3(p): return f"Vector3.new({p[0]:.2f}, {p[1]:.2f}, {p[2]:.2f})"
 
 
 def script():
-    f = ",\n\t".join(f'{{ Enum.Material.{m}, {x1 * S:.1f}, {x2 * S:.1f}, {z1 * S:.1f}, {z2 * S:.1f} }}' for m, x1, x2, z1, z2 in fills())
+    f = ",\n\t".join(f'{{ Enum.Material.{m}, {x1 * S:.1f}, {x2 * S:.1f}, {z1 * S:.1f}, {z2 * S:.1f} }}' for m, x1, x2, z1, z2 in fills() + patches())
     b = ",\n\t".join(f'{{ Enum.Material.{m}, {v3((x * S, y * S, z * S))}, {r * S:.2f} }}' for m, x, y, z, r in blobs())
     mp = ", ".join(v3((x * S, 1.2, z * S)) for x, z in mist_points())
     return OUTDOORS.replace("--FILLS--", f).replace("--BLOBS--", b).replace("--MIST--", mp)
