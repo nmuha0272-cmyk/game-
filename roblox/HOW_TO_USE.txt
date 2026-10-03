@@ -45,7 +45,10 @@ There are TWO files:
 The lobby is an abandoned Site 12 visitor hall: flickering lights, blood,
 claw marks... and an OBSERVATION WINDOW. Something in there watches you.
 Sometimes it slams against the glass.
-In the lobby, walk into an elevator with your friends (or with anyone!).
+In the lobby, PICK YOUR CHARACTER with the big buttons at the bottom of the
+screen (you keep your own avatar). Then walk into an elevator with your
+friends (or with anyone!). Your pick comes with you into the game (if a
+teammate picked the same one, you choose again in the game's waiting room).
 When 2-4 players are in it, it counts down 15 seconds and takes that group
 to their OWN private game. The first person in an elevator can press
 "Make it friends only". There's an "Invite friends" button too.

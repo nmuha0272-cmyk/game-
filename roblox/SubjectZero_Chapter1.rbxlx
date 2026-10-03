@@ -919,7 +919,7 @@ end
 -- Big buttons at the bottom of the screen: click one to pick that character.
 -- (You can also walk onto a stand, or press E at it.) You keep your avatar.
 local pickEvent = ReplicatedStorage:WaitForChild("PickCharacter")
-local picker = make("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16),
+local picker = make("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -95),
 	Size = UDim2.new(0.92, 0, 0, 150), BackgroundColor3 = Color3.fromRGB(10, 10, 10), BackgroundTransparency = 0.25 }, gui)
 make("UISizeConstraint", { MaxSize = Vector2.new(980, 150) }, picker)
 local header = make("TextLabel", { Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, Font = Enum.Font.SpecialElite,
@@ -2147,19 +2147,6 @@ local TeleportService = game:GetService("TeleportService")
 local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
 local lobby = workspace:WaitForChild("Lobby")
 
--- Came from the LOBBY place (the elevators)? Remember it, so we can go back.
-local function rememberLobby(player)
-	local ok, data = pcall(function() return player:GetJoinData().TeleportData end)
-	if ok and type(data) == "table" and data.lobby then workspace:SetAttribute("LobbyPlaceId", data.lobby) end
-end
-Players.PlayerAdded:Connect(rememberLobby)
-for _, p in ipairs(Players:GetPlayers()) do rememberLobby(p) end
-local function backToLobby(players)
-	local lobbyId = workspace:GetAttribute("LobbyPlaceId")
-	if not lobbyId then return false end
-	return pcall(function() TeleportService:TeleportAsync(lobbyId, players) end)
-end
-
 local ROAD = { Vector3.new(-4.80, 0.64, 144.00), Vector3.new(4.80, 0.64, 144.00), Vector3.new(-4.80, 0.64, 148.80), Vector3.new(4.80, 0.64, 148.80) }
 local NAMES = { Son = "THE SON (Ethan)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
 local ORDER = { "Son", "Journalist", "Engineer", "Guard" }
@@ -2192,6 +2179,24 @@ local function takenBy(id)
 		if p:GetAttribute("Character") == id then return p end
 	end
 	return nil
+end
+
+-- Came from the LOBBY place (the elevators)? Remember it, so we can go back.
+local function rememberLobby(player)
+	local ok, data = pcall(function() return player:GetJoinData().TeleportData end)
+	if ok and type(data) == "table" and data.lobby then workspace:SetAttribute("LobbyPlaceId", data.lobby) end
+	-- The character they picked in the lobby (if nobody here has it yet).
+	local want = ok and type(data) == "table" and type(data.roles) == "table" and data.roles[tostring(player.UserId)]
+	if want and NAMES[want] and not takenBy(want) and not player:GetAttribute("Character") then
+		player:SetAttribute("Character", want)
+	end
+end
+Players.PlayerAdded:Connect(rememberLobby)
+for _, p in ipairs(Players:GetPlayers()) do rememberLobby(p) end
+local function backToLobby(players)
+	local lobbyId = workspace:GetAttribute("LobbyPlaceId")
+	if not lobbyId then return false end
+	return pcall(function() TeleportService:TeleportAsync(lobbyId, players) end)
 end
 
 -- Signs and prompts on the stands.

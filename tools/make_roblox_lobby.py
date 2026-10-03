@@ -318,7 +318,7 @@ local howTo = sign(hall:WaitForChild("HowToBoard"), Enum.NormalId.Left, Color3.f
 howTo.Font = Enum.Font.Code
 howTo.TextXAlignment = Enum.TextXAlignment.Left
 howTo.TextYAlignment = Enum.TextYAlignment.Top
-howTo.Text = "HOW TO PLAY\n\n1. Walk into an ELEVATOR\n   with your friends\n   (or with anyone!).\n\n2. 2-4 players: it leaves\n   in " .. WAIT_TIME .. " seconds.\n\n3. Pick your character,\n   then survive Chapter 1\n   TOGETHER.\n\nFRIENDS ONLY: the first\nperson in can lock it\nto their friends.\n\nInvite friends: button\non the left of your screen."
+howTo.Text = "HOW TO PLAY\n\n0. Pick a character\n   (buttons at the bottom).\n\n1. Walk into an ELEVATOR\n   with your friends\n   (or with anyone!).\n\n2. 2-4 players: it leaves\n   in " .. WAIT_TIME .. " seconds.\n\n3. Pick your character,\n   then survive Chapter 1\n   TOGETHER.\n\nFRIENDS ONLY: the first\nperson in can lock it\nto their friends.\n\nInvite friends: button\non the left of your screen."
 -- Writing on the walls.
 local scrawl = sign(hall:WaitForChild("Scrawl1"), Enum.NormalId.Right, Color3.fromRGB(120, 10, 6))
 scrawl.Text = "LET ME OUT"
@@ -412,7 +412,9 @@ local function launch(e)
 	if placeId then
 		local options = Instance.new("TeleportOptions")
 		options.ShouldReserveServer = true  -- a private game just for this group
-		options:SetTeleportData({ lobby = game.PlaceId })
+		local roles = {}
+		for _, p in ipairs(group) do roles[tostring(p.UserId)] = p:GetAttribute("Character") end
+		options:SetTeleportData({ lobby = game.PlaceId, roles = roles })
 		ok, err = pcall(function() TeleportService:TeleportAsync(placeId, group, options) end)
 	end
 	if not ok then
@@ -430,6 +432,15 @@ local function launch(e)
 	e.leaving = false
 	e.countdown = nil
 end
+
+-- Characters picked here in the lobby travel with you into the game.
+local ROLE_IDS = { Son = true, Journalist = true, Engineer = true, Guard = true }
+ReplicatedStorage:WaitForChild("PickCharacter").OnServerEvent:Connect(function(player, id)
+	if typeof(id) == "string" and ROLE_IDS[id] then
+		player:SetAttribute("Character", id)
+		say(player, "You'll be " .. NAMES[id] .. ". (If a teammate picked it too, you choose again in the game.)")
+	end
+end)
 
 actionEvent.OnServerEvent:Connect(function(player, action)
 	local index = player:GetAttribute("Elevator")
@@ -629,6 +640,68 @@ player:GetAttributeChangedSignal("Elevator"):Connect(refresh)
 player:GetAttributeChangedSignal("ElevatorOwner"):Connect(refresh)
 refresh()
 
+-- PICK YOUR CHARACTER: big buttons at the bottom (you keep your own avatar).
+local pickEvent = ReplicatedStorage:WaitForChild("PickCharacter")
+local ROLES = {
+	{ id = "Son", name = "THE SON", power = "Sees the monster through walls", color = Color3.fromRGB(150, 100, 60) },
+	{ id = "Journalist", name = "THE JOURNALIST", power = "Camera flash blinds him", color = Color3.fromRGB(205, 175, 125) },
+	{ id = "Engineer", name = "THE ENGINEER", power = "Fixes things 3x faster", color = Color3.fromRGB(90, 120, 200) },
+	{ id = "Guard", name = "THE GUARD", power = "Strong + survives one catch", color = Color3.fromRGB(130, 150, 90) },
+}
+local panel = Instance.new("Frame")
+panel.AnchorPoint = Vector2.new(0.5, 1)
+panel.Position = UDim2.new(0.5, 0, 1, -95)
+panel.Size = UDim2.new(0.6, 0, 0, 130)
+panel.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+panel.BackgroundTransparency = 0.25
+panel.Parent = gui
+local sizeLimit = Instance.new("UISizeConstraint")
+sizeLimit.MaxSize = Vector2.new(900, 130)
+sizeLimit.MinSize = Vector2.new(420, 130)
+sizeLimit.Parent = panel
+local header = Instance.new("TextLabel")
+header.Size = UDim2.new(1, 0, 0, 28)
+header.BackgroundTransparency = 1
+header.Font = Enum.Font.SpecialElite
+header.TextSize = 20
+header.TextColor3 = Color3.fromRGB(230, 220, 195)
+header.Text = "PICK YOUR CHARACTER  (you keep your own avatar)"
+header.Parent = panel
+local row = Instance.new("Frame")
+row.Position = UDim2.new(0, 8, 0, 32)
+row.Size = UDim2.new(1, -16, 1, -40)
+row.BackgroundTransparency = 1
+row.Parent = panel
+local layout = Instance.new("UIListLayout")
+layout.FillDirection = Enum.FillDirection.Horizontal
+layout.Padding = UDim.new(0, 8)
+layout.Parent = row
+local pickButtons = {}
+for _, role in ipairs(ROLES) do
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.new(0.25, -6, 1, 0)
+	b.BackgroundColor3 = role.color
+	b.Font = Enum.Font.SpecialElite
+	b.TextSize = 17
+	b.TextWrapped = true
+	b.TextColor3 = Color3.new(0, 0, 0)
+	b.Text = role.name .. "\n" .. role.power
+	b.Parent = row
+	b.Activated:Connect(function() pickEvent:FireServer(role.id) end)
+	pickButtons[role.id] = b
+end
+local function refreshPick()
+	local mine = player:GetAttribute("Character")
+	for _, role in ipairs(ROLES) do
+		local b = pickButtons[role.id]
+		b.Text = (mine == role.id and "YOU: " or "") .. role.name .. "\n" .. role.power
+		b.BackgroundColor3 = mine == role.id and role.color:Lerp(Color3.new(1, 1, 1), 0.4) or role.color
+	end
+	header.Text = mine and "Picked! Now walk into an elevator." or "PICK YOUR CHARACTER  (you keep your own avatar)"
+end
+player:GetAttributeChangedSignal("Character"):Connect(refreshPick)
+refreshPick()
+
 local message = Instance.new("TextLabel")
 message.AnchorPoint = Vector2.new(0.5, 1)
 message.Position = UDim2.new(0.5, 0, 0.85, 0)
@@ -671,7 +744,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        '</Properties></Item></Item>',
        f'<Item class="ReplicatedStorage" referent="{new_ref()}"><Properties><string name="Name">ReplicatedStorage</string></Properties>'
        + "".join(f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">{n}</string></Properties></Item>'
-                 for n in ("LobbyMessage", "ElevatorAction")) + "</Item>",
+                 for n in ("LobbyMessage", "ElevatorAction", "PickCharacter")) + "</Item>",
        f'<Item class="StarterPlayer" referent="{new_ref()}"><Properties><string name="Name">StarterPlayer</string>'
        '<token name="CameraMode">0</token><float name="CameraMaxZoomDistance">16</float></Properties>'
        f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>'

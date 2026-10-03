@@ -149,7 +149,7 @@ end
 -- Big buttons at the bottom of the screen: click one to pick that character.
 -- (You can also walk onto a stand, or press E at it.) You keep your avatar.
 local pickEvent = ReplicatedStorage:WaitForChild("PickCharacter")
-local picker = make("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16),
+local picker = make("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -95),
 	Size = UDim2.new(0.92, 0, 0, 150), BackgroundColor3 = Color3.fromRGB(10, 10, 10), BackgroundTransparency = 0.25 }, gui)
 make("UISizeConstraint", { MaxSize = Vector2.new(980, 150) }, picker)
 local header = make("TextLabel", { Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, Font = Enum.Font.SpecialElite,
