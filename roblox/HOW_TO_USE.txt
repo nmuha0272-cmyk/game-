@@ -6,8 +6,10 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
 3. File -> Open from File... -> pick  SubjectZero_Chapter1.rbxlx
    (it takes a little while: it's a big map).
 4. Press Play (or F5). You start in the WAITING ROOM.
-   Walk up to a character's stand and press E to pick them (each player
-   a different one; press E on another free stand to change your mind).
+   PICK A CHARACTER, the easy way: click one of the 4 big buttons at
+   the bottom of the screen. (Or walk onto a stand, or press E at it.)
+   Each player a different one; click another free one to change.
+   You stay as your own avatar.
    The board on the wall shows who picked what. When EVERYONE has picked
    (2-4 players), a 10 second countdown starts and the whole team goes
    into the game together. (Testing alone in Studio works too.)

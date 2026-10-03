@@ -145,6 +145,59 @@ local function make(class, props, parent)
 	return thing
 end
 
+-- PICK BUTTONS (in the waiting room) ---------------------------------------
+-- Big buttons at the bottom of the screen: click one to pick that character.
+-- (You can also walk onto a stand, or press E at it.) You keep your avatar.
+local pickEvent = ReplicatedStorage:WaitForChild("PickCharacter")
+local picker = make("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16),
+	Size = UDim2.new(0.92, 0, 0, 150), BackgroundColor3 = Color3.fromRGB(10, 10, 10), BackgroundTransparency = 0.25 }, gui)
+make("UISizeConstraint", { MaxSize = Vector2.new(980, 150) }, picker)
+local header = make("TextLabel", { Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, Font = Enum.Font.SpecialElite,
+	TextSize = 22, TextColor3 = Color3.fromRGB(230, 220, 195), Text = "PICK YOUR CHARACTER  (you keep your own avatar)" }, picker)
+local row = make("Frame", { Position = UDim2.new(0, 8, 0, 34), Size = UDim2.new(1, -16, 1, -42), BackgroundTransparency = 1 }, picker)
+make("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 8),
+	HorizontalAlignment = Enum.HorizontalAlignment.Center }, row)
+local pickButtons = {}
+local SHORT = { Son = "Sees the monster through walls", Journalist = "Camera flash blinds him",
+	Engineer = "Fixes things 3x faster", Guard = "Strong + survives one catch" }
+for _, role in ipairs(ROLES) do
+	local b = make("TextButton", { Size = UDim2.new(0.25, -6, 1, 0), BackgroundColor3 = role.color, AutoButtonColor = true,
+		Font = Enum.Font.SpecialElite, TextSize = 20, TextWrapped = true, TextColor3 = Color3.new(0, 0, 0),
+		Text = role.name .. "\n" .. SHORT[role.id] }, row)
+	b.Activated:Connect(function() pickEvent:FireServer(role.id) end)
+	pickButtons[role.id] = b
+end
+local function refreshPicker()
+	picker.Visible = not player:GetAttribute("InGame")
+	local mine = player:GetAttribute("Character")
+	header.Text = mine and ("You are " .. mine:upper() .. "  -  click another one to change") or "PICK YOUR CHARACTER  (you keep your own avatar)"
+	for _, role in ipairs(ROLES) do
+		local owner
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p:GetAttribute("Character") == role.id then owner = p end
+		end
+		local b = pickButtons[role.id]
+		if owner == player then
+			b.Text = "YOU: " .. role.name .. "\n" .. SHORT[role.id]
+			b.BackgroundColor3 = role.color:Lerp(Color3.new(1, 1, 1), 0.35)
+		elseif owner then
+			b.Text = role.name .. "\nTAKEN by " .. owner.DisplayName
+			b.BackgroundColor3 = Color3.fromRGB(70, 68, 62)
+		else
+			b.Text = role.name .. "\n" .. SHORT[role.id]
+			b.BackgroundColor3 = role.color
+		end
+	end
+end
+local function watchPicks(p)
+	p:GetAttributeChangedSignal("Character"):Connect(refreshPicker)
+	p:GetAttributeChangedSignal("InGame"):Connect(refreshPicker)
+end
+for _, p in ipairs(Players:GetPlayers()) do watchPicks(p) end
+Players.PlayerAdded:Connect(function(p) watchPicks(p) refreshPicker() end)
+Players.PlayerRemoving:Connect(function() task.defer(refreshPicker) end)
+refreshPicker()
+
 -- YOUR ABILITY -----------------------------------------------------------------
 -- (You pick your character at the stands in the waiting room. Your
 -- ability button shows up when you go into the game.)
