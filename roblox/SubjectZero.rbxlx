@@ -360,11 +360,11 @@ RunService.Heartbeat:Connect(function(dt)
 end)
 ]]></ProtectedString></Properties></Item></Item>
 </Item>
-<Item class="ReplicatedStorage" referent="RBX9116"><Properties><string name="Name">ReplicatedStorage</string></Properties><Item class="RemoteEvent" referent="RBX9117"><Properties><string name="Name">LongManJumpScare</string></Properties></Item><Item class="RemoteEvent" referent="RBX9118"><Properties><string name="Name">LongManReveal</string></Properties></Item><Item class="RemoteEvent" referent="RBX9119"><Properties><string name="Name">PuzzleMessage</string></Properties></Item><Item class="RemoteEvent" referent="RBX9120"><Properties><string name="Name">PuzzleKeypad</string></Properties></Item><Item class="RemoteEvent" referent="RBX9121"><Properties><string name="Name">PuzzleRead</string></Properties></Item><Item class="RemoteEvent" referent="RBX9122"><Properties><string name="Name">ChapterEnd</string></Properties></Item><Item class="RemoteEvent" referent="RBX9123"><Properties><string name="Name">PickCharacter</string></Properties></Item><Item class="RemoteEvent" referent="RBX9124"><Properties><string name="Name">UseAbility</string></Properties></Item><Item class="RemoteEvent" referent="RBX9125"><Properties><string name="Name">CameraFlash</string></Properties></Item><Item class="RemoteEvent" referent="RBX9126"><Properties><string name="Name">LobbyMessage</string></Properties></Item><Item class="RemoteEvent" referent="RBX9127"><Properties><string name="Name">ElevatorAction</string></Properties></Item><Item class="Folder" referent="RBX9128"><Properties><string name="Name">LongManSounds</string></Properties><Item class="StringValue" referent="RBX9129"><Properties><string name="Name">Scream</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9130"><Properties><string name="Name">Shriek</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9131"><Properties><string name="Name">NeckCrack</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9132"><Properties><string name="Name">Skitter</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9133"><Properties><string name="Name">Breath</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9134"><Properties><string name="Name">Click</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9135"><Properties><string name="Name">Heartbeat</string><string name="Value"></string></Properties></Item></Item></Item>
-<Item class="Lighting" referent="RBX9136"><Properties><string name="Name">Lighting</string><float name="ClockTime">0</float><float name="Brightness">0.6</float><token name="Technology">4</token><Color3 name="Ambient"><R>0.05</R><G>0.05</G><B>0.07</B></Color3><Color3 name="OutdoorAmbient"><R>0.16</R><G>0.18</G><B>0.25</B></Color3><float name="FogEnd">220</float><float name="FogStart">10</float><Color3 name="FogColor"><R>0.03</R><G>0.035</G><B>0.05</B></Color3><bool name="GlobalShadows">true</bool></Properties><Item class="Atmosphere" referent="RBX9137"><Properties><string name="Name">Atmosphere</string><float name="Density">0.42</float><float name="Offset">0.15</float><float name="Glare">0</float><float name="Haze">2.2</float><Color3 name="Color"><R>0.3</R><G>0.34</G><B>0.43</B></Color3><Color3 name="Decay"><R>0.08</R><G>0.1</G><B>0.15</B></Color3></Properties></Item><Item class="Sky" referent="RBX9138"><Properties><string name="Name">Sky</string><int name="StarCount">4000</int><bool name="CelestialBodiesShown">true</bool><float name="MoonAngularSize">16</float></Properties></Item><Item class="ColorCorrectionEffect" referent="RBX9139"><Properties><string name="Name">ColdNight</string><float name="Brightness">0.02</float><float name="Contrast">0.12</float><float name="Saturation">-0.3</float><Color3 name="TintColor"><R>0.88</R><G>0.93</G><B>1</B></Color3></Properties></Item><Item class="BloomEffect" referent="RBX9140"><Properties><string name="Name">Glow</string><float name="Intensity">0.6</float><float name="Size">24</float><float name="Threshold">1.4</float></Properties></Item></Item>
-<Item class="StarterPlayer" referent="RBX9141"><Properties><string name="Name">StarterPlayer</string><token name="CameraMode">0</token><float name="CameraMaxZoomDistance">14</float><float name="CharacterWalkSpeed">14</float></Properties>
-<Item class="StarterCharacterScripts" referent="RBX9142"><Properties><string name="Name">StarterCharacterScripts</string></Properties>
-<Item class="Script" referent="RBX9143"><Properties><string name="Name">Flashlight</string><ProtectedString name="Source"><![CDATA[-- Every player starts with a FLASHLIGHT in their inventory (the hotbar).
+<Item class="ReplicatedStorage" referent="RBX9116"><Properties><string name="Name">ReplicatedStorage</string></Properties><Item class="RemoteEvent" referent="RBX9117"><Properties><string name="Name">LongManJumpScare</string></Properties></Item><Item class="RemoteEvent" referent="RBX9118"><Properties><string name="Name">LongManReveal</string></Properties></Item><Item class="RemoteEvent" referent="RBX9119"><Properties><string name="Name">PuzzleMessage</string></Properties></Item><Item class="RemoteEvent" referent="RBX9120"><Properties><string name="Name">PuzzleKeypad</string></Properties></Item><Item class="RemoteEvent" referent="RBX9121"><Properties><string name="Name">PuzzleRead</string></Properties></Item><Item class="RemoteEvent" referent="RBX9122"><Properties><string name="Name">ChapterEnd</string></Properties></Item><Item class="RemoteEvent" referent="RBX9123"><Properties><string name="Name">PickCharacter</string></Properties></Item><Item class="RemoteEvent" referent="RBX9124"><Properties><string name="Name">UseAbility</string></Properties></Item><Item class="RemoteEvent" referent="RBX9125"><Properties><string name="Name">CameraFlash</string></Properties></Item><Item class="RemoteEvent" referent="RBX9126"><Properties><string name="Name">LobbyMessage</string></Properties></Item><Item class="RemoteEvent" referent="RBX9127"><Properties><string name="Name">ElevatorAction</string></Properties></Item><Item class="RemoteEvent" referent="RBX9128"><Properties><string name="Name">SayLine</string></Properties></Item><Item class="Folder" referent="RBX9129"><Properties><string name="Name">LongManSounds</string></Properties><Item class="StringValue" referent="RBX9130"><Properties><string name="Name">Scream</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9131"><Properties><string name="Name">Shriek</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9132"><Properties><string name="Name">NeckCrack</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9133"><Properties><string name="Name">Skitter</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9134"><Properties><string name="Name">Breath</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9135"><Properties><string name="Name">Click</string><string name="Value"></string></Properties></Item><Item class="StringValue" referent="RBX9136"><Properties><string name="Name">Heartbeat</string><string name="Value"></string></Properties></Item></Item></Item>
+<Item class="Lighting" referent="RBX9137"><Properties><string name="Name">Lighting</string><float name="ClockTime">0</float><float name="Brightness">0.6</float><token name="Technology">4</token><Color3 name="Ambient"><R>0.05</R><G>0.05</G><B>0.07</B></Color3><Color3 name="OutdoorAmbient"><R>0.16</R><G>0.18</G><B>0.25</B></Color3><float name="FogEnd">220</float><float name="FogStart">10</float><Color3 name="FogColor"><R>0.03</R><G>0.035</G><B>0.05</B></Color3><bool name="GlobalShadows">true</bool></Properties><Item class="Atmosphere" referent="RBX9138"><Properties><string name="Name">Atmosphere</string><float name="Density">0.42</float><float name="Offset">0.15</float><float name="Glare">0</float><float name="Haze">2.2</float><Color3 name="Color"><R>0.3</R><G>0.34</G><B>0.43</B></Color3><Color3 name="Decay"><R>0.08</R><G>0.1</G><B>0.15</B></Color3></Properties></Item><Item class="Sky" referent="RBX9139"><Properties><string name="Name">Sky</string><int name="StarCount">4000</int><bool name="CelestialBodiesShown">true</bool><float name="MoonAngularSize">16</float></Properties></Item><Item class="ColorCorrectionEffect" referent="RBX9140"><Properties><string name="Name">ColdNight</string><float name="Brightness">0.02</float><float name="Contrast">0.12</float><float name="Saturation">-0.3</float><Color3 name="TintColor"><R>0.88</R><G>0.93</G><B>1</B></Color3></Properties></Item><Item class="BloomEffect" referent="RBX9141"><Properties><string name="Name">Glow</string><float name="Intensity">0.6</float><float name="Size">24</float><float name="Threshold">1.4</float></Properties></Item></Item>
+<Item class="StarterPlayer" referent="RBX9142"><Properties><string name="Name">StarterPlayer</string><token name="CameraMode">0</token><float name="CameraMaxZoomDistance">14</float><float name="CharacterWalkSpeed">14</float></Properties>
+<Item class="StarterCharacterScripts" referent="RBX9143"><Properties><string name="Name">StarterCharacterScripts</string></Properties>
+<Item class="Script" referent="RBX9144"><Properties><string name="Name">Flashlight</string><ProtectedString name="Source"><![CDATA[-- Every player starts with a FLASHLIGHT in their inventory (the hotbar).
 -- Take it out (press 1, click it, or press F / Y / Triangle) and it turns
 -- on. Click (or R2) to switch it off and on. Put it away and it goes off.
 -- The light shines from your head, so it points where you look.
@@ -416,7 +416,7 @@ toggle.OnServerEvent:Connect(function(who)
 	end
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="LocalScript" referent="RBX9144"><Properties><string name="Name">FlashlightKey</string><ProtectedString name="Source"><![CDATA[-- Sends "switch my flashlight" to the server when you press the button.
+<Item class="LocalScript" referent="RBX9145"><Properties><string name="Name">FlashlightKey</string><ProtectedString name="Source"><![CDATA[-- Sends "switch my flashlight" to the server when you press the button.
 local UserInputService = game:GetService("UserInputService")
 local toggle = script.Parent:WaitForChild("ToggleFlashlight")
 
@@ -429,7 +429,7 @@ UserInputService.InputBegan:Connect(function(input, typing)
 	end
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="LocalScript" referent="RBX9145"><Properties><string name="Name">Sprint</string><ProtectedString name="Source"><![CDATA[-- Sprint: hold Shift (keyboard) or press the left stick (controller).
+<Item class="LocalScript" referent="RBX9146"><Properties><string name="Name">Sprint</string><ProtectedString name="Source"><![CDATA[-- Sprint: hold Shift (keyboard) or press the left stick (controller).
 -- About 4 seconds of running, then you have to catch your breath.
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -467,8 +467,8 @@ RunService.Heartbeat:Connect(function(dt)
 end)
 ]]></ProtectedString></Properties></Item>
 </Item>
-<Item class="StarterPlayerScripts" referent="RBX9146"><Properties><string name="Name">StarterPlayerScripts</string></Properties>
-<Item class="LocalScript" referent="RBX9147"><Properties><string name="Name">LongManEffects</string><ProtectedString name="Source"><![CDATA[-- What each player sees from the Long Man: the reveal cutscene, and the
+<Item class="StarterPlayerScripts" referent="RBX9147"><Properties><string name="Name">StarterPlayerScripts</string></Properties>
+<Item class="LocalScript" referent="RBX9148"><Properties><string name="Name">LongManEffects</string><ProtectedString name="Source"><![CDATA[-- What each player sees from the Long Man: the reveal cutscene, and the
 -- jump scare when he catches you. Runs on your own computer.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -687,7 +687,7 @@ ReplicatedStorage:WaitForChild("LongManJumpScare").OnClientEvent:Connect(functio
 	gui:Destroy()
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="LocalScript" referent="RBX9148"><Properties><string name="Name">PuzzleUI</string><ProtectedString name="Source"><![CDATA[-- What you see from the puzzles: messages, the keypad, notes and tapes,
+<Item class="LocalScript" referent="RBX9149"><Properties><string name="Name">PuzzleUI</string><ProtectedString name="Source"><![CDATA[-- What you see from the puzzles: messages, the keypad, notes and tapes,
 -- and the end of the chapter. Runs on your own computer.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -881,7 +881,7 @@ ReplicatedStorage:WaitForChild("ChapterEnd").OnClientEvent:Connect(function()
 	black:Destroy()
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="LocalScript" referent="RBX9149"><Properties><string name="Name">CharacterPick</string><ProtectedString name="Source"><![CDATA[-- Your ability button, and what the Son's Sense and the Journalist's
+<Item class="LocalScript" referent="RBX9150"><Properties><string name="Name">CharacterPick</string><ProtectedString name="Source"><![CDATA[-- Your ability button, and what the Son's Sense and the Journalist's
 -- flash look like on your screen.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -892,7 +892,7 @@ local player = Players.LocalPlayer
 local abilityEvent = ReplicatedStorage:WaitForChild("UseAbility")
 
 local ROLES = {
-	{ id = "Son", name = "THE SON", who = "Ethan, 21", color = Color3.fromRGB(150, 100, 60),
+	{ id = "Son", name = "THE SON", who = "Eli, 21 - looking for his dad", color = Color3.fromRGB(150, 100, 60),
 		trait = "Hood up, always jumpy.", ability = "SENSE  [Q]\nSee the Long Man and useful things through walls for 4 seconds.", cooldown = 15 },
 	{ id = "Journalist", name = "THE JOURNALIST", who = "35, tan trench coat", color = Color3.fromRGB(205, 175, 125),
 		trait = "Here for the story.", ability = "CAMERA FLASH  [Q]\nBlinds the Long Man for 3 seconds. Point it at him!", cooldown = 12 },
@@ -1112,7 +1112,7 @@ ReplicatedStorage:WaitForChild("CameraFlash").OnClientEvent:Connect(function(pos
 	task.delay(0.8, function() white:Destroy() end)
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="LocalScript" referent="RBX9150"><Properties><string name="Name">LobbyButtons</string><ProtectedString name="Source"><![CDATA[-- Lobby buttons: Invite friends (always), and Leave / Friends only when
+<Item class="LocalScript" referent="RBX9151"><Properties><string name="Name">LobbyButtons</string><ProtectedString name="Source"><![CDATA[-- Lobby buttons: Invite friends (always), and Leave / Friends only when
 -- you're in an elevator. Plus messages.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1181,7 +1181,56 @@ ReplicatedStorage:WaitForChild("LobbyMessage").OnClientEvent:Connect(function(te
 	end)
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="LocalScript" referent="RBX9151"><Properties><string name="Name">OpeningCutscene</string><ProtectedString name="Source"><![CDATA[-- THE OPENING CUTSCENE: plays once, when you leave the waiting room and
+<Item class="LocalScript" referent="RBX9152"><Properties><string name="Name">StoryBubbles</string><ProtectedString name="Source"><![CDATA[-- Shows what the characters say: a speech bubble over their head, and
+-- a subtitle at the bottom ("ELI: ...") so you never miss it.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TextChatService = game:GetService("TextChatService")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+local NAMES = { Son = "ELI", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "FRANK" }
+local COLORS = { Son = Color3.fromRGB(205, 150, 100), Journalist = Color3.fromRGB(225, 200, 150),
+	Engineer = Color3.fromRGB(140, 170, 240), Guard = Color3.fromRGB(170, 195, 120) }
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "Subtitles"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+local label = Instance.new("TextLabel")
+label.AnchorPoint = Vector2.new(0.5, 1)
+label.Position = UDim2.new(0.5, 0, 0.78, 0)
+label.Size = UDim2.new(0.75, 0, 0, 60)
+label.BackgroundTransparency = 1
+label.Font = Enum.Font.SpecialElite
+label.TextSize = 24
+label.TextWrapped = true
+label.RichText = true
+label.TextStrokeTransparency = 0.25
+label.TextColor3 = Color3.fromRGB(235, 228, 205)
+label.TextTransparency = 1
+label.Parent = gui
+local count = 0
+
+ReplicatedStorage:WaitForChild("SayLine").OnClientEvent:Connect(function(speaker, role, text)
+	-- The bubble over their head (Roblox's own chat bubbles).
+	local head = speaker and speaker.Character and speaker.Character:FindFirstChild("Head")
+	if head then pcall(function() TextChatService:DisplayBubble(head, text) end) end
+	-- The subtitle.
+	count += 1
+	local mine = count
+	local c = COLORS[role] or Color3.new(1, 1, 1)
+	local hex = string.format("#%02X%02X%02X", c.R * 255, c.G * 255, c.B * 255)
+	label.Text = '<font color="' .. hex .. '">' .. (NAMES[role] or "?") .. ':</font> ' .. text
+	label.TextTransparency = 0
+	label.TextStrokeTransparency = 0.25
+	task.delay(5.5, function()
+		if mine == count then
+			TweenService:Create(label, TweenInfo.new(0.8), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		end
+	end)
+end)
+]]></ProtectedString></Properties></Item>
+<Item class="LocalScript" referent="RBX9153"><Properties><string name="Name">OpeningCutscene</string><ProtectedString name="Source"><![CDATA[-- THE OPENING CUTSCENE: plays once, when you leave the waiting room and
 -- go into the game.
 -- Skip it: Space, A / Cross, or click "Skip".
 local Players = game:GetService("Players")
@@ -1281,9 +1330,9 @@ task.wait(1)
 hint:Destroy()
 ]]></ProtectedString></Properties></Item>
 </Item></Item>
-<Item class="StarterPack" referent="RBX9152"><Properties><string name="Name">StarterPack</string></Properties><Item class="Tool" referent="RBX9153"><Properties><string name="Name">Flashlight</string><string name="ToolTip">Flashlight (click to switch off and on)</string><bool name="CanBeDropped">false</bool><bool name="RequiresHandle">true</bool></Properties><Item class="Part" referent="RBX9154"><Properties><string name="Name">Handle</string><bool name="Anchored">false</bool><CoordinateFrame name="CFrame"><X>0.0000</X><Y>0.0000</Y><Z>0.0000</Z><R00>1.00000</R00><R01>0.00000</R01><R02>0.00000</R02><R10>0.00000</R10><R11>1.00000</R11><R12>0.00000</R12><R20>0.00000</R20><R21>0.00000</R21><R22>1.00000</R22></CoordinateFrame><bool name="CanCollide">false</bool><bool name="CastShadow">true</bool><Color3uint8 name="Color3uint8">4280229661</Color3uint8><token name="Material">272</token><token name="shape">1</token><token name="TopSurface">0</token><token name="BottomSurface">0</token><Vector3 name="size"><X>0.350</X><Y>0.350</Y><Z>1.300</Z></Vector3><float name="Transparency">0.0</float><bool name="CanQuery">false</bool></Properties></Item></Item></Item>
-<Item class="ServerScriptService" referent="RBX9155"><Properties><string name="Name">ServerScriptService</string></Properties>
-<Item class="Script" referent="RBX9156"><Properties><string name="Name">FlickeringLights</string><ProtectedString name="Source"><![CDATA[-- Makes the station's broken lights flicker and the warning lights pulse.
+<Item class="StarterPack" referent="RBX9154"><Properties><string name="Name">StarterPack</string></Properties><Item class="Tool" referent="RBX9155"><Properties><string name="Name">Flashlight</string><string name="ToolTip">Flashlight (click to switch off and on)</string><bool name="CanBeDropped">false</bool><bool name="RequiresHandle">true</bool></Properties><Item class="Part" referent="RBX9156"><Properties><string name="Name">Handle</string><bool name="Anchored">false</bool><CoordinateFrame name="CFrame"><X>0.0000</X><Y>0.0000</Y><Z>0.0000</Z><R00>1.00000</R00><R01>0.00000</R01><R02>0.00000</R02><R10>0.00000</R10><R11>1.00000</R11><R12>0.00000</R12><R20>0.00000</R20><R21>0.00000</R21><R22>1.00000</R22></CoordinateFrame><bool name="CanCollide">false</bool><bool name="CastShadow">true</bool><Color3uint8 name="Color3uint8">4280229661</Color3uint8><token name="Material">272</token><token name="shape">1</token><token name="TopSurface">0</token><token name="BottomSurface">0</token><Vector3 name="size"><X>0.350</X><Y>0.350</Y><Z>1.300</Z></Vector3><float name="Transparency">0.0</float><bool name="CanQuery">false</bool></Properties></Item></Item></Item>
+<Item class="ServerScriptService" referent="RBX9157"><Properties><string name="Name">ServerScriptService</string></Properties>
+<Item class="Script" referent="RBX9158"><Properties><string name="Name">FlickeringLights</string><ProtectedString name="Source"><![CDATA[-- Makes the station's broken lights flicker and the warning lights pulse.
 -- (A light's holder part is named FlickerLight_<how broken 0-1> or PulseLight.)
 -- Lights go crazy when the Long Man is near (any light, broken or not).
 -- (Right next to him they go out completely.)
@@ -1340,7 +1389,7 @@ for _, thing in ipairs(workspace:GetDescendants()) do
 	end
 end
 ]]></ProtectedString></Properties></Item>
-<Item class="Script" referent="RBX9157"><Properties><string name="Name">Puzzles</string><ProtectedString name="Source"><![CDATA[-- CHAPTER 1 PUZZLES (Roblox version)
+<Item class="Script" referent="RBX9159"><Properties><string name="Name">Puzzles</string><ProtectedString name="Source"><![CDATA[-- CHAPTER 1 PUZZLES (Roblox version)
 -- Every puzzle needs at least TWO players working together:
 --  1. Gate: one lifts and holds the gate, another jams it with the crowbar
 --     (crowbar is by the shed).
@@ -1528,6 +1577,7 @@ tape.Triggered:Connect(function(player)
 	if not reel then say(player, "There's no tape in it. A reel tape must be around here somewhere.") return end
 	reel:Destroy()
 	tapePlayed = true
+	workspace:SetAttribute("TapePlayed", true)  -- (the story script listens)
 	tape:Destroy()
 	for _, other in ipairs(Players:GetPlayers()) do
 		local root = other.Character and other.Character:FindFirstChild("HumanoidRootPart")
@@ -1683,6 +1733,7 @@ end)
 local order = prompt(P.ContainmentOrder, "Read", "Containment Order")
 order.Triggered:Connect(function(player)
 	orderRead = true
+	workspace:SetAttribute("OrderReadBy", player.UserId)
 	readEvent:FireClient(player, CONTAINMENT[1], CONTAINMENT[2])
 end)
 local turned = {}
@@ -1731,6 +1782,7 @@ descend.Triggered:Connect(function(player)
 		end
 	end
 	leaving = true
+	workspace:SetAttribute("Descending", true)
 	descend:Destroy()
 	slide(P.ElevatorGate, Vector3.new(-3.8 * 3.2, 0, 0), 1.5)
 	task.wait(1.6)
@@ -1796,7 +1848,7 @@ Players.PlayerAdded:Connect(function(player)
 	end)
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="Script" referent="RBX9158"><Properties><string name="Name">TeamLivesOrDies</string><ProtectedString name="Source"><![CDATA[-- THE TEAM LIVES OR DIES TOGETHER.
+<Item class="Script" referent="RBX9160"><Properties><string name="Name">TeamLivesOrDies</string><ProtectedString name="Source"><![CDATA[-- THE TEAM LIVES OR DIES TOGETHER.
 -- If ONE player dies (the Long Man catches them, they fall...), EVERYONE
 -- dies, and the whole team comes back at the last checkpoint.
 -- (Puzzles you already solved stay solved.)
@@ -1881,8 +1933,8 @@ for i, cp in ipairs(CHECKPOINTS) do
 	end)
 end
 ]]></ProtectedString></Properties></Item>
-<Item class="Script" referent="RBX9159"><Properties><string name="Name">Characters</string><ProtectedString name="Source"><![CDATA[-- THE FOUR CHARACTERS. Each player picks one (no two players the same).
---  The Son (Ethan) ... SENSE (Q): see the Long Man and useful things
+<Item class="Script" referent="RBX9161"><Properties><string name="Name">Characters</string><ProtectedString name="Source"><![CDATA[-- THE FOUR CHARACTERS. Each player picks one (no two players the same).
+--  The Son (Eli) ... SENSE (Q): see the Long Man and useful things
 --                      through walls for 4 seconds.
 --  The Journalist .... CAMERA FLASH (Q): blinds the Long Man for 3 seconds
 --                      (he hates light). Point it at him!
@@ -1898,7 +1950,7 @@ local flashEvent = ReplicatedStorage:WaitForChild("CameraFlash")
 local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
 
 local ROLES = {
-	Son = { name = "Ethan (The Son)", color = Color3.fromRGB(150, 100, 60) },
+	Son = { name = "Eli (The Son)", color = Color3.fromRGB(150, 100, 60) },
 	Journalist = { name = "The Journalist", color = Color3.fromRGB(205, 175, 125) },
 	Engineer = { name = "The Engineer", color = Color3.fromRGB(90, 120, 200) },
 	Guard = { name = "Frank (The Guard)", color = Color3.fromRGB(130, 150, 90) },
@@ -1989,7 +2041,7 @@ abilityEvent.OnServerEvent:Connect(function(player)
 	end
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="Script" referent="RBX9160"><Properties><string name="Name">Outdoors</string><ProtectedString name="Source"><![CDATA[-- THE OUTSIDE: real Roblox terrain, made when the game starts.
+<Item class="Script" referent="RBX9162"><Properties><string name="Name">Outdoors</string><ProtectedString name="Source"><![CDATA[-- THE OUTSIDE: real Roblox terrain, made when the game starts.
 -- Grass, a dirt yard, a cracked concrete path, an asphalt road with muddy
 -- edges, mossy patches, rocks, rolling hills around the forest, and
 -- drifting ground mist.
@@ -2224,7 +2276,7 @@ for _, p in ipairs(MIST) do
 	e.Parent = holder
 end
 ]]></ProtectedString></Properties></Item>
-<Item class="Script" referent="RBX9161"><Properties><string name="Name">WaitingRoom</string><ProtectedString name="Source"><![CDATA[-- THE WAITING ROOM.
+<Item class="Script" referent="RBX9163"><Properties><string name="Name">WaitingRoom</string><ProtectedString name="Source"><![CDATA[-- THE WAITING ROOM.
 -- Everyone spawns here when they join. Walk up to a character's stand and
 -- press E to pick them (no two players the same; press E on another free
 -- stand to change your mind). When EVERYONE has picked and there are at
@@ -2242,10 +2294,11 @@ while not workspace:GetAttribute("Mode") do task.wait() end
 if workspace:GetAttribute("Mode") ~= "Game" then return end
 
 local ROAD = { Vector3.new(-4.80, 0.64, 144.00), Vector3.new(4.80, 0.64, 144.00), Vector3.new(-4.80, 0.64, 148.80), Vector3.new(4.80, 0.64, 148.80) }
-local NAMES = { Son = "THE SON (Ethan)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
+local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
 local ORDER = { "Son", "Journalist", "Engineer", "Guard" }
 local COUNTDOWN = 10
-local MIN_PLAYERS = RunService:IsStudio() and 1 or 2
+-- In a private game started from the lobby, the group is already together.
+local MIN_PLAYERS = (RunService:IsStudio() or game.PrivateServerId ~= "") and 1 or 2
 
 workspace:SetAttribute("GameStarted", false)
 
@@ -2437,7 +2490,7 @@ workspace:GetAttributeChangedSignal("ChapterDone"):Connect(function()
 	end
 end)
 ]]></ProtectedString></Properties></Item>
-<Item class="Script" referent="RBX9163"><Properties><string name="Name">Mode</string><ProtectedString name="Source"><![CDATA[-- LOBBY OR GAME?
+<Item class="Script" referent="RBX9165"><Properties><string name="Name">Mode</string><ProtectedString name="Source"><![CDATA[-- LOBBY OR GAME?
 -- This one place is BOTH the lobby and the game:
 --  * A normal server (what you join from the Roblox page) is the LOBBY:
 --    the dark hall with the elevators.
@@ -2459,8 +2512,8 @@ end
 workspace:FindFirstChild("Lobby"):FindFirstChild("LobbySpawn").Enabled = mode == "Game"
 workspace:FindFirstChild("Hall"):FindFirstChild("HallSpawn").Enabled = mode == "Lobby"
 workspace:SetAttribute("Mode", mode)
-]]></ProtectedString></Properties><Item class="BoolValue" referent="RBX9162"><Properties><string name="Name">TestLobbyInStudio</string><bool name="Value">false</bool></Properties></Item></Item>
-<Item class="Script" referent="RBX9164"><Properties><string name="Name">Elevators</string><ProtectedString name="Source"><![CDATA[-- THE LOBBY: elevators that take a group to their own game.
+]]></ProtectedString></Properties><Item class="BoolValue" referent="RBX9164"><Properties><string name="Name">TestLobbyInStudio</string><bool name="Value">false</bool></Properties></Item></Item>
+<Item class="Script" referent="RBX9166"><Properties><string name="Name">Elevators</string><ProtectedString name="Source"><![CDATA[-- THE LOBBY: elevators that take a group to their own game.
 -- Walk into an elevator. When 2-4 players are in it, it counts down
 -- and everyone in it goes to a private Chapter 1 game together.
 -- The first person in an elevator can make it FRIENDS ONLY.
@@ -2478,9 +2531,10 @@ if workspace:GetAttribute("Mode") ~= "Lobby" then return end
 local messageEvent = ReplicatedStorage:WaitForChild("LobbyMessage")
 local actionEvent = ReplicatedStorage:WaitForChild("ElevatorAction")
 
-local MIN_PLAYERS = 2
+local MIN_PLAYERS = 1     -- you CAN go alone (the game is better with friends!)
 local MAX_PLAYERS = 4
-local WAIT_TIME = 15
+local WAIT_TIME = 15     -- 2+ players
+local SOLO_WAIT = 30     -- alone: a longer wait, so friends can still jump in
 
 local function say(player, text)
 	if player then messageEvent:FireClient(player, text) else messageEvent:FireAllClients(text) end
@@ -2515,7 +2569,7 @@ local howTo = sign(hall:WaitForChild("HowToBoard"), Enum.NormalId.Left, Color3.f
 howTo.Font = Enum.Font.Code
 howTo.TextXAlignment = Enum.TextXAlignment.Left
 howTo.TextYAlignment = Enum.TextYAlignment.Top
-howTo.Text = "HOW TO PLAY\n\n0. Pick a character\n   (buttons at the bottom).\n\n1. Walk into an ELEVATOR\n   with your friends\n   (or with anyone!).\n\n2. 2-4 players: it leaves\n   in " .. WAIT_TIME .. " seconds.\n\n3. Pick your character,\n   then survive Chapter 1\n   TOGETHER.\n\nFRIENDS ONLY: the first\nperson in can lock it\nto their friends.\n\nInvite friends: button\non the left of your screen."
+howTo.Text = "HOW TO PLAY\n\n1. Pick a character.\n\n2. Walk into an ELEVATOR\n   with your friends\n   (or with anyone!).\n\n3. It goes down in " .. WAIT_TIME .. " s\n   (alone: " .. SOLO_WAIT .. " s).\n\n4. Survive Chapter 1\n   TOGETHER.\n\nFRIENDS ONLY: the first\nperson in can lock it\nto their friends.\n\nInvite friends: button\non the left of your screen."
 -- Writing on the walls.
 local scrawl = sign(hall:WaitForChild("Scrawl1"), Enum.NormalId.Right, Color3.fromRGB(120, 10, 6))
 scrawl.Text = "LET ME OUT"
@@ -2524,7 +2578,7 @@ local scrawl2 = sign(hall:WaitForChild("Scrawl2"), Enum.NormalId.Back, Color3.fr
 scrawl2.Text = "IT CAN SEE YOU"
 scrawl2.Font = Enum.Font.Creepster
 sign(hall:WaitForChild("ObsSign"), Enum.NormalId.Left, Color3.fromRGB(200, 60, 40)).Text = "OBSERVATION  -  SUBJECT 7"
-local NAMES = { Son = "THE SON (Ethan)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
+local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
 for id, name in pairs(NAMES) do
 	local s = hall:FindFirstChild("PedestalSign_" .. id)
 	if s then sign(s, Enum.NormalId.Front, Color3.fromRGB(230, 220, 195)).Text = name .. "\n(pick in the game - you keep your avatar)" end
@@ -2612,12 +2666,17 @@ local function launch(e)
 		local roles = {}
 		for _, p in ipairs(group) do roles[tostring(p.UserId)] = p:GetAttribute("Character") end
 		options:SetTeleportData({ lobby = game.PlaceId, roles = roles })
-		ok, err = pcall(function() TeleportService:TeleportAsync(placeId, group, options) end)
+		-- Try up to 3 times (Roblox is sometimes slow to make the private game).
+		for attempt = 1, 3 do
+			ok, err = pcall(function() TeleportService:TeleportAsync(placeId, group, options) end)
+			if ok then break end
+			task.wait(2)
+		end
 	end
 	if not ok then
 		for _, p in ipairs(group) do
-			say(p, RunService:IsStudio() and "(In Studio the elevator can't go anywhere: it only works in the published game.)"
-				or ("The elevator is stuck (" .. tostring(err) .. "). Try again in a moment."))
+			say(p, RunService:IsStudio() and "(In Studio the elevator can't go anywhere: it only works in the published game. Play it from the Roblox website!)"
+				or ("The elevator is stuck: " .. tostring(err) .. "  -  walk out and in again to retry."))
 		end
 		task.wait(3)
 	else
@@ -2632,6 +2691,11 @@ end
 
 -- (Picking a character in the lobby: the Characters script. The picks
 -- travel with the group into the game.)
+-- If Roblox can't start the game after all, tell the player why.
+TeleportService.TeleportInitFailed:Connect(function(player, result, message)
+	say(player, "Couldn't start the game (" .. tostring(result) .. ": " .. tostring(message) .. "). Walk into an elevator to try again.")
+end)
+
 actionEvent.OnServerEvent:Connect(function(player, action)
 	local index = player:GetAttribute("Elevator")
 	local e = index and elevators[index]
@@ -2679,7 +2743,7 @@ while true do
 				now = nil
 			end
 			setMembership(player, now)
-			if now then say(player, "You're in elevator " .. now.index .. ". It leaves when " .. MIN_PLAYERS .. "-4 players are in.") end
+			if now then say(player, "You're in elevator " .. now.index .. ". It goes down soon: wait here for your friends!") end
 		end
 		if now then player:SetAttribute("ElevatorOwner", now.members[1] == player) end
 	end
@@ -2689,9 +2753,11 @@ while true do
 			local n = #e.members
 			local kind = e.friendsOnly and "FRIENDS ONLY" or "OPEN TO ANYONE"
 			if n >= MIN_PLAYERS then
-				local left = (e.countdown or WAIT_TIME) - 0.25
+				local wait = n == 1 and SOLO_WAIT or WAIT_TIME
+				local left = math.min((e.countdown or wait), wait) - 0.25
 				e.countdown = left
-				e.label.Text = ("ELEVATOR %d  -  %s\n%d/4 PLAYERS\nLEAVING IN %d"):format(e.index, kind, n, math.ceil(left))
+				e.label.Text = ("ELEVATOR %d  -  %s\n%d/4 PLAYERS\nLEAVING IN %d%s"):format(e.index, kind, n, math.ceil(left),
+					n == 1 and "  (friends can still get in!)" or "")
 				e.lamp.Color = Color3.fromRGB(255, 200, 40)
 				if left <= 0 then task.spawn(launch, e) end
 			else
@@ -2704,7 +2770,7 @@ while true do
 	end
 end
 ]]></ProtectedString></Properties></Item>
-<Item class="Script" referent="RBX9165"><Properties><string name="Name">Haunting</string><ProtectedString name="Source"><![CDATA[-- THE LOBBY IS NOT SAFE: flickering lamps, a pulsing red emergency
+<Item class="Script" referent="RBX9167"><Properties><string name="Name">Haunting</string><ProtectedString name="Source"><![CDATA[-- THE LOBBY IS NOT SAFE: flickering lamps, a pulsing red emergency
 -- light, and something in the observation room that watches you... and
 -- sometimes slams against the glass.
 local hall = workspace:WaitForChild("Hall")
@@ -2782,6 +2848,117 @@ while true do
 	moveTo(SPOTS[math.random(1, #SPOTS)])
 	show(true)
 end
+]]></ProtectedString></Properties></Item>
+<Item class="Script" referent="RBX9168"><Properties><string name="Name">Story</string><ProtectedString name="Source"><![CDATA[-- THE STORY: the characters talk (speech bubbles + subtitles).
+-- Why are they here?
+--  ELI (the Son): his dad served at Site 12 during the Cold War and never
+--                 came home. Eli wants to know what his dad went through.
+--  THE JOURNALIST: chasing the "weather station" cover-up.
+--  THE ENGINEER: kept these machines running for 20 years. Feels guilty.
+--  FRANK (the Guard): the guard on duty in 1999 who sealed the doors.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local sayEvent = ReplicatedStorage:WaitForChild("SayLine")
+while not workspace:GetAttribute("Mode") do task.wait() end
+if workspace:GetAttribute("Mode") ~= "Game" then return end
+
+local ZONES = {
+	{ name = "Gate", center = Vector3.new(0.00, 4.80, 83.20), size = Vector3.new(44.80, 12.80, 19.20) },
+	{ name = "Office", center = Vector3.new(-12.80, 4.80, -25.60), size = Vector3.new(38.40, 9.60, 38.40) },
+	{ name = "Stairs", center = Vector3.new(28.80, -8.00, -76.80), size = Vector3.new(9.60, 12.80, 19.20) },
+	{ name = "Tunnels", center = Vector3.new(28.80, -24.00, -128.00), size = Vector3.new(28.80, 9.60, 25.60) },
+	{ name = "Chart", center = Vector3.new(28.80, -24.00, -166.40), size = Vector3.new(12.80, 9.60, 16.00) },
+	{ name = "ElevatorRoom", center = Vector3.new(115.20, -24.00, -211.20), size = Vector3.new(32.00, 9.60, 32.00) }
+}
+local LINES = {
+	Start = { Son = "Dad's letters stopped in 1999. Whatever he went through in the Cold War... it happened here.", Journalist = "A 'weather station' with armed guards and no weather equipment. This is my story.", Engineer = "I swore I'd never come back to Site 12. I kept these machines running for twenty years...", Guard = "I locked those doors in '99. I still hear them knocking every night." },
+	Gate = { Son = "Dad drew this fence in his letters. He said the 'weather' here was top secret.", Journalist = "Fresh tire tracks. Somebody still checks on this place.", Engineer = "The gate motor's dead. We'll have to lift it by hand.", Guard = "Same gate. Same rust. It's like it was waiting for me." },
+	Office = { Son = "Dad's desk could've been one of these. Is there anything with his name on it?", Journalist = "Look at these files. They never even cleaned it out.", Engineer = "The director's terminal. Voice-locked: he didn't trust anybody.", Guard = "The director gave the order... and walked out before the doors closed." },
+	Stairs = { Son = "Tally marks... someone was counting the days down here.", Journalist = "This stairwell isn't on any blueprint I found.", Engineer = "The emergency stairs. We used them when the elevator broke. It broke a lot.", Guard = "Stay close. Keep your flashlights on." },
+	Tunnels = { Son = "Dad... were you down here the whole time?", Journalist = "It smells like rust... and something worse.", Engineer = "These tunnels run under the whole base. Pipes, cables... and the cells.", Guard = "This is where they kept the volunteers. Keep your voices down." },
+	Chart = { Son = "Nine feet two... That's not a person anymore. Was Dad one of them?", Journalist = "A growth chart. Week 31: 'past the ceiling.' What did they DO to him?", Engineer = "Program Zero. They told the volunteers it was vitamins.", Guard = "Subject 7. I used to bring his food tray. He always said thank you." },
+	Reveal = { Son = "That thing... it was a soldier. Like Dad.", Journalist = "Don't stop, don't look back... RUN!", Engineer = "Subject 7... God forgive us.", Guard = "RUN! I'll be right behind you!" },
+	ElevatorRoom = { Son = "Level B. If Dad's anywhere... he's down there.", Journalist = "Containment orders, launch keys... they planned to bury everyone.", Engineer = "Two fuses and the old generator. I can get this working.", Guard = "Two keys. One for me... and one for the officer who never showed up." },
+	Tape = { Son = "That voice... Dad wrote about a Director Calloway.", Journalist = "'A simple course of vitamins.' I've heard that lie before.", Engineer = "Calloway. He made that speech to every new group.", Guard = "I heard that tape a hundred times. I still hate it." },
+	Order = { Son = "'Regardless of personnel inside.' They left him down there ON PURPOSE.", Journalist = "This is it. Proof they sealed people in alive.", Engineer = "Two officers, two keys, at the same time. Typical military.", Guard = "My name should be on this order. I'm the one who sealed it." },
+	Descend = { Son = "Hold on, Dad. I'm coming.", Journalist = "This goes all the way to the top...", Engineer = "These cables are old. Too old...", Guard = "Hang on to something!" }
+}
+local done = {}
+
+local function inGame()
+	local list = {}
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p:GetAttribute("InGame") and p:GetAttribute("Character") and p.Character then table.insert(list, p) end
+	end
+	return list
+end
+
+-- One character says their line for this moment.
+local function speak(player, moment)
+	local role = player and player:GetAttribute("Character")
+	local text = role and LINES[moment] and LINES[moment][role]
+	if text then sayEvent:FireAllClients(player, role, text) end
+end
+
+-- A moment the whole team reacts to: the first person speaks, then a teammate answers.
+local function moment(name, first)
+	if done[name] then return end
+	done[name] = true
+	local team = inGame()
+	if #team == 0 then return end
+	first = first or team[math.random(1, #team)]
+	speak(first, name)
+	local others = {}
+	for _, p in ipairs(team) do if p ~= first then table.insert(others, p) end end
+	if #others > 0 then
+		task.delay(3.5, function() speak(others[math.random(1, #others)], name) end)
+	end
+end
+
+-- At the start: everyone says why they came, one after another.
+task.spawn(function()
+	while #inGame() == 0 do task.wait(1) end
+	task.wait(16)  -- after the opening cutscene
+	for i, p in ipairs(inGame()) do
+		task.delay((i - 1) * 4.5, function() speak(p, "Start") end)
+	end
+end)
+
+-- New places.
+task.spawn(function()
+	while true do
+		task.wait(0.5)
+		for _, p in ipairs(inGame()) do
+			local root = p.Character:FindFirstChild("HumanoidRootPart")
+			if root then
+				for _, z in ipairs(ZONES) do
+					if not done[z.name] then
+						local d = root.Position - z.center
+						if math.abs(d.X) < z.size.X / 2 and math.abs(d.Y) < z.size.Y / 2 + 2 and math.abs(d.Z) < z.size.Z / 2 then
+							moment(z.name, p)
+						end
+					end
+				end
+			end
+		end
+	end
+end)
+
+-- Story events.
+local longMan = workspace:WaitForChild("LongMan")
+local root = longMan:WaitForChild("Root")
+root:GetAttributeChangedSignal("State"):Connect(function()
+	if root:GetAttribute("State") == "STARE" then moment("Reveal") end
+end)
+workspace:GetAttributeChangedSignal("TapePlayed"):Connect(function() moment("Tape") end)
+workspace:GetAttributeChangedSignal("OrderReadBy"):Connect(function()
+	moment("Order", Players:GetPlayerByUserId(workspace:GetAttribute("OrderReadBy") or 0))
+end)
+workspace:GetAttributeChangedSignal("Descending"):Connect(function()
+	for i, p in ipairs(inGame()) do
+		task.delay((i - 1) * 1.6, function() speak(p, "Descend") end)
+	end
+end)
 ]]></ProtectedString></Properties></Item>
 </Item>
 </roblox>

@@ -326,6 +326,7 @@ tape.Triggered:Connect(function(player)
 	if not reel then say(player, "There's no tape in it. A reel tape must be around here somewhere.") return end
 	reel:Destroy()
 	tapePlayed = true
+	workspace:SetAttribute("TapePlayed", true)  -- (the story script listens)
 	tape:Destroy()
 	for _, other in ipairs(Players:GetPlayers()) do
 		local root = other.Character and other.Character:FindFirstChild("HumanoidRootPart")
@@ -481,6 +482,7 @@ end)
 local order = prompt(P.ContainmentOrder, "Read", "Containment Order")
 order.Triggered:Connect(function(player)
 	orderRead = true
+	workspace:SetAttribute("OrderReadBy", player.UserId)
 	readEvent:FireClient(player, CONTAINMENT[1], CONTAINMENT[2])
 end)
 local turned = {}
@@ -529,6 +531,7 @@ descend.Triggered:Connect(function(player)
 		end
 	end
 	leaving = true
+	workspace:SetAttribute("Descending", true)
 	descend:Destroy()
 	slide(P.ElevatorGate, Vector3.new(-3.8 * 3.2, 0, 0), 1.5)
 	task.wait(1.6)

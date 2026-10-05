@@ -169,10 +169,11 @@ while not workspace:GetAttribute("Mode") do task.wait() end
 if workspace:GetAttribute("Mode") ~= "Game" then return end
 
 local ROAD = { --ROAD-- }
-local NAMES = { Son = "THE SON (Ethan)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
+local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
 local ORDER = { "Son", "Journalist", "Engineer", "Guard" }
 local COUNTDOWN = 10
-local MIN_PLAYERS = RunService:IsStudio() and 1 or 2
+-- In a private game started from the lobby, the group is already together.
+local MIN_PLAYERS = (RunService:IsStudio() or game.PrivateServerId ~= "") and 1 or 2
 
 workspace:SetAttribute("GameStarted", false)
 

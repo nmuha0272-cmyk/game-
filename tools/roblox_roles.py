@@ -3,7 +3,7 @@ player picks one (no two the same) and keeps their own avatar, with the
 character's name over their head. Used by make_roblox.py."""
 
 ROLES_SERVER = r'''-- THE FOUR CHARACTERS. Each player picks one (no two players the same).
---  The Son (Ethan) ... SENSE (Q): see the Long Man and useful things
+--  The Son (Eli) ... SENSE (Q): see the Long Man and useful things
 --                      through walls for 4 seconds.
 --  The Journalist .... CAMERA FLASH (Q): blinds the Long Man for 3 seconds
 --                      (he hates light). Point it at him!
@@ -19,7 +19,7 @@ local flashEvent = ReplicatedStorage:WaitForChild("CameraFlash")
 local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
 
 local ROLES = {
-	Son = { name = "Ethan (The Son)", color = Color3.fromRGB(150, 100, 60) },
+	Son = { name = "Eli (The Son)", color = Color3.fromRGB(150, 100, 60) },
 	Journalist = { name = "The Journalist", color = Color3.fromRGB(205, 175, 125) },
 	Engineer = { name = "The Engineer", color = Color3.fromRGB(90, 120, 200) },
 	Guard = { name = "Frank (The Guard)", color = Color3.fromRGB(130, 150, 90) },
@@ -122,7 +122,7 @@ local player = Players.LocalPlayer
 local abilityEvent = ReplicatedStorage:WaitForChild("UseAbility")
 
 local ROLES = {
-	{ id = "Son", name = "THE SON", who = "Ethan, 21", color = Color3.fromRGB(150, 100, 60),
+	{ id = "Son", name = "THE SON", who = "Eli, 21 - looking for his dad", color = Color3.fromRGB(150, 100, 60),
 		trait = "Hood up, always jumpy.", ability = "SENSE  [Q]\nSee the Long Man and useful things through walls for 4 seconds.", cooldown = 15 },
 	{ id = "Journalist", name = "THE JOURNALIST", who = "35, tan trench coat", color = Color3.fromRGB(205, 175, 125),
 		trait = "Here for the story.", ability = "CAMERA FLASH  [Q]\nBlinds the Long Man for 3 seconds. Point it at him!", cooldown = 12 },

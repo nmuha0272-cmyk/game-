@@ -58,7 +58,7 @@ game. Each has one unique ability, so the team must work together.
 
 | Character | Role | Ability | Held Item (first-person view) |
 |---|---|---|---|
-| **The Son (Ethan)** | Tracker | **Sense:** Hold a button to see nearby monsters glow through walls for 3 seconds. 20 second cooldown. | Parent's dog tags |
+| **The Son (Eli)** | Tracker | **Sense:** Hold a button to see nearby monsters glow through walls for 3 seconds. 20 second cooldown. | Parent's dog tags |
 | **The Journalist** | Stunner / Lore | **Camera Flash:** Stuns a monster in front of her for 2 seconds. 15 second cooldown. Photographing evidence unlocks lore entries. | Old film camera |
 | **The Engineer** | Fixer | **Repair:** Hold to fix generators, elevators, broken panels, and hack locked security doors. Only he can do this. | Wrench |
 | **The Guard (Frank)** | Protector | **Strength:** Hold doors shut against monsters, move heavy objects, build barricades, carry a downed teammate. Moves slower and makes more noise. | Heavy flashlight |
@@ -380,7 +380,7 @@ Tasks:
 - [ ] Replace placeholder art with real models, textures, and lighting
       (First pass done: generated PBR textures, forest, night sky, props,
       light fixtures, screen filter, new Long Man body. Still needs real
-      character models like Ethan's .glb.)
+      character models like Eli's .glb.)
 - [x] Horror atmosphere: flickering lights, fog, ambient sounds, music stingers
 
 ### Phase 11 — Polish and Playtesting

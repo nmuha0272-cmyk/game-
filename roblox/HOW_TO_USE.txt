@@ -16,7 +16,7 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
    into the game together. (Testing alone in Studio works too.)
    Someone who joins later picks a free character and goes straight in.
    The characters:
-     THE SON (Ethan) ... SENSE [Q]: see the Long Man and useful things
+     THE SON (Eli) ... SENSE [Q]: see the Long Man and useful things
                          through walls for 4 seconds.
      THE JOURNALIST .... CAMERA FLASH [Q]: point it at the Long Man to
                          blind him for 3 seconds.
@@ -45,9 +45,11 @@ to Roblox). When people play it from the Roblox website or app:
   * A big "CHOOSE YOUR CHARACTER" screen pops up: click a card (they keep
     their own avatar). Then the camera goes FIRST PERSON. "Change
     character" (bottom left) opens the screen again.
-  * They walk into an elevator with friends (or anyone!). When 2-4
-    players are in it, it counts down 15 seconds and takes that group to
-    their OWN PRIVATE GAME (a private copy of the same place).
+  * They walk into an elevator with friends (or anyone!). It counts down
+    (15 seconds with 2-4 players, 30 seconds if you're alone, so friends
+    can still jump in) and takes that group to their OWN PRIVATE GAME
+    (a private copy of the same place). If Roblox can't start it, a
+    message says why: walk out and back in to try again.
   * The first person in an elevator can press "Make it friends only".
     There's an "Invite friends" button too.
   * After the ending, everyone comes back to the lobby.
@@ -95,6 +97,14 @@ to see how the screen looks on a TV.
 What's in this Roblox version:
 - The opening cutscene, then first person (like the PC game)
 - The four characters with their own abilities
+- THE STORY: the characters talk (speech bubbles over their heads and
+  subtitles), at the start and in every new place, about why they came:
+    ELI (the Son) - his dad served at Site 12 during the Cold War and
+                    never came home. Eli wants to know what he went through.
+    THE JOURNALIST - chasing the "weather station" cover-up story.
+    THE ENGINEER - kept these machines running for 20 years. Feels guilty.
+    FRANK (the Guard) - the guard on duty in 1999 who sealed the doors.
+  (Change what they say in Explorer -> ServerScriptService -> Story.)
 - A new outside: real terrain (grass, a dirt yard, a cracked path, the
   road with muddy edges, rocks, rolling hills), pine trees, drifting
   ground mist, and a misty moonlit sky with stars

@@ -194,7 +194,7 @@ func interact(by: Player) -> void:
 	downed.request_help_up(by)
 
 
-## Builds this character's 3D model (Ethan, the Journalist, the Engineer or Frank).
+## Builds this character's 3D model (Eli, the Journalist, the Engineer or Frank).
 func _apply_character_color() -> void:
 	body_mesh.setup(character, is_multiplayer_authority())
 

@@ -16,6 +16,7 @@ import roblox_roles as ROLES
 import roblox_outdoors as OD
 import roblox_lobby as LOBBY
 import make_roblox_lobby as HUB
+import roblox_story as STORY
 from xml.sax.saxutils import escape
 
 KIT = "unreal_easy/SubjectZero_Kit/level.json"
@@ -286,7 +287,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManJumpScare</string></Properties></Item>'
        f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">LongManReveal</string></Properties></Item>'
        + "".join(f'<Item class="RemoteEvent" referent="{new_ref()}"><Properties><string name="Name">{n}</string></Properties></Item>'
-                 for n in ("PuzzleMessage", "PuzzleKeypad", "PuzzleRead", "ChapterEnd", "PickCharacter", "UseAbility", "CameraFlash", "LobbyMessage", "ElevatorAction"))
+                 for n in ("PuzzleMessage", "PuzzleKeypad", "PuzzleRead", "ChapterEnd", "PickCharacter", "UseAbility", "CameraFlash", "LobbyMessage", "ElevatorAction", "SayLine"))
        + f'<Item class="Folder" referent="{new_ref()}"><Properties><string name="Name">LongManSounds</string></Properties>'
        + "".join(f'<Item class="StringValue" referent="{new_ref()}"><Properties><string name="Name">{n}</string>'
                  '<string name="Value"></string></Properties></Item>'
@@ -322,7 +323,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>',
        script("LocalScript", "LongManEffects", LM.EFFECTS_SCRIPT.replace("--SHOTS--", LM.reveal_shots())),
        script("LocalScript", "PuzzleUI", PUZZLE_UI), script("LocalScript", "CharacterPick", ROLES.ROLES_UI),
-       script("LocalScript", "LobbyButtons", HUB.LOBBY_UI),
+       script("LocalScript", "LobbyButtons", HUB.LOBBY_UI), script("LocalScript", "StoryBubbles", STORY.STORY_CLIENT),
        script("LocalScript", "OpeningCutscene", LAB.INTRO_SCRIPT.replace("--SHOTS--", LAB.intro_shots())), "</Item></Item>",
        f'<Item class="StarterPack" referent="{new_ref()}"><Properties><string name="Name">StarterPack</string></Properties>'
        f'<Item class="Tool" referent="{new_ref()}"><Properties><string name="Name">Flashlight</string>'
@@ -336,7 +337,8 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        script("Script", "Outdoors", OD.script()), script("Script", "WaitingRoom", LOBBY.script()),
        script("Script", "Mode", HUB.MODE, f'<Item class="BoolValue" referent="{new_ref()}"><Properties>'
               '<string name="Name">TestLobbyInStudio</string><bool name="Value">false</bool></Properties></Item>'),
-       script("Script", "Elevators", HUB.MATCHMAKING), script("Script", "Haunting", HUB.HAUNTING), "</Item>",
+       script("Script", "Elevators", HUB.MATCHMAKING), script("Script", "Haunting", HUB.HAUNTING),
+       script("Script", "Story", STORY.server()), "</Item>",
        "</roblox>"]
 open(OUT, "w").write("\n".join(xml))
 print(f"wrote {OUT}: {len(lab_parts)} lab parts, {len(parts)} parts, {len(elevator)} elevator parts, {len(lights)} lights, {len(spawns)} spawns")

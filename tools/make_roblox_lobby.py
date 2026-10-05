@@ -304,9 +304,10 @@ if workspace:GetAttribute("Mode") ~= "Lobby" then return end
 local messageEvent = ReplicatedStorage:WaitForChild("LobbyMessage")
 local actionEvent = ReplicatedStorage:WaitForChild("ElevatorAction")
 
-local MIN_PLAYERS = 2
+local MIN_PLAYERS = 1     -- you CAN go alone (the game is better with friends!)
 local MAX_PLAYERS = 4
-local WAIT_TIME = 15
+local WAIT_TIME = 15     -- 2+ players
+local SOLO_WAIT = 30     -- alone: a longer wait, so friends can still jump in
 
 local function say(player, text)
 	if player then messageEvent:FireClient(player, text) else messageEvent:FireAllClients(text) end
@@ -341,7 +342,7 @@ local howTo = sign(hall:WaitForChild("HowToBoard"), Enum.NormalId.Left, Color3.f
 howTo.Font = Enum.Font.Code
 howTo.TextXAlignment = Enum.TextXAlignment.Left
 howTo.TextYAlignment = Enum.TextYAlignment.Top
-howTo.Text = "HOW TO PLAY\n\n0. Pick a character\n   (buttons at the bottom).\n\n1. Walk into an ELEVATOR\n   with your friends\n   (or with anyone!).\n\n2. 2-4 players: it leaves\n   in " .. WAIT_TIME .. " seconds.\n\n3. Pick your character,\n   then survive Chapter 1\n   TOGETHER.\n\nFRIENDS ONLY: the first\nperson in can lock it\nto their friends.\n\nInvite friends: button\non the left of your screen."
+howTo.Text = "HOW TO PLAY\n\n1. Pick a character.\n\n2. Walk into an ELEVATOR\n   with your friends\n   (or with anyone!).\n\n3. It goes down in " .. WAIT_TIME .. " s\n   (alone: " .. SOLO_WAIT .. " s).\n\n4. Survive Chapter 1\n   TOGETHER.\n\nFRIENDS ONLY: the first\nperson in can lock it\nto their friends.\n\nInvite friends: button\non the left of your screen."
 -- Writing on the walls.
 local scrawl = sign(hall:WaitForChild("Scrawl1"), Enum.NormalId.Right, Color3.fromRGB(120, 10, 6))
 scrawl.Text = "LET ME OUT"
@@ -350,7 +351,7 @@ local scrawl2 = sign(hall:WaitForChild("Scrawl2"), Enum.NormalId.Back, Color3.fr
 scrawl2.Text = "IT CAN SEE YOU"
 scrawl2.Font = Enum.Font.Creepster
 sign(hall:WaitForChild("ObsSign"), Enum.NormalId.Left, Color3.fromRGB(200, 60, 40)).Text = "OBSERVATION  -  SUBJECT 7"
-local NAMES = { Son = "THE SON (Ethan)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
+local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
 for id, name in pairs(NAMES) do
 	local s = hall:FindFirstChild("PedestalSign_" .. id)
 	if s then sign(s, Enum.NormalId.Front, Color3.fromRGB(230, 220, 195)).Text = name .. "\n(pick in the game - you keep your avatar)" end
@@ -438,12 +439,17 @@ local function launch(e)
 		local roles = {}
 		for _, p in ipairs(group) do roles[tostring(p.UserId)] = p:GetAttribute("Character") end
 		options:SetTeleportData({ lobby = game.PlaceId, roles = roles })
-		ok, err = pcall(function() TeleportService:TeleportAsync(placeId, group, options) end)
+		-- Try up to 3 times (Roblox is sometimes slow to make the private game).
+		for attempt = 1, 3 do
+			ok, err = pcall(function() TeleportService:TeleportAsync(placeId, group, options) end)
+			if ok then break end
+			task.wait(2)
+		end
 	end
 	if not ok then
 		for _, p in ipairs(group) do
-			say(p, RunService:IsStudio() and "(In Studio the elevator can't go anywhere: it only works in the published game.)"
-				or ("The elevator is stuck (" .. tostring(err) .. "). Try again in a moment."))
+			say(p, RunService:IsStudio() and "(In Studio the elevator can't go anywhere: it only works in the published game. Play it from the Roblox website!)"
+				or ("The elevator is stuck: " .. tostring(err) .. "  -  walk out and in again to retry."))
 		end
 		task.wait(3)
 	else
@@ -458,6 +464,11 @@ end
 
 -- (Picking a character in the lobby: the Characters script. The picks
 -- travel with the group into the game.)
+-- If Roblox can't start the game after all, tell the player why.
+TeleportService.TeleportInitFailed:Connect(function(player, result, message)
+	say(player, "Couldn't start the game (" .. tostring(result) .. ": " .. tostring(message) .. "). Walk into an elevator to try again.")
+end)
+
 actionEvent.OnServerEvent:Connect(function(player, action)
 	local index = player:GetAttribute("Elevator")
 	local e = index and elevators[index]
@@ -505,7 +516,7 @@ while true do
 				now = nil
 			end
 			setMembership(player, now)
-			if now then say(player, "You're in elevator " .. now.index .. ". It leaves when " .. MIN_PLAYERS .. "-4 players are in.") end
+			if now then say(player, "You're in elevator " .. now.index .. ". It goes down soon: wait here for your friends!") end
 		end
 		if now then player:SetAttribute("ElevatorOwner", now.members[1] == player) end
 	end
@@ -515,9 +526,11 @@ while true do
 			local n = #e.members
 			local kind = e.friendsOnly and "FRIENDS ONLY" or "OPEN TO ANYONE"
 			if n >= MIN_PLAYERS then
-				local left = (e.countdown or WAIT_TIME) - 0.25
+				local wait = n == 1 and SOLO_WAIT or WAIT_TIME
+				local left = math.min((e.countdown or wait), wait) - 0.25
 				e.countdown = left
-				e.label.Text = ("ELEVATOR %d  -  %s\n%d/4 PLAYERS\nLEAVING IN %d"):format(e.index, kind, n, math.ceil(left))
+				e.label.Text = ("ELEVATOR %d  -  %s\n%d/4 PLAYERS\nLEAVING IN %d%s"):format(e.index, kind, n, math.ceil(left),
+					n == 1 and "  (friends can still get in!)" or "")
 				e.lamp.Color = Color3.fromRGB(255, 200, 40)
 				if left <= 0 then task.spawn(launch, e) end
 			else
