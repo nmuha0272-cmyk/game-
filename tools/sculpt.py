@@ -142,7 +142,13 @@ def mesh(shape, lo, hi, voxel=0.008, faces=8000, smooth=2):
     verts += lo
     m = trimesh.Trimesh(verts, tris, process=True)
     if smooth:
+        before = m.vertices.copy()
         trimesh.smoothing.filter_taubin(m, iterations=smooth * 5)
+        # Where two surfaces almost touch, smoothing can fling a point far away
+        # (a long spike). Never let a point move more than half a voxel.
+        move = m.vertices - before
+        dist = np.linalg.norm(move, axis=1, keepdims=True)
+        m.vertices = before + move * np.minimum(1.0, (0.5 * voxel) / np.maximum(dist, 1e-12))
     if len(m.faces) > faces:
         v, f = fast_simplification.simplify(m.vertices, m.faces, 1.0 - faces / len(m.faces))
         m = trimesh.Trimesh(v, f, process=True)

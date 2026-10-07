@@ -1,0 +1,90 @@
+newmtl skin
+Kd 0.8000 0.6200 0.5000
+Ns 10
+d 1
+
+newmtl stubble
+Kd 0.4200 0.3300 0.2800
+Ns 10
+d 1
+
+newmtl hair
+Kd 0.0500 0.0400 0.0350
+Ns 10
+d 1
+
+newmtl eye_white
+Kd 0.9200 0.9000 0.8600
+Ns 10
+d 1
+
+newmtl iris
+Kd 0.1600 0.1000 0.0600
+Ns 10
+d 1
+
+newmtl lips
+Kd 0.6600 0.4600 0.4200
+Ns 10
+d 1
+
+newmtl hoodie
+Kd 0.4700 0.4700 0.4800
+Ns 10
+d 1
+
+newmtl jacket
+Kd 0.4200 0.2800 0.1600
+Ns 10
+d 1
+
+newmtl collar
+Kd 0.2400 0.1500 0.0900
+Ns 10
+d 1
+
+newmtl seam
+Kd 0.2000 0.1200 0.0700
+Ns 10
+d 1
+
+newmtl metal
+Kd 0.5500 0.5200 0.4500
+Ns 10
+d 1
+
+newmtl pack
+Kd 0.1300 0.1300 0.1400
+Ns 10
+d 1
+
+newmtl straps
+Kd 0.0700 0.0700 0.0750
+Ns 10
+d 1
+
+newmtl jeans
+Kd 0.2000 0.2700 0.4200
+Ns 10
+d 1
+
+newmtl seam_denim
+Kd 0.5000 0.4000 0.2400
+Ns 10
+d 1
+
+newmtl sneaker
+Kd 0.2000 0.2000 0.2200
+Ns 10
+d 1
+
+newmtl sole
+Kd 0.9000 0.8900 0.8600
+Ns 10
+d 1
+
+newmtl laces
+Kd 0.8800 0.8800 0.8600
+Ns 10
+d 1
+
