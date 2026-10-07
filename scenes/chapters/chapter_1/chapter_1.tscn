@@ -1890,18 +1890,7 @@ source = NodePath("../OfficeKeypad")
 hidden_until = NodePath("../ComputerBoot")
 hidden_text = "VOICE LOCKED / NO POWER"
 template = "DIRECTOR'S TERMINAL
-DOOR CODE: %s"
-
-[node name="TerminalNote" type="Label3D" parent="Station"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -9.2, 0.75, -12)
-pixel_size = 0.0025
-text = "Voice-locked: play the
-director's welcome tape.
-Screen power: switch
-by the office door."
-font_size = 28
-modulate = Color(0.85, 0.8, 0.6, 1)
-outline_size = 0
+ DOOR CODE: %s"
 
 [node name="DirectorDoor" parent="Puzzles" instance=ExtResource("10_x")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, -9)

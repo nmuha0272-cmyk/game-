@@ -21,6 +21,7 @@ var _current_level := STORY_START
 func _ready() -> void:
 	menu.host_requested.connect(_on_host_requested)
 	menu.join_requested.connect(_on_join_requested)
+	menu.solo_requested.connect(_on_solo_requested)
 	lobby.start_requested.connect(_on_start_requested)
 	lobby.leave_requested.connect(_on_leave_requested)
 	$Menus/PauseMenu.leave_requested.connect(_on_leave_requested)
@@ -42,6 +43,21 @@ func _on_host_requested() -> void:
 	GameState.start_hosting()
 	get_window().title = "Subject Zero (Host)"
 	_show_lobby()
+
+
+## Solo (test) mode: skip the lobby and drop straight into the story.
+func _on_solo_requested() -> void:
+	var error := NetworkManager.host_game()
+	if error != OK:
+		menu.show_status("Could not start (error %d)." % error)
+		return
+	GameState.local_player_name = _typed_name()
+	GameState.start_hosting()
+	get_window().title = "Subject Zero (Solo)"
+	menu.hide()
+	# Journalist by default: her flash stuns monsters and she reads lore.
+	GameState.request_character(Characters.Id.JOURNALIST)
+	GameState.start_game()
 
 
 func _on_join_requested(address: String) -> void:
@@ -66,6 +82,7 @@ func _on_start_requested() -> void:
 
 func _on_game_started() -> void:
 	lobby.hide()
+	menu.hide()
 	if multiplayer.is_server():
 		_current_level = STORY_START
 		level_root.add_child(load(STORY_START).instantiate())

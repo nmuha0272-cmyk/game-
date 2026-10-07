@@ -15,7 +15,9 @@ func can_interact(_by: Player) -> bool:
 func _on_interact(_by: Player) -> void:
 	if not requirement_met():
 		return
-	_time_left = active_time
+	# Solo: the "at the same time" puzzles become a timed run between the
+	# two buttons, so give a comfortable window.
+	_time_left = maxf(active_time, 20.0) if GameState.is_solo() else active_time
 	server_set_active(true)
 
 

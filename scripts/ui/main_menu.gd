@@ -4,11 +4,13 @@ extends Control
 
 signal host_requested
 signal join_requested(address: String)
+signal solo_requested
 signal settings_requested
 
 @onready var host_button: Button = %HostButton
 @onready var join_button: Button = %JoinButton
 @onready var quit_button: Button = %QuitButton
+@onready var solo_button: Button = %PlaySoloButton
 @onready var name_edit: LineEdit = %NameEdit
 @onready var ip_edit: LineEdit = %IPEdit
 @onready var status_label: Label = %StatusLabel
@@ -18,6 +20,7 @@ func _ready() -> void:
 	host_button.pressed.connect(func() -> void: host_requested.emit())
 	join_button.pressed.connect(func() -> void: join_requested.emit(ip_edit.text))
 	ip_edit.text_submitted.connect(func(text: String) -> void: join_requested.emit(text))
+	solo_button.pressed.connect(func() -> void: solo_requested.emit())
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
 	%SettingsButton.pressed.connect(func() -> void: settings_requested.emit())
 	show_status("")
@@ -34,5 +37,6 @@ func show_status(text: String) -> void:
 func set_buttons_enabled(enabled: bool) -> void:
 	host_button.disabled = not enabled
 	join_button.disabled = not enabled
+	solo_button.disabled = not enabled
 	ip_edit.editable = enabled
 	name_edit.editable = enabled
