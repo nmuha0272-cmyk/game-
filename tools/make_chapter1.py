@@ -311,7 +311,6 @@ gate("ComputerBoot","Puzzles",["../TapeMachine","../MonitorPower"],[],latch=Fals
 sc.node("Monitor","Label3D","Puzzles",node_paths=["source","hidden_until"],transform=xform((-9.22,1.28,-12),90),pixel_size="0.004",
         text=S(""),font_size="48",modulate=col(0.4,1,0.5),outline_size="0",script=ER(S_CODE),source=NP("../OfficeKeypad"),hidden_until=NP("../ComputerBoot"),
         hidden_text=S("VOICE LOCKED / NO POWER"),template=S("DIRECTOR'S TERMINAL\nDOOR CODE: %s"))
-label("TerminalNote",St,(-9.2,0.75,-12),90,"Voice-locked: play the\ndirector's welcome tape.\nScreen power: switch\nby the office door.",size=0.0025,font=28,color=(0.85,0.8,0.6),outline="0")
 inst("door","DirectorDoor","Puzzles",(2,0,-9),90,puzzle_controlled="true")
 gate("OfficeGate","Puzzles",["../OfficeKeypad"],["../DirectorDoor"],msg="The director's office unlocks.")
 inst("cab","FilingCabinet","Puzzles",(9.0,0,-15.25),0)

@@ -19,7 +19,6 @@ func _ready() -> void:
 
 func _refresh() -> void:
 	var value: String = source.get_display_code()
-	# Solo test mode: the code shows straight away, no tape/power hunt.
-	if hidden_until and not hidden_until.is_active and not GameState.is_solo():
+	if hidden_until and not hidden_until.is_active:
 		value = hidden_text
 	text = template % value
