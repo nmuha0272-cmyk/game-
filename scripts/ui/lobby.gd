@@ -75,7 +75,7 @@ func refresh() -> void:
 	if GameState.get_character(my_id) == Characters.Id.NONE:
 		hint_label.text = "Pick a character."
 	elif is_host and not GameState.has_enough_players():
-		hint_label.text = "Subject Zero is a co-op game for 2-4 players.\nWaiting for friends to join..."
+		hint_label.text = "You can play alone, or wait for friends.\n1-4 players. Waiting for friends to join..."
 	elif is_host and not GameState.can_start():
 		hint_label.text = "Waiting for everyone to pick a character..."
 	elif is_host:

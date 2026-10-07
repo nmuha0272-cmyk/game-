@@ -79,13 +79,18 @@ func get_owner_of(character: int) -> int:
 	return 0
 
 
-## Subject Zero is online co-op only: 2 to 4 players (every puzzle needs
-## at least two people).
-const MIN_PLAYERS := 2
+## Subject Zero plays solo or online co-op: 1 to 4 players. Puzzles that
+## would need two people get solo-friendly behaviour when is_solo().
+const MIN_PLAYERS := 1
 
 
 func has_enough_players() -> bool:
 	return players.size() >= MIN_PLAYERS
+
+
+## True when there is only one player in the game.
+func is_solo() -> bool:
+	return players.size() == 1
 
 
 func can_start() -> bool:

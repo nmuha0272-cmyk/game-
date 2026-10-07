@@ -4,7 +4,8 @@ extends PuzzleInput
 ## switch, a safelight switch... Press E to start holding it, E again to let go.
 ## Holding it means standing still: step away (or get knocked down) and you
 ## let go. You can still look around and press things within reach.
-## Active while held. This is what stops one player doing a puzzle alone.
+## Active while held. This is what stops one player doing a puzzle alone —
+## except when playing solo, where it latches on instead (see _on_interact).
 
 ## How far the holder can move from where they started holding.
 @export var max_distance := 0.8
@@ -53,6 +54,16 @@ func get_prompt(by: Player) -> String:
 
 func _on_interact(by: Player) -> void:
 	var by_id := by.name.to_int()
+	if GameState.is_solo():
+		# Solo: the switch latches. Press E to turn it on, E again to let go.
+		if not _allowed(by) or by.global_position.distance_to(global_position) > reach:
+			return
+		if is_active:
+			_release()
+		else:
+			_set_holder.rpc(by_id)
+			server_set_active(true)
+		return
 	if holder_id == 0:
 		if not _allowed(by) or by.global_position.distance_to(global_position) > reach:
 			return
@@ -68,6 +79,12 @@ func _process(delta: float) -> void:
 	if not multiplayer.is_server() or holder_id == 0:
 		return
 	var holder := Player.find(get_tree(), holder_id)
+	if GameState.is_solo():
+		# Solo: it stays latched even if you walk away. Only a missing
+		# holder (level reload) turns it off.
+		if holder == null:
+			_release()
+		return
 	# For the first moment, keep updating where they stand: their latest
 	# position may still be on its way over the network.
 	_hold_age += delta
