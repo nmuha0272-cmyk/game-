@@ -303,6 +303,85 @@ for k,(x,z,yaw) in enumerate([(-7,0.17,0),(-4,0.17,0),(5,0.17,0),(8,0.17,0),(-10
     for j,roll in enumerate([25,-20]):
         mi(f"Board{k}_{j}",St,(x+(0.01 if yaw==0 else 0),1.7,z+(0.02 if yaw==0 else 0)),mesh("BoxMesh",size=v3(1.5,0.16,0.04)),DWOOD,yaw=yaw,roll=roll)
 inst("door","FrontDoor",St,(-0.5,0,0),0)
+# --- The outside of the station: a cold-war building that has rotted for years.
+# All of it is just for looks (no collision), except the step and the AC units.
+GRIME=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.06,0.05,0.035,0.55), transparency="1", roughness="1.0"))
+RUSTSTREAK=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.28,0.12,0.05,0.45), transparency="1", roughness="1.0"))
+SIGNLIGHT=SR(sc.sub("StandardMaterial3D", albedo_color=col(1,0.8,0.5), emission_enabled="true", emission=col(1,0.75,0.45), emission_energy_multiplier="3.0"))
+def nb(name,x1,x2,y1,y2,z1,z2,mt=CONC): BX(name,St,x1,x2,y1,y2,z1,z2,mt,collide=False)
+# Darker concrete base all the way round, and a thick roof edge (parapet).
+nb("BaseFront",-10.25,10.25,0,0.45,0.15,0.3); nb("BaseWest",-10.3,-10.15,0,0.45,-16.3,0.3); nb("BaseEast",10.15,10.3,0,0.45,-16.3,0.3)
+nb("BaseBack",-10.3,10.3,0,0.45,-16.3,-16.15)
+for n,(x1,x2,z1,z2) in {"Front":(-10.4,10.4,0.2,0.4),"Back":(-10.4,10.4,-16.4,-16.2),"West":(-10.4,-10.2,-16.4,0.4),"East":(10.2,10.4,-16.4,0.4)}.items():
+    nb("Parapet"+n,x1,x2,H+0.3,H+0.75,z1,z2)
+    nb("Coping"+n,x1-0.05,x2+0.05,H+0.75,H+0.82,z1-0.05,z2+0.05,METAL)
+# Concrete pillars that stick out of the walls, so the walls aren't flat.
+for k,x in enumerate([-10,-6,-2.4,3.4,6,10]):
+    nb(f"PillarF{k}",x-0.22,x+0.22,0,H+0.75,0.1,0.32)
+for side,x in (("W",-10.32),("E",10.32)):
+    for k,z in enumerate([-16,-8,0]):
+        nb(f"Pillar{side}{k}",x-0.12,x+0.12,0,H+0.75,z-0.22,z+0.22)
+# Entrance: a concrete roof on two steel posts, a step, a caged lamp, and the station's sign.
+nb("CanopySlab",-1.9,2.9,2.75,2.95,0.15,2.2)
+nb("CanopyEdge",-1.95,2.95,2.6,2.75,2.05,2.25,METAL)
+for k,x in enumerate([-1.7,2.7]):
+    nb(f"CanopyPost{k}",x-0.06,x+0.06,0,2.75,2.0,2.12,METAL)
+BX("DoorStep",St,-1.4,2.4,0,0.06,0.15,1.4,FLOOR,collide=False)
+nb("SignPlate",-1.6,2.6,2.98,3.55,2.05,2.12,RUST)
+label("StationName",St,(0.5,3.27,2.13),0,"BLACKWATER WEATHER STATION 7",size=0.0042,font=40,color=(0.85,0.82,0.7),outline="0")
+label("StationNumber",St,(5,2.6,0.33),0,"BLDG 7-A  ·  RESTRICTED",size=0.0035,font=32,color=(0.6,0.58,0.5),outline="0")
+mi("EntranceBulb",St,(0.5,2.6,1.2),mesh("SphereMesh",radius="0.08",height="0.16",radial_segments="8",rings="4"),SIGNLIGHT,shadow=False)
+light("EntranceLamp","Lights",(0.5,2.45,1.3),color=(1,0.78,0.5),energy=1.1,rng=7,flicker=0.55,fixture=None)
+# Window frames and sills around the boarded windows.
+for k,(x,z,yaw) in enumerate([(-7,0.17,0),(-4,0.17,0),(5,0.17,0),(8,0.17,0),(-10.17,-4,90),(-10.17,-12,90),(10.17,-4,90),(10.17,-12,90)]):
+    out=1 if (yaw==0 or x>0) else -1
+    for j,(dx,dy,w,h) in enumerate([(0,0.58,1.5,0.1),(0,-0.58,1.6,0.12),(-0.7,0,0.1,1.2),(0.7,0,0.1,1.2)]):
+        if yaw==0: pos=(x+dx,1.7+dy,0.2)
+        else: pos=(x+out*0.05,1.7+dy,z+dx)
+        mi(f"WinFrame{k}_{j}",St,pos,mesh("BoxMesh",size=v3(w,h,0.08)),METAL,yaw=yaw,shadow=False)
+    # A rust streak running down from each window sill.
+    if yaw==0: pos=(x+0.2,0.85,0.18)
+    else: pos=(x+out*0.02,0.85,z-0.2)
+    mi(f"WinStreak{k}",St,pos,mesh("QuadMesh",size="Vector2(0.35, 1.5)"),RUSTSTREAK,yaw=yaw if yaw==0 else (90 if out>0 else -90),shadow=False)
+# Dirt where rain runs off the roof and up from the ground.
+for k,(x,w) in enumerate([(-8.5,2.5),(-3.5,1.4),(4.2,1.8),(8.6,2.2)]):
+    mi(f"RoofGrime{k}",St,(x,H-0.1,0.181),mesh("QuadMesh",size=f"Vector2({w}, 1.1)"),GRIME,shadow=False)
+mi("GroundGrimeFront",St,(0,0.6,0.32),mesh("QuadMesh",size="Vector2(20.4, 0.5)"),GRIME,shadow=False)
+# Drainpipes at the front corners.
+for k,x in enumerate([-9.7,9.7]):
+    mi(f"Drainpipe{k}",St,(x,(H+0.6)/2,0.42),mesh("CylinderMesh",top_radius="0.06",bottom_radius="0.06",height=str(H+0.6),radial_segments="8",rings="1"),METAL,shadow=False)
+    mi(f"DrainShoe{k}",St,(x,0.12,0.55),mesh("BoxMesh",size=v3(0.14,0.12,0.3)),METAL,shadow=False)
+    mi(f"DrainStain{k}",St,(x,0.02,0.85),mesh("PlaneMesh",size="Vector2(0.7, 0.9)"),GRIME,shadow=False)
+# An electric meter and a cable running up the east side, and an old fuel tank.
+nb("MeterBox",10.32,10.5,1.1,1.8,-2.2,-1.6,METAL)
+nb("Conduit",10.33,10.4,1.8,H+0.7,-1.95,-1.85,METAL)
+mi("FuelTank",St,(11.4,1.0,-10),mesh("CylinderMesh",top_radius="0.6",bottom_radius="0.6",height="2.6",radial_segments="14",rings="1"),RUST,pitch=90)
+for k,z in enumerate([-11,-9]):
+    nb(f"TankLeg{k}",11.0,11.8,0,0.45,z-0.06,z+0.06,METAL)
+nb("FuelPipe",10.32,10.85,1.3,1.38,-10.04,-9.96,METAL)
+# Rooftop: humming air units, vents, a dead satellite dish and aerials.
+for k,(x,z) in enumerate([(-8,-3),(2.5,-12.5)]):
+    BX(f"ACUnit{k}",St,x-0.8,x+0.8,H+0.3,H+1.3,z-0.6,z+0.6,METAL)
+    mi(f"ACFan{k}",St,(x,H+1.32,z),mesh("CylinderMesh",top_radius="0.45",bottom_radius="0.45",height="0.04",radial_segments="16",rings="1"),BLACK,shadow=False)
+for k,(x,z) in enumerate([(-2,-6),(4,-2.5),(-6,-14)]):
+    mi(f"RoofVent{k}",St,(x,H+0.65,z),mesh("CylinderMesh",top_radius="0.18",bottom_radius="0.18",height="0.7",radial_segments="10",rings="1"),METAL,shadow=False)
+    mi(f"RoofVentCap{k}",St,(x,H+1.05,z),mesh("CylinderMesh",top_radius="0.05",bottom_radius="0.3",height="0.15",radial_segments="10",rings="1"),METAL,shadow=False)
+mi("DishPost",St,(8,H+0.9,-13),mesh("CylinderMesh",top_radius="0.06",bottom_radius="0.08",height="1.2",radial_segments="8",rings="1"),METAL,shadow=False)
+mi("Dish",St,(8,H+1.6,-12.8),mesh("CylinderMesh",top_radius="0.75",bottom_radius="0.15",height="0.3",radial_segments="18",rings="1"),WHITE,pitch=-60,roll=15)
+for k,(x,z,h) in enumerate([(-9,-15,3.0),(-8.6,-15.2,2.2)]):
+    mi(f"Aerial{k}",St,(x,H+0.3+h/2,z),mesh("CylinderMesh",top_radius="0.02",bottom_radius="0.03",height=str(h),radial_segments="6",rings="1"),METAL,shadow=False)
+# Barbed wire along the top of the fence (arms leaning out, three strands).
+for n,(x1,x2,z1,z2) in {"S1":(-15,-1.6,22,22),"S2":(1.6,15,22,22),"W":(-15,-15,0,22),"E":(15,15,0,22)}.items():
+    length=max(abs(x2-x1),abs(z2-z1)); along_x=abs(x2-x1)>0
+    lean=(0,0.25) if along_x else ((-0.25,0) if x1<0 else (0.25,0))
+    for j in range(3):
+        y=3.15+j*0.14; dx,dz=lean[0]*(j+1)/3,lean[1]*(j+1)/3
+        mi(f"Barb{n}{j}",E,((x1+x2)/2+dx,y,(z1+z2)/2+dz),mesh("BoxMesh",size=v3(length if along_x else 0.015,0.015,0.015 if along_x else length)),METAL,shadow=False)
+    steps=int(length//3)+1
+    for j in range(steps):
+        t=j/max(steps-1,1); x=x1+(x2-x1)*t; z=z1+(z2-z1)*t
+        mi(f"BarbArm{n}{j}",E,(x+lean[0]/2,3.3,z+lean[1]/2),mesh("BoxMesh",size=v3(0.03,0.5,0.03)),METAL,
+           pitch=(-30 if along_x else 0),roll=(0 if along_x else (30 if x1<0 else -30)),shadow=False)
 # split code
 inst("tape","TapeMachine","Puzzles",(-8.5,0.9,-9.4),90,required_lore=S("tape_welcome"))
 inst("keypad","OfficeKeypad","Puzzles",(1.83,1.4,-8.0),-90)

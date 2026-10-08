@@ -175,7 +175,6 @@ def build(part):
     computer("ComputerJ", 13.65, -37.0, -1, F)
     at("GurneyBed", (5.0, F + 0.8, -37.4), (0.75, 0.08, 1.9), "#9a9c94")
     at("GurneySheet", (5.0, F + 0.86, -37.25), (0.78, 0.05, 1.5), "fabric:#c9c2ae", False)
-    at("GurneyStain", (5.0, F + 0.89, -37.5), (0.35, 0.01, 0.4), "#4a1a12", False)
     for dx in (-0.33, 0.33):
         for dz in (-0.85, 0.85):
             at("GurneyLeg", (5.0 + dx, F + 0.38, -37.4 + dz), (0.04, 0.76, 0.04), "#6b6d66", False)
