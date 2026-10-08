@@ -152,6 +152,22 @@ matching item in LongManSounds. Both ways work.)
 
   * Want him faster or slower? Open Workspace > LongMan > LongManBrain
     and change CHASE_SPEED (17). Walking is 14, sprinting is 22.
+
+YOUR OWN MONSTER MODEL (the new Long Man; do this once)
+Roblox can't load a 3D model from this file, so you bring it in yourself:
+ 1. In Studio: Home tab -> Import 3D (or File -> Import 3D).
+ 2. Pick LongManModel.glb (in the "models" folder of this zip).
+    Leave the settings as they are and click Import.
+ 3. In the Explorer, find the new model and RENAME it to:
+        LongManModel
+    (exactly like that). It can stay in Workspace anywhere.
+ 4. Press Play. The game hides the old block body and uses your model:
+    it's sized, moved, crawls, rises up, twitches its head and looks at
+    you by itself. The jump scare uses it too.
+ 5. If he crawls BACKWARDS: click LongManModel, Properties -> Attributes
+    -> "+", name it TurnDegrees, type Number, value 0. Press Play again.
+ 6. File -> Publish to Roblox.
+(Delete LongManModel to get the old block body back.)
 - THE TEAM LIVES OR DIES TOGETHER: if ONE player dies, EVERYONE dies,
   and the whole team comes back at the last checkpoint (the yard, the
   tunnels, or the elevator room). Puzzles you solved stay solved.

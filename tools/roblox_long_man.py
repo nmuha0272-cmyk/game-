@@ -194,6 +194,53 @@ for _, p in ipairs(model:GetDescendants()) do
 	end
 end
 
+-- YOUR OWN MONSTER MODEL: import roblox/models/LongManModel.glb in Studio
+-- (3D Importer) and name it "LongManModel" (it can be in Workspace,
+-- ServerStorage or ReplicatedStorage). Then he looks like that instead of
+-- the block body. If he walks backwards, give the model a number attribute
+-- "TurnDegrees" = 0 (the default is 180).
+local HEIGHT = 9.5  -- studs, standing up
+local custom = nil
+local customTurn = CFrame.new()
+local customLift = 0
+do
+	local found = nil
+	for _, place in ipairs({ workspace, game:GetService("ServerStorage"), ReplicatedStorage }) do
+		local m = place:FindFirstChild("LongManModel", true)
+		if m and not m:IsDescendantOf(model) then found = m break end
+	end
+	if found and found:IsA("BasePart") then
+		local wrap = Instance.new("Model")
+		wrap.Name = "LongManModel"
+		found.Parent = wrap
+		found = wrap
+	end
+	if found and found:IsA("Model") then
+		custom = found
+		custom.Name = "Custom"
+		for _, p in ipairs(custom:GetDescendants()) do
+			if p:IsA("BasePart") then
+				p.Anchored = true
+				p.CanCollide = false
+				p.CanQuery = false
+				p.CanTouch = false
+			end
+		end
+		local size = custom:GetExtentsSize()
+		if size.Y > 0 then custom:ScaleTo(custom:GetScale() * HEIGHT / size.Y) end
+		custom:PivotTo(CFrame.new())
+		local box, boxSize = custom:GetBoundingBox()
+		customLift = -(box.Position.Y - boxSize.Y / 2)
+		customTurn = CFrame.Angles(0, math.rad(custom:GetAttribute("TurnDegrees") or 180), 0)
+		custom.Parent = model
+		-- Hide the block body (the eye glow stays).
+		for _, info in ipairs(parts) do
+			info.part.Transparency = 1
+			info.part.CastShadow = false
+		end
+	end
+end
+
 -- The chase trigger: an invisible box in front of his cell.
 local trigger = Instance.new("Part")
 trigger.Name = "LongManTrigger"
@@ -441,6 +488,9 @@ local function pose(dt)
 	local rearTurn = pivotTurn("Hip", CFrame.Angles(rear * 1.15, 0, 0))
 	local bob = CFrame.new(0, math.abs(math.sin(phase)) * 0.15, 0)
 	root.CFrame = cf
+	if custom then
+		custom:PivotTo(cf * customTurn * CFrame.new(0, customLift, 0))
+	end
 	for _, info in ipairs(parts) do
 		local offset = info.offset
 		local group = info.group
@@ -627,19 +677,37 @@ ReplicatedStorage:WaitForChild("LongManJumpScare").OnClientEvent:Connect(functio
 	if not skull then return end
 	local center = skull.CFrame
 	local clones = {}
-	for _, p in ipairs(longMan:GetChildren()) do
-		local prefix = string.sub(p.Name, 1, 5)
-		if p:IsA("BasePart") and (prefix == "Head_" or string.sub(p.Name, 1, 4) == "Jaw_") then
-			local c = p:Clone()
-			c.Parent = camera
-			table.insert(clones, { part = c, offset = center:ToObjectSpace(p.CFrame) })
+	local custom = longMan:FindFirstChild("Custom")
+	local headBone = nil
+	if custom then
+		for _, b in ipairs(custom:GetDescendants()) do
+			if b:IsA("Bone") and string.match(b.Name, "Head$") then headBone = b break end
+		end
+	end
+	if custom and headBone then
+		-- Your own model: the whole thing lunges at you, face first.
+		local root = longMan:FindFirstChild("Root")
+		center = CFrame.new(headBone.WorldPosition) * (root and root.CFrame.Rotation or custom:GetPivot().Rotation)
+		local copy = custom:Clone()
+		copy.Parent = camera
+		table.insert(clones, { part = copy, offset = center:ToObjectSpace(custom:GetPivot()), isModel = true })
+	else
+		for _, p in ipairs(longMan:GetChildren()) do
+			local prefix = string.sub(p.Name, 1, 5)
+			if p:IsA("BasePart") and (prefix == "Head_" or string.sub(p.Name, 1, 4) == "Jaw_") then
+				local c = p:Clone()
+				c.Parent = camera
+				table.insert(clones, { part = c, offset = center:ToObjectSpace(p.CFrame) })
+			end
 		end
 	end
 	local light = Instance.new("PointLight")
 	light.Brightness = 4
 	light.Range = 8
 	light.Color = Color3.fromRGB(230, 225, 255)
-	light.Parent = clones[1] and clones[1].part
+	local holder = clones[1] and clones[1].part
+	if holder and holder:IsA("Model") then holder = holder:FindFirstChildWhichIsA("BasePart", true) end
+	light.Parent = holder
 	local gui = makeGui()
 	gui.DisplayOrder = 20
 	local flash = Instance.new("Frame")
@@ -664,7 +732,11 @@ ReplicatedStorage:WaitForChild("LongManJumpScare").OnClientEvent:Connect(functio
 		local target = camera.CFrame * shake * CFrame.new(0, -0.35, -distance) * CFrame.Angles(0, math.pi, 0)
 			* CFrame.Angles(0, 0, math.sin(t * 40) * 0.12)
 		for _, info in ipairs(clones) do
-			info.part.CFrame = target * info.offset
+			if info.isModel then
+				info.part:PivotTo(target * info.offset)
+			else
+				info.part.CFrame = target * info.offset
+			end
 		end
 		camera.FieldOfView = fov - math.min(1, t * 6) * 25
 		-- Black flicker frames, like the picture is breaking up.
@@ -726,3 +798,154 @@ def reveal_shots():
     shots = [((9.4, -7.6, -73.2), (9, -8.0, -82), (9.15, -7.7, -76.5), (9, -7.9, -82), 1.8),
              ((9.2, -7.75, -79.4), (9, -7.85, -81.1), (9.1, -7.8, -79.95), (9, -7.85, -81.1), 1.6)]
     return ", ".join("{" + f"{v(a)}, {v(la)}, {v(b)}, {v(lb)}, {t}" + "}" for a, la, b, lb, t in shots)
+
+
+BONES_SCRIPT = r'''-- Moves the bones of your own Long Man model (see LongManModel in
+-- HOW_TO_USE.txt), on your screen: crawling, rising up when he stares, his
+-- head twitching and turning toward you. The same moves as the PC game.
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local S = 3.2              -- studs per meter
+
+local custom, meshPart, bones, axes, unitsToStuds
+local lastPos, speed, phase = nil, 0, 0
+local crawl, roll, rollTarget, twitchTimer, lookYaw = 1, 14, 14, 2, 0
+
+local function setup(model)
+	local mp = model:FindFirstChildWhichIsA("MeshPart", true)
+	if not mp then return false end
+	local found = {}
+	for _, b in ipairs(model:GetDescendants()) do
+		if b:IsA("Bone") then
+			found[(string.gsub(string.gsub(b.Name, "^mixamorig[_:]?", ""), "^.*:", ""))] = b
+			b.Transform = CFrame.new()
+		end
+	end
+	if not (found.Hips and found.Head and found.LeftArm and found.RightArm) then return false end
+	-- Which way is "across", "up" and "forward" for this model (worked out
+	-- from the bones, so it doesn't matter how Studio turned it on import).
+	local function at(n) return mp.CFrame:PointToObjectSpace(found[n].WorldPosition) end
+	local side = (at("LeftArm") - at("RightArm")).Unit
+	local up = at("Head") - at("Hips")
+	up = (up - side * up:Dot(side)).Unit
+	axes = { side = side, twist = up, roll = side:Cross(up) }
+	unitsToStuds = (at("Head") - at("Hips")).Magnitude / (0.87 - 0.45)
+	custom, meshPart, bones = model, mp, found
+	return true
+end
+
+local function worldRot(b)
+	local parent = b.Parent
+	local base = parent:IsA("Bone") and worldRot(parent) or meshPart.CFrame.Rotation
+	return base * b.CFrame.Rotation * b.Transform.Rotation
+end
+
+-- Turns a bone around one of the model's own axes (degrees).
+local function turn(name, axis, degrees)
+	local b = bones[name]
+	if not b or degrees == 0 then return end
+	local parent = b.Parent
+	local q = (parent:IsA("Bone") and worldRot(parent) or meshPart.CFrame.Rotation) * b.CFrame.Rotation
+	local worldAxis = meshPart.CFrame:VectorToWorldSpace(axes[axis])
+	local r = CFrame.fromAxisAngle(worldAxis, math.rad(degrees))
+	b.Transform = q:Inverse() * r * q * b.Transform
+end
+
+local function drop(amount)
+	local b = bones.Hips
+	local q = worldRot(b)
+	local down = meshPart.CFrame:VectorToWorldSpace(-axes.twist) * amount * unitsToStuds
+	b.Transform = CFrame.new(q:VectorToObjectSpace(down)) * b.Transform
+end
+
+local function pose(phase, amount, crawl, headRoll, breath, lookYaw, time)
+	for _, b in pairs(bones) do b.Transform = CFrame.new() end
+	local s = math.sin(phase) * amount
+	local liftA = math.max(0, math.cos(phase)) * amount
+	local liftB = math.max(0, -math.cos(phase)) * amount
+	local idle = 1 - math.clamp(amount * 2, 0, 1)
+	local sway = math.sin(time * 0.9) * idle
+	drop(0.07 * crawl + math.abs(math.sin(phase)) * 0.01 * amount)
+	turn("Hips", "side", 62 * crawl)
+	turn("Hips", "roll", sway * 4 + s * 5)
+	turn("Spine", "side", 8 * crawl + breath * 2)
+	turn("Spine", "twist", s * 9)
+	turn("Spine1", "roll", -sway * 5 - s * 4)
+	turn("Spine2", "side", breath * 2.5 + 6 * idle * (1 - crawl))
+	turn("LeftShoulder", "roll", 10 + liftA * 12)
+	turn("RightShoulder", "roll", -10 - liftB * 12)
+	turn("Neck", "side", -40 * crawl)
+	turn("Neck", "twist", lookYaw * 0.5)
+	turn("Head", "twist", lookYaw * 0.5)
+	turn("Head", "side", -25 * crawl)
+	turn("Head", "roll", headRoll)
+	turn("LeftUpLeg", "side", -58 * crawl - 28 * s)
+	turn("RightUpLeg", "side", -58 * crawl + 28 * s)
+	turn("LeftUpLeg", "roll", -12 * crawl)
+	turn("RightUpLeg", "roll", 12 * crawl)
+	turn("LeftLeg", "side", 35 * crawl + 45 * liftB)
+	turn("RightLeg", "side", 35 * crawl + 45 * liftA)
+	turn("LeftFoot", "side", -20 * liftB)
+	turn("RightFoot", "side", -20 * liftA)
+	turn("LeftArm", "side", -45 * crawl + 30 * s - 25 * liftA + sway * 6)
+	turn("RightArm", "side", -45 * crawl - 30 * s - 25 * liftB - sway * 6)
+	turn("LeftArm", "roll", 10 * crawl)
+	turn("RightArm", "roll", -10 * crawl)
+	turn("LeftForeArm", "side", -25 * liftA - 10 * idle)
+	turn("RightForeArm", "side", -25 * liftB - 10 * idle)
+	local twitch = math.sin(time * 7) * math.sin(time * 2.3) * idle
+	turn("LeftHand", "side", -30 * liftA - 12 * twitch)
+	turn("RightHand", "side", -30 * liftB + 12 * twitch)
+end
+
+RunService.RenderStepped:Connect(function(dt)
+	local longMan = workspace:FindFirstChild("LongMan")
+	local model = longMan and longMan:FindFirstChild("Custom")
+	local root = longMan and longMan:FindFirstChild("Root")
+	if not (model and root) then return end
+	if model ~= custom and not setup(model) then return end
+	local state = root:GetAttribute("State") or "DORMANT"
+	-- How fast he's moving (meters per second), from where he is.
+	local pos = root.Position
+	if lastPos then
+		local moved = Vector3.new(pos.X - lastPos.X, 0, pos.Z - lastPos.Z).Magnitude / S
+		if moved < 3 then speed += (moved / math.max(dt, 0.001) - speed) * math.min(1, dt * 8) end
+	end
+	lastPos = pos
+	local t = os.clock()
+	local stutter = 1 + 0.7 * math.sin(t * 3.1) * math.sin(t * 1.7)
+	phase += dt * math.min(speed, 6) * 2.4 * math.max(stutter, 0.15)
+	-- On all fours, except when he rises up to stare (or reels from the flash).
+	local wantCrawl = state == "STARE" and 0 or state == "STUNNED" and 0.6 or 1
+	crawl += (wantCrawl - crawl) * math.min(1, dt * (wantCrawl < crawl and 1.6 or 4))
+	-- Head: snaps to new angles, tips over while staring, shakes when blinded.
+	twitchTimer -= dt
+	if state == "STUNNED" then
+		roll = math.sin(t * 28) * 30
+	elseif state == "STARE" then
+		roll += (75 - roll) * math.min(1, dt * 1.2)
+		twitchTimer = 0.3
+	else
+		if twitchTimer <= 0 then
+			twitchTimer = (math.random() * 3.5 + 1.5) * (state == "CHASE" and 0.4 or 1)
+			rollTarget = math.random() < 0.6 and (math.random() * 70 - 35) or 14
+			roll = rollTarget
+		end
+		roll += (rollTarget * 0.8 - roll) * math.min(1, dt * 2)
+	end
+	-- He turns his head toward the closest player.
+	local yaw, best = 0, 15 * S
+	for _, player in ipairs(Players:GetPlayers()) do
+		local head = player.Character and player.Character:FindFirstChild("Head")
+		if head and (head.Position - pos).Magnitude < best then
+			best = (head.Position - pos).Magnitude
+			local localPos = root.CFrame:PointToObjectSpace(head.Position)
+			yaw = math.deg(math.atan2(-localPos.X, -localPos.Z))
+		end
+	end
+	lookYaw += (math.clamp(yaw, -70, 70) - lookYaw) * math.min(1, dt * 3)
+	local breath = math.sin(t * (state == "CHASE" and 5 or 2))
+	pose(phase, math.clamp(speed / 2, 0, 1), crawl, roll, breath, lookYaw, t)
+end)
+'''

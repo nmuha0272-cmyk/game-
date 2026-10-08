@@ -322,6 +322,7 @@ xml = ['<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http:
        script("LocalScript", "Sprint", LM.SPRINT_SCRIPT), "</Item>",
        f'<Item class="StarterPlayerScripts" referent="{new_ref()}"><Properties><string name="Name">StarterPlayerScripts</string></Properties>',
        script("LocalScript", "LongManEffects", LM.EFFECTS_SCRIPT.replace("--SHOTS--", LM.reveal_shots())),
+       script("LocalScript", "LongManBones", LM.BONES_SCRIPT),
        script("LocalScript", "PuzzleUI", PUZZLE_UI), script("LocalScript", "CharacterPick", ROLES.ROLES_UI),
        script("LocalScript", "LobbyButtons", HUB.LOBBY_UI), script("LocalScript", "StoryBubbles", STORY.STORY_CLIENT),
        script("LocalScript", "OpeningCutscene", LAB.INTRO_SCRIPT.replace("--SHOTS--", LAB.intro_shots())), "</Item></Item>",
