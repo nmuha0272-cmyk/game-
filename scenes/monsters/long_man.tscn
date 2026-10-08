@@ -19,7 +19,7 @@
 [ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_arm_r.obj" id="lm_crawl_arm_r"]
 [ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_leg_l.obj" id="lm_crawl_leg_l"]
 [ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_leg_r.obj" id="lm_crawl_leg_r"]
-[ext_resource type="PackedScene" path="res://assets/models/long_man_custom/long_man.glb" id="lm_rig"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/long_man.glb" id="lm_rig"]
 [ext_resource type="Script" path="res://scripts/monsters/long_man_rig.gd" id="lm_rig_script"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]

@@ -35,6 +35,7 @@ var _speed := 0.0
 @onready var _rig := body.get_node_or_null("Rig") as LongManRig
 var _crawl_amount := 0.0
 var _roll := 0.0
+var _look_yaw := 0.0
 
 const JUMP_SCARE_SOUND := preload("res://assets/audio/monster_screech.wav")
 const NECK_CRACK := preload("res://assets/audio/neck_crack.wav")
@@ -111,9 +112,27 @@ func _update_rig(delta: float) -> void:
 	var target := 1.0 if monster.is_crawling() else 0.0
 	_crawl_amount = lerpf(_crawl_amount, target, clampf(delta * 4.0, 0.0, 1.0))
 	var amount := clampf(_speed / 2.0, 0.0, 1.0)
-	_crawl_phase += delta * clampf(_speed, 0.0, 6.0) * (2.4 if target > 0.5 else 1.6)
-	var breath := sin(Time.get_ticks_msec() / 1000.0 * (5.0 if monster.state == Monster.State.CHASE else 2.0))
-	_rig.set_pose(_crawl_phase, amount, _crawl_amount, _roll, breath)
+	var t := Time.get_ticks_msec() / 1000.0
+	# Broken, uneven steps: the pace keeps jerking faster and slower.
+	var stutter := 1.0 + 0.7 * sin(t * 3.1) * sin(t * 1.7)
+	_crawl_phase += delta * clampf(_speed, 0.0, 6.0) * (2.4 if target > 0.5 else 1.6) * maxf(stutter, 0.15)
+	var breath := sin(t * (5.0 if monster.state == Monster.State.CHASE else 2.0))
+	_look_yaw = lerpf(_look_yaw, _yaw_to_nearest_player(), clampf(delta * 3.0, 0.0, 1.0))
+	_rig.set_pose(_crawl_phase, amount, _crawl_amount, _roll, breath, 0.0, _look_yaw, t)
+
+
+## How far (degrees, + = his left) he has to turn his head to look at the
+## closest player. 0 when nobody is near.
+func _yaw_to_nearest_player() -> float:
+	var best := 15.0
+	var yaw := 0.0
+	for player: Node3D in get_tree().get_nodes_in_group("players"):
+		var d := monster.global_position.distance_to(player.global_position)
+		if d < best:
+			best = d
+			var local := monster.to_local(player.global_position)
+			yaw = rad_to_deg(atan2(-local.x, -local.z))
+	return clampf(yaw, -70.0, 70.0)
 
 
 ## Switches between standing and crawling, and moves the arms and legs like

@@ -1,0 +1,9 @@
+{
+  "_comment": "Joint positions for the hunched monster (arms hanging, so they can't be measured from a T-pose). Left side only (+X); the right side is mirrored. Model units: he is 0.98 tall and faces +Z.",
+  "Hips": [0, 0.45, -0.09], "Spine": [0, 0.53, -0.09], "Spine1": [0, 0.62, -0.07], "Spine2": [0, 0.72, -0.04],
+  "Neck": [0, 0.82, 0.03], "Head": [0, 0.87, 0.11], "HeadTop_End": [0, 0.98, 0.16],
+  "LeftShoulder": [0.04, 0.80, -0.02], "LeftArm": [0.14, 0.81, -0.01], "LeftForeArm": [0.26, 0.65, 0.0],
+  "LeftHand": [0.31, 0.40, 0.03], "LeftHandEnd": [0.33, 0.13, 0.10],
+  "LeftUpLeg": [0.09, 0.42, -0.08], "LeftLeg": [0.11, 0.21, -0.02], "LeftFoot": [0.11, 0.05, -0.07],
+  "LeftToeBase": [0.11, 0.015, 0.03], "LeftToe_End": [0.11, 0.015, 0.09]
+}
