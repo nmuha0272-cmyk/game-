@@ -50,7 +50,7 @@ sky=sc.sub("Sky", sky_material=SR(night_sky))
 env=sc.sub("Environment", background_mode="2", sky=SR(sky), ambient_light_source="2", ambient_light_color=col(0.18,0.22,0.28), ambient_light_energy="0.22",
            tonemap_mode="2", tonemap_exposure="1.25", ssao_enabled="true", glow_enabled="true", glow_intensity="1.0", glow_bloom="0.08", glow_hdr_threshold="0.9", volumetric_fog_enabled="true", volumetric_fog_density="0.022",
            volumetric_fog_albedo=col(0.7,0.75,0.8), volumetric_fog_length="45.0", adjustment_enabled="true", adjustment_contrast="1.15", adjustment_saturation="0.6")
-navmesh=sc.sub("NavigationMesh", geometry_parsed_geometry_type="1", geometry_source_geometry_mode="1", geometry_source_group_name='&"chapter1_nav"', agent_height="2.0", agent_radius="0.5", agent_max_climb="0.25", filter_baking_aabb="AABB(0, -10, -90, 50, 6, 56)")
+navmesh=sc.sub("NavigationMesh", geometry_parsed_geometry_type="1", geometry_source_geometry_mode="1", geometry_source_group_name='&"chapter1_nav"', agent_height="2.0", agent_radius="0.5", agent_max_climb="0.25", filter_baking_aabb="AABB(0, -10, -100, 90, 6, 66)")
 
 sc.node("Chapter1","Node3D",script=ER(S_CHAPTER))
 sc.node("WorldEnvironment","WorldEnvironment",".",environment=SR(env))
@@ -153,7 +153,7 @@ def checkpoint(name,order,pos,size,spawns):
 # ============================================================ ROCK (ground + underground, carved)
 sc.node("Rock","CSGCombiner3D","Underground",groups=["chapter1_nav"],use_collision="true")
 R="Underground/Rock"
-B("Mass",R,(15,-22.5,-17.5),(90,45,155),ROCK)
+B("Mass",R,(32.5,-22.5,-20),(125,45,160),ROCK)
 carves=[
  ("StairA",(9,-0.793,-20.6),(2,2.7,9.94),-26.57),("Landing",(9,-2.65,-26.0),(2,2.7,4.6),0),("StairB",(9,-5.355,-31.716),(2,2.7,10.4),-32),
  ("Junction",(9,-7.65,-40),(10,2.7,9.0),0),("DoorSlotD1",(9,-7.475,-45),(2,3.05,1.2),0),("TunnelT",(9,-7.65,-60.25),(4,2.7,29.5),0),
@@ -176,7 +176,7 @@ for n,(x1,x2,z1,z2) in {"West":(-23,-22,-1,51),"East":(22,23,-1,51),"South":(-23
     sh=sc.sub("BoxShape3D", size=v3(x2-x1,8,z2-z1))
     sc.node(n,"CollisionShape3D",E+"/ForestEdge",transform=xform(((x1+x2)/2,4,(z1+z2)/2)),shape=SR(sh))
 # Ground beyond the edges of the level, so the world never just ends.
-for n,(x1,x2,z1,z2) in {"OuterW":(-150,-30,-150,160),"OuterE":(60,180,-150,160),"OuterN":(-30,60,-150,-95),"OuterS":(-30,60,60,160)}.items():
+for n,(x1,x2,z1,z2) in {"OuterW":(-150,-30,-150,160),"OuterE":(95,180,-150,160),"OuterN":(-30,95,-150,-100),"OuterS":(-30,60,60,160)}.items():
     mi(n,E,((x1+x2)/2,0,(z1+z2)/2),mesh("PlaneMesh",size=f"Vector2({x2-x1}, {z2-z1})"),MAT("ground"))
 
 # The forest: pine trees as MultiMeshes (one draw per tree part, not per tree).
@@ -184,7 +184,7 @@ random.seed(12)
 def blocked(x,z):
     if -22.8<x<22.8 and -0.8<z<50.8: return True        # the play area
     if -11.5<x<11.5 and -24<z<1: return True            # the station
-    if -30<x<60 and -95<z<60: return False              # on the big ground block
+    if -30<x<95 and -100<z<60: return False              # on the big ground block
     return abs(x)>140 or z<-140 or z>150
 trees=[]
 while len(trees)<520:
@@ -472,7 +472,7 @@ label("CellScratches",U,(13.95,-7.6,-81),-90,"LET ME OUT LET ME OUT\nLET ME OUT 
 
 # monster
 sc.node("PatrolPoints","Node3D","Monsters")
-for k,p in enumerate([(9,-9,-82),(9,-9,-72),(9,-9,-56),(5.5,-9,-65),(21,-9,-68),(38,-9,-68)]):
+for k,p in enumerate([(9,-9,-82),(9,-9,-72),(9,-9,-56),(5.5,-9,-65),(21,-9,-68),(38,-9,-68),(55,-9,-66),(72,-9,-66),(72,-9,-90)]):
     sc.node(f"Point{k+1}","Marker3D","Monsters/PatrolPoints",transform=xform(p))
 sc.node("LongMan",None,"Monsters",instance=X["longman"],node_paths=["patrol_points"],transform=xform((9,-9,-82),180),patrol_points=NP("../PatrolPoints"),start_delay="99999.0")
 inst("mphoto","Photo","Monsters/LongMan",(0,0,0),0)
@@ -501,9 +501,9 @@ inst("fuse","FuseBoxEast","Puzzles",(45.95,-7.6,-70),-90); inst("fuse","FuseBoxW
 inst("lamp","PowerLamp","Puzzles",(38,-5.4,-59.2),0)
 gate("PowerGate","Puzzles",["../Generator","../FuseBoxEast","../FuseBoxWest"],["../RoomLights","../PowerLamp"],msg="Power restored. The elevator panel flickers on.")
 sc.node("OverrideRead","Node","Puzzles",script=ER(S_LORECHK),lore_id=S("file_containment_order"))
-gate("ConsolesEnabled","Puzzles",["../PowerGate","../OverrideRead"],[])
-inst("console","ConsoleWest","Puzzles",(31.5,-9,-61),90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=S("Dead. It needs power, and the override procedure (find the Containment Order)."))
-inst("console","ConsoleEast","Puzzles",(44.5,-9,-75.5),-90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=S("Dead. It needs power, and the override procedure (find the Containment Order)."))
+gate("ConsolesEnabled","Puzzles",["../PowerGate","../OverrideRead","../ElevatorKeySlot"],[])
+inst("console","ConsoleWest","Puzzles",(31.5,-9,-61),90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=S("Dead. It needs power, the override procedure (the Containment Order), and the elevator key (in the Archive)."))
+inst("console","ConsoleEast","Puzzles",(44.5,-9,-75.5),-90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=S("Dead. It needs power, the override procedure (the Containment Order), and the elevator key (in the Archive)."))
 gate("DualKey","Puzzles",["../ConsoleWest","../ConsoleEast"],[],msg="Override accepted. Everyone into the elevator!")
 BX("ControlDesk","Underground",39,41,-9,-8.1,-74.4,-73.6,METAL)
 inst("lfile","ContainmentOrder","Lore",(40,-8.1,-74),-10,entry=ER(LORE("file_containment_order")))
@@ -533,10 +533,81 @@ sc.node("Hum","AudioStreamPlayer3D",EL,transform=xform((0,1.5,0)),stream=ER(HUM)
 sc.node("Snap","AudioStreamPlayer",EL,stream=ER(SNAP),volume_db="2.0")
 stinger("ElevatorSting",(38,-7.5,-66),(10,3,8),msg="The elevator. The only way down.")
 
+# ============================================================ ROOM 6: THE LAB WING (longer chapter)
+# From the elevator room, a long corridor east to the Specimen Lab. Pull the
+# lab's power lever and its monitor shows the Archive door code; one player
+# reads it out, another types it on the keypad. The Archive (a maze of
+# shelves) holds the ELEVATOR KEY, which the elevator now needs.
+GLASS=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.6,0.8,0.7,0.25), transparency="1", roughness="0.05", metallic_specular="1.0"))
+GOO=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.15,0.4,0.2,0.55), transparency="1", emission_enabled="true", emission=col(0.1,0.5,0.2), emission_energy_multiplier="0.6"))
+for n,c,sz in [("DoorSlotD4",(47,-7.475,-66),(0.6,3.05,2)),("TunnelLab",(55.5,-7.65,-66),(17,2.7,2)),
+               ("SpecimenLab",(72,-7,-66),(16,4,16)),("ArchiveSlot",(72,-7.475,-75),(2,3.05,0.6)),
+               ("ArchiveHall",(72,-7.65,-79.5),(2,2.7,9)),("Archive",(72,-7,-90),(14,4,12))]:
+    B(n,R,c,sz,ROCK,collide=False,op=2)
+inst("door","LabDoor","Puzzles",(47,-9,-65),90)
+label("LabSign",U,(46.1,-6.9,-66),90,"LAB WING  ->\nAUTHORISED STAFF ONLY",size=0.003,font=32,color=(0.85,0.8,0.6))
+light("LabHall1","Lights",(51,-6.6,-66),energy=0.35,rng=5,flicker=0.85)
+light("LabHall2","Lights",(59,-6.6,-66),energy=0.3,rng=5,flicker=0.95)
+for k,x in enumerate([50,54.5,58,61.5]):
+    pipe(f"LabPipe{k}",(x,-6.45,-65.2),(x+2.6,-6.45,-65.2)) if k%2==0 else None
+# The Specimen Lab: six growth tanks (three with something still inside).
+for k,(x,z) in enumerate([(66.5,-60.5),(70,-60.5),(73.5,-60.5),(66.5,-71.5),(70,-71.5),(73.5,-71.5)]):
+    sc.node(f"TankBase{k}","CSGCylinder3D",U,transform=xform((x,-8.8,z)),radius="0.75",height="0.4",sides="16",use_collision="true",material=METAL)
+    sc.node(f"TankGlass{k}","CSGCylinder3D",U,transform=xform((x,-7.5,z)),radius="0.65",height="2.2",sides="16",use_collision="true",material=GLASS)
+    sc.node(f"TankTop{k}","CSGCylinder3D",U,transform=xform((x,-6.25,z)),radius="0.75",height="0.3",sides="16",material=METAL)
+    if k in (0,4):
+        sc.node(f"TankGoo{k}","CSGCylinder3D",U,transform=xform((x,-7.7,z)),radius="0.6",height="1.8",sides="16",material=GOO)
+        mi(f"TankBody{k}",U,(x,-7.5,z),mesh("CapsuleMesh",radius="0.22",height="1.6"),BLACK,shadow=False)
+        light(f"TankGlow{k}","Lights",(x,-7.2,z),color=(0.3,1,0.45),energy=0.35,rng=3.5,shadow=False,fixture=None)
+    if k == 2:
+        label(f"TankCrack{k}",U,(x,-7.4,z+0.67),0,"6",size=0.006,font=48,color=(0.7,0.65,0.5))
+for k,(x1,x2,z1,z2) in enumerate([(76,79.4,-63,-62),(76,79.4,-70,-69),(64.6,68,-66.5,-65.5)]):
+    BX(f"LabBench{k}",U,x1,x2,-9,-8.1,z1,z2,METAL)
+BX("LabDesk",U,78.4,79.6,-9,-8.1,-67,-65,DWOOD)
+BX("LabMonitorCase",U,79.3,79.75,-8.1,-7.3,-66.45,-65.55,BLACK)
+BX("LabScreen",U,79.25,79.3,-8.0,-7.4,-66.35,-65.65,SCREEN,collide=False)
+inst("lfile","SpecimenNotes","Lore",(77.5,-8.1,-62.5),15,entry=ER(LORE("file_specimen_notes")))
+item("battery",(65.5,-8.8,-58.8)); item("flare",(78.8,-8.8,-73)); item("walkie",(66,-8.1,-66))
+label("LabWallWriting",U,(64.05,-7.4,-63),90,"HE IS NOT GONE\nHE IS IN THE WALLS",size=0.0045,font=40,color=(0.55,0.5,0.45),outline="0")
+sc.node("LabLights","Node3D","Puzzles",script=ER(S_LIGHTS))
+light("LabBright1","Puzzles/LabLights",(68,-5.6,-66),energy=1.0,rng=10)
+light("LabBright2","Puzzles/LabLights",(76,-5.6,-66),energy=1.0,rng=10)
+light("LabDim","Lights",(72,-5.8,-66),color=(0.9,0.3,0.2),energy=0.25,rng=8,flicker=0.7)
+inst("lever","LabPower","Puzzles",(66,-7.7,-58.1),180,one_way="true",prompt_text=S("Pull the lab's power lever"))
+gate("LabPowerGate","Puzzles",["../LabPower"],["../LabLights"],msg="The lab lights buzz on. The monitor by the desk wakes up.")
+inst("keypad","ArchiveKeypad","Puzzles",(73.6,-7.6,-73.97),0)
+sc.node("LabMonitor","Label3D","Puzzles",node_paths=["source","hidden_until"],transform=xform((79.22,-7.7,-66),-90),pixel_size="0.004",
+        text=S(""),font_size="40",modulate=col(0.4,1,0.5),outline_size="0",script=ER(S_CODE),source=NP("../ArchiveKeypad"),hidden_until=NP("../LabPower"),
+        hidden_text=S("NO POWER"),template=S("ARCHIVE DOOR\nCODE: %s"))
+inst("door","ArchiveDoor","Puzzles",(71,-9,-75),0,puzzle_controlled="true")
+gate("ArchiveGate","Puzzles",["../ArchiveKeypad"],["../ArchiveDoor"],msg="The Archive door unlocks.")
+# The Archive: rows of shelves like a maze, and the elevator key at the back.
+for r,(z,gaps) in enumerate([(-86.5,[(70.5,72.5)]),(-89.5,[(66,68),(76,78)]),(-92.5,[(71,73)])]):
+    x=65.2; edges=[(a,b) for a,b in gaps]
+    segs=[]; cur=65.2
+    for a,b in edges:
+        segs.append((cur,a)); cur=b
+    segs.append((cur,78.8))
+    for k,(a,b) in enumerate(segs):
+        if b-a > 0.3:
+            BX(f"Shelf{r}_{k}",U,a,b,-9,-6.9,z-0.3,z+0.3,DWOOD)
+            for j,y in enumerate([-8.4,-7.7,-7.1]):
+                BX(f"Files{r}_{k}_{j}",U,a+0.1,b-0.1,y,y+0.3,z-0.25,z+0.25,PAPER,collide=False)
+BX("KeyDesk",U,71,73,-9,-8.1,-95.6,-94.6,DWOOD)
+item("keycard_red",(72,-8.0,-95.1))
+inst("lpersonal","FatherLetter","Lore",(71.4,-8.1,-95),10,entry=ER(LORE("personal_son_father_letter")))
+label("Cabinet14",U,(78.9,-7.4,-94),-90,"CABINET 14\nVOLUNTEERS 10-14",size=0.003,font=32,color=(0.8,0.75,0.6))
+light("ArchiveLight1","Lights",(68,-6.6,-88),energy=0.3,rng=6,flicker=0.9)
+light("ArchiveLight2","Lights",(75,-6.6,-94),energy=0.35,rng=5,flicker=0.6)
+stinger("ArchiveSting",(72,-7.5,-84),(4,3,2),msg="Rows and rows of files. Something is breathing between the shelves.")
+# The elevator key goes in a slot by the elevator.
+inst("fuse","ElevatorKeySlot","Puzzles",(33.5,-7.6,-59.05),180,item_id=S("keycard_red"),insert_time="1.0",engineer_insert_time="1.0",label_text=S("ELEVATOR KEY"))
+
 # ============================================================ CHECKPOINTS, SPAWNS, SYSTEMS
 checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])
 checkpoint("Tunnels",2,(9,-7.5,-38),(8,3,4),[(-1.5,1),(0,1),(1.5,1),(0,2)])
 checkpoint("ElevatorApproach",3,(18,-7.5,-68),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
+checkpoint("LabWing",4,(55,-7.5,-66),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
 sc.node("Items","Node3D",".")
 sc.node("ItemSpawner","MultiplayerSpawner",".",node_paths=["spawn_points"],spawn_path=NP("../Items"),script=ER(S_ISPAWN),spawn_points=NP("../ItemSpawnPoints"))
 sc.node("Players","Node3D",".")

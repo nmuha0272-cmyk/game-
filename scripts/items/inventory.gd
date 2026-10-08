@@ -110,6 +110,41 @@ func server_drain_filter(slot: int, seconds: float) -> void:
 
 
 ## Host only: show a message on this player's screen.
+const RADIO_STATIC := preload("res://assets/audio/radio_static.wav")
+const PING_SCENE := preload("res://scenes/player/ping_marker.tscn")
+
+
+## Host only: this player's walkie-talkie crackles. Everyone near hears the
+## static (so does the Long Man: the host tells him separately). The owner
+## sees the message and, if a teammate called, a marker where they are.
+func server_radio(text: String, caller_position: Vector3, caller_name: String) -> void:
+	if multiplayer.is_server():
+		_radio.rpc(text, caller_position, caller_name)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _radio(text: String, caller_position: Vector3, caller_name: String) -> void:
+	if multiplayer.get_remote_sender_id() != 1:
+		return
+	var crackle := AudioStreamPlayer3D.new()
+	crackle.stream = RADIO_STATIC
+	crackle.unit_size = 7.0
+	crackle.volume_db = 2.0
+	crackle.position = Vector3(0, 1.2, 0)
+	player.add_child(crackle)
+	crackle.play()
+	crackle.finished.connect(crackle.queue_free)
+	if not player.is_multiplayer_authority():
+		return
+	get_tree().call_group("player_hud", "show_message", text)
+	if caller_position.is_finite() and caller_name != "":
+		var marker := PING_SCENE.instantiate()
+		marker.text = "%s (radio)" % caller_name
+		marker.color = Color(0.6, 1.0, 0.6)
+		player.get_parent().get_parent().add_child(marker)
+		marker.global_position = caller_position + Vector3.UP * 1.8
+
+
 func server_tell(text: String) -> void:
 	if player.is_multiplayer_authority():
 		get_tree().call_group("player_hud", "show_message", text)

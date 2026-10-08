@@ -13,6 +13,8 @@ func _physics_process(_delta: float) -> void:
 	for player: Player in get_tree().get_nodes_in_group("players"):
 		if player.is_downed:
 			_wiped = true
+			# A moment first, so the one who got caught sees the whole jump scare.
+			await get_tree().create_timer(2.4).timeout
 			GameState.server_team_wiped("%s died...\nso EVERYONE dies. Back to the last checkpoint." % \
 					Characters.display_name(player.character))
 			return

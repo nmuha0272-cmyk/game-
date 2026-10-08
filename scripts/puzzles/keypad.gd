@@ -37,6 +37,37 @@ func get_display_code() -> String:
 	return code
 
 
+## Opens the big keypad on this player's screen (they type the code there).
+func open_ui() -> void:
+	var menu: Node = null
+	for m in get_tree().get_nodes_in_group("keypad_menu"):
+		menu = m
+	if menu == null:
+		var layer := CanvasLayer.new()
+		layer.layer = 30
+		get_tree().root.add_child(layer)
+		menu = Control.new()
+		menu.set_script(load("res://scripts/ui/keypad_menu.gd"))
+		menu.add_to_group("keypad_menu")
+		layer.add_child(menu)
+		menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	menu.open_for(self)
+
+
+## Any computer: press a key (the host decides what happens).
+func request_press(key: String) -> void:
+	if multiplayer.is_server():
+		server_press(key)
+	else:
+		_request_press.rpc_id(1, key)
+
+
+@rpc("any_peer", "reliable")
+func _request_press(key: String) -> void:
+	if multiplayer.is_server() and key in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "CLR", "ENT"]:
+		server_press(key)
+
+
 ## Host only: a key was pressed.
 func server_press(key: String) -> void:
 	if not multiplayer.is_server() or is_active:

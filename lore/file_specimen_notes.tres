@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_specimen_notes"
+title = "Specimen Lab Notes"
+type = 0
+text = "SPECIMEN LAB - PROGRAM ZERO\nTank 2: Volunteer 9. Rejected the serum. Kept for study.\nTank 4: Volunteer 11. Rejected the serum.\nTank 6: EMPTY. (Volunteer 14 - see Archive, cabinet 14.)\n\nThe elevator key is kept in the Archive. The Archive door code is shown on the lab monitor when the lab has power.\nDO NOT open the Archive while Subject 7 is loose. He remembers the way."
+owner_character = -1
+voice_line = ""

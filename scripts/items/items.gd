@@ -52,7 +52,7 @@ const INFO := {
 	"walkie": {
 		"name": "Walkie-Talkie", "shape": "box", "size": Vector3(0.06, 0.18, 0.04),
 		"color": Color(0.1, 0.1, 0.1),
-		"hint": "Click to buzz whoever has the other walkie-talkie.",
+		"hint": "Click to radio your team (they see where you are). Careful: the Long Man hears the static!",
 	},
 	"reel_tape": {
 		"name": "Reel Tape", "shape": "cylinder", "size": Vector3(0.07, 0.02, 0),

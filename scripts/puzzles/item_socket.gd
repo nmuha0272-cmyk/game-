@@ -7,6 +7,15 @@ extends PuzzleInput
 @export var item_id := "fuse"
 @export var insert_time := 4.0
 @export var engineer_insert_time := 1.0
+## Text on the slot's own label (empty = keep what the scene says).
+@export var label_text := ""
+
+
+func _ready() -> void:
+	super()
+	var label := get_node_or_null("Label") as Label3D
+	if label and label_text != "":
+		label.text = label_text
 
 
 func can_interact(_by: Player) -> bool:

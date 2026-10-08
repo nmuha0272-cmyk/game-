@@ -59,3 +59,31 @@ func set_pose(phase: float, amount: float, crawl: float, head_roll: float, breat
 	var twitch := sin(time * 7.0) * sin(time * 2.3) * idle
 	_turn("LeftHand", SIDE, -30.0 * lift_a - 12.0 * twitch)
 	_turn("RightHand", SIDE, -30.0 * lift_b + 12.0 * twitch)
+
+
+## The jump scare: he has you. Arms reach out and grip you (raise: 0..1),
+## his face tips up to look at you, then one arm draws back to slash
+## (slash: 0..1, 1 = swung all the way across).
+func set_grab_pose(raise: float, slash: float, head_roll: float, time: float) -> void:
+	if _sk == null:
+		return
+	_reset()
+	var shake := sin(time * 31.0) * 3.0
+	_turn("Spine", SIDE, 10.0 * raise)
+	_turn("Spine2", SIDE, 8.0 * raise + shake * 0.3)
+	_turn("Neck", SIDE, -30.0 * raise)
+	_turn("Head", SIDE, -25.0 * raise)
+	_turn("Head", ROLL, head_roll + shake)
+	_turn("LeftShoulder", ROLL, 18.0 * raise)
+	_turn("RightShoulder", ROLL, -18.0 * raise)
+	# Both arms reach forward to you and close in; elbows bent to hold on.
+	_turn("LeftArm", SIDE, -85.0 * raise)
+	_turn("LeftArm", TWIST, -22.0 * raise)
+	_turn("LeftForeArm", SIDE, -35.0 * raise)
+	_turn("LeftHand", SIDE, -45.0 * raise)
+	# The right arm rises high over his head... then rakes down across you.
+	var lift := raise * (1.0 - slash)
+	_turn("RightArm", SIDE, -85.0 * raise - 75.0 * lift + 35.0 * slash)
+	_turn("RightArm", TWIST, 22.0 * raise + 30.0 * slash)
+	_turn("RightForeArm", SIDE, -20.0 * raise - 25.0 * slash)
+	_turn("RightHand", SIDE, -30.0 + 40.0 * slash)

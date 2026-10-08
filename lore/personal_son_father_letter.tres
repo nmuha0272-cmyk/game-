@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_son_father_letter"
+title = "Unsent Letter, Cabinet 14"
+type = 3
+text = "To my boy,\nThey told us it was vitamins. They told us we were helping the country, that the Russians were doing worse. I believed them.\nThe big one in the tunnels... I knew him. We shared a bunk. He used to sing.\nIf they send me down to Level B, don't let them tell you I volunteered twice.\nI'm coming home. I promise.\n- Dad (Volunteer 14)"
+owner_character = 0
+voice_line = ""
