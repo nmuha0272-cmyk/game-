@@ -30,6 +30,11 @@ var _head_roll := 14.0
 @onready var _crawl_head: Node3D = _crawl.get_node_or_null("HeadPivot") if _crawl else null
 var _crawl_phase := 0.0
 var _speed := 0.0
+## The real model with bones (optional). When it's there, the old sculpted
+## bodies are hidden and its bones are moved instead.
+@onready var _rig := body.get_node_or_null("Rig") as LongManRig
+var _crawl_amount := 0.0
+var _roll := 0.0
 
 const JUMP_SCARE_SOUND := preload("res://assets/audio/monster_screech.wav")
 const NECK_CRACK := preload("res://assets/audio/neck_crack.wav")
@@ -40,6 +45,12 @@ var _skitter: AudioStreamPlayer3D
 
 func _ready() -> void:
 	monster.get_node("SenseGlow").visible = false
+	if _rig:
+		for part in ["Sculpt", "HeadPivot"]:
+			if body.has_node(part):
+				body.get_node(part).visible = false
+		if _crawl:
+			_crawl.visible = false
 	_last_position = monster.global_position
 	_crack = AudioStreamPlayer3D.new()
 	_crack.stream = NECK_CRACK
@@ -56,6 +67,9 @@ func _ready() -> void:
 ## Every few seconds the head snaps to a new angle, then settles. (Each
 ## computer twitches on its own; it's just for looks.)
 func _update_head(delta: float) -> void:
+	if _rig:
+		_update_rig_head(delta)
+		return
 	var head := _crawl_head if monster.is_crawling() else _head
 	if head == null:
 		return
@@ -75,9 +89,39 @@ func _update_head(delta: float) -> void:
 	head.rotation_degrees.z = lerpf(head.rotation_degrees.z, _head_roll * 0.8, clampf(delta * 2.0, 0.0, 1.0))
 
 
+## Same twitching as below, for the model with bones.
+func _update_rig_head(delta: float) -> void:
+	if monster.state == Monster.State.STARE:
+		_roll = lerpf(_roll, 75.0, clampf(delta * 1.2, 0.0, 1.0))
+		_twitch_timer = 0.3
+		return
+	_twitch_timer -= delta
+	if _twitch_timer <= 0.0:
+		_twitch_timer = randf_range(1.5, 5.0) * (0.4 if monster.state == Monster.State.CHASE else 1.0)
+		_head_roll = randf_range(-35.0, 35.0) if randf() < 0.6 else 14.0
+		_roll = _head_roll  # the snap
+		if randf() < 0.6 and _crack and _crack.is_inside_tree():
+			_crack.pitch_scale = randf_range(0.8, 1.2)
+			_crack.play()
+	_roll = lerpf(_roll, _head_roll * 0.8, clampf(delta * 2.0, 0.0, 1.0))
+
+
+## Bends the model with bones: walking, or down on all fours.
+func _update_rig(delta: float) -> void:
+	var target := 1.0 if monster.is_crawling() else 0.0
+	_crawl_amount = lerpf(_crawl_amount, target, clampf(delta * 4.0, 0.0, 1.0))
+	var amount := clampf(_speed / 2.0, 0.0, 1.0)
+	_crawl_phase += delta * clampf(_speed, 0.0, 6.0) * (2.4 if target > 0.5 else 1.6)
+	var breath := sin(Time.get_ticks_msec() / 1000.0 * (5.0 if monster.state == Monster.State.CHASE else 2.0))
+	_rig.set_pose(_crawl_phase, amount, _crawl_amount, _roll, breath)
+
+
 ## Switches between standing and crawling, and moves the arms and legs like
 ## a spider: left arm with right leg, then right arm with left leg.
 func _update_crawl(delta: float) -> void:
+	if _rig:
+		_update_rig(delta)
+		return
 	if _crawl == null:
 		return
 	var crawling := monster.is_crawling()
@@ -101,17 +145,32 @@ func play_jump_scare() -> void:
 	var camera := get_viewport().get_camera_3d()
 	if camera == null:
 		return
-	var source: Node3D = _crawl_head if (monster.is_crawling() and _crawl_head) else _head
-	if source == null:
-		source = body
-	var face: Node3D = source.duplicate()
-	face.transform = Transform3D(Basis(Vector3.UP, PI).scaled(Vector3.ONE * 1.5), Vector3(0, -0.05, -1.6))
-	face.rotation_degrees.z = randf_range(-25.0, 25.0)
-	camera.add_child(face)
+	var face: Node3D
+	# Moves the face so its head ends up at the given point.
+	var offset := Vector3.ZERO
+	if _rig:
+		# A fresh copy of the model (copying the live one breaks its bones).
+		face = (load(_rig.scene_file_path) as PackedScene).instantiate()
+		face.set_script(_rig.get_script())
+		var rig_face := face as LongManRig
+		camera.add_child(face)
+		rig_face.set_pose(0.0, 0.0, 0.0, randf_range(-35.0, 35.0), 1.0, 70.0)
+		face.transform = Transform3D(Basis.from_scale(Vector3.ONE * 1.4), Vector3.ZERO)  # already faces you
+		offset = -(face.transform.basis * rig_face.head_position())
+		offset.y += 0.1
+		face.position = offset + Vector3(0, -0.05, -1.6)
+	else:
+		var source: Node3D = _crawl_head if (monster.is_crawling() and _crawl_head) else _head
+		if source == null:
+			source = body
+		face = source.duplicate()
+		face.transform = Transform3D(Basis(Vector3.UP, PI).scaled(Vector3.ONE * 1.5), Vector3(0, -0.05, -1.6))
+		face.rotation_degrees.z = randf_range(-25.0, 25.0)
+		camera.add_child(face)
 	# A pale light from below so you see every detail of it.
 	var light := OmniLight3D.new()
 	light.light_color = Color(0.85, 0.9, 1.0)
-	light.light_energy = 2.5
+	light.light_energy = 1.4 if _rig else 2.5
 	light.omni_range = 2.0
 	light.position = Vector3(0, -0.35, -0.3)
 	camera.add_child(light)
@@ -130,12 +189,12 @@ func play_jump_scare() -> void:
 	layer.add_child(flash)
 	add_child(layer)
 	var tween := create_tween()
-	tween.tween_property(face, "position", Vector3(0, -0.1, -0.8), 0.12).set_ease(Tween.EASE_OUT)
+	tween.tween_property(face, "position", offset + Vector3(0, -0.1, -0.8), 0.12).set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(flash, "color:a", 0.0, 0.45)
 	# Shake while it's in your face.
 	for i in 12:
-		tween.tween_property(face, "position", Vector3(randf_range(-0.05, 0.05), -0.1 + randf_range(-0.04, 0.04), -0.8), 0.04)
-	tween.tween_property(face, "position", Vector3(0, -0.3, -0.45), 0.15)
+		tween.tween_property(face, "position", offset + Vector3(randf_range(-0.05, 0.05), -0.1 + randf_range(-0.04, 0.04), -0.8), 0.04)
+	tween.tween_property(face, "position", offset + Vector3(0, -0.3, -0.45), 0.15)
 	await tween.finished
 	face.queue_free()
 	light.queue_free()

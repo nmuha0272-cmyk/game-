@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3]
+[gd_scene load_steps=39 format=3]
 
 [ext_resource type="Script" path="res://scripts/monsters/monster.gd" id="1_monster"]
 [ext_resource type="Script" path="res://scripts/monsters/monster_senses.gd" id="2_senses"]
@@ -19,6 +19,8 @@
 [ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_arm_r.obj" id="lm_crawl_arm_r"]
 [ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_leg_l.obj" id="lm_crawl_leg_l"]
 [ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_leg_r.obj" id="lm_crawl_leg_r"]
+[ext_resource type="PackedScene" path="res://assets/models/long_man_custom/long_man.glb" id="lm_rig"]
+[ext_resource type="Script" path="res://scripts/monsters/long_man_rig.gd" id="lm_rig_script"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 radius = 0.35
@@ -176,6 +178,10 @@ surface_material_override/0 = SubResource("Mat_eye")
 transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, 0.046, 0.101, -0.115)
 mesh = SubResource("Mesh_eye")
 surface_material_override/0 = SubResource("Mat_eye")
+
+[node name="Rig" parent="Body" instance=ExtResource("lm_rig")]
+transform = Transform3D(-2.8, 0, 0, 0, 2.8, 0, 0, 0, -2.8, 0, 0, 0)
+script = ExtResource("lm_rig_script")
 
 [node name="CrawlBody" type="Node3D" parent="."]
 visible = false
