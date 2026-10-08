@@ -45,7 +45,7 @@ func _on_host_requested() -> void:
 	_show_lobby()
 
 
-## Solo (test) mode: skip the lobby and drop straight into the story.
+## Solo mode: host alone, but still show the lobby so you pick your character.
 func _on_solo_requested() -> void:
 	var error := NetworkManager.host_game()
 	if error != OK:
@@ -54,10 +54,7 @@ func _on_solo_requested() -> void:
 	GameState.local_player_name = _typed_name()
 	GameState.start_hosting()
 	get_window().title = "Subject Zero (Solo)"
-	menu.hide()
-	# Journalist by default: her flash stuns monsters and she reads lore.
-	GameState.request_character(Characters.Id.JOURNALIST)
-	GameState.start_game()
+	_show_lobby()
 
 
 func _on_join_requested(address: String) -> void:
