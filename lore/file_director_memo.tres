@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_director_memo"
+title = "Director's Memo: Phase Two"
+type = 0
+text = "FROM: THE DIRECTOR\nPhase One gave us Subject 7. He is strong, but he cannot be controlled, and he will not stop growing.\nPhase Two volunteers will be kept in the dormitory until we know what the serum does to the others.\nIf containment fails: seal the blast door, and get the staff out by the escape lift. ONLY the staff."
+owner_character = -1
+voice_line = ""

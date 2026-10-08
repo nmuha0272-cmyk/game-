@@ -18,6 +18,8 @@ extends CharacterBody3D
 
 ## Which character this is (see characters.gd). Set by the spawner.
 var character: int = Characters.Id.NONE
+## The locker this player is hiding in (only set on their own computer).
+var hiding_spot: Node3D = null
 ## Extra slow-down from abilities, e.g. 0.6 while the Guard moves something heavy.
 var speed_multiplier := 1.0
 ## True while this player's flashlight is on (monsters spot you more easily).
@@ -80,6 +82,14 @@ func _physics_process(delta: float) -> void:
 	var carrier := downed.get_carrier()
 	if carrier:
 		_follow_carrier(carrier, delta)
+		return
+
+	if is_instance_valid(hiding_spot):
+		# Hiding in a locker: stand still inside it (you can still look around).
+		velocity = Vector3.ZERO
+		global_position = hiding_spot.inside_position()
+		is_sprinting = false
+		stamina.draining = false
 		return
 
 	if not is_on_floor():

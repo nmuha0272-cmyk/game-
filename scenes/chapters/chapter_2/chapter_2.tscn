@@ -1,0 +1,3008 @@
+[gd_scene load_steps=148 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/puzzles/hold_switch.tscn" id="1_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/vent_cover.tscn" id="2_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/fuse_box.tscn" id="3_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/key_console.tscn" id="4_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/keypad.tscn" id="5_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/lever.tscn" id="6_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/button.tscn" id="7_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/status_lamp.tscn" id="8_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/gate_clamp.tscn" id="9_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/door.tscn" id="10_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/generator.tscn" id="11_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/filing_cabinet.tscn" id="12_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/evidence_drag_marks.tscn" id="13_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/evidence_monster_photo.tscn" id="14_x"]
+[ext_resource type="PackedScene" path="res://scenes/monsters/long_man.tscn" id="15_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_file.tscn" id="16_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_poster.tscn" id="17_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_personal.tscn" id="18_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_paper.tscn" id="19_x"]
+[ext_resource type="PackedScene" path="res://scenes/lore/tape_machine.tscn" id="20_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/puzzle_gate.gd" id="21_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/code_display.gd" id="22_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/puzzle_lights.gd" id="23_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/puzzle_mover.gd" id="24_x"]
+[ext_resource type="Script" path="res://scripts/puzzles/lore_check.gd" id="25_x"]
+[ext_resource type="Script" path="res://scripts/interactables/door_lock.gd" id="26_x"]
+[ext_resource type="Script" path="res://scripts/player/player_spawner.gd" id="27_x"]
+[ext_resource type="Script" path="res://scripts/items/item_spawner.gd" id="28_x"]
+[ext_resource type="Script" path="res://scripts/items/item_spawn_point.gd" id="29_x"]
+[ext_resource type="Script" path="res://scripts/environment/bake_navigation_on_start.gd" id="30_x"]
+[ext_resource type="Script" path="res://scripts/environment/flickering_light.gd" id="31_x"]
+[ext_resource type="Script" path="res://scripts/environment/pulsing_light.gd" id="32_x"]
+[ext_resource type="Script" path="res://scripts/environment/random_ambient_sounds.gd" id="33_x"]
+[ext_resource type="Script" path="res://scripts/game/team_monitor.gd" id="34_x"]
+[ext_resource type="Script" path="res://scripts/game/checkpoint.gd" id="35_x"]
+[ext_resource type="Script" path="res://scripts/chapters/chapter.gd" id="36_x"]
+[ext_resource type="Script" path="res://scripts/chapters/stinger_trigger.gd" id="37_x"]
+[ext_resource type="Script" path="res://scripts/chapters/chase_trigger.gd" id="38_x"]
+[ext_resource type="Script" path="res://scripts/chapters/flashlight_drain_trigger.gd" id="39_x"]
+[ext_resource type="Script" path="res://scripts/chapters/elevator.gd" id="40_x"]
+[ext_resource type="Script" path="res://scripts/chapters/cutscene.gd" id="41_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/wind_loop.wav" id="42_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient_drone.wav" id="43_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/water_drip.wav" id="44_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/distant_clank.wav" id="45_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/metal_creak.wav" id="46_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/stinger.wav" id="47_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/cable_snap.wav" id="48_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/elevator_hum.wav" id="49_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/fluorescent_buzz.wav" id="50_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/door_creak.wav" id="51_x"]
+[ext_resource type="Material" path="res://assets/materials/terrain.tres" id="52_x"]
+[ext_resource type="Material" path="res://assets/materials/concrete_wall.tres" id="53_x"]
+[ext_resource type="Material" path="res://assets/materials/painted_wall.tres" id="54_x"]
+[ext_resource type="Material" path="res://assets/materials/wood.tres" id="55_x"]
+[ext_resource type="Material" path="res://assets/materials/dark_wood.tres" id="56_x"]
+[ext_resource type="Material" path="res://assets/materials/rusty_metal.tres" id="57_x"]
+[ext_resource type="Material" path="res://assets/materials/chainlink.tres" id="58_x"]
+[ext_resource type="Material" path="res://assets/materials/asphalt.tres" id="59_x"]
+[ext_resource type="Material" path="res://assets/materials/concrete_floor.tres" id="60_x"]
+[ext_resource type="Material" path="res://assets/materials/lino_floor.tres" id="61_x"]
+[ext_resource type="Material" path="res://assets/materials/cinder_block.tres" id="62_x"]
+[ext_resource type="Material" path="res://assets/materials/rock.tres" id="63_x"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/hiding_locker.tscn" id="71_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/pressure_plate.tscn" id="72_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/radio.tscn" id="73_x"]
+[ext_resource type="Script" path="res://scripts/chapters/final_chase.gd" id="74_x"]
+[ext_resource type="Script" path="res://scripts/chapters/escape_zone.gd" id="75_x"]
+[ext_resource type="AudioStream" path="res://assets/audio/monster_shriek.wav" id="76_x"]
+[ext_resource type="ArrayMesh" path="res://assets/models/prop_crate.obj" id="79_x"]
+[ext_resource type="Resource" path="res://lore/file_radio_log.tres" id="96_x"]
+[ext_resource type="Resource" path="res://lore/file_director_memo.tres" id="97_x"]
+[ext_resource type="ArrayMesh" path="res://assets/models/prop_cabinet.obj" id="98_x"]
+[ext_resource type="Resource" path="res://lore/personal_guard_logbook.tres" id="104_x"]
+[ext_resource type="Resource" path="res://lore/personal_son_dogtag.tres" id="113_x"]
+[ext_resource type="Resource" path="res://lore/file_levelb_intake.tres" id="114_x"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_64"]
+albedo_color = Color(0.22, 0.27, 0.3, 1)
+roughness = 0.45
+metallic = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_65"]
+albedo_color = Color(0.03, 0.08, 0.04, 1)
+emission_enabled = true
+emission = Color(0.03, 0.2, 0.06, 1)
+emission_energy_multiplier = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_66"]
+albedo_color = Color(0.02, 0.02, 0.02, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_67"]
+albedo_color = Color(0.75, 0.72, 0.62, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_68"]
+albedo_color = Color(0.12, 0.09, 0.07, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_69"]
+albedo_color = Color(0.04, 0.08, 0.05, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_70"]
+albedo_color = Color(0.7, 0.7, 0.68, 1)
+roughness = 0.5
+metallic = 0.3
+
+[sub_resource type="Environment" id="Environment_77"]
+background_mode = 1
+background_color = Color(0, 0, 0, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.16, 0.18, 0.2, 1)
+ambient_light_energy = 0.12
+tonemap_mode = 2
+tonemap_exposure = 1.25
+ssao_enabled = true
+glow_enabled = true
+glow_intensity = 1.0
+glow_bloom = 0.08
+glow_hdr_threshold = 0.9
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.03
+volumetric_fog_albedo = Color(0.6, 0.65, 0.6, 1)
+volumetric_fog_length = 30.0
+adjustment_enabled = true
+adjustment_contrast = 1.15
+adjustment_saturation = 0.55
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_78"]
+geometry_parsed_geometry_type = 1
+geometry_source_geometry_mode = 1
+geometry_source_group_name = &"chapter2_nav"
+agent_height = 2.0
+agent_radius = 0.5
+agent_max_climb = 0.25
+filter_baking_aabb = AABB(-15, -1, -150, 60, 6, 155)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_80"]
+size = Vector3(0.7, 0.7, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_81"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_82"]
+size = Vector3(0.6, 0.6, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_83"]
+size = Vector3(2.4, 2.8, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_84"]
+size = Vector3(2.4, 2.8, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_85"]
+albedo_color = Color(1, 0.8, 0.55, 1)
+emission_enabled = true
+emission = Color(1, 0.8, 0.55, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_86"]
+radius = 0.06
+height = 0.12
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_87"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 0.2
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_88"]
+top_radius = 0.01
+bottom_radius = 0.01
+height = 0.4
+radial_segments = 4
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_89"]
+albedo_color = Color(0.6, 0.75, 1, 1)
+emission_enabled = true
+emission = Color(0.6, 0.75, 1, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_90"]
+size = Vector3(10, 3, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_91"]
+albedo_color = Color(0.8, 1, 0.88, 1)
+emission_enabled = true
+emission = Color(0.8, 1, 0.88, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_92"]
+albedo_color = Color(0.8, 1, 0.88, 1)
+emission_enabled = true
+emission = Color(0.8, 1, 0.88, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_93"]
+albedo_color = Color(0.8, 1, 0.88, 1)
+emission_enabled = true
+emission = Color(0.8, 1, 0.88, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_94"]
+size = Vector3(1.2, 3, 1.6)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_95"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 18.00
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_99"]
+size = Vector3(0.6, 1.35, 0.65)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_100"]
+size = Vector3(0.6, 1.35, 0.65)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_101"]
+albedo_color = Color(1, 0.85, 0.6, 1)
+emission_enabled = true
+emission = Color(1, 0.85, 0.6, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_102"]
+albedo_color = Color(0.8, 0.9, 1, 1)
+emission_enabled = true
+emission = Color(0.8, 0.9, 1, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_103"]
+size = Vector3(2.4, 3, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_105"]
+albedo_color = Color(1, 0.75, 0.5, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.5, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_106"]
+albedo_color = Color(1, 0.75, 0.5, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.5, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_107"]
+albedo_color = Color(1, 0.75, 0.5, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.5, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_108"]
+albedo_color = Color(1, 0.75, 0.5, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.5, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_109"]
+albedo_color = Color(1, 0.75, 0.5, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.5, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_110"]
+albedo_color = Color(1, 0.75, 0.5, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.5, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_111"]
+albedo_color = Color(1, 0.75, 0.5, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.5, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_112"]
+albedo_color = Color(1, 0.75, 0.5, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.5, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_115"]
+albedo_color = Color(1, 0.12, 0.06, 1)
+emission_enabled = true
+emission = Color(1, 0.12, 0.06, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_116"]
+albedo_color = Color(1, 0.12, 0.06, 1)
+emission_enabled = true
+emission = Color(1, 0.12, 0.06, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_117"]
+albedo_color = Color(1, 0.12, 0.06, 1)
+emission_enabled = true
+emission = Color(1, 0.12, 0.06, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_118"]
+albedo_color = Color(1, 0.12, 0.06, 1)
+emission_enabled = true
+emission = Color(1, 0.12, 0.06, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_119"]
+size = Vector3(4, 3.5, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_120"]
+size = Vector3(4, 3.5, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_121"]
+size = Vector3(3.5, 3, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_122"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_123"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_124"]
+size = Vector3(0.7, 0.7, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_125"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_126"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_127"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_128"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_129"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_130"]
+size = Vector3(0.7, 0.7, 0.7)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_131"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 31.00
+radial_segments = 10
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_132"]
+albedo_color = Color(1, 0.05, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.02, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_133"]
+albedo_color = Color(1, 0.05, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.02, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_134"]
+albedo_color = Color(1, 0.05, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.02, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_135"]
+albedo_color = Color(1, 0.05, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.02, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_136"]
+albedo_color = Color(1, 0.05, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.02, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_137"]
+albedo_color = Color(1, 0.05, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.02, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_138"]
+albedo_color = Color(1, 0.05, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.02, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_139"]
+albedo_color = Color(1, 0.05, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.02, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_140"]
+albedo_color = Color(1, 0.05, 0.02, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.02, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_141"]
+size = Vector3(2.4, 2.8, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_142"]
+size = Vector3(2.4, 2.8, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_143"]
+albedo_color = Color(0.6, 1, 0.7, 1)
+emission_enabled = true
+emission = Color(0.6, 1, 0.7, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_144"]
+size = Vector3(2.4, 2.8, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_145"]
+size = Vector3(2.4, 2.8, 0.15)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_146"]
+size = Vector3(7.4, 3, 7.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_147"]
+size = Vector3(4, 3, 1.5)
+
+[node name="Chapter2" type="Node3D"]
+script = ExtResource("36_x")
+title = "CHAPTER 2
+LEVEL B"
+flashlight_drain_at_start = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_77")
+
+[node name="Level" type="Node3D" parent="."]
+
+[node name="Puzzles" type="Node3D" parent="."]
+
+[node name="Lore" type="Node3D" parent="."]
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="Sound" type="Node3D" parent="."]
+
+[node name="Triggers" type="Node3D" parent="."]
+
+[node name="Checkpoints" type="Node3D" parent="."]
+
+[node name="ItemSpawnPoints" type="Node3D" parent="."]
+
+[node name="Monsters" type="Node3D" parent="."]
+
+[node name="Rock" type="CSGCombiner3D" parent="Level" groups=["chapter2_nav"]]
+use_collision = true
+
+[node name="Mass" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2, -72)
+size = Vector3(64, 8, 158)
+material = ExtResource("52_x")
+use_collision = true
+
+[node name="CrashSite" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -4)
+size = Vector3(12, 3.5, 12)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="PlateDoorSlot" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -10.3)
+size = Vector3(2.4, 2.8, 1)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="CorridorC1" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -20)
+size = Vector3(2.4, 2.8, 20)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="LockerRoomDoor" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.2, -20)
+size = Vector3(1, 2.4, 1.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="LockerRoom" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, -20)
+size = Vector3(8, 3, 6)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="RadioRoom" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.75, -35)
+size = Vector3(12, 3.5, 10)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BoothPassage" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 1.2, -33)
+size = Vector3(1.2, 2.4, 1.2)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="SignalBooth" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 1.5, -35)
+size = Vector3(5, 3, 6)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="CorridorC2" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -46)
+size = Vector3(2, 2.8, 12)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="DormDoorSlot" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.525, -52)
+size = Vector3(2, 3.05, 0.6)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="DormHall" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -72.15)
+size = Vector3(4, 3.5, 39.7)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="TunnelT1" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -102)
+size = Vector3(2.4, 2.8, 20)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="TunnelT2" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1.4, -112)
+size = Vector3(32.4, 2.8, 2.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="TunnelT3" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 1.4, -124)
+size = Vector3(2.4, 2.8, 22)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="LiftRoom" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 1.75, -140)
+size = Vector3(8, 3.5, 10)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkW-58" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.05, 1.5, -58)
+size = Vector3(6.9, 3, 7)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkDoorW-58" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 1.2, -56)
+size = Vector3(0.8, 2.4, 1.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkE-58" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.05, 1.5, -58)
+size = Vector3(6.9, 3, 7)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkDoorE-58" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.2, -56)
+size = Vector3(0.8, 2.4, 1.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkW-67" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.05, 1.5, -67)
+size = Vector3(6.9, 3, 7)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkDoorW-67" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 1.2, -65)
+size = Vector3(0.8, 2.4, 1.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkE-67" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.05, 1.5, -67)
+size = Vector3(6.9, 3, 7)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkDoorE-67" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.2, -65)
+size = Vector3(0.8, 2.4, 1.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkW-76" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.05, 1.5, -76)
+size = Vector3(6.9, 3, 7)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkDoorW-76" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 1.2, -74)
+size = Vector3(0.8, 2.4, 1.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkE-76" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.05, 1.5, -76)
+size = Vector3(6.9, 3, 7)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkDoorE-76" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.2, -74)
+size = Vector3(0.8, 2.4, 1.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkW-85" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.05, 1.5, -85)
+size = Vector3(6.9, 3, 7)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkDoorW-85" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 1.2, -83)
+size = Vector3(0.8, 2.4, 1.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkE-85" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.05, 1.5, -85)
+size = Vector3(6.9, 3, 7)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="BunkDoorE-85" type="CSGBox3D" parent="Level/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.2, -83)
+size = Vector3(0.8, 2.4, 1.4)
+material = ExtResource("52_x")
+operation = 2
+
+[node name="NavProps" type="Node3D" parent="Level" groups=["chapter2_nav"]]
+
+[node name="Wreck0" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(0.93969, 0.0476, 0.33869, 0, 0.99027, -0.13917, -0.34202, 0.13078, 0.93055, 3, 0.15, -0.5)
+size = Vector3(3.8, 0.2, 5.8)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="Wreck1" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(0.93969, 0.0476, 0.33869, 0, 0.99027, -0.13917, -0.34202, 0.13078, 0.93055, 4.6, 1.4, -0.2)
+size = Vector3(0.12, 2.6, 5.6)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="Wreck2" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(0.93969, -0.03575, 0.34015, 0, 0.99452, 0.10453, -0.34202, -0.09822, 0.93454, 1.4, 1.2, -0.9)
+size = Vector3(0.12, 2.2, 5.6)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="Wreck3" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(0.90631, 0.15832, 0.39184, 0, 0.92718, -0.37461, -0.42262, 0.33951, 0.84031, 3, 2.5, 0.9)
+size = Vector3(3.6, 0.12, 4.2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="Wreck4" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(0.93969, 0.08852, 0.33037, 0, 0.96593, -0.25882, -0.34202, 0.24321, 0.90767, 2.5, 1.4, -3.2)
+size = Vector3(3.6, 2.6, 0.1)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="Cable0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 0.98481, 0.17365, 0, -0.17365, 0.98481, 2.2, 2.6, -0.5)
+size = Vector3(0.04, 1.8, 0.04)
+material = SubResource("StandardMaterial3D_66")
+
+[node name="Cable1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 2.6, -0.1)
+size = Vector3(0.04, 1.8, 0.04)
+material = SubResource("StandardMaterial3D_66")
+
+[node name="Cable2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 0.98481, -0.17365, 0, 0.17365, 0.98481, 4.1, 2.6, 0.3)
+size = Vector3(0.04, 1.8, 0.04)
+material = SubResource("StandardMaterial3D_66")
+
+[node name="WreckSign" type="Label3D" parent="Level"]
+transform = Transform3D(0.34202, 0, 0.93969, 0, 1, 0, -0.93969, 0, 0.34202, 1.25, 1.6, -2.4)
+pixel_size = 0.003
+text = "LEVEL B
+SEALED BY ORDER"
+font_size = 32
+modulate = Color(1, 0.4, 0.25, 1)
+outline_size = 4
+
+[node name="Rubble0" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.98008, 0, 0.19862, 0, 1, 0, -0.19862, 0, 0.98008, -4.6, 0.35, -8.4)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/Rubble0"]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/Rubble0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_80")
+
+[node name="Rubble1" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.71944, 0, 0.69456, 0, 1, 0, -0.69456, 0, 0.71944, -5.2, 0.45, 0.8)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/Rubble1"]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/Rubble1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_81")
+
+[node name="Rubble2" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.26663, 0, 0.9638, 0, 1, 0, -0.9638, 0, 0.26663, 5, 0.3, -8.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/Rubble2"]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/Rubble2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_82")
+
+[node name="car_battery_63" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 0.3, 0.4)
+script = ExtResource("29_x")
+item_id = "car_battery"
+
+[node name="car_battery_64" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.2, -1.5)
+script = ExtResource("29_x")
+item_id = "car_battery"
+
+[node name="battery_65" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6, 0.9, -8.4)
+script = ExtResource("29_x")
+item_id = "battery"
+
+[node name="PlateWest" parent="Puzzles" instance=ExtResource("72_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0, -7.6)
+
+[node name="PlateEast" parent="Puzzles" instance=ExtResource("72_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0, -7.6)
+
+[node name="PlateDoor" type="AnimatableBody3D" parent="Puzzles" node_paths=PackedStringArray("sound")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10.3)
+script = ExtResource("24_x")
+open_offset = Vector3(0, 2.95, 0)
+move_time = 1.2
+sound = NodePath("Sound")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Puzzles/PlateDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+shape = SubResource("BoxShape3D_83")
+
+[node name="Mesh" type="MeshInstance3D" parent="Puzzles/PlateDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+mesh = SubResource("BoxMesh_84")
+surface_material_override/0 = ExtResource("57_x")
+
+[node name="Sound" type="AudioStreamPlayer3D" parent="Puzzles/PlateDoor"]
+stream = ExtResource("46_x")
+pitch_scale = 0.7
+unit_size = 6.0
+
+[node name="PlateGate" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../PlateWest"), NodePath("../PlateEast")]
+outputs = [NodePath("../PlateDoor")]
+mode = 0
+latch = false
+solved_message = "The heavy door grinds up... it only stays open while BOTH plates are held down."
+
+[node name="PlateHint" type="Label3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, -9.75)
+pixel_size = 0.003
+text = "BLAST DOOR B-1
+BOTH PLATES MUST BE WEIGHTED"
+font_size = 32
+modulate = Color(0.9, 0.75, 0.4, 1)
+outline_size = 4
+
+[node name="CrashBulb1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 3.2, -4)
+light_color = Color(1, 0.8, 0.55, 1)
+light_energy = 0.7
+shadow_enabled = true
+omni_range = 8
+script = ExtResource("31_x")
+brokenness = 0.6
+fixture_material = SubResource("StandardMaterial3D_85")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/CrashBulb1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_85")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/CrashBulb1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/CrashBulb1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="CrashSpark" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 2.6, -1)
+light_color = Color(0.6, 0.75, 1, 1)
+light_energy = 0.5
+shadow_enabled = false
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.95
+fixture_material = SubResource("StandardMaterial3D_89")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/CrashSpark"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_89")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/CrashSpark"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/CrashSpark"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="CrashSting" type="Area3D" parent="Triggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -5)
+script = ExtResource("37_x")
+message = "The car fell the last few floors. Everyone's alive... somehow. The only way is the heavy door."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/CrashSting"]
+shape = SubResource("BoxShape3D_90")
+
+[node name="Sound" type="AudioStreamPlayer" parent="Triggers/CrashSting"]
+stream = ExtResource("47_x")
+volume_db = -4.0
+
+[node name="StaffLocker0" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.55, 0, -21.4)
+
+[node name="StaffLocker1" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.55, 0, -20.4)
+
+[node name="StaffLocker2" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.55, 0, -19.4)
+
+[node name="LockerSign" type="Label3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.3, -22.95)
+pixel_size = 0.003
+text = "STAFF LOCKERS
+IF YOU HEAR IT: HIDE. DON'T LET IT SEE YOU."
+font_size = 32
+modulate = Color(0.85, 0.8, 0.65, 1)
+outline_size = 4
+
+[node name="battery_89" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.2, -18)
+script = ExtResource("29_x")
+item_id = "battery"
+
+[node name="walkie_90" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.2, -22)
+script = ExtResource("29_x")
+item_id = "walkie"
+
+[node name="LockerBulb" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.8, -20)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.4
+shadow_enabled = true
+omni_range = 6
+script = ExtResource("31_x")
+brokenness = 0.5
+fixture_material = SubResource("StandardMaterial3D_91")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/LockerBulb"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_91")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/LockerBulb"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/LockerBulb"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="C1Bulb" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -16)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.35
+shadow_enabled = true
+omni_range = 6
+script = ExtResource("31_x")
+brokenness = 0.8
+fixture_material = SubResource("StandardMaterial3D_92")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/C1Bulb"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_92")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/C1Bulb"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/C1Bulb"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="C1Bulb2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -26)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.3
+shadow_enabled = true
+omni_range = 6
+script = ExtResource("31_x")
+brokenness = 0.4
+fixture_material = SubResource("StandardMaterial3D_93")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/C1Bulb2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_93")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/C1Bulb2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/C1Bulb2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="LockerTip" type="Area3D" parent="Triggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.5, -20)
+script = ExtResource("37_x")
+message = "Lockers: press E to hide inside, E to get out. It can't see or hear you in there... unless it SAW you get in."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/LockerTip"]
+shape = SubResource("BoxShape3D_94")
+
+[node name="Sound" type="AudioStreamPlayer" parent="Triggers/LockerTip"]
+stream = ExtResource("47_x")
+volume_db = -4.0
+
+[node name="C1Pipe" type="MeshInstance3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0.9, 2.55, -20)
+mesh = SubResource("CylinderMesh_95")
+surface_material_override/0 = ExtResource("57_x")
+
+[node name="RadioDesk" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.45, -39.35)
+size = Vector3(4, 0.9, 1.1)
+material = ExtResource("56_x")
+use_collision = true
+
+[node name="Radio" parent="Puzzles" instance=ExtResource("73_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.9, -39.35)
+rotate_every = 25.0
+
+[node name="RadioChart" type="Label3D" parent="Puzzles" node_paths=PackedStringArray("source")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.95, 1.7, -35)
+pixel_size = 0.004
+text = ""
+font_size = 40
+modulate = Color(1, 0.85, 0.4, 1)
+outline_size = 0
+script = ExtResource("22_x")
+source = NodePath("../Radio")
+template = "EMERGENCY FREQUENCY
+%s
+(it drifts: check often)"
+
+[node name="RadioGate" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../Radio")]
+outputs = []
+mode = 0
+latch = true
+solved_message = "Through the static, a voice: \"...dormitory door code... I repeat...\" Someone chalks the numbers on the wall."
+
+[node name="ChalkCode" type="Label3D" parent="Puzzles" node_paths=PackedStringArray("source", "hidden_until")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2.1, -39.95)
+pixel_size = 0.004
+text = ""
+font_size = 44
+modulate = Color(0.9, 0.9, 0.85, 1)
+outline_size = 0
+script = ExtResource("22_x")
+source = NodePath("../DormKeypad")
+hidden_until = NodePath("../Radio")
+hidden_text = "(only static...)"
+template = "DORMITORY: %s"
+
+[node name="RadioLog" parent="Lore" instance=ExtResource("16_x")]
+transform = Transform3D(0.98481, 0, -0.17365, 0, 1, 0, 0.17365, 0, 0.98481, -1.6, 0.9, -39.3)
+entry = ExtResource("96_x")
+
+[node name="MemoDesk" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.4, 0.425, -32.75)
+size = Vector3(1, 0.85, 2.5)
+material = ExtResource("56_x")
+use_collision = true
+
+[node name="DirectorMemo" parent="Lore" instance=ExtResource("16_x")]
+transform = Transform3D(0.17365, 0, 0.98481, 0, 1, 0, -0.98481, 0, 0.17365, -7.4, 0.85, -32.6)
+entry = ExtResource("97_x")
+
+[node name="RadioCabinet0" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -7.4, 0, -38.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/RadioCabinet0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("98_x")
+surface_material_override/0 = ExtResource("57_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/RadioCabinet0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.675, 0)
+shape = SubResource("BoxShape3D_99")
+
+[node name="RadioCabinet1" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -7.4, 0, -37.4)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/RadioCabinet1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("98_x")
+surface_material_override/0 = ExtResource("57_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/RadioCabinet1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.675, 0)
+shape = SubResource("BoxShape3D_100")
+
+[node name="RadioLamp" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2.9, -37)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.6
+shadow_enabled = true
+omni_range = 7
+script = ExtResource("31_x")
+brokenness = 0.25
+fixture_material = SubResource("StandardMaterial3D_101")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/RadioLamp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_101")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/RadioLamp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/RadioLamp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="BoothLamp" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 2.6, -35)
+light_color = Color(0.8, 0.9, 1, 1)
+light_energy = 0.4
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.5
+fixture_material = SubResource("StandardMaterial3D_102")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/BoothLamp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_102")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/BoothLamp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/BoothLamp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="battery_129" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.2, -31)
+script = ExtResource("29_x")
+item_id = "battery"
+
+[node name="flare_130" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0.2, -30.6)
+script = ExtResource("29_x")
+item_id = "flare"
+
+[node name="RadioRoom" type="Area3D" parent="Checkpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -27)
+script = ExtResource("35_x")
+order = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/RadioRoom"]
+shape = SubResource("BoxShape3D_103")
+
+[node name="Spawn1" type="Marker3D" parent="Checkpoints/RadioRoom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, -1.5, 0)
+
+[node name="Spawn2" type="Marker3D" parent="Checkpoints/RadioRoom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, -1.5, 0)
+
+[node name="Spawn3" type="Marker3D" parent="Checkpoints/RadioRoom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, -1.5, 1)
+
+[node name="Spawn4" type="Marker3D" parent="Checkpoints/RadioRoom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, -1.5, 1)
+
+[node name="DormKeypad" parent="Puzzles" instance=ExtResource("5_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.97, 1.4, -50.5)
+
+[node name="DormDoor" parent="Puzzles" instance=ExtResource("10_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -52)
+puzzle_controlled = true
+
+[node name="DormGate" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../DormKeypad")]
+outputs = [NodePath("../DormDoor")]
+mode = 0
+latch = true
+solved_message = "The dormitory door unlocks. It's very quiet in there."
+
+[node name="DormSign" type="Label3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, -51.65)
+pixel_size = 0.003
+text = "DORMITORY - PHASE TWO VOLUNTEERS"
+font_size = 32
+modulate = Color(0.85, 0.8, 0.6, 1)
+outline_size = 4
+
+[node name="GuardDesk" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.475, 0.45, -55)
+size = Vector3(0.95, 0.9, 1.2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="GuardLogbook" parent="Lore" instance=ExtResource("18_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.45, 0.9, -55)
+entry = ExtResource("104_x")
+
+[node name="BedW1_0_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.51, -59.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW1_0_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.635, -59.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedW1_0_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.61, -59.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW1_0_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.735, -59.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegW1_0_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -60.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW1_0_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -60.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW1_0_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -58.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW1_0_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -58.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedW1_1_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.51, -56.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW1_1_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.635, -56.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedW1_1_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.61, -56.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW1_1_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.735, -56.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegW1_1_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -57.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW1_1_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -57.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW1_1_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -55.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW1_1_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -55.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="LockerW1" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.25, 0, -60.9)
+
+[node name="RoomNoW1" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2.05, 2.5, -56)
+pixel_size = 0.003
+text = "ROOM W1"
+font_size = 32
+modulate = Color(0.7, 0.65, 0.55, 1)
+outline_size = 4
+
+[node name="RoomBulbW1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.6, -58)
+light_color = Color(1, 0.75, 0.5, 1)
+light_energy = 0.25
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.7
+fixture_material = SubResource("StandardMaterial3D_105")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/RoomBulbW1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_105")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/RoomBulbW1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/RoomBulbW1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="BedE1_0_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.51, -59.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE1_0_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.635, -59.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedE1_0_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.61, -59.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE1_0_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.735, -59.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegE1_0_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -60.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE1_0_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -60.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE1_0_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -58.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE1_0_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -58.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedE1_1_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.51, -56.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE1_1_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.635, -56.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedE1_1_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.61, -56.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE1_1_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.735, -56.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegE1_1_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -57.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE1_1_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -57.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE1_1_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -55.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE1_1_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -55.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="LockerE1" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.25, 0, -60.9)
+
+[node name="RoomNoE1" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.05, 2.5, -56)
+pixel_size = 0.003
+text = "ROOM E1"
+font_size = 32
+modulate = Color(0.7, 0.65, 0.55, 1)
+outline_size = 4
+
+[node name="RoomBulbE1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.6, -58)
+light_color = Color(1, 0.75, 0.5, 1)
+light_energy = 0.25
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.7
+fixture_material = SubResource("StandardMaterial3D_106")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/RoomBulbE1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_106")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/RoomBulbE1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/RoomBulbE1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="BedW2_0_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.51, -68.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW2_0_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.635, -68.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedW2_0_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.61, -68.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW2_0_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.735, -68.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegW2_0_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -69.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW2_0_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -69.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW2_0_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -67.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW2_0_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -67.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedW2_1_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.51, -65.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW2_1_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.635, -65.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedW2_1_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.61, -65.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW2_1_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.735, -65.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegW2_1_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -66.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW2_1_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -66.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW2_1_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -64.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW2_1_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -64.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="LockerW2" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.25, 0, -69.9)
+
+[node name="RoomNoW2" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2.05, 2.5, -65)
+pixel_size = 0.003
+text = "ROOM W2"
+font_size = 32
+modulate = Color(0.7, 0.65, 0.55, 1)
+outline_size = 4
+
+[node name="RoomBulbW2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.6, -67)
+light_color = Color(1, 0.75, 0.5, 1)
+light_energy = 0.25
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.95
+fixture_material = SubResource("StandardMaterial3D_107")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/RoomBulbW2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_107")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/RoomBulbW2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/RoomBulbW2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="BedE2_0_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.51, -68.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE2_0_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.635, -68.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedE2_0_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.61, -68.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE2_0_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.735, -68.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegE2_0_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -69.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE2_0_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -69.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE2_0_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -67.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE2_0_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -67.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedE2_1_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.51, -65.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE2_1_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.635, -65.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedE2_1_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.61, -65.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE2_1_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.735, -65.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegE2_1_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -66.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE2_1_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -66.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE2_1_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -64.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE2_1_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -64.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="LockerE2" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.25, 0, -69.9)
+
+[node name="RoomNoE2" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.05, 2.5, -65)
+pixel_size = 0.003
+text = "ROOM E2"
+font_size = 32
+modulate = Color(0.7, 0.65, 0.55, 1)
+outline_size = 4
+
+[node name="RoomBulbE2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.6, -67)
+light_color = Color(1, 0.75, 0.5, 1)
+light_energy = 0.25
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.95
+fixture_material = SubResource("StandardMaterial3D_108")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/RoomBulbE2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_108")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/RoomBulbE2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/RoomBulbE2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="BedW3_0_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.51, -77.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW3_0_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.635, -77.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedW3_0_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.61, -77.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW3_0_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.735, -77.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegW3_0_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -78.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW3_0_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -78.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW3_0_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -76.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW3_0_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -76.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedW3_1_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.51, -74.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW3_1_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.635, -74.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedW3_1_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.61, -74.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW3_1_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.735, -74.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegW3_1_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -75.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW3_1_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -75.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW3_1_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -73.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW3_1_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -73.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="LockerW3" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.25, 0, -78.9)
+
+[node name="RoomNoW3" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2.05, 2.5, -74)
+pixel_size = 0.003
+text = "ROOM W3"
+font_size = 32
+modulate = Color(0.7, 0.65, 0.55, 1)
+outline_size = 4
+
+[node name="RoomBulbW3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.6, -76)
+light_color = Color(1, 0.75, 0.5, 1)
+light_energy = 0.25
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.7
+fixture_material = SubResource("StandardMaterial3D_109")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/RoomBulbW3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_109")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/RoomBulbW3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/RoomBulbW3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="BedE3_0_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.51, -77.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE3_0_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.635, -77.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedE3_0_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.61, -77.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE3_0_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.735, -77.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegE3_0_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -78.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE3_0_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -78.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE3_0_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -76.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE3_0_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -76.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedE3_1_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.51, -74.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE3_1_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.635, -74.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedE3_1_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.61, -74.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE3_1_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.735, -74.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegE3_1_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -75.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE3_1_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -75.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE3_1_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -73.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE3_1_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -73.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="LockerE3" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.25, 0, -78.9)
+
+[node name="RoomNoE3" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.05, 2.5, -74)
+pixel_size = 0.003
+text = "ROOM E3"
+font_size = 32
+modulate = Color(0.7, 0.65, 0.55, 1)
+outline_size = 4
+
+[node name="RoomBulbE3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.6, -76)
+light_color = Color(1, 0.75, 0.5, 1)
+light_energy = 0.25
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.7
+fixture_material = SubResource("StandardMaterial3D_110")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/RoomBulbE3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_110")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/RoomBulbE3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/RoomBulbE3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="BedW4_0_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.51, -86.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW4_0_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.635, -86.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedW4_0_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.61, -86.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW4_0_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.735, -86.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegW4_0_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -87.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW4_0_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -87.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW4_0_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -85.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW4_0_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -85.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedW4_1_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.51, -83.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW4_1_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.635, -83.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedW4_1_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.61, -83.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressW4_1_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.735, -83.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegW4_1_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -84.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW4_1_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -84.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW4_1_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.85, -82.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegW4_1_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.45, 0.85, -82.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="LockerW4" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.25, 0, -87.9)
+
+[node name="RoomNoW4" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2.05, 2.5, -83)
+pixel_size = 0.003
+text = "ROOM W4"
+font_size = 32
+modulate = Color(0.7, 0.65, 0.55, 1)
+outline_size = 4
+
+[node name="RoomBulbW4" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.6, -85)
+light_color = Color(1, 0.75, 0.5, 1)
+light_energy = 0.25
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.95
+fixture_material = SubResource("StandardMaterial3D_111")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/RoomBulbW4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_111")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/RoomBulbW4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/RoomBulbW4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="BedE4_0_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.51, -86.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE4_0_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.635, -86.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedE4_0_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.61, -86.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE4_0_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.735, -86.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegE4_0_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -87.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE4_0_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -87.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE4_0_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -85.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE4_0_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -85.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedE4_1_0.45" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.51, -83.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE4_1_0.45" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.635, -83.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedE4_1_1.55" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.61, -83.6)
+size = Vector3(1, 0.12, 2)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="MattressE4_1_1.55" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 1.735, -83.6)
+size = Vector3(0.9, 0.13, 1.9)
+material = SubResource("StandardMaterial3D_67")
+
+[node name="BedLegE4_1_0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -84.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE4_1_1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -84.55)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE4_1_2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.45, 0.85, -82.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="BedLegE4_1_3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.85, -82.65)
+size = Vector3(0.06, 1.7, 0.06)
+material = ExtResource("57_x")
+
+[node name="LockerE4" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.25, 0, -87.9)
+
+[node name="RoomNoE4" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.05, 2.5, -83)
+pixel_size = 0.003
+text = "ROOM E4"
+font_size = 32
+modulate = Color(0.7, 0.65, 0.55, 1)
+outline_size = 4
+
+[node name="RoomBulbE4" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.6, -85)
+light_color = Color(1, 0.75, 0.5, 1)
+light_energy = 0.25
+shadow_enabled = true
+omni_range = 5
+script = ExtResource("31_x")
+brokenness = 0.95
+fixture_material = SubResource("StandardMaterial3D_112")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/RoomBulbE4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_112")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/RoomBulbE4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/RoomBulbE4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="Bunk14" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.4, 2, -65.6)
+pixel_size = 0.003
+text = "BUNK 14"
+font_size = 32
+modulate = Color(0.85, 0.8, 0.6, 1)
+outline_size = 4
+
+[node name="DogTag" parent="Lore" instance=ExtResource("18_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8.9, 0.6, -65.6)
+entry = ExtResource("113_x")
+
+[node name="IntakeLog" parent="Lore" instance=ExtResource("16_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8.9, 0.6, -59.6)
+entry = ExtResource("114_x")
+
+[node name="fuse_322" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 1.8, -68.6)
+script = ExtResource("29_x")
+item_id = "fuse"
+
+[node name="fuse_323" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.2, -73)
+script = ExtResource("29_x")
+item_id = "fuse"
+
+[node name="fuse_324" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.2, -87.6)
+script = ExtResource("29_x")
+item_id = "fuse"
+
+[node name="battery_325" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.9, 0.6, -56.6)
+script = ExtResource("29_x")
+item_id = "battery"
+
+[node name="flare_326" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9, 0.6, -74.6)
+script = ExtResource("29_x")
+item_id = "flare"
+
+[node name="medkit_327" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0.2, -87.5)
+script = ExtResource("29_x")
+item_id = "medkit"
+
+[node name="HallLockerW0" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.6, 0, -62.5)
+
+[node name="HallLockerE0" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.6, 0, -62.5)
+
+[node name="HallLockerW1" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.6, 0, -71.5)
+
+[node name="HallLockerE1" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.6, 0, -71.5)
+
+[node name="HallLockerW2" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.6, 0, -80.5)
+
+[node name="HallLockerE2" parent="Puzzles" instance=ExtResource("71_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.6, 0, -80.5)
+
+[node name="HallRed0" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, -56)
+light_color = Color(1, 0.12, 0.06, 1)
+light_energy = 0.5
+shadow_enabled = false
+omni_range = 7
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/HallRed0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_115")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/HallRed0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/HallRed0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="HallRed1" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, -66)
+light_color = Color(1, 0.12, 0.06, 1)
+light_energy = 0.5
+shadow_enabled = false
+omni_range = 7
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/HallRed1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_116")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/HallRed1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/HallRed1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="HallRed2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, -76)
+light_color = Color(1, 0.12, 0.06, 1)
+light_energy = 0.5
+shadow_enabled = false
+omni_range = 7
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/HallRed2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_117")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/HallRed2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/HallRed2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="HallRed3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, -86)
+light_color = Color(1, 0.12, 0.06, 1)
+light_energy = 0.5
+shadow_enabled = false
+omni_range = 7
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/HallRed3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_118")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/HallRed3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/HallRed3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="HallWriting" type="Label3D" parent="Level"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.98, 1.5, -75.5)
+pixel_size = 0.004
+text = "IT CHECKS THE LOCKERS
+IF IT SEES YOU GET IN"
+font_size = 40
+modulate = Color(0.55, 0.08, 0.06, 1)
+outline_size = 0
+
+[node name="BlastDoor" type="AnimatableBody3D" parent="Puzzles" node_paths=PackedStringArray("sound")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -92.15)
+script = ExtResource("24_x")
+open_offset = Vector3(0, 3.6, 0)
+move_time = 3.0
+sound = NodePath("Sound")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Puzzles/BlastDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+shape = SubResource("BoxShape3D_119")
+
+[node name="Mesh" type="MeshInstance3D" parent="Puzzles/BlastDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+mesh = SubResource("BoxMesh_120")
+surface_material_override/0 = ExtResource("57_x")
+
+[node name="Sound" type="AudioStreamPlayer3D" parent="Puzzles/BlastDoor"]
+stream = ExtResource("46_x")
+pitch_scale = 0.5
+unit_size = 10.0
+
+[node name="BlastSign" type="Label3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9, -91.9)
+pixel_size = 0.004
+text = "BLAST DOOR B-2
+POWER: 3 FUSES"
+font_size = 36
+modulate = Color(1, 0.5, 0.3, 1)
+outline_size = 4
+
+[node name="BlastFuseA" parent="Puzzles" instance=ExtResource("3_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.95, 1.3, -88.6)
+
+[node name="BlastFuseB" parent="Puzzles" instance=ExtResource("3_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.95, 1.3, -90.6)
+
+[node name="BlastFuseC" parent="Puzzles" instance=ExtResource("3_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.95, 1.3, -89.6)
+
+[node name="BlastGate" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../BlastFuseA"), NodePath("../BlastFuseB"), NodePath("../BlastFuseC")]
+outputs = [NodePath("../BlastDoor")]
+mode = 0
+latch = true
+solved_message = "The blast door grinds open... and every alarm in Level B goes off."
+
+[node name="Dormitory" type="Area3D" parent="Checkpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -54.5)
+script = ExtResource("35_x")
+order = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/Dormitory"]
+shape = SubResource("BoxShape3D_121")
+
+[node name="Spawn1" type="Marker3D" parent="Checkpoints/Dormitory"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -1.5, 0)
+
+[node name="Spawn2" type="Marker3D" parent="Checkpoints/Dormitory"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
+
+[node name="Spawn3" type="Marker3D" parent="Checkpoints/Dormitory"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -1.5, 0)
+
+[node name="Spawn4" type="Marker3D" parent="Checkpoints/Dormitory"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0.8)
+
+[node name="TunnelCrate0" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.91565, 0, 0.40198, 0, 1, 0, -0.40198, 0, 0.91565, 0.6, 0.4, -98)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate0"]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/TunnelCrate0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_122")
+
+[node name="TunnelCrate1" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.82447, 0, 0.5659, 0, 1, 0, -0.5659, 0, 0.82447, -0.6, 0.45, -104)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate1"]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/TunnelCrate1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_123")
+
+[node name="TunnelCrate2" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.82046, 0, 0.5717, 0, 1, 0, -0.5717, 0, 0.82046, 0.5, 0.35, -109)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate2"]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/TunnelCrate2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_124")
+
+[node name="TunnelCrate3" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.94965, 0, 0.31331, 0, 1, 0, -0.31331, 0, 0.94965, 8, 0.4, -111.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate3"]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/TunnelCrate3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_125")
+
+[node name="TunnelCrate4" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.83531, 0, 0.54978, 0, 1, 0, -0.54978, 0, 0.83531, 16, 0.45, -112.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate4"]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/TunnelCrate4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_126")
+
+[node name="TunnelCrate5" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.80634, 0, 0.59146, 0, 1, 0, -0.59146, 0, 0.80634, 23, 0.4, -111.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate5"]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/TunnelCrate5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_127")
+
+[node name="TunnelCrate6" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.98233, 0, 0.18714, 0, 1, 0, -0.18714, 0, 0.98233, 30.6, 0.4, -118)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate6"]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/TunnelCrate6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_128")
+
+[node name="TunnelCrate7" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.78878, 0, 0.61467, 0, 1, 0, -0.61467, 0, 0.78878, 29.4, 0.45, -125)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate7"]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/TunnelCrate7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_129")
+
+[node name="TunnelCrate8" type="StaticBody3D" parent="Level/NavProps"]
+transform = Transform3D(0.89814, 0, 0.4397, 0, 1, 0, -0.4397, 0, 0.89814, 30.5, 0.35, -131)
+
+[node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate8"]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
+mesh = ExtResource("79_x")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/NavProps/TunnelCrate8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_130")
+
+[node name="T1Pipe" type="MeshInstance3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1, 2.5, -102)
+mesh = SubResource("CylinderMesh_95")
+surface_material_override/0 = ExtResource("57_x")
+
+[node name="T2Pipe" type="MeshInstance3D" parent="Level"]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 15.5, 2.5, -111.1)
+mesh = SubResource("CylinderMesh_131")
+surface_material_override/0 = ExtResource("57_x")
+
+[node name="AlarmLights" type="Node3D" parent="Lights"]
+
+[node name="Alarm0" type="OmniLight3D" parent="Lights/AlarmLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -96)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.2
+shadow_enabled = false
+omni_range = 9
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_132")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="Alarm1" type="OmniLight3D" parent="Lights/AlarmLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -106)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.2
+shadow_enabled = false
+omni_range = 9
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_133")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="Alarm2" type="OmniLight3D" parent="Lights/AlarmLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.6, -112)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.2
+shadow_enabled = false
+omni_range = 9
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_134")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="Alarm3" type="OmniLight3D" parent="Lights/AlarmLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 2.6, -112)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.2
+shadow_enabled = false
+omni_range = 9
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_135")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="Alarm4" type="OmniLight3D" parent="Lights/AlarmLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 2.6, -112)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.2
+shadow_enabled = false
+omni_range = 9
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_136")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="Alarm5" type="OmniLight3D" parent="Lights/AlarmLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 2.6, -118)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.2
+shadow_enabled = false
+omni_range = 9
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_137")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="Alarm6" type="OmniLight3D" parent="Lights/AlarmLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 2.6, -128)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.2
+shadow_enabled = false
+omni_range = 9
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_138")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="Alarm7" type="OmniLight3D" parent="Lights/AlarmLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -70)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.2
+shadow_enabled = false
+omni_range = 9
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_139")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="Alarm8" type="OmniLight3D" parent="Lights/AlarmLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -82)
+light_color = Color(1, 0.05, 0.02, 1)
+light_energy = 1.2
+shadow_enabled = false
+omni_range = 9
+script = ExtResource("32_x")
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_140")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/AlarmLights/Alarm8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="ChaseBurst" type="Marker3D" parent="Monsters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -64)
+
+[node name="ChaseRestart" type="Marker3D" parent="Monsters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -93.5)
+
+[node name="ChaseTrigger" type="Area3D" parent="Triggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -100)
+script = ExtResource("37_x")
+message = ""
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/ChaseTrigger"]
+shape = SubResource("BoxShape3D_141")
+
+[node name="FinalChase" type="Node" parent="Triggers" node_paths=PackedStringArray("source", "trigger", "monster", "burst_point", "restart_point", "alarm_lights")]
+script = ExtResource("74_x")
+source = NodePath("../../Puzzles/BlastGate")
+trigger = NodePath("../ChaseTrigger")
+monster = NodePath("../../Monsters/LongMan")
+burst_point = NodePath("../../Monsters/ChaseBurst")
+restart_point = NodePath("../../Monsters/ChaseRestart")
+alarm_lights = NodePath("../../Lights/AlarmLights")
+
+[node name="BlastTunnel" type="Area3D" parent="Checkpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -96)
+script = ExtResource("35_x")
+order = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/BlastTunnel"]
+shape = SubResource("BoxShape3D_142")
+
+[node name="Spawn1" type="Marker3D" parent="Checkpoints/BlastTunnel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4, 0)
+
+[node name="Spawn2" type="Marker3D" parent="Checkpoints/BlastTunnel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4, -0.8)
+
+[node name="Spawn3" type="Marker3D" parent="Checkpoints/BlastTunnel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4, 0.8)
+
+[node name="Spawn4" type="Marker3D" parent="Checkpoints/BlastTunnel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4, -1.6)
+
+[node name="LiftFloor" type="CSGBox3D" parent="Level/NavProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.025, -140.4)
+size = Vector3(7.6, 0.05, 8.8)
+material = ExtResource("57_x")
+use_collision = true
+
+[node name="LiftCage0" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.075, 1.7, -140.5)
+size = Vector3(0.15, 3.4, 9)
+material = ExtResource("58_x")
+
+[node name="LiftCage1" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33.925, 1.7, -140.5)
+size = Vector3(0.15, 3.4, 9)
+material = ExtResource("58_x")
+
+[node name="LiftCage2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 1.7, -144.925)
+size = Vector3(8, 3.4, 0.15)
+material = ExtResource("58_x")
+
+[node name="LiftSign" type="Label3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 2.9, -144.8)
+pixel_size = 0.004
+text = "ESCAPE LIFT - STAFF ONLY"
+font_size = 40
+modulate = Color(0.5, 1, 0.6, 1)
+outline_size = 4
+
+[node name="LiftLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3.1, -140)
+light_color = Color(0.6, 1, 0.7, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 8
+
+[node name="Bulb" type="MeshInstance3D" parent="Lights/LiftLight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_86")
+surface_material_override/0 = SubResource("StandardMaterial3D_143")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Lights/LiftLight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_87")
+surface_material_override/0 = ExtResource("58_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Lights/LiftLight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_88")
+surface_material_override/0 = SubResource("StandardMaterial3D_66")
+cast_shadow = 0
+
+[node name="EscapeGate" type="AnimatableBody3D" parent="Puzzles" node_paths=PackedStringArray("sound")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 2.9, -135.1)
+script = ExtResource("24_x")
+open_offset = Vector3(0, -2.9, 0)
+move_time = 0.5
+sound = NodePath("Sound")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Puzzles/EscapeGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+shape = SubResource("BoxShape3D_144")
+
+[node name="Mesh" type="MeshInstance3D" parent="Puzzles/EscapeGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+mesh = SubResource("BoxMesh_145")
+surface_material_override/0 = ExtResource("58_x")
+
+[node name="Sound" type="AudioStreamPlayer3D" parent="Puzzles/EscapeGate"]
+stream = ExtResource("48_x")
+unit_size = 10.0
+
+[node name="EscapeZone" type="Area3D" parent="Triggers" node_paths=PackedStringArray("gate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 1.5, -140.8)
+script = ExtResource("75_x")
+gate = NodePath("../../Puzzles/EscapeGate")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/EscapeZone"]
+shape = SubResource("BoxShape3D_146")
+
+[node name="PatrolPoints" type="Node3D" parent="Monsters"]
+
+[node name="Point1" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -60)
+
+[node name="Point2" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -67)
+
+[node name="Point3" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -75)
+
+[node name="Point4" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -76)
+
+[node name="Point5" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -88)
+
+[node name="Point6" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -85)
+
+[node name="Point7" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -58)
+
+[node name="Point8" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -58)
+
+[node name="Point9" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -85)
+
+[node name="LongMan" parent="Monsters" node_paths=PackedStringArray("patrol_points") instance=ExtResource("15_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -89)
+patrol_points = NodePath("../PatrolPoints")
+start_delay = 99999.0
+
+[node name="DormChase" type="Area3D" parent="Triggers" node_paths=PackedStringArray("monster")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -58.5)
+script = ExtResource("38_x")
+monster = NodePath("../../Monsters/LongMan")
+message = "Something unfolds at the far end of the hall. FIND THE FUSES. HIDE."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/DormChase"]
+shape = SubResource("BoxShape3D_147")
+
+[node name="Sound" type="AudioStreamPlayer" parent="Triggers/DormChase"]
+stream = ExtResource("47_x")
+volume_db = -2.0
+
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_78")
+script = ExtResource("30_x")
+
+[node name="Drone" type="AudioStreamPlayer3D" parent="Sound"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -60)
+stream = ExtResource("43_x")
+volume_db = -4.0
+unit_size = 30.0
+autoplay = true
+
+[node name="LevelSounds" type="AudioStreamPlayer3D" parent="Sound"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -60)
+unit_size = 10.0
+script = ExtResource("33_x")
+sounds = Array[AudioStream]([ExtResource("44_x"), ExtResource("45_x"), ExtResource("46_x"), ExtResource("44_x")])
+area_size = Vector3(20, 2, 120)
+min_delay = 4.0
+max_delay = 9.0
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="ItemSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
+spawn_path = NodePath("../Items")
+script = ExtResource("28_x")
+spawn_points = NodePath("../ItemSpawnPoints")
+
+[node name="Players" type="Node3D" parent="."]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
+spawn_path = NodePath("../Players")
+script = ExtResource("27_x")
+spawn_points = NodePath("../SpawnPoints")
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="Spawn1" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0, -2)
+
+[node name="Spawn2" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
+
+[node name="Spawn3" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0, -0.5)
+
+[node name="Spawn4" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -0.5)
+
+[node name="TeamMonitor" type="Node" parent="."]
+script = ExtResource("34_x")

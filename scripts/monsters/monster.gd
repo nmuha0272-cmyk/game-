@@ -50,6 +50,7 @@ enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED, DIST
 
 ## Synced to everyone so they can play the right sounds.
 var state: State = State.DORMANT
+var _hide_spot: Node3D = null
 var target: Player = null
 
 var is_stunned: bool:
@@ -161,6 +162,19 @@ func _think_chase(delta: float) -> void:
 	if not is_instance_valid(target) or target.is_downed:
 		_start_search(_last_known_position)
 		return
+	# He saw them climb into a locker: straight there, and drag them out.
+	if _hide_spot and is_instance_valid(_hide_spot) and HidingSpot.is_hidden(target):
+		var front: Vector3 = _hide_spot.global_transform * Vector3(0, 0, 0.9)
+		nav.target_position = front
+		if global_position.distance_to(front) <= catch_distance + 0.6:
+			var caught: Player = _hide_spot.server_drag_out()
+			_hide_spot = null
+			if caught:
+				caught.downed.server_set_downed(true)
+				_jump_scare.rpc_id(caught.name.to_int())
+			_wander_off()
+		return
+	_hide_spot = null
 	if senses.can_see(target):
 		_unseen_time = 0.0
 		_last_known_position = target.global_position
@@ -219,6 +233,25 @@ func _start_patrol() -> void:
 	target = null
 	_patrol_index = _nearest_patrol_point()
 	nav.target_position = _patrol_position(_patrol_index)
+
+
+## Host only: chase this player right now, no staring (the final chase).
+func server_force_chase(player: Player) -> void:
+	if not multiplayer.is_server():
+		return
+	_ignore_players_time = 0.0
+	_start_stare(player)
+	_timer = stare_time
+
+
+## Host only: someone is climbing into a locker. If he can see them doing
+## it, he remembers which one.
+func server_saw_hide(player: Player, spot: Node3D) -> void:
+	if not multiplayer.is_server() or state in [State.DORMANT, State.STUNNED, State.DISTRACTED]:
+		return
+	if senses.can_see(player) and global_position.distance_to(player.global_position) < 14.0:
+		_hide_spot = spot
+		_chase(player)
 
 
 func _investigate(position_to_check: Vector3) -> void:

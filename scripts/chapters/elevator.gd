@@ -66,5 +66,5 @@ func _depart() -> void:
 	await fall.finished
 	get_tree().call_group("screen_fader", "fade_out", "CHAPTER 1 COMPLETE\n\nThe Surface", 0.1)
 	if multiplayer.is_server():
-		await get_tree().create_timer(6.0).timeout
-		GameState.server_complete_chapter("Chapter 1 complete. Chapter 2: Power Station is coming soon.")
+		await get_tree().create_timer(5.0).timeout
+		GameState.server_next_chapter("res://scenes/chapters/chapter_2/chapter_2.tscn")

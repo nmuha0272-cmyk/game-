@@ -80,7 +80,7 @@ func noise_radius(player: Player) -> float:
 
 ## Downed and carried players are left alone.
 func _is_target(player: Player) -> bool:
-	return is_instance_valid(player) and not player.is_downed
+	return is_instance_valid(player) and not player.is_downed and not HidingSpot.is_hidden(player)
 
 
 func _has_line_of_sight(point: Vector3, player: Player) -> bool:

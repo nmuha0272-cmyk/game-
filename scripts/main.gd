@@ -32,6 +32,7 @@ func _ready() -> void:
 	GameState.game_started.connect(_on_game_started)
 	GameState.restart_requested.connect(_restart_level)
 	GameState.chapter_completed.connect(_on_chapter_completed)
+	GameState.next_chapter_requested.connect(_on_next_chapter)
 
 
 func _on_host_requested() -> void:
@@ -101,6 +102,20 @@ func _restart_level() -> void:
 @rpc("authority", "call_local", "reliable")
 func _fade_in_everyone() -> void:
 	get_tree().call_group("screen_fader", "fade_in")
+
+
+## On to the next chapter: the host swaps the level (that reaches everyone).
+func _on_next_chapter(path: String) -> void:
+	if not multiplayer.is_server():
+		return
+	for child in level_root.get_children():
+		child.queue_free()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_current_level = path
+	level_root.add_child(load(path).instantiate())
+	await get_tree().create_timer(1.0).timeout
+	_fade_in_everyone.rpc()
 
 
 ## The chapter ended: everyone goes back to the lobby (Chapter 2 comes later).

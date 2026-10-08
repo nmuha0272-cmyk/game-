@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_son_dogtag"
+title = "Dog Tag, Bunk 14"
+type = 3
+text = "A dog tag hanging from the frame of bunk 14. The name is scratched off, but the number isn't: 14.\nScratched into the wall above the bunk, in tiny letters:\nELI - I'M SORRY I'M LATE. I'M STILL COMING HOME."
+owner_character = 0
+voice_line = ""

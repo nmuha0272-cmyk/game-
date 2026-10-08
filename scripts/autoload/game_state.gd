@@ -31,6 +31,8 @@ var journal: Array = []
 var flashlight_drain := true
 
 signal chapter_completed(text: String)
+## The next chapter starts (path of its level scene).
+signal next_chapter_requested(path: String)
 
 
 func _ready() -> void:
@@ -255,6 +257,20 @@ func _set_flashlight_drain(value: bool) -> void:
 
 
 ## Host only: the chapter is over (main.gd goes back to the lobby).
+## Host only: straight on to the next chapter (everyone keeps playing).
+func server_next_chapter(path: String) -> void:
+	if multiplayer.is_server():
+		_next_chapter.rpc(path)
+
+
+@rpc("authority", "call_local", "reliable")
+func _next_chapter(path: String) -> void:
+	checkpoint_name = ""
+	checkpoint_order = 0
+	checkpoint_inventories = {}
+	next_chapter_requested.emit(path)
+
+
 func server_complete_chapter(text: String) -> void:
 	if multiplayer.is_server():
 		_complete_chapter.rpc(text)

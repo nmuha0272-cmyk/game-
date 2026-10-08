@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_levelb_intake"
+title = "Level B Intake Log"
+type = 0
+text = "LEVEL B - INTAKE LOG, PROGRAM ZERO\nVolunteers moved down for 'Phase Two': 9, 11, 12, 14.\nNo. 14 asked twice for a letter to be posted to his son. Request denied.\nNo. 12 tried to climb the elevator cables. Recovered.\nStaff reminder: Level B residents are NOT to be told about Subject 7."
+owner_character = -1
+voice_line = ""
