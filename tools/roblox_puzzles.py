@@ -69,7 +69,8 @@ def build(part, frame, new_ref, kit):
     for k, z in enumerate((-9.52, -9.28)):
         out.append(part(f"TapeReel{k}", g((-8.29, 1.12, z)), W, g((0.03, 0.2, 0.2)), "#1a1816", False, 2))
     box("Monitor", (-9.22, 1.28, -12), (0.05, 0.55, 0.75), "#0a0d0a")
-    box("MonitorPower", (1.83, 1.3, -7.0), (0.06, 0.25, 0.12), "#7a2a20")
+    box("MonitorPower", (1.83, 1.3, -7.0), (0.06, 0.25, 0.12), "#4a4d48")
+    box("MonitorPowerToggle", (1.80, 1.33, -7.0), (0.04, 0.08, 0.04), "#c9a227", collide=False)
     box("OfficeKeypad", (1.83, 1.4, -8.0), (0.05, 0.3, 0.22), "#2f332c")
     box("FilingCabinet", (9.0, 0.75, -15.25), (0.9, 1.5, 0.6), "#525c4d")
     for k in range(3):

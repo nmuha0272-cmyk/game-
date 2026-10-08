@@ -237,7 +237,9 @@ BX("Shed",E,8.5,11.5,0,2.5,10.5,13.5,WOOD)
 BX("ShedRoof",E,8.3,11.7,2.5,2.65,10.3,13.7,METAL)
 for k,(bx,bz) in enumerate([(7.8,10.6),(7.3,11.5),(12.2,14.2)]):
     barrel(f"Barrel{k}",E,bx,0,bz)
-sc.node("RadarDome","CSGSphere3D","Station",transform=xform((-5,3.5,-9)),radius="2.2",radial_segments="16",rings="8",material=WHITE)
+# The radar dome sits on a short drum ON the roof (it used to poke through the office ceiling).
+B("RadarBase","Station",(-5,3.75,-9),(3.2,0.5,3.2),CONC,collide=False)
+sc.node("RadarDome","CSGSphere3D","Station",transform=xform((-5,5.6,-9)),radius="2.2",radial_segments="16",rings="8",material=WHITE)
 B("Mast","Station",(6,7.5,-4),(0.15,8,0.15),METAL,collide=False)
 for k,y in enumerate([5,8,10.5]):
     B(f"MastBar{k}","Station",(6,y,-4),(1.4-k*0.35,0.06,0.06),METAL,collide=False)
