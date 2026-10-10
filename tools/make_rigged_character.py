@@ -4,7 +4,7 @@ textures, no skeleton) into a game-ready one:
   2. a Mixamo-style skeleton (bones named mixamorig_Hips, ...) placed from
      the shape of the body (it must stand in a T-pose or A-pose, facing +Z),
   3. every vertex attached to its nearest bones, so the body can bend.
-    python3 tools/make_rigged_character.py input.glb output.glb [triangles] [--no-rig] [--joints=file.json]
+    python3 tools/make_rigged_character.py input.glb output.glb [triangles] [--no-rig] [--joints=file.json] [--tex=512]
 A model that isn't in a T-pose (like the hunched monster) gets its joints
 from a .json file instead (see tools/rigs/long_man.json).
 """
@@ -302,4 +302,7 @@ def main(src, dst, target=30000, rig=True, joints=None):
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     jf = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--joints=")), None)
+    tex = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--tex=")), None)
+    if tex:
+        TEXTURE_SIZE = int(tex)
     main(args[0], args[1], int(args[2]) if len(args) > 2 else 30000, "--no-rig" not in sys.argv, jf)

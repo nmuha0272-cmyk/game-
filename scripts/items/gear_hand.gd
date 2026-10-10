@@ -22,7 +22,5 @@ func _refresh() -> void:
 		child.queue_free()
 	if id.is_empty():
 		return
-	var mesh := Items.make_mesh(id)
-	# Same trick as the character's held item: the flashlight skips this layer.
-	mesh.layers = 2
-	add_child(mesh)
+	# Same trick as the character's held item: the flashlight skips layer 2.
+	add_child(Items.make_mesh(id, 2))
