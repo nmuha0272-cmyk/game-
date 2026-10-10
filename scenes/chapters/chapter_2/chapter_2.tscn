@@ -710,7 +710,7 @@ modulate = Color(1, 0.4, 0.25, 1)
 outline_size = 4
 
 [node name="Rubble0" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.98008, 0, 0.19862, 0, 1, 0, -0.19862, 0, 0.98008, -4.6, 0.35, -8.4)
+transform = Transform3D(0.14953, 0, 0.98876, 0, 1, 0, -0.98876, 0, 0.14953, -4.6, 0.35, -8.4)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/Rubble0"]
 transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
@@ -722,7 +722,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_80")
 
 [node name="Rubble1" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.71944, 0, 0.69456, 0, 1, 0, -0.69456, 0, 0.71944, -5.2, 0.45, 0.8)
+transform = Transform3D(0.69469, 0, 0.71931, 0, 1, 0, -0.71931, 0, 0.69469, -5.2, 0.45, 0.8)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/Rubble1"]
 transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
@@ -734,7 +734,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_81")
 
 [node name="Rubble2" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.26663, 0, 0.9638, 0, 1, 0, -0.9638, 0, 0.26663, 5, 0.3, -8.6)
+transform = Transform3D(0.58648, 0, 0.80997, 0, 1, 0, -0.80997, 0, 0.58648, 5, 0.3, -8.6)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/Rubble2"]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -2431,7 +2431,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -1.5, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0.8)
 
 [node name="TunnelCrate0" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.91565, 0, 0.40198, 0, 1, 0, -0.40198, 0, 0.91565, 0.6, 0.4, -98)
+transform = Transform3D(0.9952, 0, 0.09787, 0, 1, 0, -0.09787, 0, 0.9952, 0.6, 0.4, -98)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate0"]
 transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
@@ -2443,7 +2443,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_122")
 
 [node name="TunnelCrate1" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.82447, 0, 0.5659, 0, 1, 0, -0.5659, 0, 0.82447, -0.6, 0.45, -104)
+transform = Transform3D(0.86859, 0, 0.49553, 0, 1, 0, -0.49553, 0, 0.86859, -0.6, 0.45, -104)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate1"]
 transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
@@ -2455,7 +2455,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_123")
 
 [node name="TunnelCrate2" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.82046, 0, 0.5717, 0, 1, 0, -0.5717, 0, 0.82046, 0.5, 0.35, -109)
+transform = Transform3D(0.7747, 0, 0.63232, 0, 1, 0, -0.63232, 0, 0.7747, 0.5, 0.35, -109)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate2"]
 transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
@@ -2467,7 +2467,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_124")
 
 [node name="TunnelCrate3" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.94965, 0, 0.31331, 0, 1, 0, -0.31331, 0, 0.94965, 8, 0.4, -111.6)
+transform = Transform3D(0.99246, 0, 0.12257, 0, 1, 0, -0.12257, 0, 0.99246, 8, 0.4, -111.6)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate3"]
 transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
@@ -2479,7 +2479,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_125")
 
 [node name="TunnelCrate4" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.83531, 0, 0.54978, 0, 1, 0, -0.54978, 0, 0.83531, 16, 0.45, -112.5)
+transform = Transform3D(0.99994, 0, 0.01068, 0, 1, 0, -0.01068, 0, 0.99994, 16, 0.45, -112.5)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate4"]
 transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
@@ -2491,7 +2491,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_126")
 
 [node name="TunnelCrate5" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.80634, 0, 0.59146, 0, 1, 0, -0.59146, 0, 0.80634, 23, 0.4, -111.5)
+transform = Transform3D(0.9813, 0, 0.19248, 0, 1, 0, -0.19248, 0, 0.9813, 23, 0.4, -111.5)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate5"]
 transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
@@ -2503,7 +2503,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_127")
 
 [node name="TunnelCrate6" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.98233, 0, 0.18714, 0, 1, 0, -0.18714, 0, 0.98233, 30.6, 0.4, -118)
+transform = Transform3D(0.91601, 0, 0.40115, 0, 1, 0, -0.40115, 0, 0.91601, 30.6, 0.4, -118)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate6"]
 transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
@@ -2515,7 +2515,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_128")
 
 [node name="TunnelCrate7" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.78878, 0, 0.61467, 0, 1, 0, -0.61467, 0, 0.78878, 29.4, 0.45, -125)
+transform = Transform3D(0.96971, 0, 0.24427, 0, 1, 0, -0.24427, 0, 0.96971, 29.4, 0.45, -125)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate7"]
 transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
@@ -2527,7 +2527,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_129")
 
 [node name="TunnelCrate8" type="StaticBody3D" parent="Level/NavProps"]
-transform = Transform3D(0.89814, 0, 0.4397, 0, 1, 0, -0.4397, 0, 0.89814, 30.5, 0.35, -131)
+transform = Transform3D(0.91702, 0, 0.39883, 0, 1, 0, -0.39883, 0, 0.91702, 30.5, 0.35, -131)
 
 [node name="Mesh" type="MeshInstance3D" parent="Level/NavProps/TunnelCrate8"]
 transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
@@ -2797,6 +2797,10 @@ message = ""
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/ChaseTrigger"]
 shape = SubResource("BoxShape3D_141")
+
+[node name="Sound" type="AudioStreamPlayer" parent="Triggers/ChaseTrigger"]
+stream = ExtResource("47_x")
+volume_db = -2.0
 
 [node name="FinalChase" type="Node" parent="Triggers" node_paths=PackedStringArray("source", "trigger", "monster", "burst_point", "restart_point", "alarm_lights")]
 script = ExtResource("74_x")

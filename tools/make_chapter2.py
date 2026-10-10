@@ -307,6 +307,7 @@ for k,(x,z) in enumerate([(0,-96),(0,-106),(6,-112),(16,-112),(26,-112),(30,-118
 sc.node("ChaseBurst","Marker3D","Monsters",transform=xform((0,0,-64)))
 sc.node("ChaseRestart","Marker3D","Monsters",transform=xform((0,0,-93.5)))
 area("ChaseTrigger","Triggers",(0,1.4,-100),(2.4,2.8,2),S_STING,message=S(""))
+sc.node("Sound","AudioStreamPlayer","Triggers/ChaseTrigger",stream=ER(STING),volume_db="-2.0")
 sc.node("FinalChase","Node","Triggers",node_paths=["source","trigger","monster","burst_point","restart_point","alarm_lights"],script=ER(S_FINAL),
         source=NP("../../Puzzles/BlastGate"),trigger=NP("../ChaseTrigger"),monster=NP("../../Monsters/LongMan"),burst_point=NP("../../Monsters/ChaseBurst"),
         restart_point=NP("../../Monsters/ChaseRestart"),alarm_lights=NP("../../Lights/AlarmLights"))
