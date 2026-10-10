@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_son_photo"
+title = "Photo: Two Soldiers"
+type = 2
+text = "An old photo of two young men in uniform, arms around each other's shoulders, laughing.\nOne of them has Eli's eyes. The other is very tall for his age.\nOn the back, in pencil: ME AND TOMMY - FORT BLISS - BEFORE ALL THIS."
+owner_character = 0
+voice_line = ""

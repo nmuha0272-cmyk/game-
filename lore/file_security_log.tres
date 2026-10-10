@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_security_log"
+title = "Security Camera Log"
+type = 0
+text = "CAMERA LOG - TUNNEL JUNCTION\n02:14 - Volunteer 14 seen walking toward the cell. Talking to the door.\n02:16 - Subject 7 answers him. (No audio. Both are smiling.)\n02:31 - Guard Kowalski escorts V14 back to the dormitory.\n03:50 - Camera 4 knocked down from INSIDE the cell. Height of the hit: 11 ft."
+owner_character = -1
+voice_line = ""

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "tape_kowalski_warning"
+title = "Reel Tape: Kowalski's Warning"
+type = 1
+text = "KOWALSKI: This is Frank Kowalski. If you're hearing this, you got further than most.\nKOWALSKI: He hates light. A flash in the face makes him stop and scream. Use it.\nKOWALSKI: He hears radios. He hears doors. He hears you RUN.\nKOWALSKI: And if he sees you hide... he remembers where.\nKOWALSKI: I'm sorry. I sealed the doors. I'm going down to find the ones I left behind.\n(Static. A long, low breath that isn't Frank's.)"
+owner_character = 3
+voice_line = ""

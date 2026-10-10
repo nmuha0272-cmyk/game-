@@ -22,7 +22,8 @@ S_NAV=SC("res://scripts/environment/bake_navigation_on_start.gd"); S_FLICK=SC("r
 S_RAND=SC("res://scripts/environment/random_ambient_sounds.gd"); S_TEAM=SC("res://scripts/game/team_monitor.gd"); S_CP=SC("res://scripts/game/checkpoint.gd")
 S_CHAPTER=SC("res://scripts/chapters/chapter.gd"); S_STING=SC("res://scripts/chapters/stinger_trigger.gd"); S_CHASE=SC("res://scripts/chapters/chase_trigger.gd")
 S_DRAIN=SC("res://scripts/chapters/flashlight_drain_trigger.gd"); S_ELEV=SC("res://scripts/chapters/elevator.gd")
-S_CUT=SC("res://scripts/chapters/cutscene.gd")
+S_CUT=SC("res://scripts/chapters/cutscene.gd"); S_SCARE=SC("res://scripts/chapters/scare_event.gd")
+X.update(signal=P("res://scenes/puzzles/signal_light.tscn"), lmodel=P("res://assets/models/characters/long_man.glb"))
 def shots(*items):
     """Cutscene shots: (from, look_from, to, look_to, seconds, caption)."""
     out=[]
@@ -301,7 +302,8 @@ for k in range(28):
     mi(f"Paper{k}",St,(x,0.025,z),mesh("PlaneMesh",size="Vector2(0.21, 0.29)"),PAPER,yaw=random.uniform(0,360),shadow=False)
 # Boarded-up windows on the outside walls.
 for k,(x,z,yaw) in enumerate([(-7,0.17,0),(-4,0.17,0),(5,0.17,0),(8,0.17,0),(-10.17,-4,90),(-10.17,-12,90),(10.17,-4,90),(10.17,-12,90)]):
-    mi(f"Window{k}",St,(x,1.7,z),mesh("BoxMesh",size=v3(1.3,1.0,0.02)),BLACK,yaw=yaw,shadow=False)
+    if k != 6:  # window 6 (break room, east) is a real opening: something looks in
+        mi(f"Window{k}",St,(x,1.7,z),mesh("BoxMesh",size=v3(1.3,1.0,0.02)),BLACK,yaw=yaw,shadow=False)
     for j,roll in enumerate([25,-20]):
         mi(f"Board{k}_{j}",St,(x+(0.01 if yaw==0 else 0),1.7,z+(0.02 if yaw==0 else 0)),mesh("BoxMesh",size=v3(1.5,0.16,0.04)),DWOOD,yaw=yaw,roll=roll)
 inst("door","FrontDoor",St,(-0.5,0,0),0)
@@ -402,7 +404,7 @@ inst("lfile","StaffDirectory","Lore",(-5,0.9,-5),20,entry=ER(LORE("file_staff_di
 inst("lpersonal","EngineerNameplate","Lore",(-4,0.9,-11),0,entry=ER(LORE("personal_engineer_nameplate")))
 inst("lpaper","Corkboard","Lore",(9.84,1.6,-9),-90,entry=ER(LORE("file_corkboard")))
 item("reel_tape",(-6.5,0.2,-14.8),"tape_welcome"); item("walkie",(-2.5,0.2,-1.0)); item("walkie",(8.5,0.2,-7.0))
-item("keycard_green",(6,1.0,-10)); item("battery",(6,1.0,-3.2)); item("flare",(6.5,1.0,-2.8))
+item("battery",(6,1.0,-3.2)); item("flare",(6.5,1.0,-2.8))
 light("OfficeLight","Lights",(-5,3.0,-8),energy=0.9,rng=8,flicker=0.3); light("HallLight","Lights",(0.5,3.0,-8),energy=0.6,rng=6,flicker=0.6)
 light("DirectorLight","Lights",(6,3.0,-11),energy=0.8,rng=6,flicker=0.15); light("BreakLight","Lights",(6,3.0,-3),energy=0.6,rng=5,flicker=0.8)
 sc.node("Buzz","AudioStreamPlayer3D","Sound",transform=xform((0,2.8,-8)),stream=ER(BUZZ),volume_db="-20.0",unit_size="3.0",autoplay="true")
@@ -430,7 +432,7 @@ BX("Locker","Underground",4.0,4.5,-9,-7.0,-66.6,-65.6,METAL)
 inst("lpaper","CrayonDrawing","Lore",(4.53,-7.8,-66.1),90,entry=ER(LORE("personal_son_drawing")))
 chart="HEIGHT\n----- WK 31 ^^ past the ceiling ^^\n----- WK 23   9 ft 2\n----- WK 14   7 ft 11\n----- WK 6    6 ft 9\n----- WK 1    6 ft 0"
 label("HeightChart","Underground",(10.95,-7.5,-52),-90,chart,size=0.003,font=32,color=(0.8,0.1,0.08),outline="0")
-inst("door","TunnelDoor","Puzzles",(12,-9,-67),90)
+inst("door","TunnelDoor","Puzzles",(12,-9,-67),90,puzzle_controlled="true")
 light("TunnelLight1","Lights",(9,-6.6,-52),energy=0.6,rng=6,flicker=0.5); light("TunnelLight2","Lights",(9,-6.6,-66),energy=0.5,rng=6,flicker=0.9)
 light("JunctionRed","Lights",(9,-6.7,-40),color=(1,0.08,0.04),energy=1.2,rng=8,pulse=True)
 light("CellGlow","Lights",(9,-5.6,-81),color=(0.3,0.6,0.4),energy=0.15,rng=6,shadow=False)
@@ -602,6 +604,95 @@ light("ArchiveLight2","Lights",(75,-6.6,-94),energy=0.35,rng=5,flicker=0.6)
 stinger("ArchiveSting",(72,-7.5,-84),(4,3,2),msg="Rows and rows of files. Something is breathing between the shelves.")
 # The elevator key goes in a slot by the elevator.
 inst("fuse","ElevatorKeySlot","Puzzles",(33.5,-7.6,-59.05),180,item_id=S("keycard_red"),insert_time="1.0",engineer_insert_time="1.0",label_text=S("ELEVATOR KEY"))
+
+# ============================================================ MORE PUZZLES, SCARES, DETAIL AND STORY
+# --- Puzzle: the director's SAFE (the green keycard is inside). Its code is
+# scribbled on the break room wall, so someone reads it out.
+for n,(x1,x2,y1,y2,z1,z2) in {"SafeBack":(9.75,9.85,0,0.9,-8.7,-7.7),"SafeTop":(9.1,9.85,0.82,0.9,-8.7,-7.7),"SafeBottom":(9.1,9.85,0,0.08,-8.7,-7.7),
+                               "SafeSideN":(9.1,9.85,0,0.9,-8.7,-8.62),"SafeSideS":(9.1,9.85,0,0.9,-7.78,-7.7)}.items():
+    BX(n,St,x1,x2,y1,y2,z1,z2,METAL)
+sc.node("SafeDoor","AnimatableBody3D","Puzzles",node_paths=["sound"],transform=xform((9.1,0,-8.2)),script=ER(S_MOVER),open_offset=v3(0,0,0.9),move_time="0.7",sound=NP("Sound"))
+sfsh=sc.sub("BoxShape3D", size=v3(0.06,0.9,1.0)); sfm=sc.sub("BoxMesh", size=v3(0.06,0.9,1.0))
+sc.node("CollisionShape3D","CollisionShape3D","Puzzles/SafeDoor",transform=xform((0,0.45,0)),shape=SR(sfsh))
+sc.node("Mesh","MeshInstance3D","Puzzles/SafeDoor",transform=xform((0,0.45,0)),mesh=SR(sfm),**{"surface_material_override/0":METAL})
+sc.node("Sound","AudioStreamPlayer3D","Puzzles/SafeDoor",stream=ER(CREAK),pitch_scale="1.6",unit_size="4.0")
+item("keycard_green",(9.45,0.2,-8.2))
+inst("keypad","SafeKeypad","Puzzles",(9.83,1.25,-8.2),-90)
+gate("SafeGate","Puzzles",["../SafeKeypad"],["../SafeDoor"],msg="Click. The director's safe swings open.")
+label("SafeLabel",St,(9.83,1.62,-8.2),-90,"DIRECTOR'S SAFE",size=0.003,font=32,color=(0.8,0.75,0.6))
+sc.node("SafeScribble","Label3D","Puzzles",node_paths=["source"],transform=xform((7.6,1.25,-0.17),180),pixel_size="0.0035",text=S(""),font_size="40",
+        modulate=col(0.55,0.5,0.45),outline_size="0",script=ER(S_CODE),source=NP("../SafeKeypad"),template=S("dir. safe - %s\n(don't forget AGAIN)"))
+# --- Puzzle: the tunnel door code blinks in MORSE CODE from a signal lamp in
+# alcove A1. The translation chart hangs in the junction, far away: one
+# player watches the blinks, another reads the chart.
+inst("keypad","TunnelKeypad","Puzzles",(10.97,-7.6,-65.6),-90)
+gate("TunnelGate","Puzzles",["../TunnelKeypad"],["../TunnelDoor"],msg="The tunnel door unlocks.")
+inst("signal","SignalLamp","Puzzles",(13.9,-7.3,-60),-90,np=["source"],source=NP("../TunnelKeypad"))
+label("SignalSign",U,(13.95,-6.75,-60),-90,"DOOR E-2 CODE (SIGNAL)",size=0.003,font=32,color=(0.85,0.75,0.5))
+morse="MORSE CODE\n1  . - - - -     6  - . . . .\n2  . . - - -     7  - - . . .\n3  . . . - -     8  - - - . .\n4  . . . . -     9  - - - - .\n5  . . . . .     0  - - - - -\nshort = .   long = -"
+label("MorseChart",U,(13.95,-7.4,-38),-90,morse,size=0.0032,font=36,color=(0.9,0.85,0.7),outline="0")
+BX("MorseBoard",U,13.97,14.0,-8.35,-6.45,-39.6,-36.4,DWOOD,collide=False)
+label("TunnelDoorSign",U,(10.97,-7.0,-65.6),-90,"DOOR E-2: CODE FROM SIGNAL LAMP",size=0.0028,font=32,color=(0.85,0.7,0.5))
+# --- Scares
+# A real hole in the break room's east wall, behind the boards, so you can see out.
+sc.node("WindowHole","CSGBox3D","Station/EastWall",transform=xform((0,0.1,4)),size=v3(0.8,1.0,1.3),operation="2")
+sc.node("WindowFace",None,"Triggers",instance=X["lmodel"],transform=sxform((10.85,-1.0,-4),-90,(2.8,2.8,2.8)))
+area("FaceAtWindow","Triggers",(6,1.5,-2.6),(6,3,4),S_SCARE,np=["show_node"],show_node=NP("../WindowFace"),show_time="0.7",sound=ER(STING),
+     message=S("...was something looking in the window?"))
+area("TunnelBlackout","Triggers",(9,-7.65,-55),(4,2.7,2),S_SCARE,np=["lights"],lights="["+", ".join(NP("../../Lights/"+n) for n in ["TunnelLight1","TunnelLight2","JunctionRed"])+"]",
+     dark_time="4.0",sound=ER(A("monster_breath.wav")),sound_volume_db="4.0",message=S("The lights die. Something is breathing in the dark..."))
+area("RoofSteps","Triggers",(6,1.5,-11),(7,3,8),S_SCARE,steps_from=v3(3,3.7,-14),steps_to=v3(9,3.7,-8),steps="7",message=S("Heavy footsteps... on the roof?"))
+area("LabDoorSlam","Triggers",(52,-7.65,-66),(2,2.7,2),S_SCARE,np=["door"],door=NP("../../Puzzles/LabDoor"),sound=ER(SNAP),message=S("BANG. The door slams shut behind you."))
+# --- More story
+inst("lfile","WeatherMemo","Lore",(-4.4,0.9,-5),-15,entry=ER(LORE("file_weather_cover")))
+inst("lpersonal","TwoSoldiers","Lore",(6.3,0.9,-3.0),30,entry=ER(LORE("personal_son_photo")))
+inst("lfile","SecurityLog","Lore",(5.5,-8.4,-37.5),0,entry=ER(LORE("file_security_log")))
+BX("SecurityDesk",U,4.6,6.4,-9,-8.4,-38.1,-36.9,METAL)
+BX("SecurityMonitor",U,5.2,5.9,-8.4,-7.9,-38.05,-37.7,BLACK)
+BX("SecurityScreen",U,5.25,5.85,-8.35,-7.95,-37.7,-37.68,SCREEN,collide=False)
+item("reel_tape",(77.6,-8.0,-69.5),"tape_kowalski_warning")
+# --- Better looking rooms: the office
+for k in range(9):
+    x=-9.5+k*2.4
+    mi(f"CeilStripX{k}",St,(x,3.18,-8),mesh("BoxMesh",size=v3(0.04,0.02,16)),METAL,shadow=False)
+for k in range(7):
+    z=-15+k*2.4
+    mi(f"CeilStripZ{k}",St,(0,3.18,z),mesh("BoxMesh",size=v3(20,0.02,0.04)),METAL,shadow=False)
+POSTER=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.62,0.58,0.45), roughness="1.0"))
+for k,(pos,yaw,text) in enumerate([((-9.83,1.8,-6.5),90,"REPORT ALL\nWEATHER ANOMALIES\nTO THE DIRECTOR"),((-1.17,1.8,-13),-90,"LOOSE LIPS\nSINK SHIPS"),
+                                     ((9.83,1.9,-12.5),-90,"PROJECT IRONWOOD\nSTRONGER TOGETHER")]):
+    mi(f"PosterBack{k}",St,pos,mesh("BoxMesh",size=v3(0.9,1.1,0.01)),POSTER,yaw=yaw,shadow=False)
+    dx,dz=((0.01,0) if yaw==90 else (-0.01,0))
+    label(f"PosterText{k}",St,(pos[0]+dx,pos[1],pos[2]+dz),yaw,text,size=0.0028,font=32,color=(0.2,0.15,0.1),outline="0")
+mi("Clock",St,(-1.15,2.55,-6),mesh("CylinderMesh",top_radius="0.18",bottom_radius="0.18",height="0.04",radial_segments="16",rings="1"),WHITE,yaw=-90,pitch=90,shadow=False)
+label("ClockHands",St,(-1.12,2.55,-6),-90,"3:17",size=0.003,font=32,color=(0.1,0.1,0.1),outline="0")
+for k,y in enumerate([0.0,0.45]):
+    mi(f"Cooler{k}",St,(-9.5,y+0.4,-0.8),mesh("CylinderMesh",top_radius="0.17",bottom_radius="0.2",height="0.8" if k==0 else "0.5",radial_segments="12",rings="1"),WHITE if k==0 else SR(sc.sub("StandardMaterial3D", albedo_color=col(0.5,0.65,0.8,0.5), transparency="1", roughness="0.1")),shadow=False)
+for k,(x,z) in enumerate([(-8.6,-15.5),(-8.0,-15.5),(-8.3,-15.5)]):
+    crate(f"FileBox{k}",St,x,0.4*(k==2),z,0.4,random.uniform(-10,10))
+# --- Better looking rooms: the tunnels (puddles, cables, junction boxes, warning stripes)
+WATER=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.05,0.06,0.06,0.75), transparency="1", roughness="0.03", metallic_specular="1.0"))
+for k,(x,z,w,d) in enumerate([(8.5,-50,1.8,2.6),(9.6,-58,1.2,1.6),(9,-70.5,2.2,1.4),(20,-68.2,3,1.2),(36,-72,2.5,2),(55,-66,3,1.4),(70,-63,2,2.5)]):
+    mi(f"Puddle{k}",U,(x,-8.985,z),mesh("PlaneMesh",size=f"Vector2({w}, {d})"),WATER,yaw=random.uniform(0,40),shadow=False)
+for k,(x,z) in enumerate([(7.1,-48),(10.9,-54),(7.1,-63),(10.9,-72)]):
+    BX(f"JunctionBox{k}",U,x-0.08 if x<9 else x-0.02,x+0.02 if x<9 else x+0.08,-7.9,-7.4,z-0.25,z+0.25,METAL,collide=False)
+    mi(f"DropCable{k}",U,(x,-6.9,z),mesh("CylinderMesh",top_radius="0.015",bottom_radius="0.015",height="1.0",radial_segments="4",rings="1"),BLACK,shadow=False)
+STRIPE=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.85,0.7,0.1), roughness="0.8"))
+for k,(c,yaw) in enumerate([((11.0,-6.3,-68),90),((30.0,-6.0,-68),90),((47.0,-6.25,-66),90),((72,-6.25,-74.7),0)]):
+    for j in range(4):
+        off=(j-1.5)*0.45
+        pos=(c[0],c[1],c[2]+off) if yaw==90 else (c[0]+off,c[1],c[2])
+        mi(f"Stripe{k}_{j}",U,pos,mesh("BoxMesh",size=v3(0.22,0.12,0.03)),STRIPE,yaw=yaw,roll=35,shadow=False)
+# --- Better looking rooms: the lab
+for k,(x,z) in enumerate([(77.4,-62.2),(77.0,-69.3)]):
+    mi(f"Microscope{k}",U,(x,-7.9,z),mesh("CylinderMesh",top_radius="0.03",bottom_radius="0.08",height="0.4",radial_segments="8",rings="1"),BLACK,shadow=False)
+for k,z in enumerate([-60.5,-71.5]):
+    BX(f"LabTerminal{k}",U,79.5,79.9,-9,-7.4,z-0.4,z+0.4,METAL)
+    BX(f"LabTerminalScreen{k}",U,79.47,79.5,-8.0,-7.6,z-0.3,z+0.3,SCREEN,collide=False)
+for k,(x,z) in enumerate([(65.5,-68),(78.5,-73)]):
+    mi(f"IVPole{k}",U,(x,-8.05,z),mesh("CylinderMesh",top_radius="0.02",bottom_radius="0.02",height="1.9",radial_segments="6",rings="1"),METAL,shadow=False)
+    mi(f"IVBag{k}",U,(x+0.08,-7.25,z),mesh("BoxMesh",size=v3(0.04,0.22,0.14)),SR(sc.sub("StandardMaterial3D", albedo_color=col(0.8,0.75,0.6,0.6), transparency="1")),shadow=False)
+label("LabChart",U,(64.05,-7.2,-69),90,"GROWTH CHART - SUBJECT 7\nWK 1   6 ft 0\nWK 14  7 ft 11\nWK 31  ???",size=0.0032,font=36,color=(0.85,0.8,0.65))
 
 # ============================================================ CHECKPOINTS, SPAWNS, SYSTEMS
 checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_weather_cover"
+title = "Memo: The Weather Station Story"
+type = 0
+text = "TO ALL STAFF - CONFIDENTIAL\nIf anyone asks, this is the Blackwater Weather Station. We measure rain. We measure wind.\nWe do NOT talk about the people who come in on the night bus, and we do NOT talk about the lower levels.\nAnyone who forgets this will be transferred to Level B.\n- The Director"
+owner_character = -1
+voice_line = ""
