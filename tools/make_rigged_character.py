@@ -5,6 +5,7 @@ textures, no skeleton) into a game-ready one:
      the shape of the body (it must stand in a T-pose or A-pose, facing +Z),
   3. every vertex attached to its nearest bones, so the body can bend.
     python3 tools/make_rigged_character.py input.glb output.glb [triangles] [--no-rig] [--joints=file.json] [--tex=512]
+Keep the model exactly as it is (only add the skeleton): triangles 0 and --tex=0.
 A model that isn't in a T-pose (like the hunched monster) gets its joints
 from a .json file instead (see tools/rigs/long_man.json).
 """
@@ -110,6 +111,8 @@ def closest_on_triangles(p, a, b, c):
 
 
 def shrink_image(data, mime):
+    if TEXTURE_SIZE <= 0:
+        return data  # --tex=0: keep the original texture exactly as it is
     im = Image.open(io.BytesIO(data))
     im.thumbnail((TEXTURE_SIZE, TEXTURE_SIZE), Image.LANCZOS)
     out = io.BytesIO()
@@ -305,4 +308,5 @@ if __name__ == "__main__":
     tex = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--tex=")), None)
     if tex:
         TEXTURE_SIZE = int(tex)
-    main(args[0], args[1], int(args[2]) if len(args) > 2 else 30000, "--no-rig" not in sys.argv, jf)
+    target = int(args[2]) if len(args) > 2 else 30000
+    main(args[0], args[1], target if target > 0 else 10 ** 12, "--no-rig" not in sys.argv, jf)

@@ -26,7 +26,6 @@ const INFO := {
 	"keycard_red": {
 		"name": "Red Keycard", "shape": "box", "size": Vector3(0.085, 0.006, 0.055),
 		"color": Color(0.75, 0.1, 0.08), "model": "res://assets/models/props/card_a.glb", "model_turn": Vector3(-90, 0, 0),
-		"tint": Color(1.0, 0.25, 0.2),
 		"hint": "Opens every security door. Just carry it.",
 	},
 	"crowbar": {
