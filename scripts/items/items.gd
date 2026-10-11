@@ -65,6 +65,12 @@ const INFO := {
 		"hint": "Heavy! Powers a heavy machine. Only the Guard can carry it at full speed.",
 		"heavy": true,
 	},
+	"fuel_can": {
+		"name": "Fuel Can", "shape": "box", "size": Vector3(0.28, 0.36, 0.16),
+		"color": Color(0.7, 0.12, 0.08),
+		"hint": "Heavy! Fuel for the power room generator.",
+		"heavy": true,
+	},
 }
 
 ## How much slower everyone except the Guard moves while carrying something heavy.

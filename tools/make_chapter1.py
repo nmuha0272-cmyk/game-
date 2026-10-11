@@ -234,7 +234,11 @@ BX("SignBoard",E,-5.2,-2.8,1.2,2.2,22.1,22.14,RUST)
 label("SignText",E,(-4,1.7,22.16),0,"PROPERTY OF U.S. GOVERNMENT\nNO TRESPASSING\nBlackwater Weather Station",size=0.0035,font=36,color=(0.85,0.8,0.7),outline="0")
 inst("drag","DragMarks","Lore",(0.6,0,26.5),8)
 # yard
-BX("Shed",E,8.5,11.5,0,2.5,10.5,13.5,WOOD)
+for n,(x1,x2,z1,z2) in {"ShedN":(8.5,11.5,10.5,10.65),"ShedS":(8.5,11.5,13.35,13.5),"ShedE":(11.35,11.5,10.5,13.5),
+                        "ShedW1":(8.5,8.65,10.5,11.3),"ShedW2":(8.5,8.65,12.5,13.5)}.items():
+    BX(n,E,x1,x2,0,2.5,z1,z2,WOOD)
+BX("ShedLintel",E,8.5,8.65,2.05,2.5,11.3,12.5,WOOD)
+BX("ShedFloor",E,8.65,11.35,0,0.03,10.65,13.35,DWOOD,collide=False)
 BX("ShedRoof",E,8.3,11.7,2.5,2.65,10.3,13.7,METAL)
 for k,(bx,bz) in enumerate([(7.8,10.6),(7.3,11.5),(12.2,14.2)]):
     barrel(f"Barrel{k}",E,bx,0,bz)
@@ -605,6 +609,54 @@ stinger("ArchiveSting",(72,-7.5,-84),(4,3,2),msg="Rows and rows of files. Someth
 # The elevator key goes in a slot by the elevator.
 inst("fuse","ElevatorKeySlot","Puzzles",(33.5,-7.6,-59.05),180,item_id=S("keycard_red"),insert_time="1.0",engineer_insert_time="1.0",label_text=S("ELEVATOR KEY"))
 
+# ============================================================ THE POWER ROOM (before you meet the Long Man)
+# The tunnel is blocked by a security shutter with no power. The Power Room
+# (off the junction) needs a yellow keycard; the spare card and the fuel are
+# in the yard shed. Fuel the generator, start it, then set the breakers to
+# the wiring diagram in the director's office. Power comes back on, and the
+# shutter opens the way to the cell...
+S_BREAKER=SC("res://scripts/puzzles/breaker_panel.gd"); S_SWITCH=SC("res://scripts/puzzles/breaker_switch.gd")
+for n,c,sz in [("PowerDoorSlot",(14.3,-7.475,-42.5),(0.6,3.05,2)),("PowerHall",(15.5,-7.65,-42.5),(2.4,2.7,2)),("PowerRoom",(21,-7,-42),(9,4,10))]:
+    B(n,R,c,sz,ROCK,collide=False,op=2)
+inst("door","PowerRoomDoor","Puzzles",(14.3,-9,-41.5),90)
+sc.node("Lock","Node","Puzzles/PowerRoomDoor",script=ER(S_LOCK),keycard_color=S("yellow"))
+label("PowerSign",U,(13.97,-6.75,-42.5),-90,"POWER ROOM - YELLOW CARD ONLY",size=0.003,font=32,color=(0.95,0.8,0.3))
+label("PowerSpare",U,(13.97,-7.25,-42.5),-90,"spare card + generator fuel:\nYARD SHED",size=0.0028,font=32,color=(0.75,0.7,0.6),outline="0")
+item("keycard_yellow",(10.6,0.85,12.0)); item("fuel_can",(9.4,0.25,12.8))
+BX("ShedShelf",E,10.2,11.3,0.8,0.85,11.2,12.8,DWOOD)
+light("ShedBulb","Lights",(10,2.3,12),color=(1,0.8,0.5),energy=0.5,rng=4,flicker=0.7)
+stinger("ShedSting",(10,1.2,12),(2.6,2.4,2.6),msg="Something moves between the trees behind the shed. It's gone when you look.")
+# Inside: generator, fuel tank, breaker panel, and the manual.
+inst("gen","PowerGenerator","Puzzles",(19,-9,-46.2),0,np=["lamp"],lamp=NP("../PowerGenLamp"))
+light("PowerGenLamp","Puzzles",(19,-7,-45.2),color=(1,0.8,0.55),energy=0.8,rng=5)
+inst("fuse","FuelTank","Puzzles",(21.2,-7.8,-46.95),0,item_id=S("fuel_can"),insert_time="3.0",engineer_insert_time="2.0",label_text=S("FUEL"))
+gate("FuelGate","Puzzles",["../PowerGenerator","../FuelTank"],[],msg="The generator coughs... and starts. Now the breakers.")
+sc.node("BreakerPanel","Node3D","Puzzles",node_paths=["powered_by"],transform=xform((25.45,-7.5,-41),-90),script=ER(S_BREAKER),powered_by=NP("../FuelGate"))
+for k in range(5):
+    sc.node(f"Switch{k+1}","StaticBody3D","Puzzles/BreakerPanel",transform=xform(((k-2)*0.32,0,0)),script=ER(S_SWITCH),number=str(k+1))
+BX("BreakerBox",U,25.4,25.5,-8.05,-6.95,-41.9,-40.1,METAL,collide=False)
+label("BreakerSign",U,(25.42,-6.75,-41),-90,"MAIN BREAKERS - SET TO THE WIRING DIAGRAM\n(the diagram is in the Director's office)",size=0.0028,font=32,color=(0.9,0.8,0.5))
+sc.node("WiringDiagram","Label3D","Puzzles",node_paths=["source"],transform=xform((5,1.9,-6.32),180),pixel_size="0.0032",text=S(""),font_size="36",
+        modulate=col(0.3,0.35,0.6),outline_size="0",script=ER(S_CODE),source=NP("../BreakerPanel"),template=S("WIRING DIAGRAM - POWER ROOM BREAKERS\n%s"))
+mi("DiagramPaper",St,(5,1.9,-6.31),mesh("BoxMesh",size=v3(2.6,0.7,0.01)),PAPER,shadow=False)
+sc.node("PowerRoomLights","Node3D","Puzzles",script=ER(S_LIGHTS))
+light("PowerBright1","Puzzles/PowerRoomLights",(19,-5.6,-42),energy=1.0,rng=9)
+light("PowerBright2","Puzzles/PowerRoomLights",(9,-6.6,-48),energy=0.9,rng=8)
+light("PowerEmergency","Lights",(21,-5.8,-38),color=(1,0.1,0.05),energy=0.4,rng=8,pulse=True,shadow=False)
+inst("lfile","PowerManual","Lore",(17.4,-8.1,-38),20,entry=ER(LORE("file_power_manual")))
+BX("ManualDesk",U,16.9,18.1,-9,-8.1,-38.6,-37.4,DWOOD)
+for k,(x,z) in enumerate([(24.5,-37.8),(24.5,-38.8),(17.2,-46.4)]):
+    barrel(f"PowerBarrel{k}",NPROP,x,-9,z)
+pipe("PowerPipe1",(16.6,-5.5,-37.4),(25.4,-5.5,-37.4),0.12); pipe("PowerPipe2",(16.6,-5.8,-46.6),(25.4,-5.8,-46.6),0.08,BLACK)
+# The security shutter blocking the tunnel until the power is back.
+sc.node("TunnelShutter","AnimatableBody3D","Puzzles",node_paths=["sound"],transform=xform((9,-9,-50.5)),script=ER(S_MOVER),open_offset=v3(0,2.75,0),move_time="3.0",sound=NP("Sound"))
+shsh=sc.sub("BoxShape3D", size=v3(4,2.7,0.3)); shm=sc.sub("BoxMesh", size=v3(4,2.7,0.25))
+sc.node("CollisionShape3D","CollisionShape3D","Puzzles/TunnelShutter",transform=xform((0,1.35,0)),shape=SR(shsh))
+sc.node("Mesh","MeshInstance3D","Puzzles/TunnelShutter",transform=xform((0,1.35,0)),mesh=SR(shm),**{"surface_material_override/0":RUST})
+sc.node("Sound","AudioStreamPlayer3D","Puzzles/TunnelShutter",stream=ER(CREAK),pitch_scale="0.5",unit_size="12.0")
+label("ShutterSign",U,(9,-7.4,-50.3),0,"SECURITY SHUTTER\nNO POWER - RESTART IN THE POWER ROOM",size=0.0032,font=36,color=(1,0.55,0.3))
+gate("PowerRestored","Puzzles",["../FuelGate","../BreakerPanel"],["../PowerRoomLights","../TunnelShutter"],msg="POWER RESTORED. The lights hum on... and the security shutter rumbles open.")
+
 # ============================================================ MORE PUZZLES, SCARES, DETAIL AND STORY
 # --- Puzzle: the director's SAFE (the green keycard is inside). Its code is
 # scribbled on the break room wall, so someone reads it out.
@@ -697,8 +749,9 @@ label("LabChart",U,(64.05,-7.2,-69),90,"GROWTH CHART - SUBJECT 7\nWK 1   6 ft 0\
 # ============================================================ CHECKPOINTS, SPAWNS, SYSTEMS
 checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])
 checkpoint("Tunnels",2,(9,-7.5,-38),(8,3,4),[(-1.5,1),(0,1),(1.5,1),(0,2)])
-checkpoint("ElevatorApproach",3,(18,-7.5,-68),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
-checkpoint("LabWing",4,(55,-7.5,-66),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
+checkpoint("Shutter",3,(9,-7.5,-52.5),(4,3,2),[(-1,0),(0,0),(1,0),(0,0.8)])
+checkpoint("ElevatorApproach",4,(18,-7.5,-68),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
+checkpoint("LabWing",5,(55,-7.5,-66),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
 sc.node("Items","Node3D",".")
 sc.node("ItemSpawner","MultiplayerSpawner",".",node_paths=["spawn_points"],spawn_path=NP("../Items"),script=ER(S_ISPAWN),spawn_points=NP("../ItemSpawnPoints"))
 sc.node("Players","Node3D",".")
