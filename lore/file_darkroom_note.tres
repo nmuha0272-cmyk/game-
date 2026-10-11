@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_darkroom_note"
+title = "Darkroom: Note on the Door"
+type = 0
+text = "DARKROOM - KEEP THE DOOR SHUT\nNo power, no safelight, no pictures.\nThe last roll from the pump room camera is still on the table. Somebody develop it. The pump room code was in that shot."
+owner_character = -1
+voice_line = ""

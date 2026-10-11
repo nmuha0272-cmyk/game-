@@ -442,7 +442,7 @@ light("JunctionRed","Lights",(9,-6.7,-40),color=(1,0.08,0.04),energy=1.2,rng=8,p
 light("CellGlow","Lights",(9,-5.6,-81),color=(0.3,0.6,0.4),energy=0.15,rng=6,shadow=False)
 item("fuse",(20.5,-8.8,-72)); light("AlcoveA3Light","Lights",(20.5,-6.7,-71),energy=0.4,rng=4,flicker=0.7)
 light("ELight1","Lights",(16,-6.6,-68),energy=0.5,rng=6,flicker=0.5); light("ELight2","Lights",(25,-6.6,-68),energy=0.5,rng=6,flicker=0.7)
-inst("door","ElevatorRoomDoor","Puzzles",(30,-9,-67),90)
+inst("door","ElevatorRoomDoor","Puzzles",(30,-9,-67),90,puzzle_controlled="true")
 sc.node("Drone","AudioStreamPlayer3D","Sound",transform=xform((15,-7,-58)),stream=ER(DRONE),volume_db="-6.0",unit_size="25.0",autoplay="true")
 sc.node("TunnelSounds","AudioStreamPlayer3D","Sound",transform=xform((20,-7.5,-60)),unit_size="8.0",script=ER(S_RAND),
         sounds=f'Array[AudioStream]([{ER(DRIP)}, {ER(DRIP)}, {ER(CLANK)}, {ER(CREAK)}])',area_size=v3(40,2,50),min_delay="4.0",max_delay="10.0")
@@ -657,6 +657,70 @@ sc.node("Sound","AudioStreamPlayer3D","Puzzles/TunnelShutter",stream=ER(CREAK),p
 label("ShutterSign",U,(9,-7.4,-50.3),0,"SECURITY SHUTTER\nNO POWER - RESTART IN THE POWER ROOM",size=0.0032,font=36,color=(1,0.55,0.3))
 gate("PowerRestored","Puzzles",["../FuelGate","../BreakerPanel"],["../PowerRoomLights","../TunnelShutter"],msg="POWER RESTORED. The lights hum on... and the security shutter rumbles open.")
 
+# ============================================================ THE DARKROOM, THE FLOOD, AND THE VENTS
+# 1. DARKROOM (behind the Power Room): once the power is back, develop the
+#    last roll of film (the Journalist is fast, anyone else slow). The
+#    photo shows the PUMP ROOM door code.
+# 2. THE FLOOD: tunnel E is knee-deep in water. Wading is slow and every
+#    splash is loud (the Long Man hears it). The elevator room door is held
+#    shut by the water. In the pump room, set the 4 valves to the chart...
+#    which hangs in the Long Man's empty CELL. Then the water drains.
+# 3. THE VENTS: a long crawl-space from alcove A2 around the cell to the pump
+#    room. Too small for him: the escape route when he's after you.
+S_FLOOD=SC("res://scripts/environment/flood_water.gd")
+WATER=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.05,0.06,0.06,0.75), transparency="1", roughness="0.03", metallic_specular="1.0"))
+X.update(dark=P("res://scenes/puzzles/darkroom_table.tscn"))
+for n,c,sz in [("DarkroomDoorSlot",(21,-7.475,-36),(2,3.05,2.2)),("Darkroom",(21,-7.25,-32.5),(6,3.5,5)),
+               ("PumpDoorSlot",(20.5,-7.475,-73.5),(2,3.05,1.0)),("PumpRoom",(20.5,-7,-78),(8,4,8)),
+               ("VentEntry",(3.15,-8.375,-66),(1.7,1.25,1.0)),("VentNS",(2.9,-8.375,-77.5),(1.2,1.25,23)),
+               ("VentEW",(11.4,-8.375,-88.9),(18,1.25,1.2)),("VentUp",(20.5,-8.375,-85.5),(1.2,1.25,7.2))]:
+    B(n,R,c,sz,ROCK,collide=False,op=2)
+# --- the darkroom
+inst("door","DarkroomDoor","Puzzles",(20,-9,-36),0)
+label("DarkroomSign",U,(21,-6.75,-37.05),180,"DARKROOM",size=0.003,font=32,color=(1,0.4,0.3))
+inst("dark","DarkroomTable","Puzzles",(21,-9,-31),180,np=["requires"],requires=NP("../PowerRestored"),requires_message=S("No power for the safelight. Restore the power first."))
+light("Safelight","Lights",(21,-5.9,-32.5),color=(1,0.1,0.05),energy=0.6,rng=6,shadow=False)
+BX("PhotoBoard",U,18.03,18.08,-8.2,-6.8,-34,-31,DWOOD,collide=False)
+sc.node("PhotoCode","Label3D","Puzzles",node_paths=["source","hidden_until"],transform=xform((18.1,-7.5,-32.5),90),pixel_size="0.0032",text=S(""),font_size="40",
+        modulate=col(0.85,0.82,0.75),outline_size="0",script=ER(S_CODE),source=NP("../PumpKeypad"),hidden_until=NP("../DarkroomTable"),
+        hidden_text=S("(empty photo board)"),template=S("PHOTO: the pump room door.\nOn the keypad, in marker: %s"))
+inst("lpaper","DarkroomNote","Lore",(23.95,-7.6,-32.5),-90,entry=ER(LORE("file_darkroom_note")))
+for k,(x,z) in enumerate([(19,-34.5),(23,-34.5)]):
+    BX(f"DarkShelf{k}",U,x-0.6,x+0.6,-9,-7.4,z-0.25,z+0.25,DWOOD)
+# --- the flood: water in tunnel E and alcove A3 (it sinks away when drained)
+sc.node("FloodWater","AnimatableBody3D","Puzzles",transform=xform((0,0,0)),script=ER(S_MOVER),open_offset=v3(0,-0.9,0),move_time="6.0")
+for k,(c,size) in enumerate([((21,-8.3,-68),(17.4,2.0)),((20.5,-8.3,-71),(3.0,4.0))]):
+    mi(f"Water{k}","Puzzles/FloodWater",c,mesh("PlaneMesh",size=f"Vector2({size[0]}, {size[1]})"),WATER,shadow=False)
+p_=area("FloodArea","Triggers",(21,-8.5,-68),(17.4,1.2,2.0),S_FLOOD,np=["drained_by"],drained_by=NP("../../Puzzles/DrainGate"))
+fsh=sc.sub("BoxShape3D", size=v3(3.0,1.2,4.0))
+sc.node("Alcove","CollisionShape3D",p_,transform=xform((-0.5,0,-3)),shape=SR(fsh))
+label("FloodSign",U,(29.97,-7.2,-68),-90,"DOOR HELD SHUT BY WATER PRESSURE\nDRAIN TUNNEL E (PUMP ROOM)",size=0.003,font=32,color=(1,0.6,0.3))
+inst("lfile","FloodReport","Lore",(13,-8.4,-61.3),20,entry=ER(LORE("file_flood_report")))
+# --- the pump room
+inst("keypad","PumpKeypad","Puzzles",(21.97,-7.6,-72),-90)
+inst("door","PumpDoor","Puzzles",(19.5,-9,-73.5),0,puzzle_controlled="true")
+gate("PumpDoorGate","Puzzles",["../PumpKeypad"],["../PumpDoor"],msg="The pump room door unlocks.")
+label("PumpSign",U,(20.5,-6.6,-73.0),0,"PUMP ROOM",size=0.003,font=32,color=(0.85,0.75,0.5))
+sc.node("PumpPanel","Node3D","Puzzles",node_paths=["powered_by"],transform=xform((24.45,-7.5,-78),-90),script=ER(S_BREAKER),powered_by=NP("../PowerRestored"))
+for k in range(4):
+    sc.node(f"Switch{k+1}","StaticBody3D","Puzzles/PumpPanel",transform=xform(((k-1.5)*0.32,0,0)),script=ER(S_SWITCH),number=str(k+1))
+BX("PumpBox",U,24.4,24.5,-8.05,-6.95,-78.8,-77.2,METAL,collide=False)
+label("PumpPanelSign",U,(24.42,-6.75,-78),-90,"PUMP VALVES - SET TO THE DRAIN CHART\n(the chart is in CELL 7)",size=0.0028,font=32,color=(0.9,0.8,0.5))
+for k,(x,z) in enumerate([(18,-80.5),(18,-77),(22.5,-80.8)]):
+    sc.node(f"Pump{k}","CSGCylinder3D",U,transform=xform((x,-8.4,z)),radius="0.55",height="1.2",sides="14",use_collision="true",material=METAL)
+pipe("PumpPipe",(16.6,-6.2,-81.5),(24.4,-6.2,-81.5),0.14)
+light("PumpLight","Lights",(20.5,-5.7,-78),color=(0.8,0.9,1),energy=0.5,rng=7,flicker=0.6)
+sc.node("DrainChart","Label3D","Puzzles",node_paths=["source"],transform=xform((9,-7.4,-85.93)),pixel_size="0.0034",text=S(""),font_size="40",
+        modulate=col(0.75,0.7,0.6),outline_size="0",script=ER(S_CODE),source=NP("../PumpPanel"),template=S("DRAIN CHART - TUNNEL E PUMPS\n%s"))
+gate("DrainGate","Puzzles",["../PumpPanel"],["../FloodWater","../ElevatorRoomDoor"],msg="The pumps roar. The water drains away... and the elevator room door swings open.")
+# --- the vents: a long crawl from alcove A2, around the cell, to the pump room
+label("VentSign",U,(4.03,-8.1,-66),90,"VENT - CROUCH (C)",size=0.0025,font=32,color=(0.8,0.75,0.6))
+inst("lpersonal","VentNote","Lore",(2.9,-8.95,-80),0,entry=ER(LORE("personal_son_vent_note")))
+light("VentGlow","Lights",(11,-7.9,-88.9),color=(0.6,0.7,0.6),energy=0.2,rng=4,shadow=False,fixture=None)
+area("VentBangs","Triggers",(9,-8.4,-88.9),(2,1.2,1.2),S_SCARE,steps_from=v3(6,-6.3,-86),steps_to=v3(12,-6.3,-86),steps="6",sound=ER(CLANK),
+     message=S("Something is pounding on the other side of the vent wall... but it can't get in."))
+item("battery",(2.9,-8.9,-72)); item("flare",(16,-8.9,-88.9))
+
 # ============================================================ MORE PUZZLES, SCARES, DETAIL AND STORY
 # --- Puzzle: the director's SAFE (the green keycard is inside). Its code is
 # scribbled on the break room wall, so someone reads it out.
@@ -723,7 +787,6 @@ for k,y in enumerate([0.0,0.45]):
 for k,(x,z) in enumerate([(-8.6,-15.5),(-8.0,-15.5),(-8.3,-15.5)]):
     crate(f"FileBox{k}",St,x,0.4*(k==2),z,0.4,random.uniform(-10,10))
 # --- Better looking rooms: the tunnels (puddles, cables, junction boxes, warning stripes)
-WATER=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.05,0.06,0.06,0.75), transparency="1", roughness="0.03", metallic_specular="1.0"))
 for k,(x,z,w,d) in enumerate([(8.5,-50,1.8,2.6),(9.6,-58,1.2,1.6),(9,-70.5,2.2,1.4),(20,-68.2,3,1.2),(36,-72,2.5,2),(55,-66,3,1.4),(70,-63,2,2.5)]):
     mi(f"Puddle{k}",U,(x,-8.985,z),mesh("PlaneMesh",size=f"Vector2({w}, {d})"),WATER,yaw=random.uniform(0,40),shadow=False)
 for k,(x,z) in enumerate([(7.1,-48),(10.9,-54),(7.1,-63),(10.9,-72)]):
