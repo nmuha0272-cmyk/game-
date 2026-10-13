@@ -1,4 +1,4 @@
-[gd_scene load_steps=320 format=3]
+[gd_scene load_steps=322 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/puzzles/hold_switch.tscn" id="1_x"]
 [ext_resource type="PackedScene" path="res://scenes/puzzles/vent_cover.tscn" id="2_x"]
@@ -1085,6 +1085,12 @@ size = Vector3(4, 3, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_319"]
 size = Vector3(2, 3, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_320"]
+size = Vector3(1.9, 0.6, 0.575625)
+
+[sub_resource type="BoxMesh" id="BoxMesh_321"]
+size = Vector3(1.9, 0.6, 0.57125)
 
 [node name="Chapter1" type="Node3D"]
 script = ExtResource("36_x")
@@ -7036,3 +7042,163 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 46.5)
 
 [node name="TeamMonitor" type="Node" parent="."]
 script = ExtResource("34_x")
+
+[node name="StairAStep0" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -0.08, -15.8278)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep1" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -0.3575, -16.3834)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep2" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -0.635, -16.9391)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep3" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -0.9125, -17.4947)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep4" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -1.19, -18.0503)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep5" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -1.4675, -18.6059)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep6" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -1.745, -19.1616)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep7" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -2.0225, -19.7172)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep8" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -2.3, -20.2728)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep9" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -2.5775, -20.8284)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep10" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -2.855, -21.3841)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep11" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -3.1325, -21.9397)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep12" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -3.41, -22.4953)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep13" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -3.6875, -23.0509)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep14" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -3.965, -23.6066)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairAStep15" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -4.2425, -24.1622)
+mesh = SubResource("BoxMesh_320")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep0" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -4.04, -26.8656)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep1" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -4.385, -27.4169)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep2" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -4.73, -27.9681)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep3" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -5.075, -28.5194)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep4" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -5.42, -29.0706)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep5" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -5.765, -29.6219)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep6" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -6.11, -30.1731)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep7" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -6.455, -30.7244)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep8" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -6.8, -31.2756)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep9" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.145, -31.8269)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep10" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.49, -32.3781)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep11" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.835, -32.9294)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep12" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -8.18, -33.4806)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep13" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -8.525, -34.0319)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep14" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -8.87, -34.5831)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")
+
+[node name="StairBStep15" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -9.215, -35.1344)
+mesh = SubResource("BoxMesh_321")
+surface_material_override/0 = ExtResource("55_x")

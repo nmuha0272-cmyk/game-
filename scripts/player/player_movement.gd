@@ -9,6 +9,8 @@ extends CharacterBody3D
 @export var crouch_speed := 1.8
 ## How quickly the player speeds up and slows down. Higher = snappier.
 @export var acceleration := 10.0
+## How hard a jump pushes you up. Higher = you jump higher.
+@export var jump_velocity := 4.5
 
 @export_group("Crouch")
 @export var stand_height := 1.8
@@ -94,6 +96,10 @@ func _physics_process(delta: float) -> void:
 
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
+	elif Input.is_action_just_pressed("jump") and not is_crouching:
+		# Jump off the floor. The gravity above is skipped on the floor, so we
+		# replace the (near-zero) downward speed with an upward push.
+		velocity.y = jump_velocity
 
 	_update_crouch(delta)
 

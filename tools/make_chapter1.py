@@ -885,5 +885,19 @@ sc.node("SpawnPoints","Node3D",".")
 for k,(x,z) in enumerate([(-1.5,45),(1.5,45),(-1.5,46.5),(1.5,46.5)]):
     sc.node(f"Spawn{k+1}","Marker3D","SpawnPoints",transform=xform((x,0,z),0))
 sc.node("TeamMonitor","Node",".",script=ER(S_TEAM))
+
+# Real steps down the hidden stairwell. The carved ramp is still what you walk
+# on (so movement and the Long Man's navigation stay smooth); these boxes just
+# sit on it so it looks like a proper staircase.
+def stairs(name,z_hi,y_hi,z_lo,y_lo,steps=16,width=1.9,thick=0.6):
+    for i in range(steps):
+        t0=i/float(steps); t1=(i+1)/float(steps)
+        z0=z_hi+(z_lo-z_hi)*t0; z1=z_hi+(z_lo-z_hi)*t1
+        top=y_hi+(y_lo-y_hi)*t0
+        mi(f"{name}Step{i}","Underground",(9,top-thick/2,(z0+z1)/2),
+           mesh("BoxMesh",size=v3(width,thick,abs(z1-z0)+0.02)),ROCK)
+stairs("StairA",-15.55,0.22,-24.44,-4.22)
+stairs("StairB",-26.59,-3.74,-35.41,-9.26)
+
 sc.write("scenes/chapters/chapter_1/chapter_1.tscn")
 print("chapter 1 written,", len(sc.nodes), "nodes")

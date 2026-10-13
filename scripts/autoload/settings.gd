@@ -16,6 +16,26 @@ var brightness := 1.0
 var graphics := 2
 const GRAPHICS_NAMES := ["Low", "Medium", "High"]
 
+## The controls the player is allowed to change, and the name shown in the menu.
+const REMAP_ACTIONS := [
+	["move_forward", "Move forward"],
+	["move_back", "Move backward"],
+	["move_left", "Move left"],
+	["move_right", "Move right"],
+	["jump", "Jump"],
+	["sprint", "Sprint"],
+	["crouch", "Crouch"],
+	["interact", "Interact / use"],
+	["flashlight", "Flashlight"],
+	["ability", "Character ability"],
+	["drop_item", "Drop item"],
+	["journal", "Journal"],
+	["ping", "Ping (mark a spot)"],
+]
+## Changes the player has made: action name -> key code. Key codes are positive,
+## mouse buttons are stored as the negative button number. Empty = the defaults.
+var _controls: Dictionary = {}
+
 
 func _ready() -> void:
 	_load()
@@ -107,6 +127,12 @@ func _load() -> void:
 	mouse_sensitivity = config.get_value("settings", "mouse_sensitivity", mouse_sensitivity)
 	brightness = config.get_value("settings", "brightness", brightness)
 	graphics = config.get_value("settings", "graphics", graphics)
+	_controls.clear()
+	for pair in REMAP_ACTIONS:
+		var action: String = pair[0]
+		if config.has_section_key("input", action):
+			_controls[action] = int(config.get_value("input", action))
+	_apply_controls()
 
 
 func _save() -> void:
@@ -115,4 +141,86 @@ func _save() -> void:
 	config.set_value("settings", "mouse_sensitivity", mouse_sensitivity)
 	config.set_value("settings", "brightness", brightness)
 	config.set_value("settings", "graphics", graphics)
+	for action in _controls:
+		config.set_value("input", action, _controls[action])
 	config.save(SAVE_PATH)
+
+
+## The key or mouse button currently bound to an action, as display text.
+func action_key_text(action: String) -> String:
+	var events := InputMap.action_get_events(action)
+	if events.is_empty():
+		return "Unbound"
+	return _event_text(events[0])
+
+
+## Binds one action to a key or mouse button and remembers it for next time.
+func set_action_key(action: String, event: InputEvent) -> void:
+	if not InputMap.has_action(action):
+		return
+	var cleaned := _clean_event(event)
+	if cleaned == null:
+		return
+	InputMap.action_erase_events(action)
+	InputMap.action_add_event(action, cleaned)
+	_controls[action] = _event_code(cleaned)
+	_save()
+
+
+## Puts every control back to the keys the game ships with.
+func reset_controls() -> void:
+	_controls.clear()
+	InputMap.load_from_project_settings()
+	_save()
+
+
+func _apply_controls() -> void:
+	for action in _controls:
+		if not InputMap.has_action(action):
+			continue
+		InputMap.action_erase_events(action)
+		var event := _make_event(_controls[action])
+		if event != null:
+			InputMap.action_add_event(action, event)
+
+
+func _event_text(event: InputEvent) -> String:
+	if event is InputEventKey:
+		var key := event as InputEventKey
+		var code := key.physical_keycode if key.physical_keycode != 0 else key.keycode
+		return OS.get_keycode_string(code)
+	if event is InputEventMouseButton:
+		var names := ["", "Left click", "Right click", "Middle click"]
+		if event.button_index <= 3:
+			return names[event.button_index]
+		return "Mouse %d" % event.button_index
+	return "?"
+
+
+func _clean_event(event: InputEvent) -> InputEvent:
+	var code := _event_code(event)
+	if code == 0:
+		return null
+	return _make_event(code)
+
+
+func _event_code(event: InputEvent) -> int:
+	if event is InputEventKey:
+		var key := event as InputEventKey
+		var code := key.physical_keycode if key.physical_keycode != 0 else key.keycode
+		return int(code)
+	if event is InputEventMouseButton:
+		return -int(event.button_index)
+	return 0
+
+
+func _make_event(code: int) -> InputEvent:
+	if code == 0:
+		return null
+	if code < 0:
+		var mouse := InputEventMouseButton.new()
+		mouse.button_index = -code
+		return mouse
+	var key := InputEventKey.new()
+	key.physical_keycode = code
+	return key
