@@ -8,6 +8,9 @@ extends Label3D
 @export var hidden_until: Node
 ## What it shows while hidden.
 @export var hidden_text := "???"
+## Show only one digit of the code (0 = the first), or -1 for all of it.
+## Spread a code over several notes, one digit each.
+@export var digit := -1
 
 
 func _ready() -> void:
@@ -19,6 +22,8 @@ func _ready() -> void:
 
 func _refresh() -> void:
 	var value: String = source.get_display_code()
+	if digit >= 0:
+		value = value.substr(digit, 1)
 	# Solo test mode: the code shows straight away, no tape/power hunt.
 	if hidden_until and not hidden_until.is_active and not GameState.is_solo():
 		value = hidden_text

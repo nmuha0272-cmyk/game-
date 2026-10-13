@@ -5,6 +5,10 @@ extends Area3D
 ## Monsters don't care about the gas.
 
 @export var seconds_until_downed := 4.0
+## When this turns active (the fans run), the gas is gone for good.
+@export var cleared_by: Node
+## The visible cloud (hidden when cleared).
+@export var cloud: Node3D
 
 ## How long each player has been breathing the gas (network ID -> seconds).
 var _exposure := {}
@@ -12,6 +16,14 @@ var _exposure := {}
 
 func _ready() -> void:
 	add_to_group("toxic_gas")
+	if cleared_by and cleared_by.has_signal("active_changed"):
+		cleared_by.active_changed.connect(func(active: bool) -> void:
+			if active:
+				_exposure.clear()
+				set_physics_process(false)
+				monitoring = false
+				if cloud:
+					cloud.visible = false)
 
 
 func _physics_process(delta: float) -> void:

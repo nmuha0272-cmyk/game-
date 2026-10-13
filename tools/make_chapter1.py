@@ -184,7 +184,7 @@ for n,(x1,x2,z1,z2) in {"OuterW":(-150,-30,-150,160),"OuterE":(95,180,-150,160),
 random.seed(12)
 def blocked(x,z):
     if -22.8<x<22.8 and -0.8<z<50.8: return True        # the play area
-    if -11.5<x<11.5 and -24<z<1: return True            # the station
+    if -19.5<x<11.5 and -24<z<1: return True            # the station (and infirmary)
     if -30<x<95 and -100<z<60: return False              # on the big ground block
     return abs(x)>140 or z<-140 or z>150
 trees=[]
@@ -550,7 +550,7 @@ for n,c,sz in [("DoorSlotD4",(47,-7.475,-66),(0.6,3.05,2)),("TunnelLab",(55.5,-7
                ("SpecimenLab",(72,-7,-66),(16,4,16)),("ArchiveSlot",(72,-7.475,-75),(2,3.05,0.6)),
                ("ArchiveHall",(72,-7.65,-79.5),(2,2.7,9)),("Archive",(72,-7,-90),(14,4,12))]:
     B(n,R,c,sz,ROCK,collide=False,op=2)
-inst("door","LabDoor","Puzzles",(47,-9,-65),90)
+inst("door","LabDoor","Puzzles",(47,-9,-65),90,puzzle_controlled="true")
 label("LabSign",U,(46.1,-6.9,-66),90,"LAB WING  ->\nAUTHORISED STAFF ONLY",size=0.003,font=32,color=(0.85,0.8,0.6))
 light("LabHall1","Lights",(51,-6.6,-66),energy=0.35,rng=5,flicker=0.85)
 light("LabHall2","Lights",(59,-6.6,-66),energy=0.3,rng=5,flicker=0.95)
@@ -721,6 +721,68 @@ area("VentBangs","Triggers",(9,-8.4,-88.9),(2,1.2,1.2),S_SCARE,steps_from=v3(6,-
      message=S("Something is pounding on the other side of the vent wall... but it can't get in."))
 item("battery",(2.9,-8.9,-72)); item("flare",(16,-8.9,-88.9))
 
+# ============================================================ THE INFIRMARY, THE AIRLOCK, AND THE GAS
+# 1. INFIRMARY (a wing on the west side of the office): the medicine
+#    cabinet's code is split over the 3 bed tags (one digit each). Inside:
+#    2 gas masks and a med kit.
+# 2. AIRLOCK (before the Lab Wing): two doors never open at once; press a
+#    button and wait out the decontamination cycle.
+# 3. GAS (the Lab Wing hall): poison gas. Someone in a gas mask runs through
+#    and pulls the ventilation lever at the far end. Then it clears.
+S_GAS=SC("res://scripts/environment/toxic_gas.gd"); S_AIRLOCK=SC("res://scripts/puzzles/airlock.gd")
+# --- the infirmary wing (x -18..-10, z -12..-2)
+sc.node("InfirmaryDoorHole","CSGBox3D","Station/WestWall",transform=xform((0,-0.4,2)),size=v3(0.6,2.4,2.0),operation="2")
+for n,(x1,x2,z1,z2) in {"InfN":(-18.3,-10,-12.3,-12),"InfS":(-18.3,-10,-2,-1.7),"InfW":(-18.3,-18,-12.3,-1.7)}.items():
+    BX(n,St,x1,x2,0,H,z1,z2,WALL)
+BX("InfRoof",St,-18.3,-9.9,H,H+0.3,-12.3,-1.7,CONC)
+BX("InfFloor",St,-18,-10,0,0.02,-12,-2,LINO,collide=False)
+inst("door","InfirmaryDoor",St,(-10,0,-5),90)
+label("InfSign",St,(-9.83,2.55,-6),90,"INFIRMARY",size=0.003,font=32,color=(0.85,0.85,0.75))
+label("InfSignOut",St,(-18.33,2.2,-7),-90,"INFIRMARY",size=0.004,font=40,color=(0.7,0.7,0.6))
+inst("keypad","MedKeypad","Puzzles",(-17.97,1.4,-9.2),90,code_length="3")
+for k,z in enumerate([-10.8,-7.0,-3.2]):
+    BX(f"InfBed{k}",St,-12.4,-10.6,0.45,0.6,z-0.5,z+0.5,WHITE)
+    BX(f"InfMattress{k}",St,-12.35,-10.65,0.6,0.7,z-0.45,z+0.45,PAPER,collide=False)
+    for j,(dx,dz) in enumerate([(-0.85,-0.45),(0.85,-0.45),(-0.85,0.45),(0.85,0.45)]):
+        BX(f"InfBedLeg{k}_{j}",St,-11.5+dx-0.03,-11.5+dx+0.03,0,0.45,z+dz-0.03,z+dz+0.03,METAL,collide=False)
+    mi(f"Curtain{k}",St,(-13.2,1.2,z),mesh("BoxMesh",size=v3(0.02,2.0,1.6)),SR(sc.sub("StandardMaterial3D", albedo_color=col(0.55,0.62,0.55,0.8), transparency="1", cull_mode="2")),shadow=False)
+    sc.node(f"BedTag{k}","Label3D","Puzzles",node_paths=["source"],transform=xform((-10.58,0.9,z),90),pixel_size="0.003",text=S(""),font_size="36",
+            modulate=col(0.25,0.2,0.15),outline_size="0",script=ER(S_CODE),source=NP("../MedKeypad"),digit=str(k),template=S(f"BED {k+1}\nTAG: %s"))
+# the medicine cabinet (hollow, with a door that slides open)
+for n,(x1,x2,y1,y2,z1,z2) in {"MedBack":(-18,-17.9,0,1.9,-11.5,-10.3),"MedTop":(-18,-17.4,1.85,1.9,-11.5,-10.3),"MedBottom":(-18,-17.4,0,0.05,-11.5,-10.3),
+                               "MedSideN":(-18,-17.4,0,1.9,-11.5,-11.45),"MedSideS":(-18,-17.4,0,1.9,-10.35,-10.3),"MedShelf":(-17.9,-17.4,0.95,1.0,-11.45,-10.35)}.items():
+    BX(n,St,x1,x2,y1,y2,z1,z2,WHITE)
+sc.node("MedDoor","AnimatableBody3D","Puzzles",node_paths=["sound"],transform=xform((-17.38,0,-10.9)),script=ER(S_MOVER),open_offset=v3(0,0,1.25),move_time="0.7",sound=NP("Sound"))
+mdsh=sc.sub("BoxShape3D", size=v3(0.05,1.9,1.2)); mdm=sc.sub("BoxMesh", size=v3(0.04,1.9,1.2))
+sc.node("CollisionShape3D","CollisionShape3D","Puzzles/MedDoor",transform=xform((0,0.95,0)),shape=SR(mdsh))
+sc.node("Mesh","MeshInstance3D","Puzzles/MedDoor",transform=xform((0,0.95,0)),mesh=SR(mdm),**{"surface_material_override/0":SR(sc.sub("StandardMaterial3D", albedo_color=col(0.7,0.8,0.75,0.5), transparency="1", roughness="0.1"))})
+sc.node("Sound","AudioStreamPlayer3D","Puzzles/MedDoor",stream=ER(CREAK),pitch_scale="1.7",unit_size="4.0")
+gate("MedGate","Puzzles",["../MedKeypad"],["../MedDoor"],msg="The medicine cabinet unlocks: gas masks!")
+label("MedLabel",St,(-17.36,2.05,-10.9),90,"MEDICINE - LOCKED\n(code: the bed tags, 1-2-3)",size=0.0028,font=32,color=(0.75,0.2,0.15))
+item("gas_mask",(-17.65,1.05,-11.1)); item("gas_mask",(-17.65,1.05,-10.6)); item("medkit",(-17.65,0.1,-10.9))
+inst("lfile","InfirmaryLog","Lore",(-14.5,0.9,-2.6),0,entry=ER(LORE("file_infirmary_log")))
+BX("InfDesk",St,-15.4,-13.6,0,0.9,-2.9,-2.2,WOOD)
+light("InfLight","Lights",(-14,3.0,-7),color=(0.85,0.95,1),energy=0.6,rng=8,flicker=0.5,fixture="tube")
+stinger("InfSting",(-14,1.5,-7),(7,3,9),msg="It smells like old medicine. One of the curtains is moving... no wind in here.")
+# --- the airlock (x 47..50 in the Lab Wing corridor)
+B("AirlockInnerSlot",R,(50,-7.475,-66),(0.6,3.05,2),ROCK,collide=False,op=2)
+inst("door","AirlockInnerDoor","Puzzles",(50,-9,-65),90,puzzle_controlled="true")
+for n,pos,yaw in [("AirlockButtonOut",(45.95,-7.7,-64.6),-90),("AirlockButtonIn",(48.5,-7.7,-65.03),180),("AirlockButtonLab",(51.2,-7.7,-65.03),180)]:
+    sc.node(n,None,"Puzzles",instance=X["button"],transform=xform(pos,yaw),active_time="1.0",prompt_text=S("Cycle the airlock"))
+sc.node("AirlockMist","Node3D","Lights")
+sc.node("Fog","FogVolume","Lights/AirlockMist",transform=xform((48.5,-7.65,-66)),size=v3(3,2.7,2),material=SR(sc.sub("FogMaterial", density="1.5", albedo=col(0.8,0.95,0.85))))
+sc.node("AirlockHiss","AudioStreamPlayer3D","Sound",transform=xform((48.5,-7,-66)),stream=ER(A("flare_hiss.wav")),unit_size="6.0")
+sc.node("Airlock","Node","Puzzles",node_paths=["outer_door","inner_door","buttons","hiss","mist"],script=ER(S_AIRLOCK),outer_door=NP("../LabDoor"),
+        inner_door=NP("../AirlockInnerDoor"),buttons="["+", ".join(NP("../"+n) for n in ["AirlockButtonOut","AirlockButtonIn","AirlockButtonLab"])+"]",
+        hiss=NP("../../Sound/AirlockHiss"),mist=NP("../../Lights/AirlockMist"))
+label("AirlockSign",U,(46.05,-6.7,-66),90,"DECONTAMINATION AIRLOCK\nPRESS THE BUTTON - ONE DOOR AT A TIME",size=0.0028,font=32,color=(0.6,1,0.7))
+# --- the gas in the Lab Wing hall, and the fan lever at the far end
+sc.node("GasCloud","FogVolume","Lights",transform=xform((57.5,-7.65,-66)),size=v3(11,2.7,2),material=SR(sc.sub("FogMaterial", density="2.5", albedo=col(0.45,0.75,0.2), emission=col(0.05,0.12,0.02))))
+area("LabGas","Triggers",(57.5,-7.65,-66),(11,2.7,2),S_GAS,np=["cleared_by","cloud"],cleared_by=NP("../../Puzzles/FanGate"),cloud=NP("../../Lights/GasCloud"),seconds_until_downed="3.5")
+inst("lever","FanLever","Puzzles",(63.6,-7.7,-65.05),180,one_way="true",prompt_text=S("Pull the ventilation lever"))
+gate("FanGate","Puzzles",["../FanLever"],[],msg="The fans roar to life. The gas clears out of the corridor.")
+label("GasSign",U,(51.0,-6.85,-66.99),0,"TOXIC GAS - DO NOT ENTER WITHOUT A MASK\nMasks: station INFIRMARY. Fan lever: far end.",size=0.0028,font=32,color=(1,0.85,0.2))
+
 # ============================================================ MORE PUZZLES, SCARES, DETAIL AND STORY
 # --- Puzzle: the director's SAFE (the green keycard is inside). Its code is
 # scribbled on the break room wall, so someone reads it out.
@@ -758,7 +820,7 @@ area("FaceAtWindow","Triggers",(6,1.5,-2.6),(6,3,4),S_SCARE,np=["show_node"],sho
 area("TunnelBlackout","Triggers",(9,-7.65,-55),(4,2.7,2),S_SCARE,np=["lights"],lights="["+", ".join(NP("../../Lights/"+n) for n in ["TunnelLight1","TunnelLight2","JunctionRed"])+"]",
      dark_time="4.0",sound=ER(A("monster_breath.wav")),sound_volume_db="4.0",message=S("The lights die. Something is breathing in the dark..."))
 area("RoofSteps","Triggers",(6,1.5,-11),(7,3,8),S_SCARE,steps_from=v3(3,3.7,-14),steps_to=v3(9,3.7,-8),steps="7",message=S("Heavy footsteps... on the roof?"))
-area("LabDoorSlam","Triggers",(52,-7.65,-66),(2,2.7,2),S_SCARE,np=["door"],door=NP("../../Puzzles/LabDoor"),sound=ER(SNAP),message=S("BANG. The door slams shut behind you."))
+# (the Lab Wing door no longer slams: it is now the airlock's outer door)
 # --- More story
 inst("lfile","WeatherMemo","Lore",(-4.4,0.9,-5),-15,entry=ER(LORE("file_weather_cover")))
 inst("lpersonal","TwoSoldiers","Lore",(6.3,0.9,-3.0),30,entry=ER(LORE("personal_son_photo")))
@@ -814,7 +876,7 @@ checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])
 checkpoint("Tunnels",2,(9,-7.5,-38),(8,3,4),[(-1.5,1),(0,1),(1.5,1),(0,2)])
 checkpoint("Shutter",3,(9,-7.5,-52.5),(4,3,2),[(-1,0),(0,0),(1,0),(0,0.8)])
 checkpoint("ElevatorApproach",4,(18,-7.5,-68),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
-checkpoint("LabWing",5,(55,-7.5,-66),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
+checkpoint("LabWing",5,(65.5,-7.5,-66),(2,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
 sc.node("Items","Node3D",".")
 sc.node("ItemSpawner","MultiplayerSpawner",".",node_paths=["spawn_points"],spawn_path=NP("../Items"),script=ER(S_ISPAWN),spawn_points=NP("../ItemSpawnPoints"))
 sc.node("Players","Node3D",".")

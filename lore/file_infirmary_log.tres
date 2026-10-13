@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_infirmary_log"
+title = "Infirmary Log"
+type = 0
+text = "INFIRMARY - PROGRAM ZERO VOLUNTEERS\nBed 1: joint pain, can't sleep. Says his bones are 'singing'.\nBed 2: nosebleeds stopped. Fever. Asking for his mother.\nBed 3: (empty - moved to Level B)\nThe gas masks are locked in the medicine cabinet: the Lab Wing corridor leaks again.\nCabinet code = the three bed tags, in order. Don't lose them this time."
+owner_character = -1
+voice_line = ""
