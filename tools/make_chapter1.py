@@ -409,8 +409,11 @@ inst("lpersonal","EngineerNameplate","Lore",(-4,0.9,-11),0,entry=ER(LORE("person
 inst("lpaper","Corkboard","Lore",(9.84,1.6,-9),-90,entry=ER(LORE("file_corkboard")))
 item("reel_tape",(-6.5,0.2,-14.8),"tape_welcome"); item("walkie",(-2.5,0.2,-1.0)); item("walkie",(8.5,0.2,-7.0))
 item("battery",(6,1.0,-3.2)); item("flare",(6.5,1.0,-2.8))
-light("OfficeLight","Lights",(-5,3.0,-8),energy=0.9,rng=8,flicker=0.3); light("HallLight","Lights",(0.5,3.0,-8),energy=0.6,rng=6,flicker=0.6)
-light("DirectorLight","Lights",(6,3.0,-11),energy=0.8,rng=6,flicker=0.15); light("BreakLight","Lights",(6,3.0,-3),energy=0.6,rng=5,flicker=0.8)
+# The station's own power. The lights start dead: restore the power (the
+# terminal in the lobby and the breaker beside it) and the building wakes up.
+sc.node("BuildingLights","Node3D","Puzzles",script=ER(S_LIGHTS))
+light("OfficeLight","Puzzles/BuildingLights",(-5,3.0,-8),energy=0.9,rng=8,flicker=0.3); light("HallLight","Puzzles/BuildingLights",(0.5,3.0,-8),energy=0.6,rng=6,flicker=0.6)
+light("DirectorLight","Puzzles/BuildingLights",(6,3.0,-11),energy=0.8,rng=6,flicker=0.15); light("BreakLight","Puzzles/BuildingLights",(6,3.0,-3),energy=0.6,rng=5,flicker=0.8)
 sc.node("Buzz","AudioStreamPlayer3D","Sound",transform=xform((0,2.8,-8)),stream=ER(BUZZ),volume_db="-20.0",unit_size="3.0",autoplay="true")
 
 # ============================================================ ROOM 3: HIDDEN STAIRWELL
@@ -898,6 +901,14 @@ def stairs(name,z_hi,y_hi,z_lo,y_lo,steps=16,width=1.9,thick=0.6):
            mesh("BoxMesh",size=v3(width,thick,abs(z1-z0)+0.02)),ROCK)
 stairs("StairA",-15.55,0.22,-24.44,-4.22)
 stairs("StairB",-26.59,-3.74,-35.41,-9.26)
+
+# ============================================================ ENTRANCE POWER
+# Right inside the front door: an old terminal and a breaker. Get the power
+# back on and the station's lights (BuildingLights, above) come to life.
+X["term"]=P("res://scenes/puzzles/terminal.tscn"); X["brk"]=P("res://scenes/puzzles/breaker.tscn")
+inst("term","Terminal","Puzzles",(-0.85,0,-1.2),90)
+inst("brk","Breaker","Puzzles",(1.83,1.4,-1.2),-90)
+gate("EntrancePower","Puzzles",["../Terminal","../Breaker"],["../BuildingLights"],msg="The building shudders and the lights come on.")
 
 sc.write("scenes/chapters/chapter_1/chapter_1.tscn")
 print("chapter 1 written,", len(sc.nodes), "nodes")

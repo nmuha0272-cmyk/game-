@@ -1,4 +1,4 @@
-[gd_scene load_steps=322 format=3]
+[gd_scene load_steps=324 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/puzzles/hold_switch.tscn" id="1_x"]
 [ext_resource type="PackedScene" path="res://scenes/puzzles/vent_cover.tscn" id="2_x"]
@@ -102,6 +102,8 @@
 [ext_resource type="Resource" path="res://lore/file_weather_cover.tres" id="286_x"]
 [ext_resource type="Resource" path="res://lore/personal_son_photo.tres" id="287_x"]
 [ext_resource type="Resource" path="res://lore/file_security_log.tres" id="288_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/terminal.tscn" id="322_x"]
+[ext_resource type="PackedScene" path="res://scenes/puzzles/breaker.tscn" id="323_x"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_67"]
 albedo_color = Color(0.22, 0.27, 0.3, 1)
@@ -3320,7 +3322,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 1, -2.8)
 script = ExtResource("29_x")
 item_id = "flare"
 
-[node name="OfficeLight" type="OmniLight3D" parent="Lights"]
+[node name="BuildingLights" type="Node3D" parent="Puzzles"]
+script = ExtResource("23_x")
+
+[node name="OfficeLight" type="OmniLight3D" parent="Puzzles/BuildingLights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 3, -8)
 light_color = Color(0.8, 1, 0.88, 1)
 light_energy = 0.9
@@ -3330,19 +3335,19 @@ script = ExtResource("31_x")
 brokenness = 0.3
 fixture_material = SubResource("StandardMaterial3D_158")
 
-[node name="Housing" type="MeshInstance3D" parent="Lights/OfficeLight"]
+[node name="Housing" type="MeshInstance3D" parent="Puzzles/BuildingLights/OfficeLight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0)
 mesh = SubResource("BoxMesh_159")
 surface_material_override/0 = ExtResource("60_x")
 cast_shadow = 0
 
-[node name="Tube" type="MeshInstance3D" parent="Lights/OfficeLight"]
+[node name="Tube" type="MeshInstance3D" parent="Puzzles/BuildingLights/OfficeLight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0)
 mesh = SubResource("BoxMesh_160")
 surface_material_override/0 = SubResource("StandardMaterial3D_158")
 cast_shadow = 0
 
-[node name="HallLight" type="OmniLight3D" parent="Lights"]
+[node name="HallLight" type="OmniLight3D" parent="Puzzles/BuildingLights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 3, -8)
 light_color = Color(0.8, 1, 0.88, 1)
 light_energy = 0.6
@@ -3352,19 +3357,19 @@ script = ExtResource("31_x")
 brokenness = 0.6
 fixture_material = SubResource("StandardMaterial3D_161")
 
-[node name="Housing" type="MeshInstance3D" parent="Lights/HallLight"]
+[node name="Housing" type="MeshInstance3D" parent="Puzzles/BuildingLights/HallLight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0)
 mesh = SubResource("BoxMesh_159")
 surface_material_override/0 = ExtResource("60_x")
 cast_shadow = 0
 
-[node name="Tube" type="MeshInstance3D" parent="Lights/HallLight"]
+[node name="Tube" type="MeshInstance3D" parent="Puzzles/BuildingLights/HallLight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0)
 mesh = SubResource("BoxMesh_160")
 surface_material_override/0 = SubResource("StandardMaterial3D_161")
 cast_shadow = 0
 
-[node name="DirectorLight" type="OmniLight3D" parent="Lights"]
+[node name="DirectorLight" type="OmniLight3D" parent="Puzzles/BuildingLights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -11)
 light_color = Color(0.8, 1, 0.88, 1)
 light_energy = 0.8
@@ -3374,19 +3379,19 @@ script = ExtResource("31_x")
 brokenness = 0.15
 fixture_material = SubResource("StandardMaterial3D_162")
 
-[node name="Housing" type="MeshInstance3D" parent="Lights/DirectorLight"]
+[node name="Housing" type="MeshInstance3D" parent="Puzzles/BuildingLights/DirectorLight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0)
 mesh = SubResource("BoxMesh_159")
 surface_material_override/0 = ExtResource("60_x")
 cast_shadow = 0
 
-[node name="Tube" type="MeshInstance3D" parent="Lights/DirectorLight"]
+[node name="Tube" type="MeshInstance3D" parent="Puzzles/BuildingLights/DirectorLight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0)
 mesh = SubResource("BoxMesh_160")
 surface_material_override/0 = SubResource("StandardMaterial3D_162")
 cast_shadow = 0
 
-[node name="BreakLight" type="OmniLight3D" parent="Lights"]
+[node name="BreakLight" type="OmniLight3D" parent="Puzzles/BuildingLights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, -3)
 light_color = Color(0.8, 1, 0.88, 1)
 light_energy = 0.6
@@ -3396,13 +3401,13 @@ script = ExtResource("31_x")
 brokenness = 0.8
 fixture_material = SubResource("StandardMaterial3D_163")
 
-[node name="Housing" type="MeshInstance3D" parent="Lights/BreakLight"]
+[node name="Housing" type="MeshInstance3D" parent="Puzzles/BuildingLights/BreakLight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0)
 mesh = SubResource("BoxMesh_159")
 surface_material_override/0 = ExtResource("60_x")
 cast_shadow = 0
 
-[node name="Tube" type="MeshInstance3D" parent="Lights/BreakLight"]
+[node name="Tube" type="MeshInstance3D" parent="Puzzles/BuildingLights/BreakLight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0)
 mesh = SubResource("BoxMesh_160")
 surface_material_override/0 = SubResource("StandardMaterial3D_163")
@@ -3439,17 +3444,17 @@ entry = ExtResource("164_x")
 transform = Transform3D(0.5, 0, -0.86603, 0, 1, 0, 0.86603, 0, 0.5, 9.75, -4, -24.2)
 entry = ExtResource("165_x")
 
-[node name="battery_430" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_431" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.25, -3.8, -24)
 script = ExtResource("29_x")
 item_id = "battery"
 
-[node name="battery_431" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_432" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.25, -3.8, -24.4)
 script = ExtResource("29_x")
 item_id = "battery"
 
-[node name="flare_432" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_433" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.75, -3.8, -26.9)
 script = ExtResource("29_x")
 item_id = "flare"
@@ -3517,12 +3522,12 @@ font_size = 32
 modulate = Color(0.85, 0.7, 0.5, 1)
 outline_size = 4
 
-[node name="fuse_444" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="fuse_445" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, -8.8, -55)
 script = ExtResource("29_x")
 item_id = "fuse"
 
-[node name="medkit_445" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="medkit_446" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, -8.8, -59.5)
 script = ExtResource("29_x")
 item_id = "medkit"
@@ -3681,7 +3686,7 @@ mesh = SubResource("CylinderMesh_109")
 surface_material_override/0 = SubResource("StandardMaterial3D_69")
 cast_shadow = 0
 
-[node name="fuse_470" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="fuse_471" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, -8.8, -72)
 script = ExtResource("29_x")
 item_id = "fuse"
@@ -4259,7 +4264,7 @@ use_collision = true
 [node name="TapeMachine2" parent="Puzzles" instance=ExtResource("20_x")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 44, -8.1, -62.5)
 
-[node name="reel_tape_588" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="reel_tape_589" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, -8.8, -61)
 script = ExtResource("29_x")
 item_id = "reel_tape"
@@ -4714,17 +4719,17 @@ material = SubResource("StandardMaterial3D_68")
 transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, 77.5, -8.1, -62.5)
 entry = ExtResource("226_x")
 
-[node name="battery_664" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_665" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.5, -8.8, -58.8)
 script = ExtResource("29_x")
 item_id = "battery"
 
-[node name="flare_665" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_666" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 78.8, -8.8, -73)
 script = ExtResource("29_x")
 item_id = "flare"
 
-[node name="walkie_666" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="walkie_667" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, -8.1, -66)
 script = ExtResource("29_x")
 item_id = "walkie"
@@ -5014,7 +5019,7 @@ size = Vector3(2, 0.9, 1)
 material = ExtResource("59_x")
 use_collision = true
 
-[node name="keycard_red_716" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="keycard_red_717" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, -8, -95.1)
 script = ExtResource("29_x")
 item_id = "keycard_red"
@@ -5149,12 +5154,12 @@ font_size = 32
 modulate = Color(0.75, 0.7, 0.6, 1)
 outline_size = 0
 
-[node name="keycard_yellow_738" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="keycard_yellow_739" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6, 0.85, 12)
 script = ExtResource("29_x")
 item_id = "keycard_yellow"
 
-[node name="fuel_can_739" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="fuel_can_740" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.4, 0.25, 12.8)
 script = ExtResource("29_x")
 item_id = "fuel_can"
@@ -5802,12 +5807,12 @@ message = "Something is pounding on the other side of the vent wall... but it ca
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/VentBangs"]
 shape = SubResource("BoxShape3D_263")
 
-[node name="battery_848" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_849" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, -8.9, -72)
 script = ExtResource("29_x")
 item_id = "battery"
 
-[node name="flare_849" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_850" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, -8.9, -88.9)
 script = ExtResource("29_x")
 item_id = "flare"
@@ -6093,17 +6098,17 @@ font_size = 32
 modulate = Color(0.75, 0.2, 0.15, 1)
 outline_size = 4
 
-[node name="gas_mask_896" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="gas_mask_897" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.65, 1.05, -11.1)
 script = ExtResource("29_x")
 item_id = "gas_mask"
 
-[node name="gas_mask_897" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="gas_mask_898" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.65, 1.05, -10.6)
 script = ExtResource("29_x")
 item_id = "gas_mask"
 
-[node name="medkit_898" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="medkit_899" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.65, 0.1, -10.9)
 script = ExtResource("29_x")
 item_id = "medkit"
@@ -6294,7 +6299,7 @@ stream = ExtResource("49_x")
 pitch_scale = 1.6
 unit_size = 4.0
 
-[node name="keycard_green_932" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="keycard_green_933" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.45, 0.2, -8.2)
 script = ExtResource("29_x")
 item_id = "keycard_green"
@@ -6451,7 +6456,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.55, -8.15, -37.69)
 size = Vector3(0.6, 0.4, 0.02)
 material = SubResource("StandardMaterial3D_68")
 
-[node name="reel_tape_958" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="reel_tape_959" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 77.6, -8, -69.5)
 script = ExtResource("29_x")
 item_id = "reel_tape"
@@ -7202,3 +7207,17 @@ surface_material_override/0 = ExtResource("55_x")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -9.215, -35.1344)
 mesh = SubResource("BoxMesh_321")
 surface_material_override/0 = ExtResource("55_x")
+
+[node name="Terminal" parent="Puzzles" instance=ExtResource("322_x")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -0.85, 0, -1.2)
+
+[node name="Breaker" parent="Puzzles" instance=ExtResource("323_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.83, 1.4, -1.2)
+
+[node name="EntrancePower" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("21_x")
+inputs = [NodePath("../Terminal"), NodePath("../Breaker")]
+outputs = [NodePath("../BuildingLights")]
+mode = 0
+latch = true
+solved_message = "The building shudders and the lights come on."
