@@ -481,7 +481,7 @@ label("CellScratches",U,(13.95,-7.6,-81),-90,"LET ME OUT LET ME OUT\nLET ME OUT 
 
 # monster
 sc.node("PatrolPoints","Node3D","Monsters")
-for k,p in enumerate([(9,-9,-82),(9,-9,-72),(9,-9,-56),(5.5,-9,-65),(21,-9,-68),(38,-9,-68),(55,-9,-66),(72,-9,-66),(72,-9,-90)]):
+for k,p in enumerate([(9,-9,-82),(9,-9,-72),(9,-9,-56),(5.5,-9,-65),(21,-9,-68),(38,-9,-68),(55,-9,-66),(72,-9,-66),(72,-9,-90),(18,-9,-52),(26,-9,-52)]):
     sc.node(f"Point{k+1}","Marker3D","Monsters/PatrolPoints",transform=xform(p))
 sc.node("LongMan",None,"Monsters",instance=X["longman"],node_paths=["patrol_points"],transform=xform((9,-9,-82),180),patrol_points=NP("../PatrolPoints"),start_delay="99999.0")
 inst("mphoto","Photo","Monsters/LongMan",(0,0,0),0)
@@ -510,9 +510,10 @@ inst("fuse","FuseBoxEast","Puzzles",(45.95,-7.6,-70),-90); inst("fuse","FuseBoxW
 inst("lamp","PowerLamp","Puzzles",(38,-5.4,-59.2),0)
 gate("PowerGate","Puzzles",["../Generator","../FuseBoxEast","../FuseBoxWest"],["../RoomLights","../PowerLamp"],msg="Power restored. The elevator panel flickers on.")
 sc.node("OverrideRead","Node","Puzzles",script=ER(S_LORECHK),lore_id=S("file_containment_order"))
-gate("ConsolesEnabled","Puzzles",["../PowerGate","../OverrideRead","../ElevatorKeySlot"],[])
-inst("console","ConsoleWest","Puzzles",(31.5,-9,-61),90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=S("Dead. It needs power, the override procedure (the Containment Order), and the elevator key (in the Archive)."))
-inst("console","ConsoleEast","Puzzles",(44.5,-9,-75.5),-90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=S("Dead. It needs power, the override procedure (the Containment Order), and the elevator key (in the Archive)."))
+gate("ConsolesEnabled","Puzzles",["../PowerGate","../OverrideRead","../ElevatorKeySlot","../DormBreakers"],[])
+CONSOLE_NEEDS=S("Dead. It needs power, the override procedure (the Containment Order), the elevator key (in the Archive), and the DORM WING's aux power.")
+inst("console","ConsoleWest","Puzzles",(31.5,-9,-61),90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=CONSOLE_NEEDS)
+inst("console","ConsoleEast","Puzzles",(44.5,-9,-75.5),-90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=CONSOLE_NEEDS)
 gate("DualKey","Puzzles",["../ConsoleWest","../ConsoleEast"],[],msg="Override accepted. Everyone into the elevator!")
 BX("ControlDesk","Underground",39,41,-9,-8.1,-74.4,-73.6,METAL)
 inst("lfile","ContainmentOrder","Lore",(40,-8.1,-74),-10,entry=ER(LORE("file_containment_order")))
@@ -878,8 +879,8 @@ label("LabChart",U,(64.05,-7.2,-69),90,"GROWTH CHART - SUBJECT 7\nWK 1   6 ft 0\
 checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])
 checkpoint("Tunnels",2,(9,-7.5,-38),(8,3,4),[(-1.5,1),(0,1),(1.5,1),(0,2)])
 checkpoint("Shutter",3,(9,-7.5,-52.5),(4,3,2),[(-1,0),(0,0),(1,0),(0,0.8)])
-checkpoint("ElevatorApproach",4,(18,-7.5,-68),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
-checkpoint("LabWing",5,(65.5,-7.5,-66),(2,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
+checkpoint("ElevatorApproach",5,(18,-7.5,-68),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
+checkpoint("LabWing",6,(65.5,-7.5,-66),(2,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
 sc.node("Items","Node3D",".")
 sc.node("ItemSpawner","MultiplayerSpawner",".",node_paths=["spawn_points"],spawn_path=NP("../Items"),script=ER(S_ISPAWN),spawn_points=NP("../ItemSpawnPoints"))
 sc.node("Players","Node3D",".")
@@ -909,6 +910,49 @@ X["term"]=P("res://scenes/puzzles/terminal.tscn"); X["brk"]=P("res://scenes/puzz
 inst("term","Terminal","Puzzles",(-0.85,0,-1.2),90)
 inst("brk","Breaker","Puzzles",(1.83,1.4,-1.2),-90)
 gate("EntrancePower","Puzzles",["../Terminal","../Breaker"],["../BuildingLights"],msg="The building shudders and the lights come on.")
+
+# ============================================================ THE DORM WING (longer chapter)
+# A billet wing off the main tunnel (east side, just past the security
+# shutter). It has its own aux breaker bank: throw the lever in the back
+# room, then set the five breakers to the card pinned in the bunk room. The
+# elevator consoles refuse an override while the dorm is dead, so this wing
+# is now part of the critical path.
+for n,c,sz in [("DormSlot",(12.5,-7.65,-52),(5,2.7,2)),
+               ("DormBunks",(18,-7.65,-52),(9,2.7,8)),
+               ("DormLink",(23.5,-7.65,-52),(4,2.7,2)),
+               ("DormUtility",(26,-7.65,-52),(6,2.7,8))]:
+    B(n,R,c,sz,ROCK,collide=False,op=2)
+label("DormSign",U,(10.9,-6.9,-55),-90,"DORM WING\nAUX POWER  ->",size=0.003,font=32,color=(0.85,0.8,0.6))
+# eight metal bunks, two rows deep, most of them stripped
+for k,(x,z) in enumerate([(15.6,-54.6),(15.6,-49.4),(21.0,-54.6),(21.0,-49.4)]):
+    BX(f"DormBed{k}",U,x-0.9,x+0.9,-9,-8.4,z-0.95,z+0.95,METAL)
+    BX(f"DormBedMat{k}",U,x-0.85,x+0.85,-8.4,-8.3,z-0.85,z+0.85,PAPER,collide=False)
+    BX(f"DormBedPost{k}",U,x-0.92,x-0.84,-9,-6.9,z-0.97,z-0.89,METAL,collide=False)
+    BX(f"DormBedPost2{k}",U,x+0.84,x+0.92,-9,-6.9,z-0.97,z-0.89,METAL,collide=False)
+for k,(x,z,yaw) in enumerate([(14.0,-52,90),(22.3,-52,-90)]):
+    prop(f"DormLocker{k}",U,"cabinet",(x,-9,z),yaw,collide=("box",(0.6,1.35,0.65),(0,0.675,0)))
+inst("lfile","DormLog","Lore",(16.5,-8.4,-50.4),0,entry=ER(LORE("file_dorm_log")))
+inst("lfile","DormScrawl","Lore",(19.5,-8.4,-53.4),180,entry=ER(LORE("personal_dorm_scrawl")))
+item("battery",(20.4,-8.9,-50.0)); item("flare",(24.4,-8.9,-52))
+light("DormBunkLight",U,(18,-6.7,-52),energy=0.55,rng=7,flicker=0.55)
+# the wiring card (the aux breaker sequence) pinned to the bunk-room wall
+sc.node("DormWiring","Label3D","Puzzles",node_paths=["source"],transform=xform((18,-7.4,-48.1),180),pixel_size="0.0032",text=S(""),font_size="36",
+        modulate=col(0.3,0.35,0.6),outline_size="0",script=ER(S_CODE),source=NP("../DormBreakers"),template=S("AUX POWER - DORM BREAKERS\n%s"))
+mi("DormWiringPaper",U,(18,-7.4,-48.05),mesh("BoxMesh",size=v3(2.6,0.7,0.01)),PAPER,shadow=False)
+# the aux power room: the lever that wakes the bank, and the 5 breakers
+inst("lever","DormPowerLever","Puzzles",(26,-7.7,-55.9),0,one_way="true",prompt_text=S("Throw the dorm's aux power"))
+sc.node("DormBreakers","Node3D","Puzzles",node_paths=["powered_by"],transform=xform((28.95,-7.5,-52),-90),script=ER(S_BREAKER),powered_by=NP("../DormPowerLever"))
+for k in range(5):
+    sc.node(f"Switch{k+1}","StaticBody3D","Puzzles/DormBreakers",transform=xform(((k-2)*0.32,0,0)),script=ER(S_SWITCH),number=str(k+1))
+BX("DormBreakerBox",U,28.9,29.0,-8.05,-6.95,-52.9,-51.1,METAL,collide=False)
+label("DormBreakerSign",U,(28.92,-6.8,-52),-90,"DORM AUX BREAKERS\nSET TO THE CARD (BUNK ROOM)",size=0.0028,font=32,color=(0.9,0.8,0.5))
+light("DormUtilLight",U,(26,-6.7,-52),energy=0.5,rng=7,flicker=0.35)
+sc.node("DormDrone","AudioStreamPlayer3D","Sound",transform=xform((22,-7,-52)),stream=ER(DRONE),volume_db="-12.0",unit_size="14.0",autoplay="true")
+area("DormScare","Triggers",(18,-7.65,-52),(9,2.7,8),S_SCARE,steps_from=v3(15,-8.9,-49),steps_to=v3(21,-8.9,-55),steps="6",
+     sound=ER(CLANK),message=S("Slow footsteps cross the dorm... but you are the only one down here."))
+sc.node("ElevatorAuxSign","Label3D",U,transform=xform((34,-6.6,-59.1),180),pixel_size="0.0028",text=S("CONSOLES NEED AUX POWER\n(DORM WING)"),font_size="32",modulate=col(1,0.8,0.4))
+# declared last so its box-shape subresource doesn't renumber the stairs' meshes
+checkpoint("Dorm",4,(15,-7.5,-52),(6,3,4),[(-2,0),(0,0),(2,0),(0,1)])
 
 sc.write("scenes/chapters/chapter_1/chapter_1.tscn")
 print("chapter 1 written,", len(sc.nodes), "nodes")

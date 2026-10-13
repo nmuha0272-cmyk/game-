@@ -1,4 +1,4 @@
-[gd_scene load_steps=324 format=3]
+[gd_scene load_steps=332 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/puzzles/hold_switch.tscn" id="1_x"]
 [ext_resource type="PackedScene" path="res://scenes/puzzles/vent_cover.tscn" id="2_x"]
@@ -104,6 +104,8 @@
 [ext_resource type="Resource" path="res://lore/file_security_log.tres" id="288_x"]
 [ext_resource type="PackedScene" path="res://scenes/puzzles/terminal.tscn" id="322_x"]
 [ext_resource type="PackedScene" path="res://scenes/puzzles/breaker.tscn" id="323_x"]
+[ext_resource type="Resource" path="res://lore/file_dorm_log.tres" id="326_x"]
+[ext_resource type="Resource" path="res://lore/personal_dorm_scrawl.tres" id="327_x"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_67"]
 albedo_color = Color(0.22, 0.27, 0.3, 1)
@@ -1093,6 +1095,30 @@ size = Vector3(1.9, 0.6, 0.575625)
 
 [sub_resource type="BoxMesh" id="BoxMesh_321"]
 size = Vector3(1.9, 0.6, 0.57125)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_324"]
+size = Vector3(0.6, 1.35, 0.65)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_325"]
+size = Vector3(0.6, 1.35, 0.65)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_328"]
+albedo_color = Color(0.8, 1, 0.88, 1)
+emission_enabled = true
+emission = Color(0.8, 1, 0.88, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_329"]
+albedo_color = Color(0.8, 1, 0.88, 1)
+emission_enabled = true
+emission = Color(0.8, 1, 0.88, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_330"]
+size = Vector3(9, 2.7, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_331"]
+size = Vector3(6, 3, 4)
 
 [node name="Chapter1" type="Node3D"]
 script = ExtResource("36_x")
@@ -4037,6 +4063,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, -9, -66)
 [node name="Point9" type="Marker3D" parent="Monsters/PatrolPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, -9, -90)
 
+[node name="Point10" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -9, -52)
+
+[node name="Point11" type="Marker3D" parent="Monsters/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, -9, -52)
+
 [node name="LongMan" parent="Monsters" node_paths=PackedStringArray("patrol_points") instance=ExtResource("15_x")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, -9, -82)
 patrol_points = NodePath("../PatrolPoints")
@@ -4217,7 +4249,7 @@ lore_id = "file_containment_order"
 
 [node name="ConsolesEnabled" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
 script = ExtResource("21_x")
-inputs = [NodePath("../PowerGate"), NodePath("../OverrideRead"), NodePath("../ElevatorKeySlot")]
+inputs = [NodePath("../PowerGate"), NodePath("../OverrideRead"), NodePath("../ElevatorKeySlot"), NodePath("../DormBreakers")]
 outputs = []
 mode = 0
 latch = true
@@ -4226,12 +4258,12 @@ solved_message = ""
 [node name="ConsoleWest" parent="Puzzles" node_paths=PackedStringArray("requires") instance=ExtResource("4_x")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31.5, -9, -61)
 requires = NodePath("../ConsolesEnabled")
-requires_message = "Dead. It needs power, the override procedure (the Containment Order), and the elevator key (in the Archive)."
+requires_message = "Dead. It needs power, the override procedure (the Containment Order), the elevator key (in the Archive), and the DORM WING's aux power."
 
 [node name="ConsoleEast" parent="Puzzles" node_paths=PackedStringArray("requires") instance=ExtResource("4_x")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 44.5, -9, -75.5)
 requires = NodePath("../ConsolesEnabled")
-requires_message = "Dead. It needs power, the override procedure (the Containment Order), and the elevator key (in the Archive)."
+requires_message = "Dead. It needs power, the override procedure (the Containment Order), the elevator key (in the Archive), and the DORM WING's aux power."
 
 [node name="DualKey" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
 script = ExtResource("21_x")
@@ -4264,7 +4296,7 @@ use_collision = true
 [node name="TapeMachine2" parent="Puzzles" instance=ExtResource("20_x")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 44, -8.1, -62.5)
 
-[node name="reel_tape_589" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="reel_tape_591" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, -8.8, -61)
 script = ExtResource("29_x")
 item_id = "reel_tape"
@@ -4719,17 +4751,17 @@ material = SubResource("StandardMaterial3D_68")
 transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, 77.5, -8.1, -62.5)
 entry = ExtResource("226_x")
 
-[node name="battery_665" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_667" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.5, -8.8, -58.8)
 script = ExtResource("29_x")
 item_id = "battery"
 
-[node name="flare_666" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_668" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 78.8, -8.8, -73)
 script = ExtResource("29_x")
 item_id = "flare"
 
-[node name="walkie_667" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="walkie_669" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, -8.1, -66)
 script = ExtResource("29_x")
 item_id = "walkie"
@@ -5019,7 +5051,7 @@ size = Vector3(2, 0.9, 1)
 material = ExtResource("59_x")
 use_collision = true
 
-[node name="keycard_red_717" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="keycard_red_719" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, -8, -95.1)
 script = ExtResource("29_x")
 item_id = "keycard_red"
@@ -5154,12 +5186,12 @@ font_size = 32
 modulate = Color(0.75, 0.7, 0.6, 1)
 outline_size = 0
 
-[node name="keycard_yellow_739" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="keycard_yellow_741" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6, 0.85, 12)
 script = ExtResource("29_x")
 item_id = "keycard_yellow"
 
-[node name="fuel_can_740" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="fuel_can_742" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.4, 0.25, 12.8)
 script = ExtResource("29_x")
 item_id = "fuel_can"
@@ -5807,12 +5839,12 @@ message = "Something is pounding on the other side of the vent wall... but it ca
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/VentBangs"]
 shape = SubResource("BoxShape3D_263")
 
-[node name="battery_849" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_851" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, -8.9, -72)
 script = ExtResource("29_x")
 item_id = "battery"
 
-[node name="flare_850" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_852" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, -8.9, -88.9)
 script = ExtResource("29_x")
 item_id = "flare"
@@ -6098,17 +6130,17 @@ font_size = 32
 modulate = Color(0.75, 0.2, 0.15, 1)
 outline_size = 4
 
-[node name="gas_mask_897" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="gas_mask_899" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.65, 1.05, -11.1)
 script = ExtResource("29_x")
 item_id = "gas_mask"
 
-[node name="gas_mask_898" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="gas_mask_900" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.65, 1.05, -10.6)
 script = ExtResource("29_x")
 item_id = "gas_mask"
 
-[node name="medkit_899" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="medkit_901" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.65, 0.1, -10.9)
 script = ExtResource("29_x")
 item_id = "medkit"
@@ -6299,7 +6331,7 @@ stream = ExtResource("49_x")
 pitch_scale = 1.6
 unit_size = 4.0
 
-[node name="keycard_green_933" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="keycard_green_935" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.45, 0.2, -8.2)
 script = ExtResource("29_x")
 item_id = "keycard_green"
@@ -6456,7 +6488,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.55, -8.15, -37.69)
 size = Vector3(0.6, 0.4, 0.02)
 material = SubResource("StandardMaterial3D_68")
 
-[node name="reel_tape_959" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="reel_tape_961" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 77.6, -8, -69.5)
 script = ExtResource("29_x")
 item_id = "reel_tape"
@@ -6980,7 +7012,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0.8)
 [node name="ElevatorApproach" type="Area3D" parent="Checkpoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -7.5, -68)
 script = ExtResource("35_x")
-order = 4
+order = 5
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/ElevatorApproach"]
 shape = SubResource("BoxShape3D_318")
@@ -7000,7 +7032,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -1.5, 0)
 [node name="LabWing" type="Area3D" parent="Checkpoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.5, -7.5, -66)
 script = ExtResource("35_x")
-order = 5
+order = 6
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/LabWing"]
 shape = SubResource("BoxShape3D_319")
@@ -7221,3 +7253,332 @@ outputs = [NodePath("../BuildingLights")]
 mode = 0
 latch = true
 solved_message = "The building shudders and the lights come on."
+
+[node name="DormSlot" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, -7.65, -52)
+size = Vector3(5, 2.7, 2)
+material = ExtResource("55_x")
+operation = 2
+
+[node name="DormBunks" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -7.65, -52)
+size = Vector3(9, 2.7, 8)
+material = ExtResource("55_x")
+operation = 2
+
+[node name="DormLink" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.5, -7.65, -52)
+size = Vector3(4, 2.7, 2)
+material = ExtResource("55_x")
+operation = 2
+
+[node name="DormUtility" type="CSGBox3D" parent="Underground/Rock"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, -7.65, -52)
+size = Vector3(6, 2.7, 8)
+material = ExtResource("55_x")
+operation = 2
+
+[node name="DormSign" type="Label3D" parent="Underground"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10.9, -6.9, -55)
+pixel_size = 0.003
+text = "DORM WING
+AUX POWER  ->"
+font_size = 32
+modulate = Color(0.85, 0.8, 0.6, 1)
+outline_size = 4
+
+[node name="DormBed0" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.6, -8.7, -54.6)
+size = Vector3(1.8, 0.6, 1.9)
+material = ExtResource("60_x")
+use_collision = true
+
+[node name="DormBedMat0" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.6, -8.35, -54.6)
+size = Vector3(1.7, 0.1, 1.7)
+material = SubResource("StandardMaterial3D_70")
+
+[node name="DormBedPost0" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.72, -7.95, -55.53)
+size = Vector3(0.08, 2.1, 0.08)
+material = ExtResource("60_x")
+
+[node name="DormBedPost20" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.48, -7.95, -55.53)
+size = Vector3(0.08, 2.1, 0.08)
+material = ExtResource("60_x")
+
+[node name="DormBed1" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.6, -8.7, -49.4)
+size = Vector3(1.8, 0.6, 1.9)
+material = ExtResource("60_x")
+use_collision = true
+
+[node name="DormBedMat1" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.6, -8.35, -49.4)
+size = Vector3(1.7, 0.1, 1.7)
+material = SubResource("StandardMaterial3D_70")
+
+[node name="DormBedPost1" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.72, -7.95, -50.33)
+size = Vector3(0.08, 2.1, 0.08)
+material = ExtResource("60_x")
+
+[node name="DormBedPost21" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.48, -7.95, -50.33)
+size = Vector3(0.08, 2.1, 0.08)
+material = ExtResource("60_x")
+
+[node name="DormBed2" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, -8.7, -54.6)
+size = Vector3(1.8, 0.6, 1.9)
+material = ExtResource("60_x")
+use_collision = true
+
+[node name="DormBedMat2" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, -8.35, -54.6)
+size = Vector3(1.7, 0.1, 1.7)
+material = SubResource("StandardMaterial3D_70")
+
+[node name="DormBedPost2" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.12, -7.95, -55.53)
+size = Vector3(0.08, 2.1, 0.08)
+material = ExtResource("60_x")
+
+[node name="DormBedPost22" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.88, -7.95, -55.53)
+size = Vector3(0.08, 2.1, 0.08)
+material = ExtResource("60_x")
+
+[node name="DormBed3" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, -8.7, -49.4)
+size = Vector3(1.8, 0.6, 1.9)
+material = ExtResource("60_x")
+use_collision = true
+
+[node name="DormBedMat3" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, -8.35, -49.4)
+size = Vector3(1.7, 0.1, 1.7)
+material = SubResource("StandardMaterial3D_70")
+
+[node name="DormBedPost3" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.12, -7.95, -50.33)
+size = Vector3(0.08, 2.1, 0.08)
+material = ExtResource("60_x")
+
+[node name="DormBedPost23" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.88, -7.95, -50.33)
+size = Vector3(0.08, 2.1, 0.08)
+material = ExtResource("60_x")
+
+[node name="DormLocker0" type="StaticBody3D" parent="Underground"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14, -9, -52)
+
+[node name="Mesh" type="MeshInstance3D" parent="Underground/DormLocker0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("121_x")
+surface_material_override/0 = ExtResource("60_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Underground/DormLocker0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.675, 0)
+shape = SubResource("BoxShape3D_324")
+
+[node name="DormLocker1" type="StaticBody3D" parent="Underground"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 22.3, -9, -52)
+
+[node name="Mesh" type="MeshInstance3D" parent="Underground/DormLocker1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("121_x")
+surface_material_override/0 = ExtResource("60_x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Underground/DormLocker1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.675, 0)
+shape = SubResource("BoxShape3D_325")
+
+[node name="DormLog" parent="Lore" instance=ExtResource("16_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, -8.4, -50.4)
+entry = ExtResource("326_x")
+
+[node name="DormScrawl" parent="Lore" instance=ExtResource("16_x")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 19.5, -8.4, -53.4)
+entry = ExtResource("327_x")
+
+[node name="battery_1143" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.4, -8.9, -50)
+script = ExtResource("29_x")
+item_id = "battery"
+
+[node name="flare_1144" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.4, -8.9, -52)
+script = ExtResource("29_x")
+item_id = "flare"
+
+[node name="DormBunkLight" type="OmniLight3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -6.7, -52)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.55
+shadow_enabled = true
+omni_range = 7
+script = ExtResource("31_x")
+brokenness = 0.55
+fixture_material = SubResource("StandardMaterial3D_328")
+
+[node name="Bulb" type="MeshInstance3D" parent="Underground/DormBunkLight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_107")
+surface_material_override/0 = SubResource("StandardMaterial3D_328")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Underground/DormBunkLight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_108")
+surface_material_override/0 = ExtResource("61_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Underground/DormBunkLight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_109")
+surface_material_override/0 = SubResource("StandardMaterial3D_69")
+cast_shadow = 0
+
+[node name="DormWiring" type="Label3D" parent="Puzzles" node_paths=PackedStringArray("source")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18, -7.4, -48.1)
+pixel_size = 0.0032
+text = ""
+font_size = 36
+modulate = Color(0.3, 0.35, 0.6, 1)
+outline_size = 0
+script = ExtResource("22_x")
+source = NodePath("../DormBreakers")
+template = "AUX POWER - DORM BREAKERS
+%s"
+
+[node name="DormWiringPaper" type="MeshInstance3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -7.4, -48.05)
+mesh = SubResource("BoxMesh_238")
+surface_material_override/0 = SubResource("StandardMaterial3D_70")
+cast_shadow = 0
+
+[node name="DormPowerLever" parent="Puzzles" instance=ExtResource("6_x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, -7.7, -55.9)
+one_way = true
+prompt_text = "Throw the dorm's aux power"
+
+[node name="DormBreakers" type="Node3D" parent="Puzzles" node_paths=PackedStringArray("powered_by")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 28.95, -7.5, -52)
+script = ExtResource("234_x")
+powered_by = NodePath("../DormPowerLever")
+
+[node name="Switch1" type="StaticBody3D" parent="Puzzles/DormBreakers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.64, 0, 0)
+script = ExtResource("235_x")
+number = 1
+
+[node name="Switch2" type="StaticBody3D" parent="Puzzles/DormBreakers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.32, 0, 0)
+script = ExtResource("235_x")
+number = 2
+
+[node name="Switch3" type="StaticBody3D" parent="Puzzles/DormBreakers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("235_x")
+number = 3
+
+[node name="Switch4" type="StaticBody3D" parent="Puzzles/DormBreakers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, 0, 0)
+script = ExtResource("235_x")
+number = 4
+
+[node name="Switch5" type="StaticBody3D" parent="Puzzles/DormBreakers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.64, 0, 0)
+script = ExtResource("235_x")
+number = 5
+
+[node name="DormBreakerBox" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.95, -7.5, -52)
+size = Vector3(0.1, 1.1, 1.8)
+material = ExtResource("60_x")
+
+[node name="DormBreakerSign" type="Label3D" parent="Underground"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 28.92, -6.8, -52)
+pixel_size = 0.0028
+text = "DORM AUX BREAKERS
+SET TO THE CARD (BUNK ROOM)"
+font_size = 32
+modulate = Color(0.9, 0.8, 0.5, 1)
+outline_size = 4
+
+[node name="DormUtilLight" type="OmniLight3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, -6.7, -52)
+light_color = Color(0.8, 1, 0.88, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 7
+script = ExtResource("31_x")
+brokenness = 0.35
+fixture_material = SubResource("StandardMaterial3D_329")
+
+[node name="Bulb" type="MeshInstance3D" parent="Underground/DormUtilLight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("SphereMesh_107")
+surface_material_override/0 = SubResource("StandardMaterial3D_329")
+cast_shadow = 0
+
+[node name="Cage" type="MeshInstance3D" parent="Underground/DormUtilLight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("CylinderMesh_108")
+surface_material_override/0 = ExtResource("61_x")
+cast_shadow = 0
+
+[node name="Cable" type="MeshInstance3D" parent="Underground/DormUtilLight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_109")
+surface_material_override/0 = SubResource("StandardMaterial3D_69")
+cast_shadow = 0
+
+[node name="DormDrone" type="AudioStreamPlayer3D" parent="Sound"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, -7, -52)
+stream = ExtResource("46_x")
+volume_db = -12.0
+unit_size = 14.0
+autoplay = true
+
+[node name="DormScare" type="Area3D" parent="Triggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -7.65, -52)
+script = ExtResource("42_x")
+steps_from = Vector3(15, -8.9, -49)
+steps_to = Vector3(21, -8.9, -55)
+steps = 6
+sound = ExtResource("48_x")
+message = "Slow footsteps cross the dorm... but you are the only one down here."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/DormScare"]
+shape = SubResource("BoxShape3D_330")
+
+[node name="ElevatorAuxSign" type="Label3D" parent="Underground"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 34, -6.6, -59.1)
+pixel_size = 0.0028
+text = "CONSOLES NEED AUX POWER
+(DORM WING)"
+font_size = 32
+modulate = Color(1, 0.8, 0.4, 1)
+
+[node name="Dorm" type="Area3D" parent="Checkpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, -7.5, -52)
+script = ExtResource("35_x")
+order = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoints/Dorm"]
+shape = SubResource("BoxShape3D_331")
+
+[node name="Spawn1" type="Marker3D" parent="Checkpoints/Dorm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -1.5, 0)
+
+[node name="Spawn2" type="Marker3D" parent="Checkpoints/Dorm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
+
+[node name="Spawn3" type="Marker3D" parent="Checkpoints/Dorm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -1.5, 0)
+
+[node name="Spawn4" type="Marker3D" parent="Checkpoints/Dorm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 1)

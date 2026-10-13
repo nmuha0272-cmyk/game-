@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_dorm_scrawl"
+title = "Scrawled On The Bunk Frame"
+type = 0
+text = "IT WATCHES YOU SLEEP.\n\nIt doesn't come in the rooms. It stands in the doorway with its head against the frame and it WAITS. We stopped sleeping in shifts and started sleeping in the vent.\n\nIf you're reading this and the lights are out - the aux breakers are in the back room. Set them to the card and RUN."
+owner_character = -1
+voice_line = ""
