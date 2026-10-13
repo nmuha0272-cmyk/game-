@@ -17,10 +17,27 @@ extends CharacterBody3D
 
 enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED, DISTRACTED, STARE }
 
+## Every monster type has its own way of dealing with a player who hides in a
+## locker. This is set per monster scene (see scenes/monsters/*.tscn):
+##  - DRAG (the Long Man): if he saw you climb in, or he is searching right
+##    where you vanished and the locker is nearby, he rips the door open and
+##    drags you out.
+##  - OVERLOAD (the Wired): it feels the current in your body. It notices a
+##    hidden player from further away and floods the locker, knocking you out.
+##  - NONE: this monster ignores lockers completely.
+enum HidingCounter { NONE, DRAG, OVERLOAD }
+
 ## Marker3D points it walks between while patrolling.
 @export var patrol_points: Node3D
 ## Seconds after the level loads before it starts moving.
 @export var start_delay := 8.0
+
+@export_group("Hiding")
+## How this monster counters players who hide in lockers (above).
+@export var hiding_counter: HidingCounter = HidingCounter.DRAG
+## How close it must come to a locker to check it while searching (meters).
+## OVERLOAD senses hiders from twice this far.
+@export var hiding_check_radius := 2.5
 
 @export_group("Speed")
 @export var patrol_speed := 1.6
@@ -50,7 +67,7 @@ enum State { DORMANT, PATROL, INVESTIGATE, CHASE, SEARCH, STUNNED, BLOCKED, DIST
 
 ## Synced to everyone so they can play the right sounds.
 var state: State = State.DORMANT
-var _hide_spot: Node3D = null
+var _hide_spot: HidingSpot = null
 var target: Player = null
 
 var is_stunned: bool:
@@ -162,17 +179,9 @@ func _think_chase(delta: float) -> void:
 	if not is_instance_valid(target) or target.is_downed:
 		_start_search(_last_known_position)
 		return
-	# He saw them climb into a locker: straight there, and drag them out.
+	# It knows which locker they climbed into: straight there to flush them out.
 	if _hide_spot and is_instance_valid(_hide_spot) and HidingSpot.is_hidden(target):
-		var front: Vector3 = _hide_spot.global_transform * Vector3(0, 0, 0.9)
-		nav.target_position = front
-		if global_position.distance_to(front) <= catch_distance + 0.6:
-			var caught: Player = _hide_spot.server_drag_out()
-			_hide_spot = null
-			if caught:
-				caught.downed.server_set_downed(true)
-				_jump_scare.rpc_id(caught.name.to_int())
-			_wander_off()
+		_go_to_hiding_spot(_hide_spot)
 		return
 	_hide_spot = null
 	if senses.can_see(target):
@@ -190,6 +199,58 @@ func _think_chase(delta: float) -> void:
 		_wander_off()
 
 
+## Host only: walk to a locker and, once there, force the player inside out.
+func _go_to_hiding_spot(spot: HidingSpot) -> void:
+	if spot.occupant == 0:
+		_hide_spot = null
+		return
+	var front: Vector3 = spot.global_transform * Vector3(0, 0, 0.9)
+	nav.target_position = front
+	if global_position.distance_to(front) <= catch_distance + 0.6:
+		_flush_hider(spot)
+
+
+## Host only: the counter. DRAG hauls them out; OVERLOAD floods the locker.
+func _flush_hider(spot: HidingSpot) -> void:
+	var caught: Player = spot.server_drag_out()
+	_hide_spot = null
+	if caught and not caught.is_downed:
+		caught.downed.server_set_downed(true)
+		if hiding_counter == HidingCounter.OVERLOAD:
+			_overload_scare.rpc_id(caught.name.to_int())
+		else:
+			_jump_scare.rpc_id(caught.name.to_int())
+	_wander_off()
+
+
+## Host only: is there somebody hiding in a locker near this point? How far
+## it can sense them depends on the monster's counter.
+func _find_hiding_spot_near(point: Vector3) -> HidingSpot:
+	var reach := _sweep_radius()
+	if reach <= 0.0:
+		return null
+	var best: HidingSpot = null
+	var best_distance := reach
+	for node in get_tree().get_nodes_in_group("hiding_spots"):
+		var spot := node as HidingSpot
+		if spot == null or spot.occupant == 0:
+			continue
+		var distance := point.distance_to(spot.global_position)
+		if distance <= best_distance:
+			best = spot
+			best_distance = distance
+	return best
+
+
+func _sweep_radius() -> float:
+	match hiding_counter:
+		HidingCounter.DRAG:
+			return hiding_check_radius
+		HidingCounter.OVERLOAD:
+			return hiding_check_radius * 2.0
+	return 0.0
+
+
 func _think_wander() -> void:
 	match state:
 		State.PATROL:
@@ -199,7 +260,11 @@ func _think_wander() -> void:
 			if nav.is_navigation_finished():
 				_start_search(_last_known_position)
 		State.SEARCH:
-			if _timer <= 0.0:
+			# On the way to search, it also checks lockers near where it lost you.
+			var spot: HidingSpot = _find_hiding_spot_near(_last_known_position) if _timer > 0.0 else null
+			if spot:
+				_go_to_hiding_spot(spot)
+			elif _timer <= 0.0:
 				_start_patrol()
 			elif nav.is_navigation_finished():
 				_wander_near(_last_known_position)
@@ -244,12 +309,17 @@ func server_force_chase(player: Player) -> void:
 	_timer = stare_time
 
 
-## Host only: someone is climbing into a locker. If he can see them doing
-## it, he remembers which one.
-func server_saw_hide(player: Player, spot: Node3D) -> void:
+## Host only: someone is climbing into a locker. If it can see them doing it,
+## it remembers which one. OVERLOAD (the Wired) also feels them climb in from
+## close range even without a clear line of sight.
+func server_saw_hide(player: Player, spot: HidingSpot) -> void:
 	if not multiplayer.is_server() or state in [State.DORMANT, State.STUNNED, State.DISTRACTED]:
 		return
-	if senses.can_see(player) and global_position.distance_to(player.global_position) < 14.0:
+	var distance := global_position.distance_to(player.global_position)
+	var noticed := senses.can_see(player) and distance < 14.0
+	if hiding_counter == HidingCounter.OVERLOAD and distance < hiding_check_radius:
+		noticed = true
+	if noticed:
 		_hide_spot = spot
 		_chase(player)
 
@@ -444,6 +514,22 @@ func get_aim_point() -> Vector3:
 @rpc("authority", "call_local", "reliable")
 func _jump_scare() -> void:
 	$Visuals.play_jump_scare()
+
+
+## Sent by the host to a player it just flushed out of a hiding spot. The Wired
+## floods the locker with current: a hard blue flash as they go down.
+@rpc("authority", "call_local", "reliable")
+func _overload_scare() -> void:
+	$Visuals.play_jump_scare()
+	var flash := OmniLight3D.new()
+	flash.light_color = Color(0.55, 0.75, 1.0)
+	flash.light_energy = 8.0
+	flash.omni_range = 7.0
+	flash.position.y = 1.6
+	add_child(flash)
+	var tween := create_tween()
+	tween.tween_property(flash, "light_energy", 0.0, 0.45)
+	tween.tween_callback(flash.queue_free)
 
 
 ## Only the Son's computer calls this, so only he sees the glow.

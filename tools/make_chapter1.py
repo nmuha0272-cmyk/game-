@@ -12,6 +12,7 @@ X=dict(
  door=P("res://scenes/interactables/door.tscn"), gen=P("res://scenes/interactables/generator.tscn"), cab=P("res://scenes/interactables/filing_cabinet.tscn"),
  drag=P("res://scenes/interactables/evidence_drag_marks.tscn"), mphoto=P("res://scenes/interactables/evidence_monster_photo.tscn"),
  longman=P("res://scenes/monsters/long_man.tscn"), lfile=P("res://scenes/lore/lore_file.tscn"), lposter=P("res://scenes/lore/lore_poster.tscn"),
+ locker=P("res://scenes/interactables/hiding_locker.tscn"),
  lpersonal=P("res://scenes/lore/lore_personal.tscn"), lpaper=P("res://scenes/lore/lore_paper.tscn"), tape=P("res://scenes/lore/tape_machine.tscn"),
 )
 SC=lambda k: sc.ext("Script",k)
@@ -479,6 +480,13 @@ for k,dz in enumerate([-0.6,0.1,0.7]):
     mi(f"Strap{k}",U,(12.6,-8.52,-83.5+dz),mesh("BoxMesh",size=v3(1.06,0.03,0.1)),DWOOD,roll=0)
 label("CellScratches",U,(13.95,-7.6,-81),-90,"LET ME OUT LET ME OUT\nLET ME OUT LET ME\nIT HURTS TO GROW",size=0.004,font=40,color=(0.5,0.45,0.4),outline="0")
 
+# --- Somewhere to hide. These are the only real hiding spots in the tunnels,
+# so a player who breaks line of sight has a chance to catch their breath.
+for k,(x,z,yaw) in enumerate([(7.9,-80,90),(7.9,-56,90),(10.1,-49,-90),
+                              (12.4,-59.2,0),(6.4,-66.2,0),(21.6,-69.8,180),
+                              (44.3,-70,-90),(48.5,-66.5,0),(64.8,-70,90),(78.4,-88,90)]):
+    inst("locker",f"TunnelLocker{k}",U,(x,-9,z),yaw)
+
 # monster
 sc.node("PatrolPoints","Node3D","Monsters")
 for k,p in enumerate([(9,-9,-82),(9,-9,-72),(9,-9,-56),(5.5,-9,-65),(21,-9,-68),(38,-9,-68),(55,-9,-66),(72,-9,-66),(72,-9,-90),(18,-9,-52),(26,-9,-52)]):
@@ -852,6 +860,9 @@ for k,y in enumerate([0.0,0.45]):
     mi(f"Cooler{k}",St,(-9.5,y+0.4,-0.8),mesh("CylinderMesh",top_radius="0.17",bottom_radius="0.2",height="0.8" if k==0 else "0.5",radial_segments="12",rings="1"),WHITE if k==0 else SR(sc.sub("StandardMaterial3D", albedo_color=col(0.5,0.65,0.8,0.5), transparency="1", roughness="0.1")),shadow=False)
 for k,(x,z) in enumerate([(-8.6,-15.5),(-8.0,-15.5),(-8.3,-15.5)]):
     crate(f"FileBox{k}",St,x,0.4*(k==2),z,0.4,random.uniform(-10,10))
+# Two lockers in the office, in case someone is chased back up the stairwell.
+inst("locker","OfficeLocker0",St,(-9.4,0,-14.3),90)
+inst("locker","OfficeLocker1",St,(9.4,0,-3.5),-90)
 # --- Better looking rooms: the tunnels (puddles, cables, junction boxes, warning stripes)
 for k,(x,z,w,d) in enumerate([(8.5,-50,1.8,2.6),(9.6,-58,1.2,1.6),(9,-70.5,2.2,1.4),(20,-68.2,3,1.2),(36,-72,2.5,2),(55,-66,3,1.4),(70,-63,2,2.5)]):
     mi(f"Puddle{k}",U,(x,-8.985,z),mesh("PlaneMesh",size=f"Vector2({w}, {d})"),WATER,yaw=random.uniform(0,40),shadow=False)
@@ -929,8 +940,8 @@ for k,(x,z) in enumerate([(15.6,-54.6),(15.6,-49.4),(21.0,-54.6),(21.0,-49.4)]):
     BX(f"DormBedMat{k}",U,x-0.85,x+0.85,-8.4,-8.3,z-0.85,z+0.85,PAPER,collide=False)
     BX(f"DormBedPost{k}",U,x-0.92,x-0.84,-9,-6.9,z-0.97,z-0.89,METAL,collide=False)
     BX(f"DormBedPost2{k}",U,x+0.84,x+0.92,-9,-6.9,z-0.97,z-0.89,METAL,collide=False)
-for k,(x,z,yaw) in enumerate([(14.0,-52,90),(22.3,-52,-90)]):
-    prop(f"DormLocker{k}",U,"cabinet",(x,-9,z),yaw,collide=("box",(0.6,1.35,0.65),(0,0.675,0)))
+for k,(x,z,yaw) in enumerate([(14.0,-52,90),(22.05,-52,-90),(24.2,-55,0)]):
+    inst("locker",f"DormLocker{k}",U,(x,-9,z),yaw)
 inst("lfile","DormLog","Lore",(16.5,-8.4,-50.4),0,entry=ER(LORE("file_dorm_log")))
 inst("lfile","DormScrawl","Lore",(19.5,-8.4,-53.4),180,entry=ER(LORE("personal_dorm_scrawl")))
 item("battery",(20.4,-8.9,-50.0)); item("flare",(24.4,-8.9,-52))

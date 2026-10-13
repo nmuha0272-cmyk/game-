@@ -1,0 +1,238 @@
+[gd_scene load_steps=39 format=3]
+
+[ext_resource type="Script" path="res://scripts/monsters/monster.gd" id="1_monster"]
+[ext_resource type="Script" path="res://scripts/monsters/monster_senses.gd" id="2_senses"]
+[ext_resource type="Script" path="res://scripts/monsters/monster_visuals.gd" id="3_visuals"]
+[ext_resource type="AudioStream" path="res://assets/audio/monster_breath.wav" id="4_breath"]
+[ext_resource type="AudioStream" path="res://assets/audio/monster_shriek.wav" id="5_shriek"]
+[ext_resource type="AudioStream" path="res://assets/audio/monster_screech.wav" id="6_screech"]
+[ext_resource type="AudioStream" path="res://assets/audio/footstep_placeholder.wav" id="7_step"]
+[ext_resource type="AudioStream" path="res://assets/audio/monster_click.wav" id="8_click"]
+[ext_resource type="Texture2D" path="res://assets/textures/rock_normal.jpg" id="lm_skin_n"]
+[ext_resource type="Texture2D" path="res://assets/textures/concrete_wall_albedo.jpg" id="lm_cloth"]
+[ext_resource type="Texture2D" path="res://assets/textures/longman_skin_albedo.jpg" id="lm_skin_tex"]
+[ext_resource type="Texture2D" path="res://assets/textures/longman_skin_normal.jpg" id="lm_skin_nrm"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_body.obj" id="lm_body_mesh"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_head.obj" id="lm_head_mesh"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_body.obj" id="lm_crawl_body"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_arm_l.obj" id="lm_crawl_arm_l"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_arm_r.obj" id="lm_crawl_arm_r"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_leg_l.obj" id="lm_crawl_leg_l"]
+[ext_resource type="ArrayMesh" path="res://assets/models/long_man_crawl_leg_r.obj" id="lm_crawl_leg_r"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/long_man.glb" id="lm_rig"]
+[ext_resource type="Script" path="res://scripts/monsters/long_man_rig.gd" id="lm_rig_script"]
+
+[sub_resource type="CapsuleShape3D" id="Shape_body"]
+radius = 0.35
+height = 2.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_skin"]
+albedo_color = Color(0.34, 0.44, 0.5, 1)
+albedo_texture = ExtResource("lm_skin_tex")
+roughness = 0.6
+normal_enabled = true
+normal_scale = 0.5
+normal_texture = ExtResource("lm_skin_nrm")
+rim_enabled = true
+rim = 0.3
+rim_tint = 0.1
+uv1_scale = Vector3(3, 3, 3)
+uv1_triplanar = true
+emission_enabled = true
+emission = Color(0.12, 0.36, 0.55, 1)
+emission_energy_multiplier = 0.55
+
+[sub_resource type="StandardMaterial3D" id="Mat_gown"]
+albedo_color = Color(0.18, 0.2, 0.25, 1)
+albedo_texture = ExtResource("lm_cloth")
+roughness = 0.95
+cull_mode = 2
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="Mat_bracelet"]
+albedo_color = Color(0.5, 0.5, 0.47, 1)
+metallic = 0.8
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="Mat_guts"]
+albedo_color = Color(0.26, 0.07, 0.06, 1)
+roughness = 0.35
+metallic_specular = 0.7
+rim_enabled = true
+rim = 0.2
+
+[sub_resource type="StandardMaterial3D" id="Mat_flesh"]
+albedo_color = Color(0.1, 0.015, 0.015, 1)
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="Mat_teeth"]
+albedo_color = Color(0.62, 0.55, 0.38, 1)
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="Mat_eyeball"]
+albedo_color = Color(0.72, 0.68, 0.5, 1)
+roughness = 0.1
+metallic_specular = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_hair"]
+albedo_color = Color(0.1, 0.1, 0.09, 1)
+roughness = 0.6
+cull_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="Mat_blood"]
+albedo_color = Color(0.17, 0.02, 0.02, 1)
+roughness = 0.25
+
+[sub_resource type="StandardMaterial3D" id="Mat_claws"]
+albedo_color = Color(0.06, 0.05, 0.04, 1)
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="Mat_hole"]
+albedo_color = Color(0.02, 0.0, 0.0, 1)
+roughness = 1.0
+
+[sub_resource type="SphereMesh" id="Mesh_eye"]
+radius = 0.025
+height = 0.05
+
+[sub_resource type="StandardMaterial3D" id="Mat_eye"]
+albedo_color = Color(0.72, 0.92, 1, 1)
+emission_enabled = true
+emission = Color(0.35, 0.8, 1, 1)
+emission_energy_multiplier = 12.0
+
+
+
+[sub_resource type="CapsuleMesh" id="Mesh_glow"]
+radius = 0.6
+height = 2.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_glow"]
+render_priority = 10
+transparency = 1
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(0.3, 0.7, 1, 0.45)
+
+[sub_resource type="SceneReplicationConfig" id="Replication"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:state")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
+[node name="TheWired" type="CharacterBody3D"]
+hiding_counter = 2
+hiding_check_radius = 2.5
+patrol_speed = 1.7
+chase_speed = 4.0
+script = ExtResource("1_monster")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+shape = SubResource("Shape_body")
+
+[node name="Senses" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, -0.1)
+script = ExtResource("2_senses")
+
+[node name="DoorProbe" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+target_position = Vector3(0, 0, -1.3)
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.6
+target_desired_distance = 0.8
+height = 2.6
+radius = 0.45
+
+[node name="Body" type="Node3D" parent="."]
+
+[node name="Sculpt" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_body_mesh")
+surface_material_override/0 = SubResource("Mat_skin")
+surface_material_override/1 = SubResource("Mat_gown")
+surface_material_override/2 = SubResource("Mat_bracelet")
+surface_material_override/3 = SubResource("Mat_guts")
+surface_material_override/4 = SubResource("Mat_flesh")
+surface_material_override/5 = SubResource("Mat_flesh")
+
+[node name="HeadPivot" type="Node3D" parent="Body"]
+transform = Transform3D(0.9703, -0.24192, 0, 0.24192, 0.9703, 0, 0, 0, 1, 0, 2.567, -0.386)
+
+[node name="Head" type="MeshInstance3D" parent="Body/HeadPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("lm_head_mesh")
+surface_material_override/0 = SubResource("Mat_skin")
+surface_material_override/1 = SubResource("Mat_hole")
+surface_material_override/2 = SubResource("Mat_teeth")
+surface_material_override/3 = SubResource("Mat_eyeball")
+surface_material_override/4 = SubResource("Mat_hair")
+surface_material_override/5 = SubResource("Mat_blood")
+
+[node name="EyeLeft" type="MeshInstance3D" parent="Body/HeadPivot"]
+transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, -0.046, 0.101, -0.115)
+mesh = SubResource("Mesh_eye")
+surface_material_override/0 = SubResource("Mat_eye")
+
+[node name="EyeRight" type="MeshInstance3D" parent="Body/HeadPivot"]
+transform = Transform3D(0.22, 0, 0, 0, 0.16, 0, 0, 0, 0.22, 0.046, 0.101, -0.115)
+mesh = SubResource("Mesh_eye")
+surface_material_override/0 = SubResource("Mat_eye")
+
+[node name="Rig" parent="Body" instance=ExtResource("lm_rig")]
+transform = Transform3D(-2.8, 0, 0, 0, 2.8, 0, 0, 0, -2.8, 0, 0, 0)
+script = ExtResource("lm_rig_script")
+
+[node name="SenseGlow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_glow")
+surface_material_override/0 = SubResource("Mat_glow")
+
+[node name="Breath" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+stream = ExtResource("4_breath")
+volume_db = -6.0
+unit_size = 3.0
+autoplay = true
+
+[node name="Shriek" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+stream = ExtResource("5_shriek")
+volume_db = 4.0
+unit_size = 10.0
+
+[node name="Screech" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+stream = ExtResource("6_screech")
+unit_size = 8.0
+
+[node name="Footsteps" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("7_step")
+volume_db = 4.0
+unit_size = 5.0
+
+[node name="Click" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+stream = ExtResource("8_click")
+unit_size = 6.0
+
+[node name="Visuals" type="Node" parent="." node_paths=PackedStringArray("monster", "body", "breath", "shriek", "screech", "footsteps", "click")]
+script = ExtResource("3_visuals")
+monster = NodePath("..")
+body = NodePath("../Body")
+breath = NodePath("../Breath")
+shriek = NodePath("../Shriek")
+screech = NodePath("../Screech")
+footsteps = NodePath("../Footsteps")
+click = NodePath("../Click")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("Replication")

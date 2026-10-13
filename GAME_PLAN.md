@@ -46,6 +46,9 @@ monster encounters → uncover story clues → descend to the next area.
 through the facility alone. Every system (abilities, gear, puzzles, monsters)
 should push players to talk, split up, cover each other, and rely on each other.
 
+**6 Chapters** — each spotlights one character and deepens the mystery.
+**The Son (Eli) unlocks new powers each chapter** (Sense → Pulse → Resonance → Echo Walk → Inheritance), changing how the team tracks, fights, and survives.
+
 **Tone:** Dark, tense, retro. Flickering fluorescent lights, bunker doors,
 reel-to-reel tapes, propaganda posters, gas masks, bulky old computers.
 
@@ -56,15 +59,24 @@ reel-to-reel tapes, propaganda posters, gas masks, bulky old computers.
 Every player picks one character. Each character can only be picked once per
 game. Each has one unique ability, so the team must work together.
 
-| Character | Role | Ability | Held Item (first-person view) |
-|---|---|---|---|
-| **The Son (Eli)** | Tracker | **Sense:** Hold a button to see nearby monsters glow through walls for 3 seconds. 20 second cooldown. | Parent's dog tags |
-| **The Journalist** | Stunner / Lore | **Camera Flash:** Stuns a monster in front of her for 2 seconds. 15 second cooldown. Photographing evidence unlocks lore entries. | Old film camera |
-| **The Engineer** | Fixer | **Repair:** Hold to fix generators, elevators, broken panels, and hack locked security doors. Only he can do this. | Wrench |
-| **The Guard (Frank)** | Protector | **Strength:** Hold doors shut against monsters, move heavy objects, build barricades, carry a downed teammate. Moves slower and makes more noise. | Heavy flashlight |
+| Character | Role | Ability | Held Item | Starting Weapon |
+|---|---|---|---|---|
+| **The Son (Eli)** | Tracker | **Sense** (Ch.1): Hold to see nearby monsters glow through walls for 3s. 20s cooldown.<br>**Pulse** (Ch.2): Sonar ping reveals exact monster positions/direction 30m, 2s. 30s cooldown, loud.<br>**Resonance** (Ch.3): Mark monster weak point, +50% team damage 5s. 40s cooldown.<br>**Echo Walk** (Ch.4): Phase 2s — silent, pass through monsters, see patrol trails. 45s cooldown.<br>**Inheritance** (Ch.5): Channel parent's serum 10s — Sense always on, silent, monsters hesitate. Once/chapter, exhausts after. | Parent's dog tags | .38 Revolver + 1 speedloader (6 rds) |
+| **The Journalist** | Stunner / Lore | **Camera Flash:** Stuns a monster in front of her for 2 seconds. 15 second cooldown. Photographing evidence unlocks lore entries. | Old film camera | Suppressed 9mm + 1 mag (12 rds) |
+| **The Engineer** | Fixer | **Repair:** Hold to fix generators, elevators, broken panels, and hack locked security doors. Only he can do this. | Wrench | 12ga Pump Shotgun + 6 shells |
+| **The Guard (Frank)** | Protector | **Strength:** Hold doors shut against monsters, move heavy objects, build barricades, carry a downed teammate. Moves slower and makes more noise. | Heavy flashlight | 9mm Pistol + 2 mags (30 rds) + Flashlight melee |
 
 **Shared by all characters:** walk, sprint (limited stamina), crouch, flashlight,
 interact, pick up small items, revive downed teammates.
+
+**Weapon slot:** 1 per player (separate from 3 gear slots). **All gunshots attract
+monsters** in a large radius. No HUD ammo counter — inspect weapon to check mag.
+Melee is silent but risky. Weapons/mags can be shared.
+
+**Voice Chat:** Players within **5 meters** can talk freely (proximity chat).
+**Walkie-Talkie:** Press and hold to talk to paired player at any distance.
+**Using a walkie-talkie emits a sound radius that attracts monsters** — they
+will investigate the transmission source.
 
 **Downed system:** A player caught by a monster is "downed," not killed. A
 teammate can revive them within 30 seconds. If everyone is downed, restart
@@ -79,8 +91,9 @@ Every level, puzzle, and encounter must follow these rules:
 1. **No solo solutions.** Every puzzle needs at least 2 players to solve.
    The game is online co-op only: 2 to 4 players, no single-player mode.
 2. **Everyone matters.** Each chapter must have moments where each of the four
-   abilities is needed. If a character is missing (fewer than 4 players),
-   provide a slower backup solution so the game is still beatable.
+   abilities is needed — **the Son's current power for that chapter counts as
+   his ability**. If a character is missing (fewer than 4 players), provide a
+   slower backup solution so the game is still beatable.
 3. **Split the team.** Puzzles often put players in different rooms, so they
    must talk to each other to succeed.
 4. **Cover each other.** Many tasks take time (repairing, entering codes,
@@ -114,9 +127,54 @@ the Guard carries them at normal speed.
 | **Flare** | Throw to light an area and distract monsters for 10 seconds | Great for covering teammates |
 | **Med Kit** | Instantly revives a downed teammate from a distance of 1 meter | Rare |
 | **Gas Mask** | Lets the wearer walk through toxic gas rooms | Filter lasts 45 seconds |
-| **Walkie-Talkie** | Lets two players hear each other from anywhere | Only 2 per chapter; very useful when split up |
+| **Walkie-Talkie** | Lets two players hear each other from anywhere. **Using it makes noise that attracts nearby monsters.** | Only 2 per chapter; very useful when split up. Press and hold to talk. Monsters hear transmissions. |
 | **Reel Tape** | Plays a lore recording on tape machines | Collectible story item |
 | **Car Battery** | Powers a single heavy machine | Heavy item |
+
+---
+
+## Weapons and Ammunition
+
+**Weapon slots:** Each player has **1 weapon slot** (separate from 3 gear slots).
+Weapons are rare — found in armories, on dead security, or hidden caches.
+
+**Ammo scarcity:** Ammo is **very limited**. No ammo pickups refill full magazines.
+Players must count every shot. Reloading is manual (eject mag, insert fresh).
+No HUD ammo counter — check by inspecting the weapon (hold key to view mag).
+
+**Noise discipline:** **All gunshots attract monsters** in a large radius.
+Suppressed weapons reduce radius but are rarer. Melee is silent but risky.
+
+**Sharing:** Weapons and magazines can be dropped/handed like gear.
+Magazines are **not universal** — each weapon takes specific mags.
+
+| Weapon | Role | Ammo Type | Capacity | Notes |
+|---|---|---|---|---|
+| **.38 Revolver** | Sidearm | .38 Speedloader | 6 | Common. Loud. Reload one round at a time (slow). |
+| **9mm Pistol** | Sidearm | 9mm Mag | 15 | Semi-auto. Faster reload. Moderate noise. |
+| **Suppressed 9mm** | Stealth sidearm | 9mm Mag | 12 | Quiet shot (short monster hearing range). Rare. |
+| **12ga Pump Shotgun** | Close-quarters | 12ga Shell (loose) | 6 | Devastating close range. Manual pump. Loud. Shells loaded one by one. |
+| **SMG (MP5-style)** | Volume of fire | 9mm Mag (extended) | 30 | Full auto. Burns ammo fast. Loud. Extended mags rare. |
+| **Bolt-Action Rifle** | Long range | .308 Stripper Clip | 5 | High damage, penetrates armor. Slow cycle. Very loud. |
+| **Tranquilizer Gun** | Non-lethal | Dart | 1 | Stuns monster 5s. Single shot. Silent. Extremely rare. |
+| **Flare Gun** | Distraction / signal | Flare Shell | 1 | Fires flare far. Lights area, draws monsters to impact. Loud. |
+
+**Melee (always available, no slot):**
+- **Combat Knife** — Quick, weak. Good for cutting cords, not fighting.
+- **Crowbar** (if in gear slot) — Heavy swing, stuns briefly. Loud impact.
+- **Guard's Flashlight** — Heavy blunt. Only Guard has it.
+
+**Character weapon affinities (starting loadout suggestion):**
+- **Son:** .38 Revolver + 1 speedloader (light, fits tracker role)
+- **Journalist:** Suppressed 9mm + 1 mag (stealth, lore focus)
+- **Engineer:** 12ga Shotgun + 6 shells (breach doors, close defense)
+- **Guard:** 9mm Pistol + 2 mags + Flashlight melee (sustained defense)
+
+**Ammo pickup examples per chapter:**
+- Ch 1: ~12 .38 rounds, 15 9mm, 6 shells total (shared across team)
+- Ch 2: Adds 30 SMG rounds, 5 .308
+- Ch 3: Adds Tranq dart, Flare shells
+- Ch 4–6: Very rare top-ups; mostly scavenged from fallen
 
 ---
 
@@ -135,8 +193,8 @@ Every puzzle below requires teamwork.
 | **Darkroom Photos** | The Journalist develops photos in a darkroom to reveal a hidden clue (like a safe combination) | Others protect her while she works |
 | **Radio Frequency** | One player tunes an old radio while another reads the correct frequency from a chart elsewhere | Communication |
 | **Morse Code** | A signal light blinks a message; one player reads it and another uses a translation sheet | Communication |
-| **Gas Room** | A player in a gas mask walks through toxic rooms while a teammate at a map guides them over walkie-talkie | Guidance |
-| **Hunted Hallway** | The Son senses where the monster is and guides teammates carrying heavy items past it | Tracking and trust |
+| **Gas Room** | A player in a gas mask walks through toxic rooms while a teammate at a map guides them over walkie-talkie. **Using the walkie-talkie attracts monsters.** | Guidance, noise discipline |
+| **Hunted Hallway** | The Son senses where the monster is and guides teammates carrying heavy items past it. **The Long Man scrambles Sense** — teammates must rely on sound and callouts. | Tracking and trust |
 
 ---
 
@@ -147,9 +205,37 @@ Every puzzle below requires teamwork.
 | 1 | The Surface | Journalist | Break into the weather station, find the hidden elevator, learn the controls | First monster appears; elevator cable snaps, trapping the team below |
 | 2 | Power Station | Engineer | Restore three generators to power the facility | Clues reveal the Engineer helped build the experiment machines |
 | 3 | The Holding Cells | Guard | Reach the sealed lower levels | The truth about the night Frank sealed the doors |
-| 4 | Subject Zero | Son | Enter the deepest lab | The Son learns what happened to his parent; final monster; team makes a choice |
+| 4 | The Deep Labs | Son | Navigate the experimental wings | Son unlocks **Resonance** — sees monster weak points |
+| 5 | The Reactor Core | Engineer | Overload the facility's heart to escape | Conduit reveals its origin; Engineer's past choice |
+| 6 | Subject Zero | Son | Confront the source in the deepest vault | Son unlocks **Inheritance** — final choice determines ending |
 
 **Build Chapter 1 fully before starting Chapter 2.**
+
+---
+
+## The Son's Evolving Powers
+
+The Son (Eli) starts with only **Sense**. As the story progresses, he unlocks
+new abilities tied to his parent's legacy and the IRONWOOD experiments.
+Each power has a cooldown and makes noise (except Sense).
+
+| Chapter | Power | Description | Cooldown | Noise |
+|---|---|---|---|---|
+| 1 (start) | **Sense** | Hold to see nearby monsters glow through walls for 3s | 20s | Silent |
+| 2 | **Pulse** | Tap to send a sonar ping — reveals all monsters' exact positions and movement direction in a 30m radius for 2s | 30s | Loud — attracts monsters to ping origin |
+| 3 | **Resonance** | Hold on a monster to highlight its weak point (glowing organ/implant) for teammates. Increases team damage to that target by 50% for 5s | 40s | Moderate — monster hears it |
+| 4 | **Echo Walk** | Briefly phase into "echo space" (2s): move silently, pass through monster collisions, see recent monster paths as trails. Cannot interact. | 45s | Silent activation; loud exit |
+| 5 | **Inheritance** | Channel parent's IRONWOOD serum (10s): gain temporary **monster traits** — Sense always on, move silently, monsters hesitate to attack you. Ends in exhaustion (slowed, no abilities 30s). | Once per chapter | Very loud — all monsters drawn to you |
+
+**Teamwork design:** Each new power changes how the team plays:
+- **Pulse** — Son becomes a radar; team coordinates pushes during ping windows
+- **Resonance** — Son marks priority targets; Engineer/Guard focus fire
+- **Echo Walk** — Son scouts ahead solo, returns to guide team through patrol routes
+- **Inheritance** — Son becomes a decoy/tank for final confrontation; team completes objective while monsters fixate on him
+
+**Narrative tie:** Each power unlocks at a personal lore moment (finding parent's
+recordings, injection sites, serum vials). The Journalist photographs these
+for the journal. The final choice in Chapter 6 uses Inheritance.
 
 ---
 
@@ -349,6 +435,10 @@ res://
 - [x] Collectible lore: notes, reel tapes, and photos with a journal menu
 - [x] Ping system: press a button to mark an item or spot for teammates
 - [x] Pause menu and settings (volume, mouse sensitivity, brightness)
+- [ ] **Proximity voice chat:** players within 5 meters hear each other
+- [ ] **Walkie-talkie system:** paired players talk at any distance; holding
+      talk button emits sound radius that attracts monsters (host syncs
+      monster investigation target)
 
 ### Phase 10 — Chapter 1: "The Surface"
 
@@ -363,8 +453,10 @@ Room-by-room plan (gray-box first):
 3. **Hidden Stairwell** — Dark and narrow. Flashlights start draining here, so
    players learn to share batteries. *Gear: Batteries, Flare.*
 4. **Maintenance Tunnels** — A **Vent Crawl** to unlock a door from the other
-   side, then the **first monster encounter**: a chase where the Son senses
-   it, the Journalist stuns it, and the Guard holds a door shut behind the team.
+   side, then the **first monster encounter**: a chase where the **Long Man
+   scrambles the Son's Sense** (false echoes), the Journalist's flash stuns it,
+   and the Guard holds a door shut behind the team. Players learn to
+   communicate monster positions verbally when Sense fails.
    *Gear: Fuse, Med Kit.*
 5. **Elevator Room** — **Power Routing**: the Engineer repairs the elevator
    generator, others find two missing fuses, and the Guard holds off the
@@ -377,6 +469,9 @@ Tasks:
 - [x] One chase sequence through narrow tunnels
 - [x] Lore items that introduce the facility and each character's reason for coming
 - [x] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"
+- [ ] **Long Man scrambles Son's Sense** — test false echoes, verbal callouts work
+- [ ] **Walkie-talkie attracts Long Man** — test transmission noise radius, monster investigates
+- [ ] **Proximity chat** — test 5m range, no monster attraction
 - [ ] Replace placeholder art with real models, textures, and lighting
       (First pass done: generated PBR textures, forest, night sky, props,
       light fixtures, screen filter, new Long Man body. Still needs real
@@ -408,20 +503,57 @@ The level is shared: `tools/export_for_unreal.gd` writes Chapter 1 to
 
 ### Later (after Chapter 1 is fun)
 - Steam lobbies and invites (GodotSteam)
-- Proximity voice chat
-- Chapters 2, 3, and 4
+- Chapters 2, 3, 4, 5, and 6
 - Unique monster designs for each chapter
+- Son's evolving powers (Pulse, Resonance, Echo Walk, Inheritance)
 
 ---
 
 ## Monster Ideas (to design later)
 
-- **Chapter 1:** A failed test subject stretched too tall for the tunnels,
-  crawls on all fours in tight spaces.
-- **Chapter 2:** Something fused with the facility's machinery, attracted to
-  electricity. Restoring power wakes it up.
-- **Chapter 3:** The people Frank sealed in, now changed. They still knock on doors.
-- **Chapter 4:** Subject Zero, possibly connected to the Son's parent.
+Each monster is designed to **counter one character's ability**, forcing the
+team to adapt and protect that player.
+
+- **Chapter 1 — The Long Man (counters Son's Sense)**
+  A failed test subject stretched too tall for the tunnels, crawls on all fours.
+  **Counter:** His mutated biology **scrambles the Son's Sense ability** — when
+  the Son uses Sense near him, it shows false positives (ghost echoes) or
+  nothing at all. The Son must rely on teammates' callouts instead.
+
+- **Chapter 2 — The Conduit (counters Engineer's Repair)**
+  Something fused with the facility's machinery, attracted to electricity.
+  Restoring power wakes it up. **Counter:** It **sabotages repairs** — when the
+  Engineer uses Repair, the Conduit can reverse progress remotely or overload
+  the machine, stunning the Engineer. The team must guard the Engineer while
+  they work, and kill power to slow the monster.
+
+- **Chapter 3 — The Wardens (counters Guard's Strength)**
+  The people Frank sealed in, now changed. They still knock on doors.
+  **Counter:** They are **too strong for the Guard to hold back** — doors held
+  by the Guard buckle faster, and heavy objects the Guard moves can be shoved
+  aside. The Guard cannot simply brute-force; the team must use barricades,
+  traps, and environmental hazards instead.
+
+- **Chapter 4 — The Mimic (counters Journalist's Camera Flash)**
+  A shapeshifter that copies team members' voices and appearances.
+  **Counter:** It **feeds on light** — the Camera Flash doesn't stun it; it
+  *empowers* it, making it faster and deadlier. The Journalist must use flares,
+  environmental lights, or darkness. The Son's Sense works reliably — the team
+  must track it without flash.
+
+- **Chapter 5 — The Conduit Prime (counters Engineer's Repair / Son's Pulse)**
+  The Conduit's original form, fused with the reactor core.
+  **Counter:** It **absorbs energy** — Engineer's Repair speeds it up; Son's
+  Pulse reveals *its* position to *it* (two-way ping). The Engineer must work
+  unpowered; the Son must use Sense/Resonance instead of Pulse.
+
+- **Chapter 6 — Subject Zero (counters Son's Inheritance / all abilities)**
+  The original volunteer — the Son's parent, transformed.
+  **Counter:** It **mirrors abilities** — Sense shows it as a teammate, Pulse
+  hits the Son back, Resonance marks a teammate as weak point, Echo Walk
+  pulls the Son out of phase, Inheritance triggers a shared health pool (damage
+  to Subject Zero damages the Son). The team must defeat it *without* the Son
+  using powers — the Son guides them verbally while suppressed.
 
 ---
 

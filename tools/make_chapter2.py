@@ -3,6 +3,7 @@ Run from the project folder:  python3 tools/make_chapter2.py
 Edit the room layouts here, not in the .tscn (it gets overwritten)."""
 import math, os, random, sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from tscn import *
+random.seed(20)  # keep the scattering of crates/barrels identical every build
 sc=Scene()
 P=lambda k: sc.ext("PackedScene",k)
 X=dict(
@@ -11,7 +12,7 @@ X=dict(
  button=P("res://scenes/puzzles/button.tscn"), lamp=P("res://scenes/puzzles/status_lamp.tscn"), clamp=P("res://scenes/puzzles/gate_clamp.tscn"),
  door=P("res://scenes/interactables/door.tscn"), gen=P("res://scenes/interactables/generator.tscn"), cab=P("res://scenes/interactables/filing_cabinet.tscn"),
  drag=P("res://scenes/interactables/evidence_drag_marks.tscn"), mphoto=P("res://scenes/interactables/evidence_monster_photo.tscn"),
- longman=P("res://scenes/monsters/long_man.tscn"), lfile=P("res://scenes/lore/lore_file.tscn"), lposter=P("res://scenes/lore/lore_poster.tscn"),
+ lfile=P("res://scenes/lore/lore_file.tscn"), lposter=P("res://scenes/lore/lore_poster.tscn"),
  lpersonal=P("res://scenes/lore/lore_personal.tscn"), lpaper=P("res://scenes/lore/lore_paper.tscn"), tape=P("res://scenes/lore/tape_machine.tscn"),
 )
 SC=lambda k: sc.ext("Script",k)
@@ -46,7 +47,7 @@ BARK=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.12,0.09,0.07), roughness
 NEEDLES=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.04,0.08,0.05), roughness="1.0"))
 WHITE=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.7,0.7,0.68), roughness="0.5", metallic="0.3"))
 X.update(locker=P("res://scenes/interactables/hiding_locker.tscn"), plate=P("res://scenes/puzzles/pressure_plate.tscn"),
-         radio=P("res://scenes/puzzles/radio.tscn"))
+         radio=P("res://scenes/puzzles/radio.tscn"), wired=P("res://scenes/monsters/the_wired.tscn"))
 S_FINAL=SC("res://scripts/chapters/final_chase.gd"); S_ESCAPE=SC("res://scripts/chapters/escape_zone.gd")
 ALARM=A("monster_shriek.wav")
 env=sc.sub("Environment", background_mode="1", background_color=col(0,0,0), ambient_light_source="2", ambient_light_color=col(0.16,0.18,0.2), ambient_light_energy="0.12",
@@ -246,9 +247,9 @@ item("battery",(3.2,0.2,-31)); item("flare",(-7.5,0.2,-30.6))
 checkpoint("RadioRoom",1,(0,1.5,-27),(2.4,3,2),[(-0.6,0),(0.6,0),(-0.6,1),(0.6,1)])
 
 # ============================================================ 4. THE DORMITORY (hide and seek)
-# The Long Man drops in when you enter. Find 3 FUSES in the bunk rooms while
-# he hunts you, and put them in the fuse boxes by the blast door. Hide in
-# the lockers when he comes.
+# The Wired drops in when you enter. Find 3 FUSES in the bunk rooms while
+# it hunts you, and put them in the fuse boxes by the blast door. Hide in
+# the lockers when it comes... but the Wired feels you through the metal.
 inst("keypad","DormKeypad","Puzzles",(0.97,1.4,-50.5),-90)
 inst("door","DormDoor","Puzzles",(-1,0,-52),0,puzzle_controlled="true")
 gate("DormGate","Puzzles",["../DormKeypad"],["../DormDoor"],msg="The dormitory door unlocks. It's very quiet in there.")
@@ -279,6 +280,9 @@ item("battery",(8.9,0.6,-58+1.4)); item("flare",(-8.9,0.6,-76+1.4)); item("medki
 for k,z in enumerate([-62.5,-71.5,-80.5]):
     inst("locker",f"HallLockerW{k}","Puzzles",(-1.6,0,z),90)
     inst("locker",f"HallLockerE{k}","Puzzles",(1.6,0,z),-90)
+# A few more hiding spots in rooms that had none.
+for k,(x,z,yaw) in enumerate([(9.3,-36.5,-90),(-7.5,-33,90),(-5,-8.5,90),(33,-143,-90)]):
+    inst("locker",f"ExtraLocker{k}","Puzzles",(x,0,z),yaw)
 for k,z in enumerate([-56,-66,-76,-86]):
     light(f"HallRed{k}","Lights",(0,3.2,z),color=(1,0.12,0.06),energy=0.5,rng=7,pulse=True,shadow=False)
 label("HallWriting",L,(-1.98,1.5,-75.5),90,"IT CHECKS THE LOCKERS\nIF IT SEES YOU GET IN",size=0.004,font=40,color=(0.55,0.08,0.06),outline="0")
@@ -309,8 +313,9 @@ sc.node("ChaseRestart","Marker3D","Monsters",transform=xform((0,0,-93.5)))
 area("ChaseTrigger","Triggers",(0,1.4,-100),(2.4,2.8,2),S_STING,message=S(""))
 sc.node("Sound","AudioStreamPlayer","Triggers/ChaseTrigger",stream=ER(STING),volume_db="-2.0")
 sc.node("FinalChase","Node","Triggers",node_paths=["source","trigger","monster","burst_point","restart_point","alarm_lights"],script=ER(S_FINAL),
-        source=NP("../../Puzzles/BlastGate"),trigger=NP("../ChaseTrigger"),monster=NP("../../Monsters/LongMan"),burst_point=NP("../../Monsters/ChaseBurst"),
-        restart_point=NP("../../Monsters/ChaseRestart"),alarm_lights=NP("../../Lights/AlarmLights"))
+        source=NP("../../Puzzles/BlastGate"),trigger=NP("../ChaseTrigger"),monster=NP("../../Monsters/TheWired"),burst_point=NP("../../Monsters/ChaseBurst"),
+        restart_point=NP("../../Monsters/ChaseRestart"),alarm_lights=NP("../../Lights/AlarmLights"),
+        message=S("ALARM! The Wired is loose. RUN for the lift!"))
 checkpoint("BlastTunnel",3,(0,1.4,-96),(2.4,2.8,2),[(0,0),(0,-0.8),(0,0.8),(0,-1.6)])
 # The escape lift.
 BX("LiftFloor",NP_,26.2,33.8,0,0.05,-144.8,-136,METAL)
@@ -329,8 +334,8 @@ area("EscapeZone","Triggers",(30,1.5,-140.8),(7.4,3,7.4),S_ESCAPE,np=["gate"],ga
 sc.node("PatrolPoints","Node3D","Monsters")
 for k,p in enumerate([(0,0,-60),(-6,0,-67),(0,0,-75),(6,0,-76),(0,0,-88),(-6,0,-85),(6,0,-58),(-6,0,-58),(6,0,-85)]):
     sc.node(f"Point{k+1}","Marker3D","Monsters/PatrolPoints",transform=xform(p))
-sc.node("LongMan",None,"Monsters",instance=X["longman"],node_paths=["patrol_points"],transform=xform((0,0,-89),180),patrol_points=NP("../PatrolPoints"),start_delay="99999.0")
-area("DormChase","Triggers",(0,1.5,-58.5),(4,3,1.5),S_CHASE,np=["monster"],monster=NP("../../Monsters/LongMan"),message=S("Something unfolds at the far end of the hall. FIND THE FUSES. HIDE."))
+sc.node("TheWired",None,"Monsters",instance=X["wired"],node_paths=["patrol_points"],transform=xform((0,0,-89),180),patrol_points=NP("../PatrolPoints"),start_delay="99999.0")
+area("DormChase","Triggers",(0,1.5,-58.5),(4,3,1.5),S_CHASE,np=["monster"],monster=NP("../../Monsters/TheWired"),message=S("The lights gutter and die. The Wired is in the walls. FIND THE FUSES. HIDE."))
 sc.node("Sound","AudioStreamPlayer","Triggers/DormChase",stream=ER(STING),volume_db="-2.0")
 sc.node("Navigation","NavigationRegion3D",".",navigation_mesh=SR(navmesh),script=ER(S_NAV))
 sc.node("Drone","AudioStreamPlayer3D","Sound",transform=xform((0,2,-60)),stream=ER(DRONE),volume_db="-4.0",unit_size="30.0",autoplay="true")

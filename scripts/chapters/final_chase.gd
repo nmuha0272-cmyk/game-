@@ -1,6 +1,6 @@
 extends Node
 ## The final chase. When `source` turns active (the blast door opens), the
-## alarms go off and the Long Man bursts out at `burst_point`, faster than
+## alarms go off and the monster bursts out at `burst_point`, faster than
 ## ever and never losing track of you. Run for the escape lift!
 
 @export var source: Node
@@ -13,7 +13,7 @@ extends Node
 ## (after a restart there, the blast door is shut behind you).
 @export var restart_point: Marker3D
 @export var alarm_lights: Node3D
-@export var message := "ALARM! The Long Man is loose. RUN for the lift!"
+@export var message := "ALARM! It is loose. RUN for the lift!"
 @export var chase_speed := 4.7
 
 var _started := false
