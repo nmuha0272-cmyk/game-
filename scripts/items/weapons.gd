@@ -79,10 +79,10 @@ static func make_mesh(id: String) -> Node3D:
 
 	holder.add_child(_part(Vector3(0.07, 0.12, 0.28), Vector3(0, 0, -0.02), metal))
 
-	var barrel := {
+	var barrel := float({
 		"shotgun": 0.5, "rifle": 0.55, "smg": 0.24,
 		"suppressed_9mm": 0.32, "tranq": 0.24, "flare_gun": 0.2,
-	}.get(id, 0.22)
+	}.get(id, 0.22))
 	holder.add_child(_part(Vector3(0.03, 0.03, barrel),
 			Vector3(0, 0.03, -0.14 - barrel * 0.5), metal))
 
