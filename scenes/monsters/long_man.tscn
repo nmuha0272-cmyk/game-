@@ -124,6 +124,7 @@ properties/2/spawn = true
 properties/2/replication_mode = 1
 
 [node name="LongMan" type="CharacterBody3D"]
+scrambles_sense = true
 script = ExtResource("1_monster")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

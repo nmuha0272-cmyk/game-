@@ -31,6 +31,8 @@ const REMAP_ACTIONS := [
 	["drop_item", "Drop item"],
 	["journal", "Journal"],
 	["ping", "Ping (mark a spot)"],
+	["weapon_toggle", "Draw / holster weapon"],
+	["reload", "Reload weapon"],
 ]
 ## Changes the player has made: action name -> key code. Key codes are positive,
 ## mouse buttons are stored as the negative button number. Empty = the defaults.

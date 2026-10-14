@@ -67,6 +67,13 @@ func _create_player(data: Dictionary) -> Node:
 	player.character = data.character
 	player.position = data.position
 	player.rotation.y = data.yaw
+	# Starting gun. Done here so every computer picks the same one.
+	var weapon_id := str(Characters.get_value(data.character, "weapon", ""))
+	if not weapon_id.is_empty():
+		var start_loaded := int(Characters.get_value(data.character, "weapon_loaded", -1))
+		var start_reserve: Dictionary = Characters.get_value(data.character, "weapon_reserve", {})
+		var gun := player.get_node("Weapon") as WeaponHolder
+		gun.set_loadout(weapon_id, start_loaded, start_reserve)
 	return player
 
 

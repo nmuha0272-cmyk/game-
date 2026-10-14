@@ -129,6 +129,7 @@ properties/2/replication_mode = 1
 [node name="TheWired" type="CharacterBody3D"]
 hiding_counter = 2
 hiding_check_radius = 2.5
+sabotages_repair = true
 patrol_speed = 1.7
 chase_speed = 4.0
 script = ExtResource("1_monster")

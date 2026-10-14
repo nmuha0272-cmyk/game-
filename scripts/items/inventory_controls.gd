@@ -19,7 +19,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		inventory.select_slot((inventory.active_slot + 1) % Inventory.SLOT_COUNT)
 	elif event.is_action_pressed("slot_prev"):
 		inventory.select_slot((inventory.active_slot + Inventory.SLOT_COUNT - 1) % Inventory.SLOT_COUNT)
-	elif event.is_action_pressed("use_item"):
+	elif event.is_action_pressed("use_item") and not inventory.player.weapon.drawn:
 		var looked_at := interactor.get_collider()
 		inventory.request_use(looked_at.name.to_int() if looked_at is Player else 0)
 	elif event.is_action_pressed("drop_item"):

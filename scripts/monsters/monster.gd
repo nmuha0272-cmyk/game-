@@ -39,6 +39,14 @@ enum HidingCounter { NONE, DRAG, OVERLOAD }
 ## OVERLOAD senses hiders from twice this far.
 @export var hiding_check_radius := 2.5
 
+@export_group("Combat")
+## How much gunfire it takes before it is driven off (it then recovers).
+@export var max_health := 100.0
+## The Long Man: while he is close, he jumbles the Son's Sense (false echoes).
+@export var scrambles_sense := false
+## The Wired: while it is close, it reverses the Engineer's repairs.
+@export var sabotages_repair := false
+
 @export_group("Speed")
 @export var patrol_speed := 1.6
 @export var investigate_speed := 2.6
@@ -69,6 +77,8 @@ enum HidingCounter { NONE, DRAG, OVERLOAD }
 var state: State = State.DORMANT
 var _hide_spot: HidingSpot = null
 var target: Player = null
+## Current health (host-side). Reset to max_health when driven off.
+var health := 0.0
 
 var is_stunned: bool:
 	get:
@@ -94,6 +104,7 @@ var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 func _ready() -> void:
 	add_to_group("monsters")
 	_timer = start_delay
+	health = max_health
 
 
 func _physics_process(delta: float) -> void:
@@ -401,6 +412,49 @@ func stun(seconds: float) -> void:
 	state = State.STUNNED
 	_timer = seconds * light_sensitivity
 	velocity = Vector3.ZERO
+
+
+## Host only: a gunshot hit us. Enough damage drives it off for a while.
+func take_damage(amount: float, from: Node = null) -> void:
+	if not multiplayer.is_server() or amount <= 0.0:
+		return
+	if state == State.DORMANT and from is Player:
+		_chase(from as Player)
+	health -= amount
+	_hit_flash.rpc()
+	if health <= 0.0:
+		health = max_health
+		_drive_off()
+
+
+## Host only: a tranquilizer dart. Stuns for a flat time (no light bonus),
+## but it doesn't do damage.
+func take_stun(seconds: float) -> void:
+	if not multiplayer.is_server():
+		return
+	_last_known_position = target.global_position if target else global_position
+	target = null
+	state = State.STUNNED
+	_timer = seconds
+	velocity = Vector3.ZERO
+
+
+## Host only: hurt too badly — it flees to recover instead of being killed
+## (so a chase can always come back later).
+func _drive_off() -> void:
+	_last_known_position = global_position
+	target = null
+	state = State.STUNNED
+	_timer = 4.0
+	velocity = Vector3.ZERO
+	_ignore_players_time = catch_cooldown
+
+
+## Sent by the host when a shot lands, so everyone hears it.
+@rpc("authority", "call_local", "reliable")
+func _hit_flash() -> void:
+	if has_node("Screech"):
+		$Screech.play()
 
 
 # ---------------------------------------------------------------- moving

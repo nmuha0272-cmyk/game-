@@ -491,8 +491,8 @@ for k,(x,z,yaw) in enumerate([(7.9,-80,90),(7.9,-56,90),(10.1,-49,-90),
 sc.node("PatrolPoints","Node3D","Monsters")
 for k,p in enumerate([(9,-9,-82),(9,-9,-72),(9,-9,-56),(5.5,-9,-65),(21,-9,-68),(38,-9,-68),(55,-9,-66),(72,-9,-66),(72,-9,-90),(18,-9,-52),(26,-9,-52)]):
     sc.node(f"Point{k+1}","Marker3D","Monsters/PatrolPoints",transform=xform(p))
-# The Long Man and his chase are switched off for testing (set to True to bring him back).
-LONG_MAN_ON=False
+# The Long Man and his chase (set to False to switch him off for testing).
+LONG_MAN_ON=True
 if LONG_MAN_ON:
   sc.node("LongMan",None,"Monsters",instance=X["longman"],node_paths=["patrol_points"],transform=xform((9,-9,-82),180),patrol_points=NP("../PatrolPoints"),start_delay="99999.0")
   inst("mphoto","Photo","Monsters/LongMan",(0,0,0),0)

@@ -439,6 +439,12 @@ res://
 - [ ] **Walkie-talkie system:** paired players talk at any distance; holding
       talk button emits sound radius that attracts monsters (host syncs
       monster investigation target)
+- [x] **Weapons and ammo:** one weapon slot per player (separate from gear),
+      ammo scarcity, gunshots attract monsters, weapons/ammo can be shared
+- [x] **Per-character starting loadouts** (Son: revolver, Journalist:
+      suppressed 9mm, Engineer: shotgun, Guard: pistol)
+- [x] **Monsters take damage** from gunfire and are driven off (never killed),
+      so a chase can always come back later
 
 ### Phase 10 — Chapter 1: "The Surface"
 
@@ -469,8 +475,8 @@ Tasks:
 - [x] One chase sequence through narrow tunnels
 - [x] Lore items that introduce the facility and each character's reason for coming
 - [x] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"
-- [ ] **Long Man scrambles Son's Sense** — test false echoes, verbal callouts work
-- [ ] **Walkie-talkie attracts Long Man** — test transmission noise radius, monster investigates
+- [x] **Long Man scrambles Son's Sense** — false echoes, verbal callouts work
+- [x] **Walkie-talkie attracts Long Man** — transmission noise radius, monster investigates
 - [ ] **Proximity chat** — test 5m range, no monster attraction
 - [ ] Replace placeholder art with real models, textures, and lighting
       (First pass done: generated PBR textures, forest, night sky, props,

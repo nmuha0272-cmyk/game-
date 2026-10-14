@@ -26,12 +26,32 @@ func _on_pressed() -> void:
 		return
 	start_cooldown()
 	_time_left = duration
-	status_text = "Sensing..."
 	_sound.play()
-	for monster in get_tree().get_nodes_in_group("monsters"):
-		if monster.global_position.distance_to(player.global_position) <= radius:
-			monster.set_sensed(true)
-			_sensed.append(monster)
+	var scrambled := _scrambler_near()
+	status_text = "Sense scrambled!" if scrambled else "Sensing..."
+	var pool := get_tree().get_nodes_in_group("monsters")
+	if scrambled:
+		# The Long Man jumbles the signal into false echoes: a random handful
+		# of monsters glow, wherever they really are.
+		pool.shuffle()
+		for i in mini(2, pool.size()):
+			pool[i].set_sensed(true)
+			_sensed.append(pool[i])
+	else:
+		for monster in pool:
+			if monster.global_position.distance_to(player.global_position) <= radius:
+				monster.set_sensed(true)
+				_sensed.append(monster)
+
+
+## The Long Man (and anything else with scrambles_sense) wrecks Sense when close.
+func _scrambler_near() -> bool:
+	for node in get_tree().get_nodes_in_group("monsters"):
+		var monster := node as Monster
+		if monster and monster.scrambles_sense \
+				and monster.global_position.distance_to(player.global_position) <= radius:
+			return true
+	return false
 
 
 func _process(delta: float) -> void:

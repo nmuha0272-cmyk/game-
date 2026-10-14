@@ -70,6 +70,42 @@ const INFO := {
 		"color": Color(0.7, 0.12, 0.08),
 		"hint": "Fuel for the power room generator.",
 	},
+	"ammo_38": {
+		"name": ".38 Speedloader", "shape": "box", "size": Vector3(0.04, 0.11, 0.04),
+		"color": Color(0.75, 0.65, 0.3), "shiny": true,
+		"hint": "Reloads your .38 Revolver. Click to add to your gun.",
+		"extra": {"ammo_type": "38", "rounds": 6},
+	},
+	"ammo_9mm": {
+		"name": "9mm Mag", "shape": "box", "size": Vector3(0.035, 0.13, 0.025),
+		"color": Color(0.6, 0.6, 0.62), "shiny": true,
+		"hint": "Reloads 9mm weapons. Click to add to your gun.",
+		"extra": {"ammo_type": "9mm", "rounds": 15},
+	},
+	"ammo_12ga": {
+		"name": "12ga Shells", "shape": "cylinder", "size": Vector3(0.02, 0.11, 0),
+		"color": Color(0.7, 0.2, 0.12),
+		"hint": "Reloads the shotgun. Click to add to your gun.",
+		"extra": {"ammo_type": "12ga", "rounds": 6},
+	},
+	"ammo_308": {
+		"name": ".308 Stripper Clip", "shape": "box", "size": Vector3(0.02, 0.12, 0.02),
+		"color": Color(0.7, 0.55, 0.25), "shiny": true,
+		"hint": "Reloads the bolt-action rifle. Click to add to your gun.",
+		"extra": {"ammo_type": "308", "rounds": 5},
+	},
+	"ammo_dart": {
+		"name": "Tranq Dart", "shape": "cylinder", "size": Vector3(0.015, 0.12, 0),
+		"color": Color(0.3, 0.7, 0.6), "shiny": true,
+		"hint": "Reloads the tranquilizer gun. Click to add to your gun.",
+		"extra": {"ammo_type": "dart", "rounds": 1},
+	},
+	"ammo_flare_shell": {
+		"name": "Flare Shell", "shape": "cylinder", "size": Vector3(0.022, 0.09, 0),
+		"color": Color(0.8, 0.25, 0.1),
+		"hint": "Reloads the flare gun. Click to add to your gun.",
+		"extra": {"ammo_type": "flare_shell", "rounds": 1},
+	},
 }
 
 ## How much slower everyone except the Guard moves while carrying something heavy.

@@ -12,6 +12,7 @@ const INFO := {
 		"held_item": "res://scenes/player/held_items/dog_tags.tscn",
 		"color": Color(0.42, 0.27, 0.16),  # brown canvas jacket
 		"ability_script": "res://scripts/abilities/son_sense.gd",
+		"weapon": "revolver", "weapon_loaded": 6, "weapon_reserve": {"38": 6},
 	},
 	Id.JOURNALIST: {
 		"name": "The Journalist",
@@ -20,6 +21,7 @@ const INFO := {
 		"held_item": "res://scenes/player/held_items/film_camera.tscn",
 		"color": Color(0.62, 0.5, 0.36),  # tan trench coat
 		"ability_script": "res://scripts/abilities/journalist_flash.gd",
+		"weapon": "suppressed_9mm", "weapon_loaded": 12, "weapon_reserve": {"9mm": 12},
 	},
 	Id.ENGINEER: {
 		"name": "The Engineer",
@@ -28,6 +30,7 @@ const INFO := {
 		"held_item": "res://scenes/player/held_items/wrench.tscn",
 		"color": Color(0.14, 0.17, 0.3),  # navy overalls
 		"ability_script": "res://scripts/abilities/engineer_repair.gd",
+		"weapon": "shotgun", "weapon_loaded": 6, "weapon_reserve": {"12ga": 6},
 	},
 	Id.GUARD: {
 		"name": "The Guard (Frank)",
@@ -36,6 +39,7 @@ const INFO := {
 		"held_item": "res://scenes/player/held_items/heavy_flashlight.tscn",
 		"color": Color(0.3, 0.33, 0.22),  # olive field jacket
 		"ability_script": "res://scripts/abilities/guard_strength.gd",
+		"weapon": "pistol", "weapon_loaded": 15, "weapon_reserve": {"9mm": 30},
 		# Frank is big: a bit slower, and his footsteps are louder.
 		"speed_multiplier": 0.85,
 		"footstep_volume_db": 5.0,

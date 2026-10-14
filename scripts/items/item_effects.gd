@@ -25,6 +25,11 @@ static func server_use(item: Dictionary, player: Player, target_id: int) -> bool
 			return true
 		"walkie":
 			_radio_call(player)
+		"ammo_38", "ammo_9mm", "ammo_12ga", "ammo_308", "ammo_dart", "ammo_flare_shell":
+			player.weapon.server_add_ammo(item.ammo_type, int(item.rounds))
+			player.inventory.server_tell("Added %d x %s." % [
+					int(item.rounds), Weapons.AMMO.get(item.ammo_type, {}).get("name", "ammo")])
+			return true
 		_:
 			player.inventory.server_tell(Items.INFO[item.id].hint)
 	return false
