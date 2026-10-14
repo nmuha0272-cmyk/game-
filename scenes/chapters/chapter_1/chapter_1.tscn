@@ -4094,13 +4094,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -9, -52)
 [node name="Point11" type="Marker3D" parent="Monsters/PatrolPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, -9, -52)
 
-[node name="LongMan" parent="Monsters" node_paths=PackedStringArray("patrol_points") instance=ExtResource("15_x")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, -9, -82)
-patrol_points = NodePath("../PatrolPoints")
-start_delay = 99999.0
-
-[node name="Photo" parent="Monsters/LongMan" instance=ExtResource("14_x")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+; [node name="LongMan" parent="Monsters" node_paths=PackedStringArray("patrol_points") instance=ExtResource("15_x")]
+; transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, -9, -82)
+; patrol_points = NodePath("../PatrolPoints")
+; start_delay = 99999.0
+;
+; [node name="Photo" parent="Monsters/LongMan" instance=ExtResource("14_x")]
+; transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_79")
@@ -4125,23 +4125,23 @@ script = ExtResource("42_x")
 play_on_start = true
 shots = [{"from": Vector3(-14, 9, 62), "from_look": Vector3(0, 2, -6), "to": Vector3(-6, 6.5, 50), "to_look": Vector3(0, 2, -8), "time": 5.0, "text": "1999. Site 12 was sealed... with people still inside."}, {"from": Vector3(-6.5, 1.8, 27), "from_look": Vector3(-4, 1.7, 22), "to": Vector3(-4.6, 1.7, 24.6), "to_look": Vector3(-4, 1.7, 22), "time": 3.5, "text": "Officially, it was only ever a weather station."}, {"from": Vector3(7, 2.2, 15), "from_look": Vector3(-5, 3.4, -9), "to": Vector3(3, 2.8, 9), "to_look": Vector3(-5, 3.4, -9), "time": 4.0, "text": "2015. Four strangers came looking for answers."}, {"from": Vector3(0.5, 1.7, 30), "from_look": Vector3(0, 1.4, 22), "to": Vector3(0.2, 1.65, 26), "to_look": Vector3(0, 1.3, 22), "time": 2.5, "text": "CHAPTER 1  -  THE SURFACE"}]
 
-[node name="Reveal" type="Node" parent="Cutscenes"]
-script = ExtResource("42_x")
-shots = [{"from": Vector3(9.4, -7.7, -73.2), "from_look": Vector3(9, -6.9, -82), "to": Vector3(9.15, -7.6, -75.2), "to_look": Vector3(9, -6.7, -82), "time": 1.8, "text": "SUBJECT 7"}, {"from": Vector3(9.25, -6.35, -80.1), "from_look": Vector3(9, -6.45, -81.7), "to": Vector3(9.08, -6.42, -80.7), "to_look": Vector3(9, -6.45, -81.7), "time": 1.6, "text": ""}]
+; [node name="Reveal" type="Node" parent="Cutscenes"]
+; script = ExtResource("42_x")
+; shots = [{"from": Vector3(9.4, -7.7, -73.2), "from_look": Vector3(9, -6.9, -82), "to": Vector3(9.15, -7.6, -75.2), "to_look": Vector3(9, -6.7, -82), "time": 1.8, "text": "SUBJECT 7"}, {"from": Vector3(9.25, -6.35, -80.1), "from_look": Vector3(9, -6.45, -81.7), "to": Vector3(9.08, -6.42, -80.7), "to_look": Vector3(9, -6.45, -81.7), "time": 1.6, "text": ""}]
 
-[node name="ChaseTrigger" type="Area3D" parent="Triggers" node_paths=PackedStringArray("monster", "cutscene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.5, -67)
-script = ExtResource("39_x")
-message = "RUN!"
-monster = NodePath("../../Monsters/LongMan")
-cutscene = NodePath("../../Cutscenes/Reveal")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/ChaseTrigger"]
-shape = SubResource("BoxShape3D_200")
-
-[node name="Sound" type="AudioStreamPlayer" parent="Triggers/ChaseTrigger"]
-stream = ExtResource("51_x")
-volume_db = -4.0
+; [node name="ChaseTrigger" type="Area3D" parent="Triggers" node_paths=PackedStringArray("monster", "cutscene")]
+; transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.5, -67)
+; script = ExtResource("39_x")
+; message = "RUN!"
+; monster = NodePath("../../Monsters/LongMan")
+; cutscene = NodePath("../../Cutscenes/Reveal")
+;
+; [node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/ChaseTrigger"]
+; shape = SubResource("BoxShape3D_200")
+;
+; [node name="Sound" type="AudioStreamPlayer" parent="Triggers/ChaseTrigger"]
+; stream = ExtResource("51_x")
+; volume_db = -4.0
 
 [node name="RoomLights" type="Node3D" parent="Puzzles"]
 script = ExtResource("24_x")
