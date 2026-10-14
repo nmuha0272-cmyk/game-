@@ -7,6 +7,6 @@ script = ExtResource("1_entry")
 id = "file_power_manual"
 title = "Power Room: Restart Procedure"
 type = 0
-text = "EMERGENCY POWER RESTART\n1. Fill the generator with fuel (the spare can is in the yard shed).\n2. Start the generator (repair it if it's stuck. Ask Engineering).\n3. Set the 5 main breakers to match the WIRING DIAGRAM in the Director's office. It changes every time the system is reset, so CHECK IT.\n4. The security shutter to the lower tunnels opens when power is back.\nNOTE: Do not restore power to the cell block without the Director's order."
+text = "EMERGENCY POWER RESTART\n1. Pour the fuel into the generator tank (a spare can is on the stairwell landing). The generator starts by itself.\n2. Set the 3 main breakers to match the WIRING DIAGRAM on the wall beside them.\n3. The security shutter to the lower tunnels opens when power is back."
 owner_character = -1
 voice_line = ""

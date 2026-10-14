@@ -491,8 +491,11 @@ for k,(x,z,yaw) in enumerate([(7.9,-80,90),(7.9,-56,90),(10.1,-49,-90),
 sc.node("PatrolPoints","Node3D","Monsters")
 for k,p in enumerate([(9,-9,-82),(9,-9,-72),(9,-9,-56),(5.5,-9,-65),(21,-9,-68),(38,-9,-68),(55,-9,-66),(72,-9,-66),(72,-9,-90),(18,-9,-52),(26,-9,-52)]):
     sc.node(f"Point{k+1}","Marker3D","Monsters/PatrolPoints",transform=xform(p))
-sc.node("LongMan",None,"Monsters",instance=X["longman"],node_paths=["patrol_points"],transform=xform((9,-9,-82),180),patrol_points=NP("../PatrolPoints"),start_delay="99999.0")
-inst("mphoto","Photo","Monsters/LongMan",(0,0,0),0)
+# The Long Man and his chase are switched off for testing (set to True to bring him back).
+LONG_MAN_ON=False
+if LONG_MAN_ON:
+  sc.node("LongMan",None,"Monsters",instance=X["longman"],node_paths=["patrol_points"],transform=xform((9,-9,-82),180),patrol_points=NP("../PatrolPoints"),start_delay="99999.0")
+  inst("mphoto","Photo","Monsters/LongMan",(0,0,0),0)
 sc.node("Navigation","NavigationRegion3D",".",navigation_mesh=SR(navmesh),script=ER(S_NAV))
 
 stinger("TunnelsSting",(9,-7.5,-38),(9,3,5),msg="It's cold down here. Something smells like rust and old blood.")
@@ -503,10 +506,11 @@ sc.node("Intro","Node","Cutscenes",script=ER(S_CUT),play_on_start="true",shots=s
     ((-6.5,1.8,27),(-4,1.7,22),(-4.6,1.7,24.6),(-4,1.7,22),3.5,"Officially, it was only ever a weather station."),
     ((7,2.2,15),(-5,3.4,-9),(3,2.8,9),(-5,3.4,-9),4.0,"2015. Four strangers came looking for answers."),
     ((0.5,1.7,30),(0,1.4,22),(0.2,1.65,26),(0,1.3,22),2.5,"CHAPTER 1  -  THE SURFACE")))
-sc.node("Reveal","Node","Cutscenes",script=ER(S_CUT),shots=shots(
+if LONG_MAN_ON:
+  sc.node("Reveal","Node","Cutscenes",script=ER(S_CUT),shots=shots(
     ((9.4,-7.7,-73.2),(9,-6.9,-82),(9.15,-7.6,-75.2),(9,-6.7,-82),1.8,"SUBJECT 7"),
     ((9.25,-6.35,-80.1),(9,-6.45,-81.7),(9.08,-6.42,-80.7),(9,-6.45,-81.7),1.6,"")))
-stinger("ChaseTrigger",(9,-7.5,-67),(4,3,4),msg="RUN!",script=S_CHASE,np=["monster","cutscene"],monster=NP("../../Monsters/LongMan"),cutscene=NP("../../Cutscenes/Reveal"))
+  stinger("ChaseTrigger",(9,-7.5,-67),(4,3,4),msg="RUN!",script=S_CHASE,np=["monster","cutscene"],monster=NP("../../Monsters/LongMan"),cutscene=NP("../../Cutscenes/Reveal"))
 
 # ============================================================ ROOM 5: ELEVATOR ROOM
 sc.node("RoomLights","Node3D","Puzzles",script=ER(S_LIGHTS))
@@ -631,26 +635,28 @@ S_BREAKER=SC("res://scripts/puzzles/breaker_panel.gd"); S_SWITCH=SC("res://scrip
 for n,c,sz in [("PowerDoorSlot",(14.3,-7.475,-42.5),(0.6,3.05,2)),("PowerHall",(15.5,-7.65,-42.5),(2.4,2.7,2)),("PowerRoom",(21,-7,-42),(9,4,10))]:
     B(n,R,c,sz,ROCK,collide=False,op=2)
 inst("door","PowerRoomDoor","Puzzles",(14.3,-9,-41.5),90)
-sc.node("Lock","Node","Puzzles/PowerRoomDoor",script=ER(S_LOCK),keycard_color=S("yellow"))
-label("PowerSign",U,(13.97,-6.75,-42.5),-90,"POWER ROOM - YELLOW CARD ONLY",size=0.003,font=32,color=(0.95,0.8,0.3))
-label("PowerSpare",U,(13.97,-7.25,-42.5),-90,"spare card + generator fuel:\nYARD SHED",size=0.0028,font=32,color=(0.75,0.7,0.6),outline="0")
-item("keycard_yellow",(10.6,0.85,12.0)); item("fuel_can",(9.4,0.25,12.8))
+label("PowerSign",U,(13.97,-6.75,-42.5),-90,"POWER ROOM",size=0.003,font=32,color=(0.95,0.8,0.3))
+item("fuel_can",(8.6,-3.8,-25.4)); item("battery",(10.6,0.85,12.0))
 BX("ShedShelf",E,10.2,11.3,0.8,0.85,11.2,12.8,DWOOD)
 light("ShedBulb","Lights",(10,2.3,12),color=(1,0.8,0.5),energy=0.5,rng=4,flicker=0.7)
 stinger("ShedSting",(10,1.2,12),(2.6,2.4,2.6),msg="Something moves between the trees behind the shed. It's gone when you look.")
 # Inside: generator, fuel tank, breaker panel, and the manual.
-inst("gen","PowerGenerator","Puzzles",(19,-9,-46.2),0,np=["lamp"],lamp=NP("../PowerGenLamp"))
-light("PowerGenLamp","Puzzles",(19,-7,-45.2),color=(1,0.8,0.55),energy=0.8,rng=5)
+# The generator (it starts by itself once it has fuel: its light and hum come on).
+BX("PowerGenBody",NPROP,18.0,20.0,-9,-7.9,-46.9,-45.5,METAL)
+BX("PowerGenTop",U,18.3,19.7,-7.9,-7.6,-46.7,-45.7,RUST)
+sc.node("GenRunning","Node3D","Puzzles",script=ER(S_LIGHTS))
+light("PowerGenLamp","Puzzles/GenRunning",(19,-7,-45.2),color=(1,0.8,0.55),energy=0.8,rng=5)
+sc.node("GenHum","AudioStreamPlayer3D","Puzzles/GenRunning",transform=xform((19,-8.4,-46.2)),stream=ER(A("generator_hum.wav")),unit_size="6.0")
 inst("fuse","FuelTank","Puzzles",(21.2,-7.8,-46.95),0,item_id=S("fuel_can"),insert_time="3.0",engineer_insert_time="2.0",label_text=S("FUEL"))
-gate("FuelGate","Puzzles",["../PowerGenerator","../FuelTank"],[],msg="The generator coughs... and starts. Now the breakers.")
+gate("FuelGate","Puzzles",["../FuelTank"],["../GenRunning"],msg="The generator coughs... and starts. Now set the breakers to the diagram on the wall.")
 sc.node("BreakerPanel","Node3D","Puzzles",node_paths=["powered_by"],transform=xform((25.45,-7.5,-41),-90),script=ER(S_BREAKER),powered_by=NP("../FuelGate"))
-for k in range(5):
-    sc.node(f"Switch{k+1}","StaticBody3D","Puzzles/BreakerPanel",transform=xform(((k-2)*0.32,0,0)),script=ER(S_SWITCH),number=str(k+1))
+for k in range(3):
+    sc.node(f"Switch{k+1}","StaticBody3D","Puzzles/BreakerPanel",transform=xform(((k-1)*0.32,0,0)),script=ER(S_SWITCH),number=str(k+1))
 BX("BreakerBox",U,25.4,25.5,-8.05,-6.95,-41.9,-40.1,METAL,collide=False)
-label("BreakerSign",U,(25.42,-6.75,-41),-90,"MAIN BREAKERS - SET TO THE WIRING DIAGRAM\n(the diagram is in the Director's office)",size=0.0028,font=32,color=(0.9,0.8,0.5))
-sc.node("WiringDiagram","Label3D","Puzzles",node_paths=["source"],transform=xform((5,1.9,-6.32),180),pixel_size="0.0032",text=S(""),font_size="36",
+label("BreakerSign",U,(25.42,-6.75,-41),-90,"MAIN BREAKERS - SET THEM TO THE WIRING DIAGRAM",size=0.0028,font=32,color=(0.9,0.8,0.5))
+sc.node("WiringDiagram","Label3D","Puzzles",node_paths=["source"],transform=xform((25.43,-7.55,-43.6),-90),pixel_size="0.0032",text=S(""),font_size="36",
         modulate=col(0.3,0.35,0.6),outline_size="0",script=ER(S_CODE),source=NP("../BreakerPanel"),template=S("WIRING DIAGRAM - POWER ROOM BREAKERS\n%s"))
-mi("DiagramPaper",St,(5,1.9,-6.31),mesh("BoxMesh",size=v3(2.6,0.7,0.01)),PAPER,shadow=False)
+mi("DiagramPaper",U,(25.44,-7.55,-43.6),mesh("BoxMesh",size=v3(1.7,0.6,0.01)),PAPER,yaw=-90,shadow=False)
 sc.node("PowerRoomLights","Node3D","Puzzles",script=ER(S_LIGHTS))
 light("PowerBright1","Puzzles/PowerRoomLights",(19,-5.6,-42),energy=1.0,rng=9)
 light("PowerBright2","Puzzles/PowerRoomLights",(9,-6.6,-48),energy=0.9,rng=8)

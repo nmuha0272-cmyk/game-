@@ -68,8 +68,7 @@ const INFO := {
 	"fuel_can": {
 		"name": "Fuel Can", "shape": "box", "size": Vector3(0.28, 0.36, 0.16),
 		"color": Color(0.7, 0.12, 0.08),
-		"hint": "Heavy! Fuel for the power room generator.",
-		"heavy": true,
+		"hint": "Fuel for the power room generator.",
 	},
 }
 

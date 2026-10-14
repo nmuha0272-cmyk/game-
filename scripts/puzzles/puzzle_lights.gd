@@ -1,6 +1,7 @@
 extends Node3D
 ## A group of lights that turn on when a puzzle is solved (a PuzzleGate
 ## output), like the lights coming back after the power is restored.
+## Sounds in the group (like a generator's hum) start and stop with them.
 
 
 func _ready() -> void:
@@ -21,3 +22,8 @@ func _show(value: bool) -> void:
 	for child in get_children():
 		if child is Light3D:
 			child.visible = value
+		elif child is AudioStreamPlayer3D:
+			if value and not child.playing:
+				child.play()
+			elif not value:
+				child.stop()
