@@ -61,10 +61,15 @@ game. Each has one unique ability, so the team must work together.
 
 | Character | Role | Ability | Held Item | Starting Weapon |
 |---|---|---|---|---|
-| **The Son (Eli)** | Tracker | **Sense** (Ch.1): Hold to see nearby monsters glow through walls for 3s. 20s cooldown.<br>**Pulse** (Ch.2): Sonar ping reveals exact monster positions/direction 30m, 2s. 30s cooldown, loud.<br>**Resonance** (Ch.3): Mark monster weak point, +50% team damage 5s. 40s cooldown.<br>**Echo Walk** (Ch.4): Phase 2s — silent, pass through monsters, see patrol trails. 45s cooldown.<br>**Inheritance** (Ch.5): Channel parent's serum 10s — Sense always on, silent, monsters hesitate. Once/chapter, exhausts after. | Parent's dog tags | .38 Revolver + 1 speedloader (6 rds) |
-| **The Journalist** | Stunner / Lore | **Camera Flash:** Stuns a monster in front of her for 2 seconds. 15 second cooldown. Photographing evidence unlocks lore entries. | Old film camera | Suppressed 9mm + 1 mag (12 rds) |
-| **The Engineer** | Fixer | **Repair:** Hold to fix generators, elevators, broken panels, and hack locked security doors. Only he can do this. | Wrench | 12ga Pump Shotgun + 6 shells |
-| **The Guard (Frank)** | Protector | **Strength:** Hold doors shut against monsters, move heavy objects, build barricades, carry a downed teammate. Moves slower and makes more noise. | Heavy flashlight | 9mm Pistol + 2 mags (30 rds) + Flashlight melee |
+| **The Son (Eli)** | Tracker | **Sense** (Ch.1): Hold to see nearby monsters glow through walls for 3s. 20s cooldown.<br>**Pulse** (Ch.2): Sonar ping reveals exact monster positions/direction 30m, 2s. 30s cooldown, loud.<br>**Resonance** (Ch.3): Mark monster weak point, +50% team damage 5s. 40s cooldown.<br>**Echo Walk** (Ch.4): Phase 2s — silent, pass through monsters, see patrol trails. 45s cooldown.<br>**Inheritance** (Ch.5): Channel parent's serum 10s — Sense always on, silent, monsters hesitate. Once/chapter, exhausts after. | Parent's dog tags | None — find one |
+| **The Journalist** | Stunner / Lore | **Camera Flash:** Stuns a monster in front of her for 2 seconds. 15 second cooldown. Photographing evidence unlocks lore entries. | Old film camera | None — find one |
+| **The Engineer** | Fixer | **Repair:** Hold to fix generators, elevators, broken panels, and hack locked security doors. Only he can do this. | Wrench | None — find one |
+| **The Guard (Frank)** | Protector | **Strength:** Hold doors shut against monsters, move heavy objects, build barricades, carry a downed teammate. Moves slower and makes more noise. | Heavy flashlight | None — find one |
+
+**Yes, that's right: nobody starts with a gun.** Every chapter begins unarmed.
+Weapons are scavenged from the world (armories, dead security, hidden caches) —
+see "Weapons and Ammunition". A looted weapon is yours only until you drop it or
+go down.
 
 **Shared by all characters:** walk, sprint (limited stamina), crouch, flashlight,
 interact, pick up small items, revive downed teammates.
@@ -164,11 +169,15 @@ Magazines are **not universal** — each weapon takes specific mags.
 - **Crowbar** (if in gear slot) — Heavy swing, stuns briefly. Loud impact.
 - **Guard's Flashlight** — Heavy blunt. Only Guard has it.
 
-**Character weapon affinities (starting loadout suggestion):**
-- **Son:** .38 Revolver + 1 speedloader (light, fits tracker role)
-- **Journalist:** Suppressed 9mm + 1 mag (stealth, lore focus)
-- **Engineer:** 12ga Shotgun + 6 shells (breach doors, close defense)
-- **Guard:** 9mm Pistol + 2 mags + Flashlight melee (sustained defense)
+**Character weapon affinities (what each is most likely to grab first):**
+- **Son:** .38 Revolver (light, fits tracker role)
+- **Journalist:** Suppressed 9mm (stealth, lore focus)
+- **Engineer:** 12ga Shotgun (breach doors, close defense)
+- **Guard:** 9mm Pistol + Flashlight melee (sustained defense)
+
+Nobody *starts* with these; they are the weapons each character is built to use
+best once the team finds them. Chapter 1's armory (just below the stairwell) is
+where the team gets its first guns.
 
 **Ammo pickup examples per chapter:**
 - Ch 1: ~12 .38 rounds, 15 9mm, 6 shells total (shared across team)
@@ -441,8 +450,9 @@ res://
       monster investigation target)
 - [x] **Weapons and ammo:** one weapon slot per player (separate from gear),
       ammo scarcity, gunshots attract monsters, weapons/ammo can be shared
-- [x] **Per-character starting loadouts** (Son: revolver, Journalist:
-      suppressed 9mm, Engineer: shotgun, Guard: pistol)
+- [x] **No starting weapons:** every chapter begins unarmed; weapons are looted
+      from the world. A weapon can be dropped (H) or handed over, and you lose
+      it if you go down.
 - [x] **Monsters take damage** from gunfire and are driven off (never killed),
       so a chase can always come back later
 
@@ -458,13 +468,19 @@ Room-by-room plan (gray-box first):
    (Guard pushes it). *Gear: Green Keycard, Walkie-Talkie, first Reel Tape.*
 3. **Hidden Stairwell** — Dark and narrow. Flashlights start draining here, so
    players learn to share batteries. *Gear: Batteries, Flare.*
-4. **Maintenance Tunnels** — A **Vent Crawl** to unlock a door from the other
-   side, then the **first monster encounter**: a chase where the **Long Man
+4. **Security Armory (bottom of the stairwell)** — The players arrive **unarmed**.
+   The Long Man is waiting in the dark and charges them the moment they reach
+   the bottom. They scramble to the weapon racks: grab a gun and drive him off
+   with fire. This ambusher **flees for good** once beaten (the real one still
+   waits in his cell). *Gear: the team's first weapons — Shotgun, Pistol,
+   Revolver, Suppressed 9mm — plus ammo and a Med Kit.*
+5. **Maintenance Tunnels** — A **Vent Crawl** to unlock a door from the other
+   side, then the **Long Man encounter**: a chase where the **Long Man
    scrambles the Son's Sense** (false echoes), the Journalist's flash stuns it,
    and the Guard holds a door shut behind the team. Players learn to
    communicate monster positions verbally when Sense fails.
    *Gear: Fuse, Med Kit.*
-5. **Elevator Room** — **Power Routing**: the Engineer repairs the elevator
+6. **Elevator Room** — **Power Routing**: the Engineer repairs the elevator
    generator, others find two missing fuses, and the Guard holds off the
    monster. Then a **Dual Key Console** starts the elevator.
 
@@ -472,6 +488,8 @@ Tasks:
 - [x] Gray-box all five rooms
 - [x] Place puzzles and gear as listed above
 - [x] Confirm every character's ability is needed at least once
+- [x] **Unarmed start + armory ambush:** players begin with no weapons, meet the
+      Long Man at the bottom of the stairwell, and arm up from the armory racks
 - [x] One chase sequence through narrow tunnels
 - [x] Lore items that introduce the facility and each character's reason for coming
 - [x] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"

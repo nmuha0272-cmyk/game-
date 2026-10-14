@@ -27,6 +27,10 @@ func can_interact(_by: Player) -> bool:
 
 func get_prompt(by: Player) -> String:
 	var text := "[E] Pick up %s" % Items.display_name(item)
+	if Items.is_weapon(item):
+		if by.weapon.has_weapon():
+			text += "  (replaces %s)" % by.weapon.info().get("name", "your gun")
+		return text
 	if by.inventory.free_slot() < 0:
 		text = "%s  (hands full: drop something with G)" % Items.display_name(item)
 	elif Items.is_heavy(item) and by.character != Characters.Id.GUARD:
@@ -52,6 +56,11 @@ func _server_pick_up(by: Player) -> void:
 	if _taken or by == null or by.is_downed:
 		return
 	if by.global_position.distance_to(global_position) > 3.5:
+		return
+	if Items.is_weapon(item):
+		if by.weapon.server_pick_up(item):
+			_taken = true
+			queue_free()
 		return
 	if by.inventory.server_add(item):
 		_taken = true

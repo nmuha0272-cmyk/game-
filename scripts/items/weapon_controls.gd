@@ -14,6 +14,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		weapon.request_toggle()
 	elif event.is_action_pressed("reload"):
 		weapon.request_reload()
+	elif event.is_action_pressed("drop_weapon"):
+		weapon.request_drop()
 	elif event.is_action_pressed("use_item") and weapon.drawn:
 		weapon.request_fire()
 

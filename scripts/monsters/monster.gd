@@ -42,6 +42,9 @@ enum HidingCounter { NONE, DRAG, OVERLOAD }
 @export_group("Combat")
 ## How much gunfire it takes before it is driven off (it then recovers).
 @export var max_health := 100.0
+## Some monsters (an early scripted ambusher) leave the map for good when driven
+## off instead of recovering to hunt again.
+@export var leaves_when_beaten := false
 ## The Long Man: while he is close, he jumbles the Son's Sense (false echoes).
 @export var scrambles_sense := false
 ## The Wired: while it is close, it reverses the Engineer's repairs.
@@ -440,14 +443,31 @@ func take_stun(seconds: float) -> void:
 
 
 ## Host only: hurt too badly — it flees to recover instead of being killed
-## (so a chase can always come back later).
+## (so a chase can always come back later). A scripted ambusher leaves entirely.
 func _drive_off() -> void:
+	if leaves_when_beaten:
+		_leave.rpc()
+		return
 	_last_known_position = global_position
 	target = null
 	state = State.STUNNED
 	_timer = 4.0
 	velocity = Vector3.ZERO
 	_ignore_players_time = catch_cooldown
+
+
+## Sent by the host when this monster is beaten and gone for good. Runs on every
+## computer: it vanishes and stops thinking (the node stays, harmless).
+@rpc("authority", "call_local", "reliable")
+func _leave() -> void:
+	set_physics_process(false)
+	visible = false
+	remove_from_group("monsters")
+	var shape := get_node_or_null("CollisionShape3D") as CollisionShape3D
+	if shape:
+		shape.set_deferred("disabled", true)
+	if has_node("SenseGlow"):
+		$SenseGlow.visible = false
 
 
 ## Sent by the host when a shot lands, so everyone hears it.

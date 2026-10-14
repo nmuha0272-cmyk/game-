@@ -61,6 +61,12 @@ func set_loadout(id: String, start_loaded: int, start_reserve: Dictionary) -> vo
 	changed.emit()
 
 
+## This gun as a world item (so it can be dropped for someone else to find).
+func to_item() -> Dictionary:
+	return {"id": "weapon_" + weapon_id, "weapon": weapon_id,
+			"loaded": loaded, "reserve": reserve.duplicate(true)}
+
+
 # ------------------------------------------------------------- owner requests
 
 func request_toggle() -> void:
@@ -91,7 +97,51 @@ func request_reload() -> void:
 		_request_reload.rpc_id(1)
 
 
+## Owner asks to put the gun down (it becomes a world item again).
+func request_drop() -> void:
+	if not has_weapon():
+		return
+	if multiplayer.is_server():
+		server_drop()
+	else:
+		_request_drop.rpc_id(1)
+
+
 # ------------------------------------------------------------- host-only changes
+
+## Host only: pick up a weapon item. Any gun already held is dropped first.
+func server_pick_up(item: Dictionary) -> bool:
+	if not multiplayer.is_server() or player.is_downed or not Items.is_weapon(item):
+		return false
+	var id := Items.weapon_id(item)
+	if not Weapons.INFO.has(id):
+		return false
+	if has_weapon():
+		server_drop()
+	var capacity := int(Weapons.INFO[id].get("capacity", 0))
+	var start_loaded := int(item.get("loaded", capacity))
+	var start_reserve: Dictionary = item.get("reserve", {})
+	weapon_id = id
+	loaded = clampi(start_loaded, 0, capacity)
+	reserve = start_reserve.duplicate(true)
+	drawn = false
+	_send()
+	server_tell("Picked up the %s. Press 4 to draw it." % Weapons.display_name(id))
+	return true
+
+
+## Host only: drop the gun in front of the player (and forget it).
+func server_drop() -> void:
+	if not multiplayer.is_server() or not has_weapon() or player.is_downed:
+		return
+	var spawner := ItemSpawner.find(player.get_tree())
+	if spawner:
+		spawner.server_drop(to_item(), player)
+	weapon_id = ""
+	loaded = 0
+	reserve = {}
+	drawn = false
+	_send()
 
 func server_set_drawn(value: bool) -> void:
 	if not multiplayer.is_server():
@@ -203,6 +253,12 @@ func _request_fire() -> void:
 func _request_reload() -> void:
 	if multiplayer.is_server() and multiplayer.get_remote_sender_id() == player.get_multiplayer_authority():
 		server_reload()
+
+
+@rpc("any_peer", "reliable")
+func _request_drop() -> void:
+	if multiplayer.is_server() and multiplayer.get_remote_sender_id() == player.get_multiplayer_authority():
+		server_drop()
 
 
 # ------------------------------------------------------------- messages

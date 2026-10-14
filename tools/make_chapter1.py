@@ -498,7 +498,7 @@ if LONG_MAN_ON:
   inst("mphoto","Photo","Monsters/LongMan",(0,0,0),0)
 sc.node("Navigation","NavigationRegion3D",".",navigation_mesh=SR(navmesh),script=ER(S_NAV))
 
-stinger("TunnelsSting",(9,-7.5,-38),(9,3,5),msg="It's cold down here. Something smells like rust and old blood.")
+stinger("TunnelsSting",(9,-7.5,-44),(9,3,5),msg="It's cold down here. Something smells like rust and old blood.")
 # Cutscenes: the intro over the station, and Subject 7 rising in his cell.
 sc.node("Cutscenes","Node",".")
 sc.node("Intro","Node","Cutscenes",script=ER(S_CUT),play_on_start="true",shots=shots(
@@ -891,6 +891,35 @@ for k,(x,z) in enumerate([(65.5,-68),(78.5,-73)]):
     mi(f"IVPole{k}",U,(x,-8.05,z),mesh("CylinderMesh",top_radius="0.02",bottom_radius="0.02",height="1.9",radial_segments="6",rings="1"),METAL,shadow=False)
     mi(f"IVBag{k}",U,(x+0.08,-7.25,z),mesh("BoxMesh",size=v3(0.04,0.22,0.14)),SR(sc.sub("StandardMaterial3D", albedo_color=col(0.8,0.75,0.6,0.6), transparency="1")),shadow=False)
 label("LabChart",U,(64.05,-7.2,-69),90,"GROWTH CHART - SUBJECT 7\nWK 1   6 ft 0\nWK 14  7 ft 11\nWK 31  ???",size=0.0032,font=36,color=(0.85,0.8,0.65))
+
+# ============================================================ THE ARMORY + THE AMBUSH
+# Right under the stairwell the survivors blunder into the old security armory.
+# The Long Man is waiting: he bursts out and comes for them. There are no
+# starting weapons any more, so this is where the team arms up: guns and ammo
+# sit on the racks. Drive him off with gunfire and he flees the surface for good
+# (this one is scripted to leave; the real one still waits down in his cell).
+prop("WeaponCabinet",NPROP,"cabinet",(4.5,-9,-40.2),90,collide=("box",(0.6,1.35,0.65),(0,0.675,0)))
+BX("ArmoryTable",U,11.4,13.6,-9,-8.25,-43.6,-42.4,METAL)
+BX("ArmoryRack",U,13.72,14.0,-9,-6.5,-39.2,-36.0,METAL,collide=False)
+crate("ArmCrate0",NPROP,5.2,-9,-43.5,0.8,8); crate("ArmCrate1",NPROP,12.9,-9,-36.6,0.7,-12)
+barrel("ArmBarrel0",NPROP,4.9,-9,-36.3)
+label("ArmorySign",U,(12,-6.7,-44.35),0,"SECURITY ARMORY\nWEAPONS - AUTHORISED PERSONNEL ONLY",size=0.003,font=36,color=(0.95,0.8,0.3))
+light("ArmoryLight1","Lights",(9,-6.6,-38.5),color=(1,0.9,0.72),energy=0.9,rng=8,flicker=0.25)
+light("ArmoryLight2","Lights",(12.5,-6.6,-42.5),color=(1,0.88,0.7),energy=0.7,rng=7,flicker=0.4)
+# the guns and ammo (spread along both racks so several people can arm up)
+item("weapon_shotgun",(13.85,-8.75,-37.2)); item("weapon_pistol",(13.85,-8.75,-38.2))
+item("weapon_revolver",(13.85,-8.75,-39.0)); item("weapon_suppressed_9mm",(4.55,-8.75,-39.6))
+item("ammo_12ga",(4.55,-8.85,-38.4)); item("ammo_9mm",(4.55,-8.85,-37.6))
+item("ammo_9mm",(13.85,-8.85,-36.7)); item("ammo_38",(11.9,-8.75,-43.1))
+item("ammo_308",(13.2,-8.75,-43.1)); item("medkit",(12.6,-8.75,-43.1))
+# a dead security guard, and the sidearm he never got to use
+BX("GuardTorso",U,6.8,7.4,-8.72,-8.34,-40.5,-39.4,BLACK,collide=False)
+mi("GuardHead",U,(7.1,-8.55,-39.15),mesh("SphereMesh",radius="0.12",height="0.24",radial_segments="10",rings="5"),BLACK,shadow=False)
+label("GuardNote",U,(7.1,-8.2,-39.9),0,"GUARD - KIA",size=0.0025,font=28,color=(0.6,0.5,0.45),outline="0")
+# the ambush: a second Long Man, awake only for this set-piece
+sc.node("LongManAmbush",None,"Monsters",instance=X["longman"],transform=xform((9,-9,-43.4)),start_delay="99999.0",max_health="50.0",leaves_when_beaten="true")
+stinger("AmbushTrigger",(9,-7.6,-36.6),(9,3,2.6),msg="He was waiting in the dark. Get to the racks - ARM YOURSELF!",
+       script=S_CHASE,np=["monster"],monster=NP("../../Monsters/LongManAmbush"))
 
 # ============================================================ CHECKPOINTS, SPAWNS, SYSTEMS
 checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])

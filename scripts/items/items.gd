@@ -106,6 +106,56 @@ const INFO := {
 		"hint": "Reloads the flare gun. Click to add to your gun.",
 		"extra": {"ammo_type": "flare_shell", "rounds": 1},
 	},
+	# --- Weapons lying in the world (armories, dead security). Picking one up
+	# puts it in your single weapon slot; you can drop it again like any item.
+	"weapon_revolver": {
+		"name": ".38 Revolver", "shape": "box", "size": Vector3(0.24, 0.14, 0.05),
+		"color": Color(0.32, 0.3, 0.3),
+		"hint": "Pick it up to arm yourself. Draw it with 4.",
+		"extra": {"weapon": "revolver", "loaded": 6, "reserve": {"38": 6}},
+	},
+	"weapon_pistol": {
+		"name": "9mm Pistol", "shape": "box", "size": Vector3(0.24, 0.14, 0.05),
+		"color": Color(0.28, 0.28, 0.3),
+		"hint": "Pick it up to arm yourself. Draw it with 4.",
+		"extra": {"weapon": "pistol", "loaded": 15, "reserve": {"9mm": 15}},
+	},
+	"weapon_suppressed_9mm": {
+		"name": "Suppressed 9mm", "shape": "box", "size": Vector3(0.34, 0.14, 0.05),
+		"color": Color(0.22, 0.24, 0.24),
+		"hint": "Quiet. Pick it up to arm yourself.",
+		"extra": {"weapon": "suppressed_9mm", "loaded": 12, "reserve": {"9mm": 12}},
+	},
+	"weapon_shotgun": {
+		"name": "12ga Shotgun", "shape": "box", "size": Vector3(0.55, 0.14, 0.05),
+		"color": Color(0.3, 0.22, 0.16),
+		"hint": "Devastating up close. Pick it up to arm yourself.",
+		"extra": {"weapon": "shotgun", "loaded": 6, "reserve": {"12ga": 6}},
+	},
+	"weapon_smg": {
+		"name": "SMG", "shape": "box", "size": Vector3(0.4, 0.18, 0.06),
+		"color": Color(0.2, 0.2, 0.22),
+		"hint": "Full auto. Pick it up to arm yourself.",
+		"extra": {"weapon": "smg", "loaded": 30, "reserve": {"9mm": 30}},
+	},
+	"weapon_rifle": {
+		"name": "Bolt-Action Rifle", "shape": "box", "size": Vector3(0.6, 0.14, 0.05),
+		"color": Color(0.26, 0.2, 0.14),
+		"hint": "High damage at range. Pick it up to arm yourself.",
+		"extra": {"weapon": "rifle", "loaded": 5, "reserve": {"308": 5}},
+	},
+	"weapon_tranq": {
+		"name": "Tranquilizer Gun", "shape": "box", "size": Vector3(0.28, 0.14, 0.05),
+		"color": Color(0.2, 0.32, 0.3),
+		"hint": "Stuns a monster. Pick it up to arm yourself.",
+		"extra": {"weapon": "tranq", "loaded": 1, "reserve": {"dart": 1}},
+	},
+	"weapon_flare_gun": {
+		"name": "Flare Gun", "shape": "box", "size": Vector3(0.24, 0.16, 0.05),
+		"color": Color(0.5, 0.2, 0.12),
+		"hint": "Lights the area and draws monsters. Pick it up to arm yourself.",
+		"extra": {"weapon": "flare_gun", "loaded": 1, "reserve": {"flare_shell": 1}},
+	},
 }
 
 ## How much slower everyone except the Guard moves while carrying something heavy.
@@ -132,10 +182,22 @@ static func is_heavy(item: Dictionary) -> bool:
 	return not item.is_empty() and INFO[item.id].get("heavy", false)
 
 
+## True if the item in hand is a gun (goes in the weapon slot, not a gear slot).
+static func is_weapon(item: Dictionary) -> bool:
+	return not item.is_empty() and item.has("weapon")
+
+
+## The weapon id inside a weapon item ("" if it isn't one).
+static func weapon_id(item: Dictionary) -> String:
+	return str(item.get("weapon", "")) if is_weapon(item) else ""
+
+
 ## The item's 3D look: its real model if it has one (see "model"), sized to
 ## fit, or else a simple shape. layers: which render layers it's drawn on.
 static func make_mesh(id: String, layers := 1) -> Node3D:
 	var info: Dictionary = INFO[id]
+	if info.has("weapon"):
+		return Weapons.make_mesh(str(info.weapon))
 	if info.has("model") and ResourceLoader.exists(info.model):
 		var model := fit_model(info.model, get_bounds(id), info.get("model_turn", Vector3.ZERO), info.get("tint", Color.WHITE))
 		for part: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
