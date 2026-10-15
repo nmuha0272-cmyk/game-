@@ -17,10 +17,12 @@ signal switched(is_on: bool)
 var charge := 1.0
 
 var _base_energy := 0.0
+var _base_range := 0.0
 
 
 func _ready() -> void:
 	_base_energy = light_energy
+	_base_range = spot_range
 	visible = starts_on
 
 
@@ -37,19 +39,31 @@ func set_on(value: bool) -> void:
 	switched.emit(value)
 
 
+## The flashlight's full brightness, with the player's Settings choice
+## (Settings > Flashlight brightness) applied. A brighter beam also reaches
+## a bit further.
+func _full_energy() -> float:
+	spot_range = _base_range * sqrt(Settings.flashlight_brightness)
+	return _base_energy * Settings.flashlight_brightness
+
+
 func _process(delta: float) -> void:
-	if not is_multiplayer_authority() or not visible:
+	if not visible:
+		return
+	if not is_multiplayer_authority():
+		# Other players' flashlights, as seen on this computer.
+		light_energy = _full_energy()
 		return
 	if GameState.flashlight_drain:
 		charge = maxf(charge - delta / battery_life, 0.0)
 	if charge <= 0.0:
 		set_on(false)
 	elif charge < low_battery and randf() < 0.08:
-		light_energy = _base_energy * randf_range(0.1, 0.6)  # Dying battery flicker.
+		light_energy = _full_energy() * randf_range(0.1, 0.6)  # Dying battery flicker.
 	elif _monster_near(7.0) and randf() < 0.12:
-		light_energy = _base_energy * randf_range(0.0, 0.3)  # Something is close...
+		light_energy = _full_energy() * randf_range(0.0, 0.3)  # Something is close...
 	else:
-		light_energy = _base_energy * (0.6 + 0.4 * minf(charge / low_battery, 1.0))
+		light_energy = _full_energy() * (0.6 + 0.4 * minf(charge / low_battery, 1.0))
 
 
 ## True if a monster is within this many meters (the flashlight starts to act up).

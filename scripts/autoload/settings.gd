@@ -12,6 +12,8 @@ var volume := 0.8
 var mouse_sensitivity := 0.002
 ## 1 = normal. Higher is brighter.
 var brightness := 1.0
+## How bright your flashlight is. 1 = normal.
+var flashlight_brightness := 1.0
 ## 0 = Low (fast), 1 = Medium, 2 = High (bounced light, reflections, smooth edges).
 var graphics := 2
 const GRAPHICS_NAMES := ["Low", "Medium", "High"]
@@ -63,6 +65,12 @@ func set_brightness(value: float) -> void:
 	brightness = clampf(value, 0.5, 1.8)
 	_apply()
 	_save()
+
+
+func set_flashlight_brightness(value: float) -> void:
+	flashlight_brightness = clampf(value, 0.4, 2.0)
+	_save()
+	changed.emit()
 
 
 func set_graphics(value: int) -> void:
@@ -129,6 +137,7 @@ func _load() -> void:
 	volume = config.get_value("settings", "volume", volume)
 	mouse_sensitivity = config.get_value("settings", "mouse_sensitivity", mouse_sensitivity)
 	brightness = config.get_value("settings", "brightness", brightness)
+	flashlight_brightness = config.get_value("settings", "flashlight_brightness", flashlight_brightness)
 	graphics = config.get_value("settings", "graphics", graphics)
 	_controls.clear()
 	for pair in REMAP_ACTIONS:
@@ -143,6 +152,7 @@ func _save() -> void:
 	config.set_value("settings", "volume", volume)
 	config.set_value("settings", "mouse_sensitivity", mouse_sensitivity)
 	config.set_value("settings", "brightness", brightness)
+	config.set_value("settings", "flashlight_brightness", flashlight_brightness)
 	config.set_value("settings", "graphics", graphics)
 	for action in _controls:
 		config.set_value("input", action, _controls[action])

@@ -981,8 +981,9 @@ for k,(x,z) in enumerate([(15.6,-54.6),(15.6,-49.4),(21.0,-54.6),(21.0,-49.4)]):
     BX(f"DormBedMat{k}",U,x-0.85,x+0.85,-8.4,-8.3,z-0.85,z+0.85,PAPER,collide=False)
     BX(f"DormBedPost{k}",U,x-0.92,x-0.84,-9,-6.9,z-0.97,z-0.89,METAL,collide=False)
     BX(f"DormBedPost2{k}",U,x+0.84,x+0.92,-9,-6.9,z-0.97,z-0.89,METAL,collide=False)
-for k,(x,z,yaw) in enumerate([(14.0,-52,90),(22.05,-52,-90),(24.2,-55,0)]):
-    inst("locker",f"DormLocker{k}",U,(x,-9,z),yaw)
+# One hiding locker in the dorm's utility room. (Two more used to stand in
+# the middle of the dorm's narrow passages and blocked the way in.)
+inst("locker","DormLocker2",U,(24.2,-9,-55),0)
 inst("lfile","DormLog","Lore",(16.5,-8.4,-50.4),0,entry=ER(LORE("file_dorm_log")))
 inst("lfile","DormScrawl","Lore",(19.5,-8.4,-53.4),180,entry=ER(LORE("personal_dorm_scrawl")))
 item("battery",(20.4,-8.9,-50.0)); item("flare",(24.4,-8.9,-52))

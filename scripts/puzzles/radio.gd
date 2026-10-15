@@ -46,6 +46,7 @@ func server_tune(direction: int) -> void:
 	_set_frequency.rpc(min_frequency + index * step)
 	if is_equal_approx(frequency, target):
 		_set_active.rpc(true)
+		GameState.server_save_progress(self, true)
 
 
 func _process(delta: float) -> void:
@@ -87,6 +88,12 @@ func _set_target(value: float) -> void:
 func _set_frequency(value: float) -> void:
 	frequency = value
 	_update_display()
+
+
+## Host only: after a wipe, it's already solved.
+func server_restore() -> void:
+	if not is_active:
+		_set_active.rpc(true)
 
 
 @rpc("authority", "call_local", "reliable")

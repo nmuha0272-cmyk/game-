@@ -15,7 +15,7 @@ func _triggered(by: Player) -> void:
 		monster.global_position = burst_point.global_position
 		monster.velocity = Vector3.ZERO
 		monster.wake(by, burst_roar)
-	elif cutscene:
+	elif cutscene and not cutscene._played:
 		cutscene.server_play()
 		monster.wake(by, cutscene.total_time() + 0.4)
 	else:

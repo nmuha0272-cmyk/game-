@@ -52,6 +52,18 @@ func _on_flipped() -> void:
 		if _switches[i].is_up != pattern[i]:
 			return
 	_set_active.rpc()
+	GameState.server_save_progress(self, true)
+
+
+## Host only: after a wipe, it's already solved: set the switches to the
+## pattern and switch it on.
+func server_restore() -> void:
+	if is_active:
+		return
+	_set_active.rpc()
+	for i in _switches.size():
+		if _switches[i].is_up != pattern[i]:
+			_switches[i]._flip.rpc(pattern[i])
 
 
 @rpc("any_peer", "reliable")

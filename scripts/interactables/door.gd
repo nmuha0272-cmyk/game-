@@ -15,6 +15,25 @@ var held_by := 0
 @onready var _sound: AudioStreamPlayer3D = $Sound
 
 
+func _ready() -> void:
+	# A player whose copy of the level loads late asks the host whether
+	# this door is open, so every screen agrees.
+	if not multiplayer.is_server():
+		_request_state.rpc_id(1)
+
+
+@rpc("any_peer", "reliable")
+func _request_state() -> void:
+	if multiplayer.is_server() and is_open:
+		_set_open.rpc_id(multiplayer.get_remote_sender_id(), true)
+
+
+## Host only: after a wipe, the team had left this door open.
+func server_restore() -> void:
+	if not is_open:
+		_set_open.rpc(true)
+
+
 func is_held() -> bool:
 	return held_by != 0
 
@@ -121,6 +140,9 @@ func _process(_delta: float) -> void:
 @rpc("authority", "call_local", "reliable")
 func _set_open(value: bool) -> void:
 	is_open = value
+	# Remember players' doors (puzzle doors come back with their puzzle).
+	if not puzzle_controlled:
+		GameState.server_save_progress(self, value)
 	var angle := open_angle if is_open else 0.0
 	create_tween().tween_property(self, "rotation_degrees:y", angle, swing_time) \
 			.set_trans(Tween.TRANS_SINE)

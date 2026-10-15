@@ -78,6 +78,7 @@ func server_press(key: String) -> void:
 		"ENT":
 			if entered == code:
 				_set_active.rpc(true)
+				GameState.server_save_progress(self, true)
 			else:
 				_show_wrong.rpc()
 		_:
@@ -124,6 +125,12 @@ func _set_code(new_code: String) -> void:
 func _set_entered(text: String) -> void:
 	entered = text
 	_update_display()
+
+
+## Host only: after a wipe, it's already solved.
+func server_restore() -> void:
+	if not is_active:
+		_set_active.rpc(true)
 
 
 @rpc("authority", "call_local", "reliable")

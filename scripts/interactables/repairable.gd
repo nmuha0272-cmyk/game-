@@ -68,9 +68,16 @@ func _server_repair(by: Player) -> void:
 		_set_repaired.rpc()
 
 
+## Host only: after a wipe, it was already fixed.
+func server_restore() -> void:
+	if not is_repaired:
+		_set_repaired.rpc()
+
+
 @rpc("authority", "call_local", "reliable")
 func _set_repaired() -> void:
 	is_repaired = true
+	GameState.server_save_progress(self, true)
 	_on_repaired()
 	repaired.emit()
 	active_changed.emit(true)

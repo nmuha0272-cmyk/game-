@@ -40,10 +40,22 @@ func _evaluate() -> void:
 	_set_active.rpc(result)
 	for output in outputs:
 		output.puzzle_set(result)
+	if latch:
+		GameState.server_save_progress(self, result)
 	if result and not _was_solved:
 		_was_solved = true
 		if not solved_message.is_empty():
 			_announce.rpc(solved_message)
+
+
+## Host only: after a wipe, this puzzle is already solved. Switch the
+## outputs back on (doors open, lights on) without the "solved!" message.
+func server_restore() -> void:
+	_was_solved = true
+	if not is_active:
+		_set_active.rpc(true)
+	for output in outputs:
+		output.puzzle_set(true)
 
 
 @rpc("authority", "call_local", "reliable")

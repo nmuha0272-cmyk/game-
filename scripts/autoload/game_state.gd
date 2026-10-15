@@ -25,6 +25,11 @@ var checkpoint_name := ""
 var checkpoint_order := 0
 ## Everyone's gear when the checkpoint was reached (network ID -> slots).
 var checkpoint_inventories := {}
+## Host only: what the team has already done in this chapter (doors opened,
+## locks undone, puzzles solved). A wipe reloads the level, then this puts
+## it all back, so nothing has to be done twice. Key: the node's path inside
+## the level. Cleared when a new chapter (or a new game) starts.
+var level_progress := {}
 ## Lore entry IDs the team has found. Shared by everyone.
 var journal: Array = []
 ## Whether flashlight batteries drain (Chapter 1 turns this on in the stairwell).
@@ -54,6 +59,7 @@ func reset() -> void:
 	checkpoint_name = ""
 	checkpoint_order = 0
 	checkpoint_inventories = {}
+	level_progress = {}
 	journal = []
 	menu_open = false
 	players_changed.emit()
@@ -202,6 +208,45 @@ func server_reach_checkpoint(checkpoint: Checkpoint) -> void:
 	_announce.rpc("Checkpoint reached.")
 
 
+## Host only: remember that a door/lock/puzzle in the level is done (or not
+## any more, e.g. a door someone closed again). `node` must have a
+## server_restore() method that puts it back in its "done" state.
+func server_save_progress(node: Node, done: bool) -> void:
+	if not multiplayer.is_server() or not node.is_inside_tree():
+		return
+	var level := _level_of(node)
+	if level == null:
+		return
+	var key := str(level.get_path_to(node))
+	if done:
+		level_progress[key] = true
+	else:
+		level_progress.erase(key)
+
+
+## Host only, after a wipe reloaded the level: put back everything the team
+## had already done. Puzzle gates go first, so the pieces that feed them
+## don't announce "solved!" a second time.
+func server_restore_progress(level: Node) -> void:
+	if not multiplayer.is_server() or level == null:
+		return
+	var nodes: Array[Node] = []
+	for key: String in level_progress.keys():
+		var node := level.get_node_or_null(NodePath(key))
+		if node and node.has_method("server_restore"):
+			nodes.append(node)
+	nodes.sort_custom(func(a: Node, b: Node) -> bool: return a is PuzzleGate and not b is PuzzleGate)
+	for node in nodes:
+		node.server_restore()
+
+
+func _level_of(node: Node) -> Node:
+	# The level is the child of Main's "Level" node.
+	while node and not (node.get_parent() and node.get_parent().name == "Level"):
+		node = node.get_parent()
+	return node
+
+
 ## Host only: everyone is down. Fade out on every screen, then restart.
 func server_team_wiped(text := "Everyone is down...\nBack to the last checkpoint.") -> void:
 	_show_wipe.rpc(text)
@@ -268,6 +313,7 @@ func _next_chapter(path: String) -> void:
 	checkpoint_name = ""
 	checkpoint_order = 0
 	checkpoint_inventories = {}
+	level_progress = {}
 	next_chapter_requested.emit(path)
 
 

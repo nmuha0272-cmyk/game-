@@ -22,6 +22,10 @@ var _hold_start := Vector3.ZERO
 var _hold_age := 0.0
 
 
+func stays_done() -> bool:
+	return false
+
+
 func _ready() -> void:
 	super()
 	add_to_group("hold_switches")

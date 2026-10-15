@@ -8,6 +8,11 @@ extends PuzzleInput
 var _time_left := 0.0
 
 
+## A timed button pops back up, so it doesn't stay done.
+func stays_done() -> bool:
+	return active_time <= 0.0
+
+
 func can_interact(_by: Player) -> bool:
 	return enabled and not is_active
 

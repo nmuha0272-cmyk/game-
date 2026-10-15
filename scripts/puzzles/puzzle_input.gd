@@ -51,6 +51,20 @@ func get_prompt(by: Player) -> String:
 func server_set_active(value: bool) -> void:
 	if multiplayer.is_server() and value != is_active:
 		_set_active.rpc(value)
+		if stays_done():
+			GameState.server_save_progress(self, value)
+
+
+## True if this piece stays done after the team dies (most do). Pieces that
+## only count while someone holds or stands on them return false.
+func stays_done() -> bool:
+	return true
+
+
+## Host only: after a wipe, put this piece back the way the team left it.
+func server_restore() -> void:
+	if not is_active:
+		_set_active.rpc(true)
 
 
 @rpc("authority", "call_local", "reliable")

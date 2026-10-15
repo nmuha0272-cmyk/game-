@@ -1,5 +1,6 @@
 extends MenuBase
-## Settings: volume, mouse sensitivity, brightness, graphics and controls.
+## Settings: volume, mouse sensitivity, brightness, flashlight brightness,
+## graphics and controls.
 ## Saved automatically, so they stay the same next time the game starts.
 
 var _volume: HSlider
@@ -26,6 +27,8 @@ func _ready() -> void:
 	_sensitivity = _add_slider(content, "Mouse sensitivity", 0.0005, 0.006, Settings.mouse_sensitivity,
 			Settings.set_mouse_sensitivity)
 	_brightness = _add_slider(content, "Brightness", 0.5, 1.8, Settings.brightness, Settings.set_brightness)
+	_add_slider(content, "Flashlight brightness", 0.4, 2.0, Settings.flashlight_brightness,
+			Settings.set_flashlight_brightness)
 	_add_graphics_picker(content)
 	_add_controls(content)
 	make_button(box, "Back", close)

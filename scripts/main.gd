@@ -95,7 +95,12 @@ func _restart_level() -> void:
 		child.queue_free()
 	await get_tree().process_frame
 	await get_tree().process_frame
-	level_root.add_child(load(_current_level).instantiate())
+	var level: Node = load(_current_level).instantiate()
+	level_root.add_child(level)
+	# Put back the doors and puzzles the team already did, once every
+	# player's copy of the level has loaded.
+	await get_tree().create_timer(0.5).timeout
+	GameState.server_restore_progress(level)
 	_fade_in_everyone.rpc()
 
 

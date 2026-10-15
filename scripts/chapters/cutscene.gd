@@ -2,7 +2,8 @@ class_name Cutscene
 extends Node
 ## A short movie moment: the camera glides through a few shots with black
 ## bars and captions, then you get control back. The host starts it and it
-## plays on everyone's screen at once. Press Space/Enter to skip it.
+## plays on everyone's screen at once. HOLD Space/Enter to skip it
+## (a tap does nothing, so jumping can't skip it by accident).
 
 signal finished
 
@@ -16,10 +17,19 @@ signal finished
 var playing := false
 var _played := false
 var _skip := false
+var _skip_hold := 0.0
+
+const SKIP_HOLD_TIME := 1.0
 
 
 func _ready() -> void:
 	if play_on_start and multiplayer.is_server() and GameState.checkpoint_order == 0:
+		# Wait until every player has loaded the level and spawned (up to
+		# 8 seconds), or the others would miss it.
+		var waited := 0.0
+		while waited < 8.0 and get_tree().get_nodes_in_group("players").size() < GameState.players.size():
+			await get_tree().create_timer(0.2).timeout
+			waited += 0.2
 		await get_tree().create_timer(0.6).timeout
 		server_play()
 
@@ -35,19 +45,37 @@ func total_time() -> float:
 func server_play() -> void:
 	if multiplayer.is_server() and not _played:
 		_played = true
+		# Plays once per chapter: not again after the team dies.
+		GameState.server_save_progress(self, true)
 		_play.rpc()
 
 
+## Host only: after a wipe, the team already saw this.
+func server_restore() -> void:
+	_played = true
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if playing and event.is_action_pressed("ui_accept"):
-		_skip = true
+	if playing and (event.is_action("ui_accept") or event.is_action("jump")):
 		get_viewport().set_input_as_handled()
+
+
+func _process(delta: float) -> void:
+	if not playing:
+		return
+	if Input.is_action_pressed("ui_accept"):
+		_skip_hold += delta
+		if _skip_hold >= SKIP_HOLD_TIME:
+			_skip = true
+	else:
+		_skip_hold = 0.0
 
 
 @rpc("authority", "call_local", "reliable")
 func _play() -> void:
 	playing = true
 	_skip = false
+	_skip_hold = 0.0
 	var camera := Camera3D.new()
 	camera.fov = 58.0
 	add_child(camera)
@@ -105,7 +133,7 @@ func _make_bars() -> CanvasLayer:
 	caption.add_theme_color_override("font_color", Color(0.85, 0.82, 0.75))
 	layer.add_child(caption)
 	var hint := Label.new()
-	hint.text = "[Space] Skip"
+	hint.text = "Hold [Space] to skip"
 	hint.anchor_left = 0.85
 	hint.anchor_right = 0.99
 	hint.anchor_top = 0.02

@@ -75,6 +75,13 @@ func _has_keycard(by: Player) -> bool:
 	return false
 
 
+## Host only: after a wipe, it was already unlocked.
+func server_restore() -> void:
+	if is_locked:
+		_unlock.rpc()
+
+
 @rpc("authority", "call_local", "reliable")
 func _unlock() -> void:
 	is_locked = false
+	GameState.server_save_progress(self, true)
