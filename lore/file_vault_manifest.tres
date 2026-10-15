@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_vault_manifest"
+title = "Specimen Vault Manifest"
+type = 0
+text = "SPECIMEN VAULT - CONTENTS\n\nH-7 SERUM, BATCH 1-6 .......... DESTROYED\nH-7 SERUM, BATCH 7 ............ 3 VIALS (see Dr. Reyes)\nBONE SAMPLES, SUBJ. 7 ......... 41 jars. Still growing in the jar.\nPROGRAM ZERO - TRANSFER FILES .. MOVED TO LEVEL D\n\nA note paper-clipped to the page:\nThe samples grow even in formaldehyde. Whatever H-7 is, it isn't finished with him. It isn't finished with any of them."
+owner_character = -1
+voice_line = ""

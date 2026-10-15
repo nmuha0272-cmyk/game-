@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_journalist_badge"
+title = "Press Badge - D. Marsh"
+type = 3
+text = "A laminated press badge, cracked down the middle: DANIEL MARSH - THE BLACKWATER COURIER.\nHer informant. The man who stopped answering her calls.\nOn the back, in his handwriting:\nThey keep the proof in the vault. If I don't come out, the code is in the booth. Don't go in alone."
+owner_character = 1
+voice_line = "Daniel... this is Daniel's badge. He made it this far."

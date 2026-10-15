@@ -12,7 +12,7 @@ X=dict(
  door=P("res://scenes/interactables/door.tscn"), gen=P("res://scenes/interactables/generator.tscn"), cab=P("res://scenes/interactables/filing_cabinet.tscn"),
  drag=P("res://scenes/interactables/evidence_drag_marks.tscn"), mphoto=P("res://scenes/interactables/evidence_monster_photo.tscn"),
  longman=P("res://scenes/monsters/long_man.tscn"), lfile=P("res://scenes/lore/lore_file.tscn"), lposter=P("res://scenes/lore/lore_poster.tscn"),
- locker=P("res://scenes/interactables/hiding_locker.tscn"),
+ locker=P("res://scenes/interactables/hiding_locker.tscn"), plate=P("res://scenes/puzzles/pressure_plate.tscn"),
  lpersonal=P("res://scenes/lore/lore_personal.tscn"), lpaper=P("res://scenes/lore/lore_paper.tscn"), tape=P("res://scenes/lore/tape_machine.tscn"),
 )
 SC=lambda k: sc.ext("Script",k)
@@ -926,6 +926,165 @@ sc.node("AmbushBurst","Marker3D","Monsters",transform=xform((9,0.1,-16.6),180))
 stinger("AmbushTrigger",(9,-6.4,-30.5),(2.4,3,2),msg="Something slams through the door above you... RUN to the armory and grab a gun!",
        script=S_CHASE,np=["monster","burst_point"],monster=NP("../../Monsters/LongManAmbush"),burst_point=NP("../../Monsters/AmbushBurst"))
 label("ArmoryArrow",U,(9.95,-7.0,-34.5),-90,"ARMORY  ->",size=0.003,font=36,color=(0.95,0.8,0.3))
+
+# ============================================================ MORE ARMORY
+# The armory gets dressed up: sandbags, wall racks of (display-only) rifles,
+# green ammo cans, a cleaning bench, a paper target, a map of Level B, a red
+# emergency light, the sign-out sheet (lore) and a little more loot.
+OLIVE=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.22,0.25,0.14), roughness="0.7", metallic="0.3"))
+BURLAP=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.42,0.36,0.24), roughness="1.0"))
+GUNMETAL=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.06,0.06,0.06), roughness="0.4", metallic="0.8"))
+for k,(x,z) in enumerate([(5.1,-37.6),(5.9,-37.6),(6.7,-37.6),(5.5,-37.62),(6.3,-37.62)]):
+    y=-8.82 if k<3 else -8.47
+    mi(f"Sandbag{k}",NPROP,(x,y,z),mesh("CapsuleMesh",radius="0.18",height="0.8",radial_segments="8",rings="2"),BURLAP,roll=90)
+BX("SandbagWall",NPROP,4.7,7.1,-9,-8.3,-37.85,-37.35,BURLAP,collide=True)
+# wall racks of display rifles on the west wall
+BX("RifleRackW",U,4.05,4.15,-8.3,-7.0,-39.4,-37.9,DWOOD,collide=False)
+for k in range(4):
+    z=-38.1-k*0.38
+    mi(f"RackRifle{k}",U,(4.22,-7.65,z),mesh("BoxMesh",size=v3(0.05,1.05,0.09)),GUNMETAL,roll=6,shadow=False)
+    mi(f"RackStock{k}",U,(4.22,-8.12,z),mesh("BoxMesh",size=v3(0.06,0.3,0.12)),DWOOD,shadow=False)
+label("RackSign",U,(4.17,-6.85,-38.65),90,"RIFLES - SIGNED OUT",size=0.0025,font=28,color=(0.9,0.85,0.6))
+# ammo cans on the table and a stack by the bench
+for k,(x,y,z) in enumerate([(11.7,-8.13,-43.2),(12.15,-8.13,-43.25),(13.2,-8.13,-42.7)]):
+    mi(f"AmmoCan{k}",U,(x,y,z),mesh("BoxMesh",size=v3(0.3,0.24,0.16)),OLIVE,yaw=random.uniform(-15,15))
+for k in range(3):
+    BX(f"AmmoCrateStack{k}",NPROP,10.6,11.3,-9+k*0.32,-8.7+k*0.32,-44.3,-43.8,OLIVE)
+# cleaning bench along the north wall (east of the stairs)
+BX("CleanBench",NPROP,10.6,12.6,-9,-8.15,-36.05,-35.55,METAL)
+mi("BenchRag",U,(11.2,-8.13,-35.8),mesh("BoxMesh",size=v3(0.3,0.01,0.2)),PAPER,yaw=20,shadow=False)
+mi("BenchPistol",U,(11.9,-8.12,-35.8),mesh("BoxMesh",size=v3(0.22,0.04,0.14)),GUNMETAL,yaw=-30,shadow=False)
+# paper target and a Level B map on the south wall (either side of the bolted door)
+mi("TargetPaper",U,(6.0,-7.4,-44.47),mesh("BoxMesh",size=v3(0.6,0.8,0.01)),PAPER,shadow=False)
+label("TargetRings",U,(6.0,-7.4,-44.45),0,"(  (  ( O )  )  )\n.  .   .",size=0.004,font=40,color=(0.1,0.1,0.1),outline="0")
+mi("MapBoard",U,(12.4,-7.3,-44.47),mesh("BoxMesh",size=v3(1.3,0.9,0.02)),PAPER,shadow=False)
+label("MapText",U,(12.4,-7.3,-44.44),0,"LEVEL B\n[ARMORY]---[TUNNEL]---[CELL]\n      |          |\n  [DORM]   [ELEVATOR]---[LAB]\n              |\n        [OBSERVATION]",size=0.0022,font=28,color=(0.15,0.15,0.4),outline="0")
+light("ArmoryAlarm","Lights",(5,-6.6,-43.8),color=(1,0.1,0.05),energy=0.6,rng=5,pulse=True,shadow=False)
+inst("lfile","ArmorySignout","Lore",(12.0,-8.25,-42.7),-15,entry=ER(LORE("file_armory_signout")))
+item("ammo_12ga",(11.0,-8.1,-35.8)); item("flare",(5.6,-8.4,-37.6)); item("battery",(13.4,-8.1,-43.2))
+
+# ============================================================ THE MAINTENANCE BYPASS (longer main tunnel)
+# Section 3 of the main tunnel has caved in, so the way south now winds
+# through the old maintenance bypass: three turns, failing fluorescent tubes
+# with dark stretches between them, pipes, puddles, dripping water, a supply
+# room (with a locker to hide in) and a shower room to search. It's all
+# carved out of the same rock, so the Long Man's navigation covers it.
+for n,c,s in [("BypassN",(14.95,-7.65,-57.6),(8.1,2.7,1.8)),        # east from the tunnel
+              ("BypassE",(18.1,-7.65,-61.0),(1.8,2.7,8.6)),         # south
+              ("BypassS",(14.95,-7.65,-64.4),(8.1,2.7,1.8)),        # back west to the tunnel
+              ("SupplyDoorSlot",(19.3,-7.9,-61.0),(0.8,2.2,1.2)),
+              ("SupplyRoom",(21.6,-7.65,-61.0),(4.0,2.7,3.2)),
+              ("ShowerDoorSlot",(19.3,-7.9,-57.6),(0.8,2.2,1.2)),
+              ("ShowerRoom",(21.4,-7.65,-57.65),(3.6,2.7,1.9))]:
+    B(n,R,c,s,ROCK,collide=False,op=2)
+# the cave-in itself fills Section 3 of the main tunnel
+BX("CaveIn",R,6.9,11.1,-9.1,-6.2,-63.3,-59.2,STONE)
+for k,(x,y,z,r) in enumerate([(7.9,-8.6,-58.9,0.55),(9.4,-8.7,-58.8,0.45),(10.4,-8.5,-59.0,0.6),(8.6,-8.0,-59.05,0.5),
+                              (8.0,-8.6,-63.55,0.5),(9.8,-8.7,-63.6,0.55),(10.6,-8.3,-63.4,0.45)]):
+    mi(f"Rubble{k}",U,(x,y,z),mesh("SphereMesh",radius=f"{r}",height=f"{r*1.6:.2f}",radial_segments="7",rings="4"),STONE,yaw=random.uniform(0,90))
+mi("BentBeam",U,(9,-7.2,-58.95),mesh("BoxMesh",size=v3(3.2,0.18,0.18)),RUST,roll=14)
+label("CaveInSign",U,(9,-7.0,-58.75),0,"SECTION 3 CLOSED - CAVE-IN\nUSE MAINTENANCE BYPASS  ->",size=0.003,font=32,color=(0.95,0.75,0.2))
+label("CaveInSignS",U,(9,-7.0,-63.85),180,"SECTION 3 CLOSED - CAVE-IN\n<-  USE MAINTENANCE BYPASS",size=0.003,font=32,color=(0.95,0.75,0.2))
+# failing fluorescent tubes, far apart so there are dark stretches between
+for k,(x,z) in enumerate([(13.2,-57.6),(18.1,-60.0),(16.2,-64.4),(21.6,-61.0)]):
+    light(f"BypassTube{k}","Lights",(x,-6.5,z),color=(0.82,0.95,0.88),energy=0.55 if k<3 else 0.4,rng=3.6,flicker=[0.75,0.9,0.6,0.5][k],fixture="tube")
+# pipes along the walls and ceiling
+pipe("BypassPipeN1",(11.1,-6.75,-56.85),(18.9,-6.75,-56.85)); pipe("BypassPipeN2",(11.1,-7.05,-56.88),(18.9,-7.05,-56.88),0.05,BLACK)
+pipe("BypassPipeE1",(18.85,-6.75,-64.4),(18.85,-6.75,-56.9)); pipe("BypassPipeE2",(17.3,-6.5,-65.2),(17.3,-6.5,-56.8),0.06)
+pipe("BypassPipeS1",(11.1,-6.75,-65.15),(18.9,-6.75,-65.15)); pipe("BypassPipeS2",(11.1,-6.45,-64.4),(18.9,-6.45,-64.4),0.11,RUST)
+for k,(x,z,w,d) in enumerate([(15.5,-57.7,1.6,1.2),(18.0,-62.5,1.2,2.2),(13.0,-64.3,1.8,1.1),(21.9,-57.6,1.4,1.0)]):
+    mi(f"BypassPuddle{k}",U,(x,-8.985,z),mesh("PlaneMesh",size=f"Vector2({w}, {d})"),WATER,shadow=False)
+sc.node("BypassDrips","AudioStreamPlayer3D","Sound",transform=xform((16,-7,-61)),unit_size="5.0",script=ER(S_RAND),
+        sounds=f'Array[AudioStream]([{ER(DRIP)}, {ER(DRIP)}, {ER(DRIP)}, {ER(CREAK)}])',area_size=v3(8,1,8),min_delay="1.5",max_delay="4.0")
+# supply room: a locker to hide in, shelves, batteries and a note
+inst("locker","BypassLocker",U,(23.25,-9,-61.6),-90)
+BX("SupplyShelf",NPROP,20.0,22.4,-9,-7.4,-62.55,-62.2,METAL)
+for k,x in enumerate([20.4,21.0,21.8]):
+    mi(f"SupplyBox{k}",U,(x,-8.05,-62.38),mesh("BoxMesh",size=v3(0.4,0.3,0.28)),DWOOD if k%2 else PAPER,yaw=random.uniform(-10,10))
+item("battery",(20.6,-7.25,-62.38)); item("battery",(21.7,-8.85,-60.0))
+inst("lfile","BypassScrawl","Lore",(22.0,-7.25,-62.38),0,entry=ER(LORE("file_bypass_scrawl")))
+# shower room: a row of rusted shower heads, a drain, the cave-in notice
+for k,x in enumerate([20.2,21.4,22.6]):
+    pipe(f"ShowerHead{k}",(x,-6.9,-56.82),(x,-7.4,-56.82),0.04)
+    mi(f"ShowerDrain{k}",U,(x,-8.99,-57.6),mesh("CylinderMesh",top_radius="0.08",bottom_radius="0.08",height="0.01",radial_segments="8",rings="1"),BLACK,shadow=False)
+inst("lfile","CaveInNotice","Lore",(22.6,-8.9,-58.2),30,entry=ER(LORE("file_cavein_notice")))
+item("ammo_9mm",(20.4,-8.9,-58.2))
+light("ShowerGlow","Lights",(21.4,-6.6,-57.65),color=(0.6,0.8,0.7),energy=0.18,rng=3,flicker=0.95,shadow=False)
+# the dripping stops...
+area("BypassScare","Triggers",(18.1,-7.65,-61.5),(1.8,2.7,3),S_SCARE,steps_from=v3(15,-8.9,-64.4),steps_to=v3(12,-8.9,-64.4),steps="5",
+     sound=ER(CREAK),message=S("The dripping stops."))
+
+# ============================================================ THE OBSERVATION WING (new co-op puzzle)
+# Off the north side of the elevator room: a winding corridor to Observation
+# Booth 2 and the Specimen Vault.
+# THE PUZZLE (needs 2+ players):
+#  - The booth door only stays open while someone stands on the PLATE in the
+#    corridor outside (or for a few seconds after the button inside is
+#    pressed, so nobody gets locked in).
+#  - The vault code is shown ONLY on the booth monitor, and it changes every
+#    minute. The keypad is around two corners, by the vault door.
+#  So: one player holds the plate, one reads the code in the booth and calls
+#  it out (or runs it over), and someone enters it at the vault.
+for n,c,s in [("ObsDoorSlot",(44,-7.475,-59.3),(1.8,3.05,1.0)),
+              ("ObsHallA",(44,-7.65,-53.6),(1.8,2.7,11.2)),
+              ("ObsHallB",(48.55,-7.65,-48.9),(10.9,2.7,1.8)),
+              ("ObsHallC",(53.1,-7.65,-44.45),(1.8,2.7,10.7)),
+              ("BoothDoorSlot",(48,-7.475,-50.4),(2,3.05,1.2)),
+              ("Booth",(48,-7.65,-53),(4,2.7,4)),
+              ("VaultAnte",(53.5,-7.65,-38.5),(7,2.7,5)),
+              ("VaultDoorSlot",(57.3,-7.475,-38.5),(0.6,3.05,2)),
+              ("Vault",(60.3,-7.65,-38.3),(5.4,2.7,5.4))]:
+    B(n,R,c,s,ROCK,collide=False,op=2)
+label("ObsSign",U,(44,-5.5,-59.05),180,"OBSERVATION WING\nBOOTH 2  /  SPECIMEN VAULT",size=0.003,font=32,color=(0.85,0.85,0.7))
+for k,(x,z) in enumerate([(44,-56),(44,-50.5),(50.5,-48.9),(53.1,-45),(53.5,-38.5)]):
+    light(f"ObsTube{k}","Lights",(x,-6.5,z),color=(0.85,0.95,0.9),energy=0.5,rng=4.5,flicker=[0.3,0.7,0.5,0.85,0.2][k],fixture="tube")
+pipe("ObsPipeA",(44.75,-6.7,-58.8),(44.75,-6.7,-48.2)); pipe("ObsPipeB",(43.3,-6.7,-48.15),(53.8,-6.7,-48.15),0.06,BLACK)
+pipe("ObsPipeC",(53.85,-6.6,-49.6),(53.85,-6.6,-40.1),0.08)
+for k,(x,z,w,d) in enumerate([(44,-54,1.2,1.6),(51.5,-48.9,1.5,1.2),(53.1,-42.5,1.2,1.4)]):
+    mi(f"ObsPuddle{k}",U,(x,-8.985,z),mesh("PlaneMesh",size=f"Vector2({w}, {d})"),WATER,shadow=False)
+# the plate, the booth door, and the button inside
+inst("plate","BoothPlate","Puzzles",(45.6,-9,-48.9),0,solo_linger="12.0")
+label("PlateSign",U,(45.6,-7.0,-48.05),180,"TWO-MAN RULE\nSTAND ON THE PLATE TO HOLD THE BOOTH OPEN",size=0.0026,font=28,color=(0.95,0.8,0.3))
+inst("door","BoothDoor","Puzzles",(47,-9,-50.4),0,puzzle_controlled="true")
+sc.node("BoothExit",None,"Puzzles",instance=X["button"],transform=xform((49.4,-7.7,-51.03),180),active_time="3.0",prompt_text=S("Open the booth door"))
+gate("BoothGate","Puzzles",["../BoothPlate","../BoothExit"],["../BoothDoor"],mode=1,latch=False)
+# inside the booth: the monitor with the vault code, a desk, the log, a tape
+BX("BoothDesk",NPROP,46.3,49.7,-9,-8.2,-54.9,-54.2,METAL)
+mi("BoothMonitor",U,(48,-7.55,-54.5),mesh("BoxMesh",size=v3(0.9,0.6,0.5)),METAL,shadow=False)
+mi("BoothScreen",U,(48,-7.55,-54.24),mesh("BoxMesh",size=v3(0.75,0.45,0.01)),SCREEN,shadow=False)
+sc.node("VaultCodeScreen","Label3D","Puzzles",node_paths=["source"],transform=xform((48,-7.55,-54.22)),pixel_size="0.0022",text=S(""),font_size="40",
+        modulate=col(0.4,1,0.5),outline_size="0",script=ER(S_CODE),source=NP("../VaultKeypad"),template=S("VAULT CODE\n%s\n(changes every minute)"))
+inst("lfile","ObservationLog","Lore",(46.9,-8.2,-54.5),15,entry=ER(LORE("file_observation_log")))
+inst("tape","TapeMachine3","Puzzles",(49.2,-8.2,-54.55),0)
+light("BoothLight","Lights",(48,-6.5,-52.5),color=(0.7,0.9,1),energy=0.45,rng=4,flicker=0.25,fixture="tube")
+# the "glass": a dark window looking at nothing... and a hand print on it
+mi("BoothWindow",U,(46.03,-7.4,-53),mesh("BoxMesh",size=v3(0.02,0.9,2.2)),BLACK,shadow=False)
+label("HandPrint",U,(46.06,-7.3,-53.3),90,"( ' ' ' ' )\n  \\    /",size=0.004,font=40,color=(0.35,0.4,0.35),outline="0")
+# the vault antechamber: keypad, benches, the reel tape
+inst("keypad","VaultKeypad","Puzzles",(56.97,-7.6,-40.3),-90,rotate_every="60.0")
+inst("door","VaultDoor","Puzzles",(57.3,-9,-37.5),90,puzzle_controlled="true")
+gate("VaultGate","Puzzles",["../VaultKeypad"],["../VaultDoor","../VaultLights"],msg="The vault door unbolts with a heavy CLUNK.")
+label("VaultSign",U,(56.95,-6.7,-38.5),-90,"SPECIMEN VAULT\nCODE FROM BOOTH 2 ONLY",size=0.003,font=32,color=(0.9,0.35,0.3))
+BX("AnteBench",NPROP,50.2,52.6,-9,-8.55,-40.7,-40.25,DWOOD)
+item("reel_tape",(51.2,-8.45,-40.45),"tape_vault_guard")
+light("AnteLight","Lights",(53.5,-6.6,-37),color=(1,0.85,0.6),energy=0.35,rng=5,flicker=0.6)
+# the vault: shelves of glowing specimen jars, the manifest, the badge, loot
+sc.node("VaultLights","Node3D","Puzzles",script=ER(S_LIGHTS))
+light("VaultLight","Puzzles/VaultLights",(60.3,-6.6,-38.3),color=(0.6,1,0.7),energy=0.7,rng=7)
+JAR=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.4,0.9,0.5,0.55), transparency="1", emission_enabled="true", emission=col(0.15,0.5,0.2), emission_energy_multiplier="1.5"))
+for side,z in [("N",-35.95),("S",-40.65)]:
+    BX(f"VaultShelf{side}",NPROP,58.2,62.6,-9,-7.0,z-0.25,z+0.25,METAL)
+    for k in range(6):
+        mi(f"Jar{side}{k}",U,(58.6+k*0.7,-7.55 if k%2 else -8.35,z),mesh("CylinderMesh",top_radius="0.12",bottom_radius="0.12",height="0.32",radial_segments="10",rings="1"),JAR,shadow=False)
+inst("lfile","VaultManifest","Lore",(62.4,-8.4,-38.3),-80,entry=ER(LORE("file_vault_manifest")))
+BX("VaultTable",NPROP,61.6,62.8,-9,-8.4,-39.0,-37.6,METAL)
+inst("lpersonal","InformantBadge","Lore",(62.0,-8.4,-37.9),20,entry=ER(LORE("personal_journalist_badge")))
+item("medkit",(59.0,-8.8,-38.3)); item("ammo_9mm",(59.8,-8.8,-37.3)); item("ammo_12ga",(60.6,-8.8,-39.3)); item("battery",(62.2,-8.35,-38.8))
+# the Long Man can wander up here too once he's loose
+for k,p in enumerate([(44,-9,-54),(50,-9,-48.9),(53.1,-9,-44)]):
+    sc.node(f"ObsPoint{k+1}","Marker3D","Monsters/PatrolPoints",transform=xform(p))
+area("BoothScare","Triggers",(48,-7.65,-53),(3.6,2.7,3.6),S_SCARE,steps_from=v3(44,-6.3,-53),steps_to=v3(44,-6.3,-57),steps="4",
+     sound=ER(A("monster_breath.wav")),message=S("Something taps on the glass. Four times."))
 
 # ============================================================ CHECKPOINTS, SPAWNS, SYSTEMS
 checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])

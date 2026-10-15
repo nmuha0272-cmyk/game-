@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_observation_log"
+title = "Observation Log - Subject 7"
+type = 0
+text = "OBSERVATION BOOTH 2 - SUBJECT 7 (H-7)\n\nWK 18: Subject stands in the corner facing the wall for 9 hrs. Does not sleep.\nWK 20: Subject has learned the booth is staffed. Turns to face the glass when the booth door opens. We now keep the door shut.\nWK 22: The booth door only stays open while someone stands on the plate outside. Two-man rule. Nobody goes in alone.\nWK 24: Vault code is on the booth monitor ONLY. Read it, call it out, get out.\nWK 25: Subject tapped on the glass. Four times. Then the code changed."
+owner_character = -1
+voice_line = ""

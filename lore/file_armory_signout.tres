@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_armory_signout"
+title = "Armory Sign-Out Sheet"
+type = 0
+text = "SECURITY ARMORY - LEVEL B - SIGN-OUT\n\n02:10  M1911 x2, .45 x4 mags ... Pvt. Hale\n02:12  Shotgun, 12ga x1 box ... Pvt. Ortiz\n02:31  ALL REMAINING SIDEARMS ... Sgt. ??? (signature smeared)\n03:05  (no entry)\n03:06  (no entry)\n\nScrawled across the bottom in red pen:\nBULLETS SLOW IT DOWN. THEY DO NOT STOP IT. SHOOT AND MOVE."
+owner_character = -1
+voice_line = ""

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "tape_vault_guard"
+title = "Reel Tape: The Two-Man Rule"
+type = 1
+text = "SGT. VOSS: Booth two, this is Voss. You reading the code?\nPVT. HALE: Reading it now. Three... wait. Something's on the glass.\nSGT. VOSS: Stay on the plate, Ortiz. Do NOT step off that plate.\nPVT. ORTIZ: I'm on it! I'm on it! Hale, get out of there!\nPVT. HALE: The door - the door's closing - ORTIZ!\n(A long scraping sound. The plate clicks. The tape runs on in silence.)"
+owner_character = -1
+voice_line = ""

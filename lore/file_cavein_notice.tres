@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_cavein_notice"
+title = "Notice: Main Tunnel Cave-In"
+type = 0
+text = "MAINTENANCE NOTICE - MAIN TUNNEL, SECTION 3\n\nThe ceiling in Section 3 came down at 0340. No injuries. Probably.\n\nUntil it is cleared, ALL traffic goes through the maintenance bypass. Keep to the bypass and keep the lights on. The tubes in there have been failing for weeks and nobody wants to change them.\n\nNOTE: The cave-in did not look like a cave-in. The supports were bent. From the inside.\n\n- D. KESSLER, FACILITIES"
+owner_character = -1
+voice_line = ""

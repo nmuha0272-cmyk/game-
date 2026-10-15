@@ -5,10 +5,14 @@ extends Area3D
 signal active_changed(active: bool)
 
 @export var plate_mesh: MeshInstance3D
+## Playing alone (backup solution): the plate stays down this many seconds
+## after you step off, so one player can still get through. 0 = off.
+@export var solo_linger := 0.0
 
 var is_active := false
 
 var _material: StandardMaterial3D
+var _linger_left := 0.0
 
 
 func _ready() -> void:
@@ -19,7 +23,7 @@ func _ready() -> void:
 	_update_visuals()
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if not multiplayer.is_server():
 		return
 	var weighted := false
@@ -27,6 +31,12 @@ func _physics_process(_delta: float) -> void:
 		if body is Player or body is HeavyObject:
 			weighted = true
 		elif "item" in body and Items.is_heavy(body.item):
+			weighted = true
+	if solo_linger > 0.0 and GameState.is_solo():
+		if weighted:
+			_linger_left = solo_linger
+		elif _linger_left > 0.0:
+			_linger_left -= delta
 			weighted = true
 	if weighted != is_active:
 		_set_active.rpc(weighted)

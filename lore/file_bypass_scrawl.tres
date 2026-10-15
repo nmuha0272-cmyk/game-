@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_bypass_scrawl"
+title = "Written In Grease Pencil"
+type = 0
+text = "Third time this week the lights in the bypass went out with me in it.\n\nEvery time, the dripping stops. That's how you know. The water stops dripping because something tall is standing under the pipes and it's catching the drops.\n\nIf the dripping stops - get in the locker in the supply room and DON'T BREATHE."
+owner_character = -1
+voice_line = ""
