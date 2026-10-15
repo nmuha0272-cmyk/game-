@@ -1109,7 +1109,7 @@ radial_segments = 10
 rings = 5
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_324"]
-size = Vector3(9, 3, 2.6)
+size = Vector3(2.4, 3, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_325"]
 size = Vector3(8, 3, 4)
@@ -7203,17 +7203,27 @@ font_size = 28
 modulate = Color(0.6, 0.5, 0.45, 1)
 outline_size = 0
 
+[node name="AmbushParkFloor" type="CSGBox3D" parent="Underground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 200, -60.25, 200)
+size = Vector3(8, 0.5, 8)
+material = ExtResource("57_x")
+use_collision = true
+
 [node name="LongManAmbush" parent="Monsters" instance=ExtResource("15_x")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -9, -43.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 200, -60, 200)
 start_delay = 99999.0
 max_health = 50.0
 leaves_when_beaten = true
 
-[node name="AmbushTrigger" type="Area3D" parent="Triggers" node_paths=PackedStringArray("monster")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.6, -36.6)
+[node name="AmbushBurst" type="Marker3D" parent="Monsters"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, 0.1, -16.6)
+
+[node name="AmbushTrigger" type="Area3D" parent="Triggers" node_paths=PackedStringArray("monster", "burst_point")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -6.4, -30.5)
 script = ExtResource("39_x")
-message = "He was waiting in the dark. Get to the racks - ARM YOURSELF!"
+message = "Something slams through the door above you... RUN to the armory and grab a gun!"
 monster = NodePath("../../Monsters/LongManAmbush")
+burst_point = NodePath("../../Monsters/AmbushBurst")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/AmbushTrigger"]
 shape = SubResource("BoxShape3D_324")
@@ -7221,6 +7231,14 @@ shape = SubResource("BoxShape3D_324")
 [node name="Sound" type="AudioStreamPlayer" parent="Triggers/AmbushTrigger"]
 stream = ExtResource("51_x")
 volume_db = -4.0
+
+[node name="ArmoryArrow" type="Label3D" parent="Underground"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.95, -7, -34.5)
+pixel_size = 0.003
+text = "ARMORY  ->"
+font_size = 36
+modulate = Color(0.95, 0.8, 0.3, 1)
+outline_size = 4
 
 [node name="Yard" type="Area3D" parent="Checkpoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 17)
@@ -7661,12 +7679,12 @@ entry = ExtResource("334_x")
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 19.5, -8.4, -53.4)
 entry = ExtResource("335_x")
 
-[node name="battery_1191" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_1194" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.4, -8.9, -50)
 script = ExtResource("30_x")
 item_id = "battery"
 
-[node name="flare_1192" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_1195" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.4, -8.9, -52)
 script = ExtResource("30_x")
 item_id = "flare"

@@ -916,10 +916,16 @@ item("ammo_308",(13.2,-8.75,-43.1)); item("medkit",(12.6,-8.75,-43.1))
 BX("GuardTorso",U,6.8,7.4,-8.72,-8.34,-40.5,-39.4,BLACK,collide=False)
 mi("GuardHead",U,(7.1,-8.55,-39.15),mesh("SphereMesh",radius="0.12",height="0.24",radial_segments="10",rings="5"),BLACK,shadow=False)
 label("GuardNote",U,(7.1,-8.2,-39.9),0,"GUARD - KIA",size=0.0025,font=28,color=(0.6,0.5,0.45),outline="0")
-# the ambush: a second Long Man, awake only for this set-piece
-sc.node("LongManAmbush",None,"Monsters",instance=X["longman"],transform=xform((9,-9,-43.4)),start_delay="99999.0",max_health="50.0",leaves_when_beaten="true")
-stinger("AmbushTrigger",(9,-7.6,-36.6),(9,3,2.6),msg="He was waiting in the dark. Get to the racks - ARM YOURSELF!",
-       script=S_CHASE,np=["monster"],monster=NP("../../Monsters/LongManAmbush"))
+# the ambush: a second Long Man, awake only for this set-piece. He waits far
+# out of sight; when the team is halfway down the stairs he bursts out at the
+# TOP of the stairwell behind them and chases them down into the armory, so
+# they have to grab a gun off the racks and fight him off.
+BX("AmbushParkFloor",U,196,204,-60.5,-60,196,204,CONC)
+sc.node("LongManAmbush",None,"Monsters",instance=X["longman"],transform=xform((200,-60,200)),start_delay="99999.0",max_health="50.0",leaves_when_beaten="true")
+sc.node("AmbushBurst","Marker3D","Monsters",transform=xform((9,0.1,-16.6),180))
+stinger("AmbushTrigger",(9,-6.4,-30.5),(2.4,3,2),msg="Something slams through the door above you... RUN to the armory and grab a gun!",
+       script=S_CHASE,np=["monster","burst_point"],monster=NP("../../Monsters/LongManAmbush"),burst_point=NP("../../Monsters/AmbushBurst"))
+label("ArmoryArrow",U,(9.95,-7.0,-34.5),-90,"ARMORY  ->",size=0.003,font=36,color=(0.95,0.8,0.3))
 
 # ============================================================ CHECKPOINTS, SPAWNS, SYSTEMS
 checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])
