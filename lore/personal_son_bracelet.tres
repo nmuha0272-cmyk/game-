@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_son_bracelet"
+title = "Hospital Bracelet - Volunteer 14"
+type = 3
+text = "A plastic hospital bracelet, the kind they put on newborns, but adult-sized:\nVOLUNTEER 14 - PROGRAM ZERO - DO NOT AUTOPSY - TRANSFER TO LEVEL D\n\nDo not autopsy. Because they weren't dead."
+owner_character = 0
+voice_line = "Fourteen. Dad's number. 'Do not autopsy'... he wasn't dead. He was moved. He's DOWN there."

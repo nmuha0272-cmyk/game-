@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_guard_last_call"
+title = "Transcript - Last Call to the Surface"
+type = 3
+text = "A carbon copy of a radio transcript, folded small and tucked behind the antenna chart.\n\nB-COMMS: Surface, this is Level B. Request elevator override. We have people down here.\nSURFACE: Negative, Level B. Containment order stands.\nB-COMMS: Who signed it? WHO SIGNED IT?\nSURFACE: ...Sergeant F. Kowalski has the order.\n\nSomeone has circled the name, again and again, until the pen went through the paper."
+owner_character = 3
+voice_line = "That's my name. They told them it was me. ...It was me."

@@ -468,9 +468,9 @@ pipe("PipeT3",(10.78,-6.6,-74.5),(10.78,-6.6,-46),0.05,BLACK)
 pipe("PipeE1",(14.5,-6.75,-67.25),(28,-6.75,-67.25)); pipe("PipeE2",(14.5,-7.05,-67.2),(28,-7.05,-67.2),0.05,BLACK)
 pipe("PipeJ1",(4.25,-6.7,-44.3),(13.8,-6.7,-44.3))
 pipe("PipeRoom1",(30.3,-5.6,-76.6),(45.7,-5.6,-76.6),0.14); pipe("PipeRoom2",(30.3,-5.3,-59.4),(45.7,-5.3,-59.4),0.1)
-for k,(x,z) in enumerate([(13.1,-43.6),(13.3,-36.6),(12.6,-36.3),(41.8,-76.4),(42.5,-76.5),(30.7,-64.5)]):
+for k,(x,z) in enumerate([(13.1,-43.6),(13.3,-36.6),(12.6,-36.3),(39.7,-76.4),(40.4,-76.5),(30.7,-64.5)]):
     barrel(f"Barrel{k}",NPROP,x,-9,z)
-for k,(x,z,sz,yaw) in enumerate([(4.8,-36.3,0.9,10),(45.1,-66.2,1.0,0),(45.2,-64.9,0.7,25),(36,-76.3,0.8,0)]):
+for k,(x,z,sz,yaw) in enumerate([(4.8,-36.3,0.9,10),(31.0,-72.0,1.0,0),(31.1,-73.3,0.7,25),(36,-76.3,0.8,0)]):
     crate(f"Crate{k}",NPROP,x,-9,z,sz,yaw)
 # The cell: a bed frame with straps, where Subject 7 was kept.
 sc.node("CellBed","CSGBox3D",NPROP,transform=xform((12.6,-8.6,-83.5)),size=v3(1.0,0.12,2.1),use_collision="true",material=METAL)
@@ -482,9 +482,12 @@ label("CellScratches",U,(13.95,-7.6,-81),-90,"LET ME OUT LET ME OUT\nLET ME OUT 
 
 # --- Somewhere to hide. These are the only real hiding spots in the tunnels,
 # so a player who breaks line of sight has a chance to catch their breath.
-for k,(x,z,yaw) in enumerate([(7.9,-80,90),(7.9,-56,90),(10.1,-49,-90),
-                              (12.4,-59.2,0),(6.4,-66.2,0),(21.6,-69.8,180),
-                              (44.3,-70,-90),(48.5,-66.5,0),(64.8,-70,90),(78.4,-88,90)]):
+# (TunnelLocker7 used to stand inside the airlock and blocked it.)
+for k,spot in enumerate([(7.9,-80,90),(7.9,-56,90),(10.1,-49,-90),
+                          (12.4,-59.2,0),(6.4,-66.2,0),(21.6,-69.8,180),
+                          (44.3,-70,-90),None,(64.8,-70,90),(78.4,-88,90)]):
+    if spot is None: continue
+    x,z,yaw=spot
     inst("locker",f"TunnelLocker{k}",U,(x,-9,z),yaw)
 
 # monster
@@ -522,8 +525,8 @@ inst("fuse","FuseBoxEast","Puzzles",(45.95,-7.6,-70),-90); inst("fuse","FuseBoxW
 inst("lamp","PowerLamp","Puzzles",(38,-5.4,-59.2),0)
 gate("PowerGate","Puzzles",["../Generator","../FuseBoxEast","../FuseBoxWest"],["../RoomLights","../PowerLamp"],msg="Power restored. The elevator panel flickers on.")
 sc.node("OverrideRead","Node","Puzzles",script=ER(S_LORECHK),lore_id=S("file_containment_order"))
-gate("ConsolesEnabled","Puzzles",["../PowerGate","../OverrideRead","../ElevatorKeySlot","../DormBreakers"],[])
-CONSOLE_NEEDS=S("Dead. It needs power, the override procedure (the Containment Order), the elevator key (in the Archive), and the DORM WING's aux power.")
+gate("ConsolesEnabled","Puzzles",["../PowerGate","../OverrideRead","../ElevatorKeySlot","../DormBreakers","../CommsGate"],[])
+CONSOLE_NEEDS=S("Dead. It needs power, the override procedure (the Containment Order), the elevator key (in the Archive), the DORM WING's aux power, and the SURFACE RELAY (Comms, north of the Lab).")
 inst("console","ConsoleWest","Puzzles",(31.5,-9,-61),90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=CONSOLE_NEEDS)
 inst("console","ConsoleEast","Puzzles",(44.5,-9,-75.5),-90,np=["requires"],requires=NP("../ConsolesEnabled"),requires_message=CONSOLE_NEEDS)
 gate("DualKey","Puzzles",["../ConsoleWest","../ConsoleEast"],[],msg="Override accepted. Everyone into the elevator!")
@@ -562,8 +565,8 @@ stinger("ElevatorSting",(38,-7.5,-66),(10,3,8),msg="The elevator. The only way d
 # shelves) holds the ELEVATOR KEY, which the elevator now needs.
 GLASS=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.6,0.8,0.7,0.25), transparency="1", roughness="0.05", metallic_specular="1.0"))
 GOO=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.15,0.4,0.2,0.55), transparency="1", emission_enabled="true", emission=col(0.1,0.5,0.2), emission_energy_multiplier="0.6"))
-for n,c,sz in [("DoorSlotD4",(47,-7.475,-66),(0.6,3.05,2)),("TunnelLab",(55.5,-7.65,-66),(17,2.7,2)),
-               ("SpecimenLab",(72,-7,-66),(16,4,16)),("ArchiveSlot",(72,-7.475,-75),(2,3.05,0.6)),
+for n,c,sz in [("DoorSlotD4",(46.6,-7.475,-66),(1.4,3.05,2)),("TunnelLab",(55.5,-7.65,-66),(17,2.7,2)),
+               ("SpecimenLab",(72,-7,-66),(16,4,16)),("ArchiveSlot",(72,-7.475,-74.65),(2,3.05,1.4)),
                ("ArchiveHall",(72,-7.65,-79.5),(2,2.7,9)),("Archive",(72,-7,-90),(14,4,12))]:
     B(n,R,c,sz,ROCK,collide=False,op=2)
 inst("door","LabDoor","Puzzles",(47,-9,-65),90,puzzle_controlled="true")
@@ -1076,6 +1079,156 @@ for k,p in enumerate([(44,-9,-54),(50,-9,-48.9),(53.1,-9,-44)]):
     sc.node(f"ObsPoint{k+1}","Marker3D","Monsters/PatrolPoints",transform=xform(p))
 area("BoothScare","Triggers",(48,-7.65,-53),(3.6,2.7,3.6),S_SCARE,steps_from=v3(44,-6.3,-53),steps_to=v3(44,-6.3,-57),steps="4",
      sound=ER(A("monster_breath.wav")),message=S("Something taps on the glass. Four times."))
+
+# ============================================================ THE COMMS ROOM (required)
+# North of the Specimen Lab. The elevator override must be AUTHORISED by the
+# surface relay, so the consoles now also need the relay. Tune the radio to
+# the emergency band: the live frequency is only on the chart in the antenna
+# room (out of sight of the radio) and it drifts, so one player reads it out
+# while another tunes.
+X.update(radio=P("res://scenes/puzzles/radio.tscn"))
+for n,c,s in [("CommsSlot",(76,-7.475,-58.2),(1.8,3.05,1.0)),
+              ("CommsHallN",(76,-7.65,-51.1),(1.8,2.7,14.4)),
+              ("CommsHallW",(73.9,-7.65,-50.8),(6.0,2.7,1.8)),
+              ("RadioRoom",(67.75,-7.65,-49.5),(6.5,2.7,9.0)),
+              ("AntennaRoom",(76.5,-7.65,-40.5),(7.0,2.7,7.0))]:
+    B(n,R,c,s,ROCK,collide=False,op=2)
+label("CommsSign",U,(76,-5.6,-58.05),180,"COMMUNICATIONS\nSURFACE RELAY",size=0.003,font=32,color=(0.85,0.85,0.7))
+for k,(x,z) in enumerate([(76,-55),(76,-46.5),(73,-50.8),(67.75,-49.5),(76.5,-40.5)]):
+    light(f"CommsTube{k}","Lights",(x,-6.5,z),color=(0.85,0.95,0.9),energy=0.5,rng=4.5,flicker=[0.6,0.85,0.4,0.3,0.7][k],fixture="tube")
+pipe("CommsPipe1",(76.85,-6.7,-57.8),(76.85,-6.7,-44.2)); pipe("CommsPipe2",(71.1,-6.75,-50.0),(75.1,-6.75,-50.0),0.06,BLACK)
+for k,(x,z,w,d) in enumerate([(76,-52,1.2,1.8),(68.5,-46,1.6,1.2)]):
+    mi(f"CommsPuddle{k}",U,(x,-8.985,z),mesh("PlaneMesh",size=f"Vector2({w}, {d})"),WATER,shadow=False)
+# the radio room: the radio on its desk, racks of dead equipment, the log, a tape machine
+BX("RadioDesk",NPROP,65.9,69.6,-9,-8.1,-53.95,-53.2,DWOOD)
+inst("radio","CommsRadio","Puzzles",(67.75,-8.1,-53.6),0,rotate_every="25.0")
+for k,z in enumerate([-51.5,-48.5,-45.5]):
+    BX(f"CommsRack{k}",NPROP,64.55,65.3,-9,-6.9,z-1.1,z+1.1,METAL)
+    for j in range(5):
+        mi(f"RackLamp{k}_{j}",U,(65.32,-7.2-j*0.3,z-0.6+j*0.3),mesh("BoxMesh",size=v3(0.01,0.05,0.05)),SCREEN,shadow=False)
+inst("lfile","CommsLog","Lore",(69.1,-8.1,-53.5),-15,entry=ER(LORE("file_comms_log")))
+inst("tape","TapeMachine4","Puzzles",(66.3,-8.1,-53.5),0)
+item("battery",(70.4,-8.9,-45.0))
+sc.node("RelayLights","Node3D","Puzzles",script=ER(S_LIGHTS))
+light("RelayLamp","Puzzles/RelayLights",(67.75,-6.7,-53.3),color=(0.3,1,0.4),energy=0.8,rng=5,shadow=False,fixture=None)
+gate("CommsGate","Puzzles",["../CommsRadio"],["../RelayLights"],msg="Through the static: \"...Level B, elevator override AUTHORISED.\" The consoles will accept it now.")
+# the antenna room: the live frequency chart, the transcript, a reel tape
+BX("AntennaMast",NPROP,78.6,79.0,-9,-6.3,-38.6,-38.2,METAL)
+for k in range(4):
+    mi(f"AntennaRung{k}",U,(78.8,-8.4+k*0.55,-38.4),mesh("BoxMesh",size=v3(0.9,0.04,0.04)),METAL,shadow=False)
+mi("ChartPaper",U,(76.0,-7.4,-37.04),mesh("BoxMesh",size=v3(1.8,0.9,0.01)),PAPER,shadow=False)
+sc.node("FrequencyChart","Label3D","Puzzles",node_paths=["source"],transform=xform((76.0,-7.4,-37.06),180),pixel_size="0.0035",text=S(""),font_size="40",
+        modulate=col(0.2,0.2,0.45),outline_size="0",script=ER(S_CODE),source=NP("../CommsRadio"),template=S("RELAY BAND - LIVE\n%s\n(it drifts: keep calling it out)"))
+inst("lpersonal","LastCall","Lore",(74.2,-8.9,-37.6),40,entry=ER(LORE("personal_guard_last_call")))
+item("reel_tape",(78.0,-8.85,-43.2),"tape_relay_test"); item("flare",(73.7,-8.9,-43.4))
+area("AntennaScare","Triggers",(76.5,-7.65,-41),(6,2.7,5),S_SCARE,steps_from=v3(76,-6.3,-56),steps_to=v3(76,-6.3,-46),steps="5",
+     sound=ER(A("monster_breath.wav")),message=S("The radio in the other room crackles... and someone whispers your names."))
+sc.node("CommsNeedSign","Label3D",U,transform=xform((31.5,-6.4,-59.05),180),pixel_size="0.0028",text=S("CONSOLES NEED THE SURFACE RELAY\n(COMMS - NORTH OF THE LAB)"),font_size="32",modulate=col(1,0.8,0.4))
+checkpoint("Comms",7,(76,-7.5,-55),(1.8,3,2),[(0,-0.6),(0,0.6),(0,-1.2),(0,1.2)])
+
+# ============================================================ THE BOILER ROOM (optional, two valves)
+# Off the south wall of the elevator room. Venting the boilers needs BOTH
+# relief valves held open at the same time: one by the boilers, one in the
+# gauge room down the other corridor. Then the pressure cage opens (loot).
+for n,c,s in [("BoilerSlot",(42.5,-7.475,-77.3),(1.8,3.05,1.0)),
+              ("BoilerHall1",(42.5,-7.65,-80.5),(1.8,2.7,7.2)),
+              ("BoilerHall2",(37.7,-7.65,-84.9),(11.4,2.7,1.8)),
+              ("GaugeHall",(32.9,-7.65,-88.9),(1.8,2.7,6.2)),
+              ("GaugeRoom",(29.25,-7.65,-91),(5.5,2.7,5)),
+              ("BoilerDoorSlot",(41.4,-7.475,-86.3),(1.8,3.05,1.4)),
+              ("BoilerRoom",(43,-7,-92),(10,4,10)),
+              ("BoilerCage",(46,-7.65,-98.4),(3,2.7,2.8))]:
+    B(n,R,c,s,ROCK,collide=False,op=2)
+label("BoilerSign",U,(42.5,-5.6,-76.95),0,"BOILER ROOM\nDANGER - HIGH PRESSURE",size=0.003,font=32,color=(1,0.6,0.3))
+for k,(x,z) in enumerate([(42.5,-80),(37,-84.9),(32.9,-89),(29.25,-91)]):
+    light(f"BoilerTube{k}","Lights",(x,-6.5,z),color=(0.9,0.85,0.7),energy=0.45,rng=4,flicker=[0.7,0.5,0.9,0.4][k],fixture="tube")
+light("BoilerGlow","Lights",(43,-6.0,-92),color=(1,0.45,0.2),energy=0.9,rng=9,flicker=0.3)
+pipe("BoilerPipeH1",(43.25,-6.7,-77.8),(43.25,-6.7,-84.2)); pipe("BoilerPipeH2",(32.2,-6.7,-84.15),(43.2,-6.7,-84.15),0.12,RUST)
+pipe("GaugePipe",(33.65,-6.75,-86),(33.65,-6.75,-91.8),0.06,BLACK)
+for k,(x,z,w,d) in enumerate([(42.5,-82,1.2,1.8),(35,-84.9,1.8,1.2),(32.9,-91,1.2,1.4),(44,-89,2,1.6)]):
+    mi(f"BoilerPuddle{k}",U,(x,-8.985,z),mesh("PlaneMesh",size=f"Vector2({w}, {d})"),WATER,shadow=False)
+# two big boilers with pipes to the ceiling
+for k,z in enumerate([-90.3,-94.6]):
+    sc.node(f"Boiler{k}","CSGCylinder3D",NPROP,transform=xform((40.4,-7.6,z)),radius="1.15",height="2.8",sides="16",use_collision="true",material=RUST)
+    pipe(f"BoilerStack{k}",(40.4,-6.2,z),(40.4,-5.0,z),0.2)
+label("BoilerPlateLabel",U,(41.57,-7.6,-94.6),90,"B-2",size=0.004,font=40,color=(0.8,0.7,0.4))
+inst("lpersonal","BoilerPlate","Lore",(41.7,-8.9,-93.4),90,entry=ER(LORE("personal_engineer_boiler_plate")))
+# steam, hiss and knocking
+sc.node("BoilerSteam","FogVolume","Lights",transform=xform((40.4,-7.4,-92.4)),size=v3(3,2.5,7),material=SR(sc.sub("FogMaterial", density="0.6", albedo=col(0.85,0.85,0.85))))
+sc.node("BoilerHiss","AudioStreamPlayer3D","Sound",transform=xform((40.4,-7.5,-92.4)),stream=ER(A("flare_hiss.wav")),volume_db="-8.0",unit_size="5.0",autoplay="true")
+sc.node("BoilerKnocks","AudioStreamPlayer3D","Sound",transform=xform((43,-7,-92)),unit_size="7.0",script=ER(S_RAND),
+        sounds=f'Array[AudioStream]([{ER(CLANK)}, {ER(CLANK)}, {ER(CREAK)}, {ER(DRIP)}])',area_size=v3(9,2,9),min_delay="3.0",max_delay="7.0")
+# the two relief valves
+inst("hold","ValveBoiler","Puzzles",(38.05,-8.0,-92.4),90,prompt_text=S("Hold the relief valve open"))
+inst("hold","ValveGauge","Puzzles",(26.55,-8.0,-91),90,prompt_text=S("Hold the relief valve open"))
+label("ValveSignA",U,(38.05,-7.3,-92.4),90,"RELIEF VALVE A\nHOLD WITH VALVE B",size=0.0025,font=28,color=(0.95,0.8,0.3))
+label("ValveSignB",U,(26.55,-7.3,-91),90,"RELIEF VALVE B\nHOLD WITH VALVE A",size=0.0025,font=28,color=(0.95,0.8,0.3))
+for k in range(3):
+    mi(f"Gauge{k}",U,(29.25-1+k,-7.2,-88.53),mesh("CylinderMesh",top_radius="0.16",bottom_radius="0.16",height="0.05",radial_segments="12",rings="1"),WHITE,pitch=90,shadow=False)
+label("GaugeText",U,(29.25,-7.75,-88.55),180,"BOILER A    BOILER B    MAIN\n  DANGER      DANGER     DANGER",size=0.0022,font=28,color=(0.8,0.2,0.15),outline="0")
+inst("lfile","BoilerLog","Lore",(30.8,-8.9,-92.8),-30,entry=ER(LORE("file_boiler_log")))
+# the pressure cage with the loot
+sc.node("PressureCage","AnimatableBody3D","Puzzles",node_paths=["sound"],transform=xform((46,-9,-97)),script=ER(S_MOVER),open_offset=v3(0,2.6,0),move_time="2.5",sound=NP("Sound"))
+cgsh=sc.sub("BoxShape3D", size=v3(3,2.7,0.12)); cgm=sc.sub("BoxMesh", size=v3(3,2.7,0.05))
+sc.node("CollisionShape3D","CollisionShape3D","Puzzles/PressureCage",transform=xform((0,1.35,0)),shape=SR(cgsh))
+sc.node("Mesh","MeshInstance3D","Puzzles/PressureCage",transform=xform((0,1.35,0)),mesh=SR(cgm),**{"surface_material_override/0":FENCE})
+sc.node("Sound","AudioStreamPlayer3D","Puzzles/PressureCage",stream=ER(CREAK),pitch_scale="0.7",unit_size="10.0")
+gate("BoilerVent","Puzzles",["../ValveBoiler","../ValveGauge"],["../PressureCage"],msg="Both valves scream... the boilers vent with a roar, and the pressure cage unlocks.")
+item("medkit",(45.2,-8.9,-98.8)); item("ammo_12ga",(46.0,-8.9,-99.2)); item("ammo_9mm",(46.8,-8.9,-98.8)); item("battery",(46.4,-8.9,-98.0))
+inst("locker","BoilerLocker",U,(47.25,-9,-89),-90)
+area("BoilerScare","Triggers",(43,-7.65,-90),(6,2.7,4),S_SCARE,steps_from=v3(44,-5.2,-95),steps_to=v3(42,-5.2,-88),steps="4",
+     sound=ER(CLANK),message=S("Four knocks inside the boiler. Then four more."))
+
+# ============================================================ THE MORGUE (optional, find the code)
+# Off the east wall of the elevator room. The cold room code is split over
+# four toe tags: two in the morgue, one in the hall, one on a body bag in the
+# boiler room. Find them all, then enter the code by the cold room door.
+for n,c,s in [("MorgueHall",(48.95,-7.65,-72.5),(6.1,2.7,1.8)),
+              ("MorgueHallS",(51.1,-7.65,-75.85),(1.8,2.7,8.5)),
+              ("Morgue",(55,-7.65,-84),(12,2.7,8)),
+              ("ColdDoorSlot",(57,-7.475,-88.5),(2,3.05,1.0)),
+              ("ColdRoom",(57,-7.65,-92),(7,2.7,6))]:
+    B(n,R,c,s,ROCK,collide=False,op=2)
+label("MorgueSign",U,(45.95,-5.6,-72.5),-90,"MORGUE  /  COLD STORAGE",size=0.003,font=32,color=(0.75,0.85,0.9))
+for k,(x,z) in enumerate([(48.5,-72.5),(51.1,-77),(52.5,-84),(58,-84),(57,-92)]):
+    light(f"MorgueTube{k}","Lights",(x,-6.5,z),color=(0.75,0.9,1),energy=0.45,rng=4.5,flicker=[0.5,0.9,0.3,0.6,0.4][k],fixture="tube")
+pipe("MorguePipe",(46.1,-6.7,-71.75),(51.9,-6.7,-71.75),0.06,BLACK); pipe("MorguePipeS",(51.85,-6.7,-72.5),(51.85,-6.7,-79.8))
+for k,(x,z,w,d) in enumerate([(51.1,-75,1.2,1.6),(55.5,-86,1.8,1.2)]):
+    mi(f"MorguePuddle{k}",U,(x,-8.985,z),mesh("PlaneMesh",size=f"Vector2({w}, {d})"),WATER,shadow=False)
+sc.node("ColdKeypad",None,"Puzzles",instance=X["keypad"],transform=xform((58.6,-7.6,-87.97),0))
+inst("door","ColdDoor","Puzzles",(56,-9,-88.5),0,puzzle_controlled="true")
+gate("ColdGate","Puzzles",["../ColdKeypad"],["../ColdDoor"],msg="The cold room door unseals with a hiss of freezing air.")
+label("ColdSign",U,(57,-6.6,-87.95),0,"COLD STORAGE\nCODE: ALL FOUR TOE TAGS, IN ORDER",size=0.0026,font=28,color=(0.75,0.85,0.95))
+# the drawer wall and two autopsy tables
+BX("DrawerWall",NPROP,60.4,61.0,-9,-6.4,-87.5,-80.5,METAL)
+for k in range(9):
+    r,c=k//3,k%3
+    label(f"DrawerNo{k}",U,(60.38,-7.0-r*0.8,-86.5+c*2.2),-90,str(k+1),size=0.004,font=40,color=(0.8,0.8,0.75))
+for k,x in enumerate([53.5,57.0]):
+    BX(f"AutopsyTable{k}",NPROP,x-0.5,x+0.5,-9,-8.1,-85.0,-83.0,WHITE)
+    BX(f"Sheet{k}",U,x-0.42,x+0.42,-8.1,-7.85,-84.9,-83.2,PAPER,collide=False)
+inst("locker","MorgueLocker",U,(49.35,-9,-86),90)
+inst("lfile","MorgueLedger","Lore",(57.5,-8.1,-83.0),15,entry=ER(LORE("file_morgue_ledger")))
+item("flare",(50.0,-8.9,-81.0))
+# the four toe tags (each shows one digit of the cold room code)
+TAG=[((53.5,-7.83,-83.15),0,"Puzzles"),((60.36,-7.4,-83.2),-90,"Puzzles"),((50.23,-7.6,-77.5),90,"Puzzles"),((44.6,-8.6,-89.6),0,"Puzzles")]
+BX("BodyBag",U,44.0,45.2,-9,-8.75,-90.6,-89.8,BLACK,collide=False)
+for k,(pos,yaw,par) in enumerate(TAG):
+    sc.node(f"ToeTag{k}","Label3D",par,node_paths=["source"],transform=xform(pos,yaw),pixel_size="0.0022",text=S(""),font_size="32",
+            modulate=col(0.3,0.25,0.2),outline_size="0",script=ER(S_CODE),source=NP("../ColdKeypad"),digit=str(k),template=S(f"TOE TAG {k+1} of 4\\n%s"))
+    mi(f"TagCard{k}",U,pos,mesh("BoxMesh",size=v3(0.22,0.12,0.005)),PAPER,yaw=yaw,shadow=False)
+# the cold room: the bracelet, loot
+BX("ColdShelf",NPROP,54.0,60.0,-9,-7.2,-94.9,-94.4,METAL)
+for k in range(5):
+    mi(f"ColdBox{k}",U,(54.6+k*1.2,-7.9,-94.65),mesh("BoxMesh",size=v3(0.5,0.3,0.35)),WHITE,shadow=False)
+inst("lpersonal","Bracelet","Lore",(57,-8.9,-91.5),20,entry=ER(LORE("personal_son_bracelet")))
+item("medkit",(55,-8.9,-92.5)); item("battery",(59,-8.9,-92.5)); item("ammo_38",(56.2,-7.1,-94.65)); item("ammo_308",(58.0,-7.1,-94.65))
+sc.node("ColdMist","FogVolume","Lights",transform=xform((57,-8.4,-92)),size=v3(6.5,1.2,5.5),material=SR(sc.sub("FogMaterial", density="0.4", albedo=col(0.8,0.9,1))))
+area("MorgueScare","Triggers",(55,-7.65,-82),(8,2.7,3),S_SCARE,steps_from=v3(60.5,-7.4,-86.5),steps_to=v3(60.5,-7.4,-81.5),steps="3",
+     sound=ER(CLANK),message=S("Somewhere behind you, a drawer slides open by itself."))
+# the Long Man can come looking in all three
+for k,p in enumerate([(51.1,-9,-76),(55,-9,-84),(43,-9,-90),(37,-9,-84.9),(76,-9,-50),(67.75,-9,-49)]):
+    sc.node(f"NewPoint{k+1}","Marker3D","Monsters/PatrolPoints",transform=xform(p))
 
 # ============================================================ CHECKPOINTS, SPAWNS, SYSTEMS
 checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])

@@ -491,6 +491,9 @@ Tasks:
 - [x] **Unarmed start + armory:** players begin with no weapons and arm up from
       the armory racks, deep in the tunnels off the maintenance bypass
 - [x] One chase sequence through narrow tunnels
+- [x] Extra Chapter 1 sections: maintenance bypass, Observation Wing (plate + split code),
+      Comms room (radio, required for the elevator), Boiler room (two valves held
+      together), Morgue (toe-tag code)
 - [x] Lore items that introduce the facility and each character's reason for coming
 - [x] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"
 - [x] **Long Man scrambles Son's Sense** — false echoes, verbal callouts work

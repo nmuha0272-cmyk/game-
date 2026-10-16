@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_engineer_boiler_plate"
+title = "Boiler Maker's Plate"
+type = 3
+text = "A brass maker's plate riveted to the second boiler:\nPRESSURE VESSEL B-2 - DESIGNED FOR PROJECT IRONWOOD\nCHIEF DESIGN ENGINEER: (the name has been filed off, but the Engineer knows whose it was)\n\nThe boilers didn't heat the building. They heated the growth chamber."
+owner_character = 2
+voice_line = "My name. I designed these to feed the chamber. I told myself it was just heating."

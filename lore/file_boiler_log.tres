@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_boiler_log"
+title = "Boiler Room Pressure Log"
+type = 0
+text = "BOILER ROOM - PRESSURE LOG\n\nVENTING THE BOILERS NEEDS BOTH RELIEF VALVES OPEN AT THE SAME TIME: one here by the boilers, one in the gauge room. One valve on its own does nothing but scream.\n\nThe pressure cage stays locked while the boilers are hot. Spare supplies are in the cage.\n\nPersonal note: the boilers knock all night. Kessler says it's the pipes. The pipes don't knock in rhythm. Four knocks. Wait. Four knocks."
+owner_character = -1
+voice_line = ""

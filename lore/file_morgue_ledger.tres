@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_morgue_ledger"
+title = "Morgue Intake Ledger"
+type = 0
+text = "LEVEL B MORGUE - INTAKE\n\nDrawer 1 ... Volunteer 3 ... 'cardiac' ... (bones measured 2x normal density)\nDrawer 2 ... Volunteer 9 ... 'cardiac'\nDrawer 3 ... Volunteer 11 ... 'cardiac' ... (spine had grown THROUGH the skull)\nDrawer 4 ... EMPTY. Body was here at 22:00. Gone at 06:00. Drawer was opened from the INSIDE.\n\nNote to staff: cold room code is split across the toe tags, so nobody gets in alone. Collect all four."
+owner_character = -1
+voice_line = ""
