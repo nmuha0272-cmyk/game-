@@ -892,77 +892,6 @@ for k,(x,z) in enumerate([(65.5,-68),(78.5,-73)]):
     mi(f"IVBag{k}",U,(x+0.08,-7.25,z),mesh("BoxMesh",size=v3(0.04,0.22,0.14)),SR(sc.sub("StandardMaterial3D", albedo_color=col(0.8,0.75,0.6,0.6), transparency="1")),shadow=False)
 label("LabChart",U,(64.05,-7.2,-69),90,"GROWTH CHART - SUBJECT 7\nWK 1   6 ft 0\nWK 14  7 ft 11\nWK 31  ???",size=0.0032,font=36,color=(0.85,0.8,0.65))
 
-# ============================================================ THE ARMORY + THE AMBUSH
-# Right under the stairwell the survivors blunder into the old security armory.
-# The Long Man is waiting: he bursts out and comes for them. There are no
-# starting weapons any more, so this is where the team arms up: guns and ammo
-# sit on the racks. Drive him off with gunfire and he flees the surface for good
-# (this one is scripted to leave; the real one still waits down in his cell).
-prop("WeaponCabinet",NPROP,"cabinet",(4.5,-9,-40.2),90,collide=("box",(0.6,1.35,0.65),(0,0.675,0)))
-BX("ArmoryTable",U,11.4,13.6,-9,-8.25,-43.6,-42.4,METAL)
-BX("ArmoryRack",U,13.72,14.0,-9,-6.5,-39.2,-36.0,METAL,collide=False)
-crate("ArmCrate0",NPROP,5.2,-9,-43.5,0.8,8); crate("ArmCrate1",NPROP,12.9,-9,-36.6,0.7,-12)
-barrel("ArmBarrel0",NPROP,4.9,-9,-36.3)
-label("ArmorySign",U,(12,-6.7,-44.35),0,"SECURITY ARMORY\nWEAPONS - AUTHORISED PERSONNEL ONLY",size=0.003,font=36,color=(0.95,0.8,0.3))
-light("ArmoryLight1","Lights",(9,-6.6,-38.5),color=(1,0.9,0.72),energy=0.9,rng=8,flicker=0.25)
-light("ArmoryLight2","Lights",(12.5,-6.6,-42.5),color=(1,0.88,0.7),energy=0.7,rng=7,flicker=0.4)
-# the guns and ammo (spread along both racks so several people can arm up)
-item("weapon_shotgun",(13.85,-8.75,-37.2)); item("weapon_pistol",(13.85,-8.75,-38.2))
-item("weapon_revolver",(13.85,-8.75,-39.0)); item("weapon_suppressed_9mm",(4.55,-8.75,-39.6))
-item("ammo_12ga",(4.55,-8.85,-38.4)); item("ammo_9mm",(4.55,-8.85,-37.6))
-item("ammo_9mm",(13.85,-8.85,-36.7)); item("ammo_38",(11.9,-8.75,-43.1))
-item("ammo_308",(13.2,-8.75,-43.1)); item("medkit",(12.6,-8.75,-43.1))
-# a dead security guard, and the sidearm he never got to use
-BX("GuardTorso",U,6.8,7.4,-8.72,-8.34,-40.5,-39.4,BLACK,collide=False)
-mi("GuardHead",U,(7.1,-8.55,-39.15),mesh("SphereMesh",radius="0.12",height="0.24",radial_segments="10",rings="5"),BLACK,shadow=False)
-label("GuardNote",U,(7.1,-8.2,-39.9),0,"GUARD - KIA",size=0.0025,font=28,color=(0.6,0.5,0.45),outline="0")
-# the ambush: a second Long Man, awake only for this set-piece. He waits far
-# out of sight; when the team is halfway down the stairs he bursts out at the
-# TOP of the stairwell behind them and chases them down into the armory, so
-# they have to grab a gun off the racks and fight him off.
-BX("AmbushParkFloor",U,196,204,-60.5,-60,196,204,CONC)
-sc.node("LongManAmbush",None,"Monsters",instance=X["longman"],transform=xform((200,-60,200)),start_delay="99999.0",max_health="50.0",leaves_when_beaten="true")
-sc.node("AmbushBurst","Marker3D","Monsters",transform=xform((9,0.1,-16.6),180))
-stinger("AmbushTrigger",(9,-6.4,-30.5),(2.4,3,2),msg="Something slams through the door above you... RUN to the armory and grab a gun!",
-       script=S_CHASE,np=["monster","burst_point"],monster=NP("../../Monsters/LongManAmbush"),burst_point=NP("../../Monsters/AmbushBurst"))
-label("ArmoryArrow",U,(9.95,-7.0,-34.5),-90,"ARMORY  ->",size=0.003,font=36,color=(0.95,0.8,0.3))
-
-# ============================================================ MORE ARMORY
-# The armory gets dressed up: sandbags, wall racks of (display-only) rifles,
-# green ammo cans, a cleaning bench, a paper target, a map of Level B, a red
-# emergency light, the sign-out sheet (lore) and a little more loot.
-OLIVE=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.22,0.25,0.14), roughness="0.7", metallic="0.3"))
-BURLAP=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.42,0.36,0.24), roughness="1.0"))
-GUNMETAL=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.06,0.06,0.06), roughness="0.4", metallic="0.8"))
-for k,(x,z) in enumerate([(5.1,-37.6),(5.9,-37.6),(6.7,-37.6),(5.5,-37.62),(6.3,-37.62)]):
-    y=-8.82 if k<3 else -8.47
-    mi(f"Sandbag{k}",NPROP,(x,y,z),mesh("CapsuleMesh",radius="0.18",height="0.8",radial_segments="8",rings="2"),BURLAP,roll=90)
-BX("SandbagWall",NPROP,4.7,7.1,-9,-8.3,-37.85,-37.35,BURLAP,collide=True)
-# wall racks of display rifles on the west wall
-BX("RifleRackW",U,4.05,4.15,-8.3,-7.0,-39.4,-37.9,DWOOD,collide=False)
-for k in range(4):
-    z=-38.1-k*0.38
-    mi(f"RackRifle{k}",U,(4.22,-7.65,z),mesh("BoxMesh",size=v3(0.05,1.05,0.09)),GUNMETAL,roll=6,shadow=False)
-    mi(f"RackStock{k}",U,(4.22,-8.12,z),mesh("BoxMesh",size=v3(0.06,0.3,0.12)),DWOOD,shadow=False)
-label("RackSign",U,(4.17,-6.85,-38.65),90,"RIFLES - SIGNED OUT",size=0.0025,font=28,color=(0.9,0.85,0.6))
-# ammo cans on the table and a stack by the bench
-for k,(x,y,z) in enumerate([(11.7,-8.13,-43.2),(12.15,-8.13,-43.25),(13.2,-8.13,-42.7)]):
-    mi(f"AmmoCan{k}",U,(x,y,z),mesh("BoxMesh",size=v3(0.3,0.24,0.16)),OLIVE,yaw=random.uniform(-15,15))
-for k in range(3):
-    BX(f"AmmoCrateStack{k}",NPROP,10.6,11.3,-9+k*0.32,-8.7+k*0.32,-44.3,-43.8,OLIVE)
-# cleaning bench along the north wall (east of the stairs)
-BX("CleanBench",NPROP,10.6,12.6,-9,-8.15,-36.05,-35.55,METAL)
-mi("BenchRag",U,(11.2,-8.13,-35.8),mesh("BoxMesh",size=v3(0.3,0.01,0.2)),PAPER,yaw=20,shadow=False)
-mi("BenchPistol",U,(11.9,-8.12,-35.8),mesh("BoxMesh",size=v3(0.22,0.04,0.14)),GUNMETAL,yaw=-30,shadow=False)
-# paper target and a Level B map on the south wall (either side of the bolted door)
-mi("TargetPaper",U,(6.0,-7.4,-44.47),mesh("BoxMesh",size=v3(0.6,0.8,0.01)),PAPER,shadow=False)
-label("TargetRings",U,(6.0,-7.4,-44.45),0,"(  (  ( O )  )  )\n.  .   .",size=0.004,font=40,color=(0.1,0.1,0.1),outline="0")
-mi("MapBoard",U,(12.4,-7.3,-44.47),mesh("BoxMesh",size=v3(1.3,0.9,0.02)),PAPER,shadow=False)
-label("MapText",U,(12.4,-7.3,-44.44),0,"LEVEL B\n[ARMORY]---[TUNNEL]---[CELL]\n      |          |\n  [DORM]   [ELEVATOR]---[LAB]\n              |\n        [OBSERVATION]",size=0.0022,font=28,color=(0.15,0.15,0.4),outline="0")
-light("ArmoryAlarm","Lights",(5,-6.6,-43.8),color=(1,0.1,0.05),energy=0.6,rng=5,pulse=True,shadow=False)
-inst("lfile","ArmorySignout","Lore",(12.0,-8.25,-42.7),-15,entry=ER(LORE("file_armory_signout")))
-item("ammo_12ga",(11.0,-8.1,-35.8)); item("flare",(5.6,-8.4,-37.6)); item("battery",(13.4,-8.1,-43.2))
-
 # ============================================================ THE MAINTENANCE BYPASS (longer main tunnel)
 # Section 3 of the main tunnel has caved in, so the way south now winds
 # through the old maintenance bypass: three turns, failing fluorescent tubes
@@ -1013,6 +942,68 @@ light("ShowerGlow","Lights",(21.4,-6.6,-57.65),color=(0.6,0.8,0.7),energy=0.18,r
 # the dripping stops...
 area("BypassScare","Triggers",(18.1,-7.65,-61.5),(1.8,2.7,3),S_SCARE,steps_from=v3(15,-8.9,-64.4),steps_to=v3(12,-8.9,-64.4),steps="5",
      sound=ER(CREAK),message=S("The dripping stops."))
+
+# ============================================================ THE ARMORY (deep in the tunnels)
+# The old security armory is past the security shutter, at the end of a short
+# hall off the maintenance bypass (behind a door). Everyone starts unarmed,
+# so this is where the team finds guns and ammo, before the Long Man gets
+# loose. (The stairs are just a dark junction now: no ambush there.)
+OLIVE=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.22,0.25,0.14), roughness="0.7", metallic="0.3"))
+BURLAP=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.42,0.36,0.24), roughness="1.0"))
+GUNMETAL=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.06,0.06,0.06), roughness="0.4", metallic="0.8"))
+for n,c,s in [("ArmoryHall",(21.7,-7.65,-64.4),(5.4,2.7,1.8)),
+              ("ArmoryDoorSlot",(24.4,-7.475,-64.4),(0.6,3.05,2)),
+              ("Armory",(27.05,-7.65,-61.6),(4.7,2.7,8.4))]:
+    B(n,R,c,s,ROCK,collide=False,op=2)
+inst("door","ArmoryDoor","Puzzles",(24.4,-9,-63.4),90)
+label("ArmorySign",U,(24.05,-6.55,-64.4),-90,"SECURITY ARMORY\nAUTHORISED PERSONNEL ONLY",size=0.0026,font=32,color=(0.95,0.8,0.3))
+label("ArmoryArrow",U,(18.95,-7.2,-62.6),-90,"ARMORY",size=0.003,font=36,color=(0.95,0.8,0.3))
+light("ArmoryHallTube","Lights",(22.2,-6.5,-64.4),color=(0.82,0.95,0.88),energy=0.4,rng=3.5,flicker=0.8,fixture="tube")
+pipe("ArmoryHallPipe",(19.1,-6.75,-65.15),(24.0,-6.75,-65.15))
+# furniture: weapon cabinet, table, gun rack, crates, a barrel
+prop("WeaponCabinet",NPROP,"cabinet",(25.05,-9,-58.6),90,collide=("box",(0.6,1.35,0.65),(0,0.675,0)))
+BX("ArmoryTable",NPROP,26.0,28.2,-9,-8.25,-62.0,-60.8,METAL)
+BX("ArmoryRack",U,29.1,29.38,-9,-6.5,-64.8,-61.6,METAL,collide=False)
+crate("ArmCrate0",NPROP,28.7,-9,-58.0,0.7,8); barrel("ArmBarrel0",NPROP,25.3,-9,-65.2)
+light("ArmoryLight1","Lights",(27,-6.6,-59.5),color=(1,0.9,0.72),energy=0.9,rng=7,flicker=0.25)
+light("ArmoryLight2","Lights",(27,-6.6,-64),color=(1,0.88,0.7),energy=0.7,rng=6,flicker=0.4)
+light("ArmoryAlarm","Lights",(25.2,-6.6,-57.9),color=(1,0.1,0.05),energy=0.6,rng=5,pulse=True,shadow=False)
+# sandbags along the north end
+for k,(x,z) in enumerate([(25.6,-58.1),(26.4,-58.1),(27.2,-58.1),(26.0,-58.12),(26.8,-58.12)]):
+    mi(f"Sandbag{k}",NPROP,(x,-8.82 if k<3 else -8.47,z),mesh("CapsuleMesh",radius="0.18",height="0.8",radial_segments="8",rings="2"),BURLAP,roll=90)
+BX("SandbagWall",NPROP,25.2,27.6,-9,-8.3,-58.35,-57.85,BURLAP)
+# wall rack of display rifles on the west wall
+BX("RifleRackW",U,24.75,24.85,-8.3,-7.0,-61.6,-60.1,DWOOD,collide=False)
+for k in range(4):
+    z=-60.3-k*0.38
+    mi(f"RackRifle{k}",U,(24.92,-7.65,z),mesh("BoxMesh",size=v3(0.05,1.05,0.09)),GUNMETAL,roll=6,shadow=False)
+    mi(f"RackStock{k}",U,(24.92,-8.12,z),mesh("BoxMesh",size=v3(0.06,0.3,0.12)),DWOOD,shadow=False)
+label("RackSign",U,(24.87,-6.85,-60.85),90,"RIFLES - SIGNED OUT",size=0.0025,font=28,color=(0.9,0.85,0.6))
+# ammo cans on the table, a stack of ammo crates, a cleaning bench
+for k,(x,z) in enumerate([(26.3,-61.7),(26.75,-61.75),(27.9,-61.1)]):
+    mi(f"AmmoCan{k}",U,(x,-8.13,z),mesh("BoxMesh",size=v3(0.3,0.24,0.16)),OLIVE,yaw=random.uniform(-15,15))
+for k in range(3):
+    BX(f"AmmoCrateStack{k}",NPROP,28.5,29.2,-9+k*0.32,-8.7+k*0.32,-59.6,-59.1,OLIVE)
+BX("CleanBench",NPROP,26.4,28.6,-9,-8.15,-65.75,-65.25,METAL)
+mi("BenchRag",U,(27.0,-8.13,-65.5),mesh("BoxMesh",size=v3(0.3,0.01,0.2)),PAPER,yaw=20,shadow=False)
+mi("BenchPistol",U,(27.7,-8.12,-65.5),mesh("BoxMesh",size=v3(0.22,0.04,0.14)),GUNMETAL,yaw=-30,shadow=False)
+# paper target on the north wall, a map of Level B on the east wall
+mi("TargetPaper",U,(27.9,-7.4,-57.43),mesh("BoxMesh",size=v3(0.6,0.8,0.01)),PAPER,shadow=False)
+label("TargetRings",U,(27.9,-7.4,-57.45),180,"(  (  ( O )  )  )\n.  .   .",size=0.004,font=40,color=(0.1,0.1,0.1),outline="0")
+mi("MapBoard",U,(29.37,-7.3,-60.2),mesh("BoxMesh",size=v3(0.02,0.9,1.3)),PAPER,shadow=False)
+label("MapText",U,(29.35,-7.3,-60.2),-90,"LEVEL B\n[STAIRS]---[TUNNEL]---[CELL]\n     |       |\n [DORM]  [ARMORY]  [ELEVATOR]---[LAB]\n                       |\n                 [OBSERVATION]",size=0.0022,font=28,color=(0.15,0.15,0.4),outline="0")
+# a dead security guard, and the sidearm he never got to use
+BX("GuardTorso",U,27.4,28.0,-8.72,-8.34,-63.9,-62.8,BLACK,collide=False)
+mi("GuardHead",U,(27.7,-8.55,-62.55),mesh("SphereMesh",radius="0.12",height="0.24",radial_segments="10",rings="5"),BLACK,shadow=False)
+label("GuardNote",U,(27.7,-8.2,-63.3),0,"GUARD - KIA",size=0.0025,font=28,color=(0.6,0.5,0.45),outline="0")
+inst("lfile","ArmorySignout","Lore",(27.4,-8.25,-61.1),-15,entry=ER(LORE("file_armory_signout")))
+# the guns and ammo (spread out so several people can arm up)
+item("weapon_shotgun",(29.0,-8.75,-64.2)); item("weapon_pistol",(29.0,-8.75,-63.2))
+item("weapon_revolver",(29.0,-8.75,-62.3)); item("weapon_suppressed_9mm",(27.0,-8.15,-61.4))
+item("ammo_12ga",(26.4,-8.15,-61.1)); item("ammo_9mm",(28.0,-8.15,-61.7))
+item("ammo_9mm",(28.9,-8.85,-61.8)); item("ammo_38",(27.4,-8.05,-65.5))
+item("ammo_308",(28.0,-8.05,-65.5)); item("medkit",(26.6,-8.05,-65.5))
+item("ammo_12ga",(28.8,-7.9,-58.0)); item("flare",(25.9,-8.2,-58.1)); item("battery",(28.85,-7.95,-59.35))
 
 # ============================================================ THE OBSERVATION WING (new co-op puzzle)
 # Off the north side of the elevator room: a winding corridor to Observation

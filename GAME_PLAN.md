@@ -176,7 +176,7 @@ Magazines are **not universal** — each weapon takes specific mags.
 - **Guard:** 9mm Pistol + Flashlight melee (sustained defense)
 
 Nobody *starts* with these; they are the weapons each character is built to use
-best once the team finds them. Chapter 1's armory (just below the stairwell) is
+best once the team finds them. Chapter 1's armory (deep in the tunnels, off the maintenance bypass) is
 where the team gets its first guns.
 
 **Ammo pickup examples per chapter:**
@@ -488,8 +488,8 @@ Tasks:
 - [x] Gray-box all five rooms
 - [x] Place puzzles and gear as listed above
 - [x] Confirm every character's ability is needed at least once
-- [x] **Unarmed start + armory ambush:** players begin with no weapons, meet the
-      Long Man at the bottom of the stairwell, and arm up from the armory racks
+- [x] **Unarmed start + armory:** players begin with no weapons and arm up from
+      the armory racks, deep in the tunnels off the maintenance bypass
 - [x] One chase sequence through narrow tunnels
 - [x] Lore items that introduce the facility and each character's reason for coming
 - [x] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"
