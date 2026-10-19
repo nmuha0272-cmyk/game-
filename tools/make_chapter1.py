@@ -630,16 +630,27 @@ inst("fuse","ElevatorKeySlot","Puzzles",(33.5,-7.6,-59.05),180,item_id=S("keycar
 
 # ============================================================ THE POWER ROOM (before you meet the Long Man)
 # The tunnel is blocked by a security shutter with no power. The Power Room
-# (off the junction) needs a yellow keycard; the spare card and the fuel are
-# in the yard shed. Fuel the generator, start it, then set the breakers to
-# the wiring diagram in the director's office. Power comes back on, and the
-# shutter opens the way to the cell...
+# (off the junction) is sealed with a CARD READER: slot the yellow FACILITIES
+# keycard to get in. The card sits with the fuel on the stairwell landing, on
+# the way down - and the fuel tank is inside the power room, so anyone who
+# missed them goes back up for it anyway. Fuel the generator, start it, then
+# set the breakers to the wiring diagram on the wall. Power comes back on, and
+# the shutter opens the way to the cell...
 S_BREAKER=SC("res://scripts/puzzles/breaker_panel.gd"); S_SWITCH=SC("res://scripts/puzzles/breaker_switch.gd")
 for n,c,sz in [("PowerDoorSlot",(14.3,-7.475,-42.5),(0.6,3.05,2)),("PowerHall",(15.5,-7.65,-42.5),(2.4,2.7,2)),("PowerRoom",(21,-7,-42),(9,4,10))]:
     B(n,R,c,sz,ROCK,collide=False,op=2)
-inst("door","PowerRoomDoor","Puzzles",(14.3,-9,-41.5),90)
+inst("door","PowerRoomDoor","Puzzles",(14.3,-9,-41.5),90,puzzle_controlled="true")
 label("PowerSign",U,(13.97,-6.75,-42.5),-90,"POWER ROOM",size=0.003,font=32,color=(0.95,0.8,0.3))
-item("fuel_can",(8.6,-3.8,-25.4)); item("battery",(10.6,0.85,12.0))
+# The card reader: on the junction wall, just north of the door.
+inst("fuse","PowerCardReader","Puzzles",(14.03,-7.6,-40.35),-90,item_id=S("keycard_yellow"),
+     insert_time="3.0",engineer_insert_time="1.0",label_text=S("FACILITIES CARD"))
+label("PowerCardSign",U,(13.97,-6.8,-40.35),-90,"FACILITIES CARD REQUIRED",size=0.0026,font=30,color=(0.95,0.8,0.3))
+gate("PowerDoorGate","Puzzles",["../PowerCardReader"],["../PowerRoomDoor"],
+     msg="The card reader chirps green... the POWER ROOM door unbolts.")
+item("fuel_can",(8.6,-3.8,-25.4))
+# The yellow keycard for the reader above, with the fuel on the landing.
+item("keycard_yellow",(9.2,-3.9,-24.8))
+item("battery",(10.6,0.85,12.0))
 BX("ShedShelf",E,10.2,11.3,0.8,0.85,11.2,12.8,DWOOD)
 light("ShedBulb","Lights",(10,2.3,12),color=(1,0.8,0.5),energy=0.5,rng=4,flicker=0.7)
 stinger("ShedSting",(10,1.2,12),(2.6,2.4,2.6),msg="Something moves between the trees behind the shed. It's gone when you look.")

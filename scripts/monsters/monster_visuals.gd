@@ -197,7 +197,8 @@ func play_jump_scare() -> void:
 	light.queue_free()
 	layer.queue_free()
 	await get_tree().create_timer(1.5).timeout
-	sound.queue_free()
+	if is_instance_valid(sound):
+		sound.queue_free()
 
 
 ## The jump scare with the real model: he lunges, GRABS you and lifts you
@@ -260,7 +261,8 @@ func _grab_and_slash(camera: Camera3D) -> void:
 	camera.rotation.z = 0.0
 	await get_tree().create_timer(1.6).timeout
 	layer.queue_free()
-	sound.queue_free()
+	if is_instance_valid(sound):
+		sound.queue_free()
 
 
 func _scare_sound(camera: Camera3D, pitch: float) -> AudioStreamPlayer:

@@ -5713,6 +5713,7 @@ operation = 2
 
 [node name="PowerRoomDoor" parent="Puzzles" instance=ExtResource("10_x")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14.3, -9, -41.5)
+puzzle_controlled = true
 
 [node name="PowerSign" type="Label3D" parent="Underground"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.97, -6.75, -42.5)
@@ -5722,12 +5723,40 @@ font_size = 32
 modulate = Color(0.95, 0.8, 0.3, 1)
 outline_size = 4
 
-[node name="fuel_can_748" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="PowerCardReader" parent="Puzzles" instance=ExtResource("3_x")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14.03, -7.6, -40.35)
+item_id = "keycard_yellow"
+insert_time = 3.0
+engineer_insert_time = 1.0
+label_text = "FACILITIES CARD"
+
+[node name="PowerCardSign" type="Label3D" parent="Underground"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.97, -6.8, -40.35)
+pixel_size = 0.0026
+text = "FACILITIES CARD REQUIRED"
+font_size = 30
+modulate = Color(0.95, 0.8, 0.3, 1)
+outline_size = 4
+
+[node name="PowerDoorGate" type="Node" parent="Puzzles" node_paths=PackedStringArray("inputs", "outputs")]
+script = ExtResource("23_x")
+inputs = [NodePath("../PowerCardReader")]
+outputs = [NodePath("../PowerRoomDoor")]
+mode = 0
+latch = true
+solved_message = "The card reader chirps green... the POWER ROOM door unbolts."
+
+[node name="fuel_can_751" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.6, -3.8, -25.4)
 script = ExtResource("31_x")
 item_id = "fuel_can"
 
-[node name="battery_749" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="keycard_yellow_752" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, -3.9, -24.8)
+script = ExtResource("31_x")
+item_id = "keycard_yellow"
+
+[node name="battery_753" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6, 0.85, 12)
 script = ExtResource("31_x")
 item_id = "battery"
@@ -6380,12 +6409,12 @@ message = "Something is pounding on the other side of the vent wall... but it ca
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/VentBangs"]
 shape = SubResource("BoxShape3D_266")
 
-[node name="battery_859" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_863" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, -8.9, -72)
 script = ExtResource("31_x")
 item_id = "battery"
 
-[node name="flare_860" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_864" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, -8.9, -88.9)
 script = ExtResource("31_x")
 item_id = "flare"
@@ -6671,17 +6700,17 @@ font_size = 32
 modulate = Color(0.75, 0.2, 0.15, 1)
 outline_size = 4
 
-[node name="gas_mask_907" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="gas_mask_911" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.65, 1.05, -11.1)
 script = ExtResource("31_x")
 item_id = "gas_mask"
 
-[node name="gas_mask_908" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="gas_mask_912" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.65, 1.05, -10.6)
 script = ExtResource("31_x")
 item_id = "gas_mask"
 
-[node name="medkit_909" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="medkit_913" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.65, 0.1, -10.9)
 script = ExtResource("31_x")
 item_id = "medkit"
@@ -6872,7 +6901,7 @@ stream = ExtResource("51_x")
 pitch_scale = 1.6
 unit_size = 4.0
 
-[node name="keycard_green_943" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="keycard_green_947" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.45, 0.2, -8.2)
 script = ExtResource("31_x")
 item_id = "keycard_green"
@@ -7029,7 +7058,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.55, -8.15, -37.69)
 size = Vector3(0.6, 0.4, 0.02)
 material = SubResource("StandardMaterial3D_70")
 
-[node name="reel_tape_969" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="reel_tape_973" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 77.6, -8, -69.5)
 script = ExtResource("31_x")
 item_id = "reel_tape"
@@ -7777,12 +7806,12 @@ transform = Transform3D(0.99759, 0, -0.06938, 0, 1, 0, 0.06938, 0, 0.99759, 21.8
 mesh = SubResource("BoxMesh_336")
 surface_material_override/0 = SubResource("StandardMaterial3D_72")
 
-[node name="battery_1095" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_1099" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.6, -7.25, -62.38)
 script = ExtResource("31_x")
 item_id = "battery"
 
-[node name="battery_1096" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_1100" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.7, -8.85, -60)
 script = ExtResource("31_x")
 item_id = "battery"
@@ -7828,7 +7857,7 @@ cast_shadow = 0
 transform = Transform3D(0.86603, 0, 0.5, 0, 1, 0, -0.5, 0, 0.86603, 22.6, -8.9, -58.2)
 entry = ExtResource("340_x")
 
-[node name="ammo_9mm_1105" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_9mm_1109" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.4, -8.9, -58.2)
 script = ExtResource("31_x")
 item_id = "ammo_9mm"
@@ -8267,67 +8296,67 @@ outline_size = 0
 transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 27.4, -8.25, -61.1)
 entry = ExtResource("363_x")
 
-[node name="weapon_shotgun_1178" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="weapon_shotgun_1182" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, -8.75, -64.2)
 script = ExtResource("31_x")
 item_id = "weapon_shotgun"
 
-[node name="weapon_pistol_1179" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="weapon_pistol_1183" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, -8.75, -63.2)
 script = ExtResource("31_x")
 item_id = "weapon_pistol"
 
-[node name="weapon_revolver_1180" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="weapon_revolver_1184" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, -8.75, -62.3)
 script = ExtResource("31_x")
 item_id = "weapon_revolver"
 
-[node name="weapon_suppressed_9mm_1181" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="weapon_suppressed_9mm_1185" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, -8.15, -61.4)
 script = ExtResource("31_x")
 item_id = "weapon_suppressed_9mm"
 
-[node name="ammo_12ga_1182" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_12ga_1186" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.4, -8.15, -61.1)
 script = ExtResource("31_x")
 item_id = "ammo_12ga"
 
-[node name="ammo_9mm_1183" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_9mm_1187" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, -8.15, -61.7)
 script = ExtResource("31_x")
 item_id = "ammo_9mm"
 
-[node name="ammo_9mm_1184" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_9mm_1188" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.9, -8.85, -61.8)
 script = ExtResource("31_x")
 item_id = "ammo_9mm"
 
-[node name="ammo_38_1185" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_38_1189" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.4, -8.05, -65.5)
 script = ExtResource("31_x")
 item_id = "ammo_38"
 
-[node name="ammo_308_1186" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_308_1190" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, -8.05, -65.5)
 script = ExtResource("31_x")
 item_id = "ammo_308"
 
-[node name="medkit_1187" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="medkit_1191" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.6, -8.05, -65.5)
 script = ExtResource("31_x")
 item_id = "medkit"
 
-[node name="ammo_12ga_1188" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_12ga_1192" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.8, -7.9, -58)
 script = ExtResource("31_x")
 item_id = "ammo_12ga"
 
-[node name="flare_1189" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_1193" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.9, -8.2, -58.1)
 script = ExtResource("31_x")
 item_id = "flare"
 
-[node name="battery_1190" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_1194" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.85, -7.95, -59.35)
 script = ExtResource("31_x")
 item_id = "battery"
@@ -8674,7 +8703,7 @@ size = Vector3(2.4, 0.45, 0.45)
 material = ExtResource("61_x")
 use_collision = true
 
-[node name="reel_tape_1243" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="reel_tape_1247" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.2, -8.45, -40.45)
 script = ExtResource("31_x")
 item_id = "reel_tape"
@@ -8834,22 +8863,22 @@ use_collision = true
 transform = Transform3D(0.93969, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.93969, 62, -8.4, -37.9)
 entry = ExtResource("384_x")
 
-[node name="medkit_1270" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="medkit_1274" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, -8.8, -38.3)
 script = ExtResource("31_x")
 item_id = "medkit"
 
-[node name="ammo_9mm_1271" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_9mm_1275" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59.8, -8.8, -37.3)
 script = ExtResource("31_x")
 item_id = "ammo_9mm"
 
-[node name="ammo_12ga_1272" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_12ga_1276" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.6, -8.8, -39.3)
 script = ExtResource("31_x")
 item_id = "ammo_12ga"
 
-[node name="battery_1273" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_1277" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62.2, -8.35, -38.8)
 script = ExtResource("31_x")
 item_id = "battery"
@@ -9171,7 +9200,7 @@ entry = ExtResource("396_x")
 [node name="TapeMachine4" parent="Puzzles" instance=ExtResource("22_x")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66.3, -8.1, -53.5)
 
-[node name="battery_1326" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_1330" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70.4, -8.9, -45)
 script = ExtResource("31_x")
 item_id = "battery"
@@ -9247,13 +9276,13 @@ template = "RELAY BAND - LIVE
 transform = Transform3D(0.76604, 0, 0.64279, 0, 1, 0, -0.64279, 0, 0.76604, 74.2, -8.9, -37.6)
 entry = ExtResource("399_x")
 
-[node name="reel_tape_1338" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="reel_tape_1342" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 78, -8.85, -43.2)
 script = ExtResource("31_x")
 item_id = "reel_tape"
 lore_id = "tape_relay_test"
 
-[node name="flare_1339" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_1343" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.7, -8.9, -43.4)
 script = ExtResource("31_x")
 item_id = "flare"
@@ -9655,22 +9684,22 @@ mode = 0
 latch = true
 solved_message = "Both valves scream... the boilers vent with a roar, and the pressure cage unlocks."
 
-[node name="medkit_1404" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="medkit_1408" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.2, -8.9, -98.8)
 script = ExtResource("31_x")
 item_id = "medkit"
 
-[node name="ammo_12ga_1405" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_12ga_1409" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, -8.9, -99.2)
 script = ExtResource("31_x")
 item_id = "ammo_12ga"
 
-[node name="ammo_9mm_1406" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_9mm_1410" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.8, -8.9, -98.8)
 script = ExtResource("31_x")
 item_id = "ammo_9mm"
 
-[node name="battery_1407" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_1411" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.4, -8.9, -98)
 script = ExtResource("31_x")
 item_id = "battery"
@@ -9991,7 +10020,7 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 49.35, -9, -86)
 transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, 57.5, -8.1, -83)
 entry = ExtResource("426_x")
 
-[node name="flare_1456" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_1460" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, -8.9, -81)
 script = ExtResource("31_x")
 item_id = "flare"
@@ -10113,22 +10142,22 @@ cast_shadow = 0
 transform = Transform3D(0.93969, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.93969, 57, -8.9, -91.5)
 entry = ExtResource("429_x")
 
-[node name="medkit_1473" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="medkit_1477" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, -8.9, -92.5)
 script = ExtResource("31_x")
 item_id = "medkit"
 
-[node name="battery_1474" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_1478" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, -8.9, -92.5)
 script = ExtResource("31_x")
 item_id = "battery"
 
-[node name="ammo_38_1475" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_38_1479" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.2, -7.1, -94.65)
 script = ExtResource("31_x")
 item_id = "ammo_38"
 
-[node name="ammo_308_1476" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="ammo_308_1480" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, -7.1, -94.65)
 script = ExtResource("31_x")
 item_id = "ammo_308"
@@ -10601,12 +10630,12 @@ entry = ExtResource("441_x")
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 19.5, -8.4, -53.4)
 entry = ExtResource("442_x")
 
-[node name="battery_1585" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="battery_1589" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.4, -8.9, -50)
 script = ExtResource("31_x")
 item_id = "battery"
 
-[node name="flare_1586" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="flare_1590" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.4, -8.9, -52)
 script = ExtResource("31_x")
 item_id = "flare"

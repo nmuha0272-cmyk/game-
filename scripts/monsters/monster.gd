@@ -8,8 +8,10 @@ extends CharacterBody3D
 ##   PATROL ──hears something──> INVESTIGATE ──sees someone──> CHASE
 ##     ^                              │                          │
 ##     └────────── SEARCH <───────────┴────loses them────────────┘
-## A camera flash puts it in STUNNED. A door the Guard is holding puts it in
-## BLOCKED (it pounds on the door, then gives up). A locked door does too.
+## A camera flash puts it in STUNNED. Every bullet staggers it (it flinches and
+## stops for a moment; enough gunfire drives it off for a while). A door the
+## Guard is holding puts it in BLOCKED (it pounds on the door, then gives up).
+## A locked door does too.
 ## A burning flare puts it in DISTRACTED: it stares at the flare and ignores
 ## players until it burns out. Catching a player downs them.
 ## STARE: when it first spots you, it rises up to its full height and stares
@@ -88,6 +90,8 @@ var is_stunned: bool:
 		return state == State.STUNNED
 
 var _timer := 0.0
+## Seconds left before it stops flinching from the last bullet that hit it.
+var _stagger_time := 0.0
 var _unseen_time := 0.0
 var _last_known_position := Vector3.ZERO
 var _patrol_index := 0
@@ -122,6 +126,11 @@ func _physics_process(delta: float) -> void:
 # ---------------------------------------------------------------- thinking
 
 func _think(delta: float) -> void:
+	# Staggered: a bullet knocked the wind out of it. It stands there, holding
+	# its state (still angry, still hunting) until it shakes it off.
+	if _stagger_time > 0.0:
+		_stagger_time = maxf(_stagger_time - delta, 0.0)
+		return
 	_timer -= delta
 	match state:
 		State.DORMANT:
@@ -417,7 +426,8 @@ func stun(seconds: float) -> void:
 	velocity = Vector3.ZERO
 
 
-## Host only: a gunshot hit us. Enough damage drives it off for a while.
+## Host only: a gunshot hit us. Enough damage drives it off for a while,
+## and every hit staggers it: it flinches and stops dead for a moment.
 func take_damage(amount: float, from: Node = null) -> void:
 	if not multiplayer.is_server() or amount <= 0.0:
 		return
@@ -428,6 +438,19 @@ func take_damage(amount: float, from: Node = null) -> void:
 	if health <= 0.0:
 		health = max_health
 		_drive_off()
+		return
+	_stagger(clampf(amount * 0.03, 0.3, 1.0))
+
+
+## Host only: a bullet made it flinch. No state change, so it goes right back
+## to what it was doing once it recovers (guns stun, they never kill it).
+func _stagger(seconds: float) -> void:
+	if state == State.DORMANT:
+		return
+	if target and is_instance_valid(target):
+		_last_known_position = target.global_position
+	_stagger_time = maxf(_stagger_time, seconds)
+	velocity = Vector3.ZERO
 
 
 ## Host only: a tranquilizer dart. Stuns for a flat time (no light bonus),
@@ -470,11 +493,20 @@ func _leave() -> void:
 		$SenseGlow.visible = false
 
 
-## Sent by the host when a shot lands, so everyone hears it.
+## Sent by the host when a shot lands, so everyone sees and hears it.
 @rpc("authority", "call_local", "reliable")
 func _hit_flash() -> void:
 	if has_node("Screech"):
 		$Screech.play()
+	var spark := OmniLight3D.new()
+	spark.light_color = Color(1.0, 0.9, 0.75)
+	spark.light_energy = 7.0
+	spark.omni_range = 3.5
+	spark.position = Vector3(0.0, 0.9 if is_crawling() else 1.6, -0.4)
+	add_child(spark)
+	var tween := create_tween()
+	tween.tween_property(spark, "light_energy", 0.0, 0.2)
+	tween.tween_callback(spark.queue_free)
 
 
 # ---------------------------------------------------------------- moving
@@ -504,6 +536,8 @@ func _move(delta: float) -> void:
 
 
 func _current_speed() -> float:
+	if _stagger_time > 0.0:
+		return 0.0
 	match state:
 		State.PATROL: return patrol_speed
 		State.INVESTIGATE: return investigate_speed
