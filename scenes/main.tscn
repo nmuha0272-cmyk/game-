@@ -1,6 +1,7 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/main_menu/opening_cutscene.tscn" id="2_opening"]
 [ext_resource type="PackedScene" path="res://scenes/main_menu/main_menu.tscn" id="2_menu"]
 [ext_resource type="PackedScene" path="res://scenes/lobby/lobby.tscn" id="3_lobby"]
 [ext_resource type="Script" path="res://scripts/ui/journal_menu.gd" id="4_journal"]
@@ -23,7 +24,10 @@ _spawnable_scenes = PackedStringArray("res://scenes/chapters/chapter_1/chapter_1
 spawn_path = NodePath("../Level")
 spawn_limit = 1
 
+[node name="OpeningCutscene" parent="." instance=ExtResource("2_opening")]
+
 [node name="MainMenu" parent="." instance=ExtResource("2_menu")]
+visible = false
 
 [node name="Lobby" parent="." instance=ExtResource("3_lobby")]
 visible = false

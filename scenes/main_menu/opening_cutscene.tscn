@@ -1,0 +1,176 @@
+[gd_scene load_steps=3 format=3 uid="uid://ca4obn6ygmamh"]
+
+[ext_resource type="Script" path="res://scripts/ui/opening_cutscene.gd" id="1_opening"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_separator"]
+bg_color = Color(0.2, 0.2, 0.2, 1)
+border_width_bottom = 2
+border_color = Color(0.1, 0.1, 0.1, 1)
+
+[node name="OpeningCutscene" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_opening")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="NewspaperContainer" type="CenterContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Newspaper" type="PanelContainer" parent="NewspaperContainer"]
+layout_mode = 2
+
+[node name="NewspaperBG" type="ColorRect" parent="NewspaperContainer/Newspaper"]
+layout_mode = 2
+color = Color(0.92, 0.88, 0.8, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="NewspaperContainer/Newspaper"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="NewspaperContainer/Newspaper/MarginContainer"]
+custom_minimum_size = Vector2(700, 0)
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Header" type="Label" parent="NewspaperContainer/Newspaper/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_font_sizes/font_size = 14
+text = "The Portland Tribune          October 15, 1992"
+horizontal_alignment = 1
+
+[node name="Separator1" type="HSeparator" parent="NewspaperContainer/Newspaper/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 3
+theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
+
+[node name="Headline" type="Label" parent="NewspaperContainer/Newspaper/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
+theme_override_font_sizes/font_size = 36
+text = "MYSTERY ILLNESS CLAIMS
+ANOTHER VETERAN"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Separator2" type="HSeparator" parent="NewspaperContainer/Newspaper/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 3
+theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
+
+[node name="ArticleText" type="RichTextLabel" parent="NewspaperContainer/Newspaper/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 380)
+layout_mode = 2
+theme_override_colors/default_color = Color(0.1, 0.1, 0.1, 1)
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "PORTLAND — Another former military volunteer has died under mysterious circumstances, bringing the total to seventeen deaths in the past six months.
+
+[b]David Chen, 54[/b], passed away last Thursday after a brief battle with what doctors initially diagnosed as an aggressive form of bone cancer. However, medical examiners are now questioning that diagnosis.
+
+\"The cell degradation patterns don't match any known cancer,\" said Dr. Sarah Mitchell, who reviewed the autopsy. \"It's almost as if his body was rejecting itself from the inside out.\"
+
+Chen is the latest in a growing list of former servicemen who participated in a classified military program in the 1960s. All victims displayed similar symptoms: unexplained bone density changes, organ failure, and rapid deterioration.
+
+Family members report that in his final days, Chen spoke repeatedly about \"Project IRONWOOD\" and urged his son to \"stay away from the old weather station.\"
+
+The Department of Defense declined to comment on the nature of Chen's service or the existence of any program by that name.
+
+[i]Continued on page A4...[/i]"
+fit_content = true
+scroll_active = false
+
+[node name="FadeTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
+[node name="HospitalContainer" type="CenterContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HospitalContainer"]
+layout_mode = 2
+theme_override_constants/separation = 25
+
+[node name="Scene" type="Label" parent="HospitalContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 18
+text = "Six months earlier..."
+horizontal_alignment = 1
+
+[node name="Text" type="RichTextLabel" parent="HospitalContainer/VBoxContainer"]
+custom_minimum_size = Vector2(800, 400)
+layout_mode = 2
+theme_override_colors/default_color = Color(0.85, 0.82, 0.75, 1)
+theme_override_font_sizes/normal_font_size = 22
+bbcode_enabled = true
+text = "[center]The hospital room was quiet except for the beeping monitors.
+
+Eli sat beside his father's bed, watching the man who had always seemed so strong waste away.
+
+\"It's not cancer, son,\" David Chen whispered, his voice thin. \"They told us it was vitamins. Strength supplements for soldiers. But it was something else.\"
+
+His father's hand trembled as he pulled out an old dog tag from beneath his hospital gown.
+
+\"VOLUNTEER 14 - IRONWOOD\"
+
+\"They're all dying now. Everyone from the program. One by one.\" His father's eyes met Eli's. \"Stay away from that place. The old weather station. Promise me.\"
+
+But Eli couldn't promise that.
+
+Not when seventeen men had died.
+Not when the government claimed ignorance.
+Not when his father deserved the truth.
+
+[i]Three days later, David Chen was gone.[/i][/center]"
+fit_content = true
+scroll_active = false
+
+[node name="SkipHint" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -280.0
+offset_top = -50.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_font_sizes/font_size = 14
+text = "Hold [SPACE] to skip"
+horizontal_alignment = 2
+vertical_alignment = 2

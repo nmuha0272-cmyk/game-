@@ -1,5 +1,5 @@
 extends Node
-## Decides what's on screen: main menu -> lobby -> game level.
+## Decides what's on screen: opening cutscene -> main menu -> lobby -> game level.
 ## Only the host loads the level. The LevelSpawner then copies it
 ## to everyone in the lobby.
 
@@ -13,12 +13,16 @@ const STORY_START := "res://scenes/chapters/chapter_1/chapter_1.tscn"
 var _current_level := STORY_START
 
 @onready var level_root: Node = $Level
+@onready var opening_cutscene = $OpeningCutscene
 @onready var menu = $MainMenu
 @onready var lobby = $Lobby
 @onready var settings_menu: MenuBase = $Menus/Settings
 
 
 func _ready() -> void:
+	# Show main menu right away
+	_show_main_menu()
+	
 	menu.host_requested.connect(_on_host_requested)
 	menu.join_requested.connect(_on_join_requested)
 	menu.solo_requested.connect(_on_solo_requested)
@@ -33,6 +37,21 @@ func _ready() -> void:
 	GameState.restart_requested.connect(_restart_level)
 	GameState.chapter_completed.connect(_on_chapter_completed)
 	GameState.next_chapter_requested.connect(_on_next_chapter)
+	
+	# Connect cutscene finished signal
+	if opening_cutscene:
+		opening_cutscene.finished.connect(_on_opening_finished)
+
+
+func _on_opening_finished() -> void:
+	# After cutscene, load the actual game level
+	if multiplayer.is_server():
+		_current_level = STORY_START
+		level_root.add_child(load(STORY_START).instantiate())
+
+
+func _show_main_menu() -> void:
+	menu.show()
 
 
 func _on_host_requested() -> void:
@@ -81,9 +100,10 @@ func _on_start_requested() -> void:
 func _on_game_started() -> void:
 	lobby.hide()
 	menu.hide()
-	if multiplayer.is_server():
-		_current_level = STORY_START
-		level_root.add_child(load(STORY_START).instantiate())
+	# Play the opening cutscene before starting the game
+	if opening_cutscene:
+		opening_cutscene.show()
+		opening_cutscene.play_cutscene()
 
 
 ## Host only: the whole team went down. Reload the level; players appear at
