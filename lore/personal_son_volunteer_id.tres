@@ -7,6 +7,13 @@ script = ExtResource("1_entry")
 id = "personal_son_volunteer_id"
 title = "Volunteer 14 ID Card"
 type = 3
-text = "VOLUNTEER IDENTIFICATION, PROJECT IRONWOOD\nVolunteer No. 14\nStatus stamped in red: TRANSFERRED - PROGRAM ZERO\n\nThe photo on the card has been torn off."
+text = "VOLUNTEER IDENTIFICATION, PROJECT IRONWOOD
+Volunteer No. 14
+Name: DAVID CHEN
+Status stamped in red: TRANSFERRED - PROGRAM ZERO
+
+The photo on the card shows a young man in uniform, smiling.
+
+Dad kept this with him until the end. In the hospital, he said it wasn't cancer. He said they were all dying... everyone from the program."
 owner_character = 0
-voice_line = "Volunteer 14... that was Dad's number. Transferred to... Program Zero? What is that?"
+voice_line = "Dad... you were Volunteer 14. They told you it was vitamins, but it killed you thirty years later."

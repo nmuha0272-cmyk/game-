@@ -7,6 +7,14 @@ script = ExtResource("1_entry")
 id = "personal_son_father_letter"
 title = "Unsent Letter, Cabinet 14"
 type = 3
-text = "To my boy,\nThey told us it was vitamins. They told us we were helping the country, that the Russians were doing worse. I believed them.\nThe big one in the tunnels... I knew him. We shared a bunk. He used to sing.\nIf they send me down to Level B, don't let them tell you I volunteered twice.\nI'm coming home. I promise.\n- Dad (Volunteer 14)"
+text = "To my boy,
+They told us it was vitamins. They told us we were helping the country, that the Russians were doing worse. I believed them.
+The big one in the tunnels... I knew him. We shared a bunk. He used to sing.
+If they send me down to Level B, don't let them tell you I volunteered twice.
+I'm coming home. I promise.
+
+- Dad (Volunteer 14)
+
+[The letter was never sent. He did come home... but thirty years later, the experiments caught up with him. The doctors called it cancer, but Dad knew better.]"
 owner_character = 0
-voice_line = ""
+voice_line = "He kept his promise. He came home. But what they did to him... it never left his body."

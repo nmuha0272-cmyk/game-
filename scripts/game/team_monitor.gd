@@ -4,11 +4,20 @@ extends Node
 ## them, gas, a fall...), they die, and so does everyone else: the whole
 ## team restarts from the last checkpoint.
 
+## DEBUG: Press F1 to toggle god mode (you can't die).
+var god_mode := false
 var _wiped := false
 
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F1:
+		god_mode = not god_mode
+		get_tree().call_group("player_hud", "show_message", 
+			"God Mode: " + ("ON (You can't die)" if god_mode else "OFF"))
+
+
 func _physics_process(_delta: float) -> void:
-	if not multiplayer.is_server() or _wiped:
+	if not multiplayer.is_server() or _wiped or god_mode:
 		return
 	for player: Player in get_tree().get_nodes_in_group("players"):
 		if player.is_downed:
