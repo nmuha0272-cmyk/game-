@@ -32,6 +32,8 @@ var flashlight_on: bool:
 var is_downed: bool:
 	get:
 		return downed != null and downed.is_downed
+## Can be disabled during cutscenes or dialogue.
+var movement_enabled := true
 
 # These are synced over the network so other players see/hear us correctly.
 var is_sprinting := false
@@ -78,6 +80,11 @@ func _ready() -> void:
 	downed.changed.connect(_apply_crouch_shape)
 
 
+## Enable or disable player movement (for cutscenes, dialogue, etc.)
+func set_movement_enabled(enabled: bool) -> void:
+	movement_enabled = enabled
+
+
 func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority():
 		return
@@ -97,7 +104,7 @@ func _physics_process(delta: float) -> void:
 
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
-	elif Input.is_action_just_pressed("jump") and not is_crouching:
+	elif Input.is_action_just_pressed("jump") and not is_crouching and movement_enabled:
 		# Jump off the floor. The gravity above is skipped on the floor, so we
 		# replace the (near-zero) downward speed with an upward push.
 		velocity.y = jump_velocity
@@ -116,7 +123,7 @@ func _physics_process(delta: float) -> void:
 
 	# Input.get_vector gives x = left/right, y = forward/back (forward is negative).
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
-	if GameState.menu_open:
+	if GameState.menu_open or not movement_enabled:
 		input = Vector2.ZERO
 	var direction := (transform.basis * Vector3(input.x, 0.0, input.y)).normalized()
 
@@ -124,7 +131,7 @@ func _physics_process(delta: float) -> void:
 	# Nobody but the Guard can sprint while carrying something heavy.
 	var too_heavy := inventory.speed_multiplier() < 1.0
 	is_sprinting = Input.is_action_pressed("sprint") and moving_forward \
-			and not is_crouching and not too_heavy and stamina.can_sprint()
+			and not is_crouching and not too_heavy and stamina.can_sprint() and movement_enabled
 	stamina.draining = is_sprinting
 
 	var speed := walk_speed
@@ -145,7 +152,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _update_crouch(delta: float) -> void:
-	var wants_crouch := Input.is_action_pressed("crouch")
+	var wants_crouch := Input.is_action_pressed("crouch") and movement_enabled
 	if wants_crouch and not is_crouching:
 		is_crouching = true
 	elif not wants_crouch and is_crouching and _can_stand_up():

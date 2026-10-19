@@ -55,6 +55,13 @@ func server_restore() -> void:
 	_played = true
 
 
+## True once this cutscene has played (or was restored as already seen) and
+## is no longer on screen. Other scenes (like the opening dialogue) wait for
+## this so they never talk over it.
+func is_done() -> bool:
+	return _played and not playing
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if playing and (event.is_action("ui_accept") or event.is_action("jump")):
 		get_viewport().set_input_as_handled()

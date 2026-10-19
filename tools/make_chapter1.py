@@ -24,6 +24,7 @@ S_RAND=SC("res://scripts/environment/random_ambient_sounds.gd"); S_TEAM=SC("res:
 S_CHAPTER=SC("res://scripts/chapters/chapter.gd"); S_STING=SC("res://scripts/chapters/stinger_trigger.gd"); S_CHASE=SC("res://scripts/chapters/chase_trigger.gd")
 S_DRAIN=SC("res://scripts/chapters/flashlight_drain_trigger.gd"); S_ELEV=SC("res://scripts/chapters/elevator.gd")
 S_CUT=SC("res://scripts/chapters/cutscene.gd"); S_SCARE=SC("res://scripts/chapters/scare_event.gd")
+S_DIALOGUE=SC("res://scripts/chapters/opening_dialogue.gd")
 X.update(signal=P("res://scenes/puzzles/signal_light.tscn"), lmodel=P("res://assets/models/characters/long_man.glb"))
 def shots(*items):
     """Cutscene shots: (from, look_from, to, look_to, seconds, caption)."""
@@ -56,6 +57,7 @@ navmesh=sc.sub("NavigationMesh", geometry_parsed_geometry_type="1", geometry_sou
 
 sc.node("Chapter1","Node3D",script=ER(S_CHAPTER))
 sc.node("WorldEnvironment","WorldEnvironment",".",environment=SR(env))
+sc.node("OpeningDialogue","Node",".",script=ER(S_DIALOGUE))
 sc.node("Moon","DirectionalLight3D",".",transform=xform((0,20,0),30,-35),light_color=col(0.55,0.65,0.9),light_energy="0.5",shadow_enabled="true",directional_shadow_max_distance="70.0")
 for g in ["Exterior","Station","Underground","Puzzles","Lore","Lights","Sound","Triggers","Checkpoints","ItemSpawnPoints","Monsters"]:
     sc.node(g,"Node3D",".")

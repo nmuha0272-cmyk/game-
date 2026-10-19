@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/main_menu/opening_cutscene.tscn" id="2_opening"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/ui/screen_fader.gd" id="7_fader"]
 [ext_resource type="Script" path="res://scripts/ui/screen_effects.gd" id="8_fx"]
 [ext_resource type="Shader" path="res://assets/shaders/horror_screen.gdshader" id="9_fxshader"]
+[ext_resource type="PackedScene" uid="uid://bkqx8y7m4h5vw" path="res://scenes/ui/dialogue_box.tscn" id="10_dialogue"]
 
 [sub_resource type="ShaderMaterial" id="FxMaterial"]
 shader = ExtResource("9_fxshader")
@@ -45,6 +46,8 @@ script = ExtResource("5_settings")
 script = ExtResource("6_pause")
 settings_menu = NodePath("../Settings")
 journal_menu = NodePath("../Journal")
+
+[node name="DialogueBox" parent="Menus" instance=ExtResource("10_dialogue")]
 
 [node name="ScreenFader" type="CanvasLayer" parent="."]
 script = ExtResource("7_fader")
