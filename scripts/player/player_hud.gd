@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## The on-screen overlay: crosshair, prompts, stamina, ability cooldown,
 ## progress bar, gear hotbar, flashlight battery, messages, camera-flash
-## whiteout, toxic gas warning and the "you are down" screen.
+## whiteout, toxic gas warning, noise meter, and the "you are down" screen.
 ## Only your own player has a HUD.
 
 @export var player: Player
@@ -21,12 +21,17 @@ extends CanvasLayer
 @onready var hotbar: HBoxContainer = $Hotbar
 @onready var battery_label: Label = $BatteryLabel
 @onready var subtitle_label: Label = $SubtitleLabel
+@onready var noise_meter: HBoxContainer = $NoiseMeter
+@onready var noise_meter_fill: ProgressBar = $NoiseMeter/NoiseMeterBG/NoiseMeterFill
+@onready var noise_meter_label: Label = $NoiseMeter/NoiseMeterLabel
+@onready var quick_chat_wheel: Node = $QuickChatWheel
 
 var _slot_labels: Array[Label] = []
 var _slot_panels: Array[PanelContainer] = []
 
 var _message_tween: Tween
 var _subtitle_left := 0.0
+var _noise_level := 0.0
 
 
 func _ready() -> void:
@@ -74,6 +79,7 @@ func _process(_delta: float) -> void:
 	if status_label.text.is_empty() and HoldSwitch.held_by(player):
 		status_label.text = "Holding it up. Stay still!   [E] Let go"
 	_show_gas_warning()
+	_update_noise_meter()
 	downed_overlay.visible = player.is_downed
 	if player.downed.is_out:
 		var watching: String = player.get_node("Spectator").watched_name()
@@ -86,6 +92,35 @@ func _process(_delta: float) -> void:
 		_subtitle_left -= _delta
 		if _subtitle_left <= 0.0:
 			subtitle_label.text = ""
+	
+	# Quick chat wheel input
+	if Input.is_action_just_pressed("quick_chat"):
+		quick_chat_wheel.toggle()
+
+
+func _update_noise_meter() -> void:
+	# Get noise level from VoiceChat autoload
+	var voice_chat = VoiceChat
+	if voice_chat:
+		_noise_level = lerp(_noise_level, voice_chat._current_noise_level, 0.2)
+	
+	noise_meter_fill.value = _noise_level
+	
+	# Color based on tier
+	var tier = voice_chat.get_noise_tier() if voice_chat else "silent"
+	match tier:
+		"silent":
+			noise_meter_fill.modulate = Color(0.3, 0.3, 0.3)
+			noise_meter_label.text = ""
+		"whisper":
+			noise_meter_fill.modulate = Color(0.3, 1.0, 0.3)
+			noise_meter_label.text = "WHISPER"
+		"talk":
+			noise_meter_fill.modulate = Color(1.0, 0.8, 0.2)
+			noise_meter_label.text = "TALK"
+		"yell":
+			noise_meter_fill.modulate = Color(1.0, 0.2, 0.2)
+			noise_meter_label.text = "YELL"
 
 
 func _show_gas_warning() -> void:

@@ -1,0 +1,180 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/quick_chat_wheel.gd" id="1_script"]
+
+[node name="QuickChatWheel" type="CanvasLayer"]
+script = ExtResource("1_script")
+visible = false
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.0)
+
+[node name="Wheel" type="Node2D" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -120.0
+offset_right = 120.0
+offset_bottom = 120.0
+mouse_filter = 0
+
+[node name="CenterLabel" type="Label" parent="Wheel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -20.0
+offset_right = 60.0
+offset_bottom = 20.0
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+text = "Hold RMB\nRelease to\nsend"
+
+[node name="Option1" type="TextureButton" parent="Wheel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -90.0
+offset_top = -110.0
+offset_right = 90.0
+offset_bottom = -30.0
+mouse_filter = 1
+theme_override_constants/text_offset_h = 0
+theme_override_constants/text_offset_v = 0
+theme_override_font_sizes/font_size = 14
+text = "Follow me"
+tooltip_text = "Follow me"
+
+[node name="Option2" type="TextureButton" parent="Wheel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 10.0
+offset_top = -80.0
+offset_right = 130.0
+offset_bottom = 0.0
+mouse_filter = 1
+theme_override_constants/text_offset_h = 0
+theme_override_constants/text_offset_v = 0
+theme_override_font_sizes/font_size = 14
+text = "Wait here"
+tooltip_text = "Wait here"
+
+[node name="Option3" type="TextureButton" parent="Wheel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 10.0
+offset_top = 0.0
+offset_right = 130.0
+offset_bottom = 80.0
+mouse_filter = 1
+theme_override_constants/text_offset_h = 0
+theme_override_constants/text_offset_v = 0
+theme_override_font_sizes/font_size = 14
+text = "Need help"
+tooltip_text = "Need help"
+
+[node name="Option4" type="TextureButton" parent="Wheel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -90.0
+offset_top = 30.0
+offset_right = 90.0
+offset_bottom = 110.0
+mouse_filter = 1
+theme_override_constants/text_offset_h = 0
+theme_override_constants/text_offset_v = 0
+theme_override_font_sizes/font_size = 14
+text = "Enemy nearby"
+tooltip_text = "Enemy nearby"
+
+[node name="Option5" type="TextureButton" parent="Wheel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130.0
+offset_top = 0.0
+offset_right = -10.0
+offset_bottom = 80.0
+mouse_filter = 1
+theme_override_constants/text_offset_h = 0
+theme_override_constants/text_offset_v = 0
+theme_override_font_sizes/font_size = 14
+text = "Going in"
+tooltip_text = "Going in"
+
+[node name="Option6" type="TextureButton" parent="Wheel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130.0
+offset_top = -80.0
+offset_right = -10.0
+offset_bottom = 0.0
+mouse_filter = 1
+theme_override_constants/text_offset_h = 0
+theme_override_constants/text_offset_v = 0
+theme_override_font_sizes/font_size = 14
+text = "Clear"
+tooltip_text = "Clear"
+
+[node name="Option7" type="TextureButton" parent="Wheel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -95.0
+offset_right = 60.0
+offset_bottom = -5.0
+mouse_filter = 1
+theme_override_constants/text_offset_h = 0
+theme_override_constants/text_offset_v = 0
+theme_override_font_sizes/font_size = 12
+text = "Regroup"
+tooltip_text = "Regroup"
+
+[node name="Option8" type="TextureButton" parent="Wheel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = 5.0
+offset_right = 60.0
+offset_bottom = 95.0
+mouse_filter = 1
+theme_override_constants/text_offset_h = 0
+theme_override_constants/text_offset_v = 0
+theme_override_font_sizes/font_size = 12
+text = "Loot here"
+tooltip_text = "Loot here"
