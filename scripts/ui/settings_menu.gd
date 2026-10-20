@@ -13,10 +13,10 @@ var _listening_action := ""
 
 
 func _ready() -> void:
-	var box := make_panel(Vector2(560, 560))
+	var box := make_panel(Vector2(560, 620))
 	make_title(box, "SETTINGS")
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(0, 440)
+	scroll.custom_minimum_size = Vector2(0, 500)
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	box.add_child(scroll)
 	var content := VBoxContainer.new()
@@ -29,6 +29,31 @@ func _ready() -> void:
 	_brightness = _add_slider(content, "Brightness", 0.5, 1.8, Settings.brightness, Settings.set_brightness)
 	_add_slider(content, "Flashlight brightness", 0.4, 2.0, Settings.flashlight_brightness,
 			Settings.set_flashlight_brightness)
+	
+	# Voice chat settings
+	var voice_heading := Label.new()
+	voice_heading.text = "\nVoice Chat"
+	content.add_child(voice_heading)
+	
+	var mode_picker := OptionButton.new()
+	mode_picker.add_item("Push-to-talk (V)")
+	mode_picker.add_item("Open mic")
+	mode_picker.selected = Settings.voice_chat_mode
+	mode_picker.item_selected.connect(Settings.set_voice_chat_mode)
+	var mode_row := HBoxContainer.new()
+	mode_row.add_theme_constant_override("separation", 12)
+	content.add_child(mode_row)
+	var mode_label := Label.new()
+	mode_label.text = "Mode"
+	mode_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	mode_row.add_child(mode_label)
+	mode_row.add_child(mode_picker)
+	
+	_add_slider(content, "Mic sensitivity", 0.1, 10.0, Settings.mic_sensitivity,
+			Settings.set_mic_sensitivity)
+	_add_slider(content, "Noise gate", 0.0, 0.5, Settings.noise_gate_threshold,
+			Settings.set_noise_gate_threshold)
+	
 	_add_graphics_picker(content)
 	_add_controls(content)
 	make_button(box, "Back", close)

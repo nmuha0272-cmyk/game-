@@ -18,6 +18,14 @@ var flashlight_brightness := 1.0
 var graphics := 2
 const GRAPHICS_NAMES := ["Low", "Medium", "High"]
 
+## Voice chat
+## 0 = Push-to-talk (V), 1 = Open mic
+var voice_chat_mode := 0
+## Mic sensitivity multiplier (0.1 - 10.0)
+var mic_sensitivity := 1.0
+## Noise gate threshold (0.0 - 0.5)
+var noise_gate_threshold := 0.01
+
 ## The controls the player is allowed to change, and the name shown in the menu.
 const REMAP_ACTIONS := [
 	["move_forward", "Move forward"],
@@ -69,6 +77,27 @@ func set_brightness(value: float) -> void:
 
 func set_flashlight_brightness(value: float) -> void:
 	flashlight_brightness = clampf(value, 0.4, 2.0)
+	_save()
+	changed.emit()
+
+
+func set_voice_chat_mode(value: int) -> void:
+	voice_chat_mode = clampi(value, 0, 1)
+	VoiceChat.set_push_to_talk(value == 0)
+	_save()
+	changed.emit()
+
+
+func set_mic_sensitivity(value: float) -> void:
+	mic_sensitivity = clampf(value, 0.1, 10.0)
+	VoiceChat.set_mic_sensitivity(value)
+	_save()
+	changed.emit()
+
+
+func set_noise_gate_threshold(value: float) -> void:
+	noise_gate_threshold = clampf(value, 0.0, 0.5)
+	VoiceChat.set_noise_gate(value)
 	_save()
 	changed.emit()
 
@@ -139,12 +168,18 @@ func _load() -> void:
 	brightness = config.get_value("settings", "brightness", brightness)
 	flashlight_brightness = config.get_value("settings", "flashlight_brightness", flashlight_brightness)
 	graphics = config.get_value("settings", "graphics", graphics)
+	voice_chat_mode = config.get_value("settings", "voice_chat_mode", voice_chat_mode)
+	mic_sensitivity = config.get_value("settings", "mic_sensitivity", mic_sensitivity)
+	noise_gate_threshold = config.get_value("settings", "noise_gate_threshold", noise_gate_threshold)
 	_controls.clear()
 	for pair in REMAP_ACTIONS:
 		var action: String = pair[0]
 		if config.has_section_key("input", action):
 			_controls[action] = int(config.get_value("input", action))
 	_apply_controls()
+	
+	# Apply voice chat settings after VoiceChat is ready
+	call_deferred("_apply_voice_settings")
 
 
 func _save() -> void:
@@ -154,9 +189,19 @@ func _save() -> void:
 	config.set_value("settings", "brightness", brightness)
 	config.set_value("settings", "flashlight_brightness", flashlight_brightness)
 	config.set_value("settings", "graphics", graphics)
+	config.set_value("settings", "voice_chat_mode", voice_chat_mode)
+	config.set_value("settings", "mic_sensitivity", mic_sensitivity)
+	config.set_value("settings", "noise_gate_threshold", noise_gate_threshold)
 	for action in _controls:
 		config.set_value("input", action, _controls[action])
 	config.save(SAVE_PATH)
+
+
+func _apply_voice_settings() -> void:
+	if VoiceChat:
+		VoiceChat.set_push_to_talk(voice_chat_mode == 0)
+		VoiceChat.set_mic_sensitivity(mic_sensitivity)
+		VoiceChat.set_noise_gate(noise_gate_threshold)
 
 
 ## The key or mouse button currently bound to an action, as display text.
