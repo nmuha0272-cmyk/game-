@@ -3023,3 +3023,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -0.5)
 
 [node name="TeamMonitor" type="Node" parent="."]
 script = ExtResource("33_x")
+[node name="pouch_200" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.3, 0.2, -87.5)
+script = ExtResource("28_x")
+item_id = "pouch"
+
+[node name="backpack_201" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0.2, -87.6)
+script = ExtResource("28_x")
+item_id = "backpack"

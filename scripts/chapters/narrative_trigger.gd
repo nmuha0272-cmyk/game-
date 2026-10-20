@@ -17,7 +17,7 @@ func _ready() -> void:
 	# If this is a checkpoint-based trigger, listen for checkpoint reached
 	if checkpoint_order > 0:
 		# Find checkpoint nodes and connect
-		for checkpoint in get_tree().get_nodes_in_group("checkpoint"):
+		for checkpoint in get_tree().get_nodes_in_group("checkpoints"):
 			checkpoint.reached.connect(_on_checkpoint_reached)
 
 
@@ -122,7 +122,7 @@ func _eli_rescue() -> void:
 	eli.speed_multiplier = 1.0
 	
 	if eli.has_meta("injury_light"):
-		var light := eli.get_meta("injury_light")
+		var light = eli.get_meta("injury_light")
 		if is_instance_valid(light):
 			light.queue_free()
 		eli.remove_meta("injury_light")
@@ -196,7 +196,7 @@ func _eli_cole_promise() -> void:
 
 func _show_dialogue(speaker: String, text: String, duration: float) -> void:
 	# Show to all players near the speaker
-	var speaker_player := _find_player_by_name(speaker)
+	var speaker_player := _find_player_by_character_name(speaker)
 	var position := speaker_player.global_position if speaker_player else global_position
 	get_tree().call_group("player_hud", "show_subtitle_near", position, 30.0, speaker, text, duration)
 
@@ -222,8 +222,17 @@ func _find_player_by_character(char_id: int) -> Player:
 	return null
 
 
-func _find_player_by_name(name: String) -> Player:
-	for player in get_tree().get_nodes_in_group("players"):
-		if player.name == name:
-			return player
-	return null
+func _find_player_by_character_name(speaker_name: String) -> Player:
+	var char_id := Characters.Id.NONE
+	match speaker_name:
+		"Eli", "Son":
+			char_id = Characters.Id.SON
+		"Journalist":
+			char_id = Characters.Id.JOURNALIST
+		"Engineer":
+			char_id = Characters.Id.ENGINEER
+		"Cole", "Guard", "Frank":
+			char_id = Characters.Id.GUARD
+	if char_id == Characters.Id.NONE:
+		return null
+	return _find_player_by_character(char_id)

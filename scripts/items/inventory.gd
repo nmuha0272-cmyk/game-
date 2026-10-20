@@ -1,6 +1,7 @@
 class_name Inventory
 extends Node
-## A player's 3 gear slots.
+## A player's gear slots (3 to start, more when a pouch or backpack is
+## strapped on — see ItemEffects).
 ##
 ## The HOST owns the real contents and sends a copy to every computer whenever
 ## they change. Picking up, dropping and handing items over all happen in one
@@ -8,7 +9,10 @@ extends Node
 
 signal changed
 
-const SLOT_COUNT := 3
+## Slots everyone starts with.
+const BASE_SLOTS := 3
+## Biggest an inventory can get (3 + pouches and backpacks found in the world).
+const MAX_SLOTS := 8
 
 ## Each slot is {} when empty, or an item like {"id": "battery"}.
 var slots: Array = [{}, {}, {}]
@@ -20,8 +24,13 @@ var active_slot := 0
 
 # ------------------------------------------------------------- questions
 
+## How many gear slots this player has right now (grows with packs).
+func slot_count() -> int:
+	return slots.size()
+
+
 func get_item(slot: int) -> Dictionary:
-	return slots[slot] if slot >= 0 and slot < SLOT_COUNT else {}
+	return slots[slot] if slot >= 0 and slot < slots.size() else {}
 
 
 func get_active_item() -> Dictionary:
@@ -29,7 +38,7 @@ func get_active_item() -> Dictionary:
 
 
 func find_item(id: String) -> int:
-	for i in SLOT_COUNT:
+	for i in slots.size():
 		if slots[i].get("id") == id:
 			return i
 	return -1
@@ -43,7 +52,7 @@ func free_slot() -> int:
 	# Prefer the selected slot so a picked-up item lands in your hand.
 	if slots[active_slot].is_empty():
 		return active_slot
-	for i in SLOT_COUNT:
+	for i in slots.size():
 		if slots[i].is_empty():
 			return i
 	return -1
@@ -65,7 +74,7 @@ func speed_multiplier() -> float:
 
 ## Slot of a gas mask that still has filter left (-1 if none).
 func find_working_gas_mask() -> int:
-	for i in SLOT_COUNT:
+	for i in slots.size():
 		if slots[i].get("id") == "gas_mask" and slots[i].get("filter", 0.0) > 0.0:
 			return i
 	return -1
@@ -80,6 +89,18 @@ func server_add(item: Dictionary) -> bool:
 	slots[slot] = item
 	_send_to_everyone()
 	return true
+
+
+## Host only: strap on a pouch / backpack. Returns how many gear slots it
+## added (0 if the pack is already as big as it gets — then the item is kept).
+func server_expand(extra_slots: int) -> int:
+	if not multiplayer.is_server() or slots.size() >= MAX_SLOTS:
+		return 0
+	var added := clampi(extra_slots, 1, MAX_SLOTS - slots.size())
+	for i in added:
+		slots.append({})
+	_send_to_everyone()
+	return added
 
 
 ## Host only: replace all slots at once (restoring gear at a checkpoint).
@@ -155,7 +176,7 @@ func server_tell(text: String) -> void:
 # ------------------------------------------------------------- requests (owner's computer)
 
 func select_slot(slot: int) -> void:
-	active_slot = clampi(slot, 0, SLOT_COUNT - 1)
+	active_slot = clampi(slot, 0, slots.size() - 1)
 	changed.emit()
 	if multiplayer.is_server():
 		_send_to_everyone()
@@ -193,7 +214,7 @@ func _request_action(action: String, slot: int, target_id: int) -> void:
 @rpc("any_peer", "reliable")
 func _request_select(slot: int) -> void:
 	if multiplayer.is_server() and multiplayer.get_remote_sender_id() == player.get_multiplayer_authority():
-		active_slot = clampi(slot, 0, SLOT_COUNT - 1)
+		active_slot = clampi(slot, 0, slots.size() - 1)
 		_send_to_everyone()
 
 
@@ -236,6 +257,7 @@ func _receive(new_slots: Array, new_active: int) -> void:
 	# Our own selection stays as we chose it; others follow the host.
 	if not player.is_multiplayer_authority():
 		active_slot = new_active
+	active_slot = clampi(active_slot, 0, slots.size() - 1)
 	changed.emit()
 
 

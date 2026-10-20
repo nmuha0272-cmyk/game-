@@ -35,6 +35,12 @@ var _rigs := {}
 var _rig: HumanRig
 var _rig_scale := 1.0
 
+## Cutscene acting: how "talking" this body is (0..1) and how far the head
+## is turned toward whoever is speaking (degrees). Set by opening_dialogue,
+## cleared when the scene ends.
+var acting := 0.0
+var glance := 0.0
+
 
 func setup(character: int, is_local: bool) -> void:
 	for child in get_children():
@@ -86,6 +92,7 @@ func _add_part(parent: Node3D, file: String, is_local: bool) -> void:
 func _process(delta: float) -> void:
 	var body := get_parent() as CharacterBody3D
 	if body == null:
+		_update_standin()
 		return
 	if _rig:
 		_update_rig(body, delta)
@@ -123,4 +130,43 @@ func _update_rig(body: CharacterBody3D, delta: float) -> void:
 	var head := body.get_node_or_null("Head") as Node3D
 	var look := head.rotation_degrees.x if head else 0.0
 	var breath := sin(Time.get_ticks_msec() / 1000.0 * 1.6)
-	_rig.set_pose(_phase, amount, crouch, look, breath)
+	_rig.set_pose(_phase, amount, crouch, look, breath, glance, acting)
+
+
+## Bodies with no player attached (the cutscene stand-ins that stand in for
+## characters nobody picked) just stand there: breathing, head turned to
+## the speaker, and the gestures the cutscene asked for.
+func _update_standin() -> void:
+	if _rig == null:
+		return
+	var breath := sin(Time.get_ticks_msec() / 1000.0 * 1.6)
+	_rig.set_pose(0.0, 0.0, 0.0, 0.0, breath, glance, acting)
+
+
+## How talking this body is right now (0..1). See human_rig.gd.
+func set_acting(amount: float) -> void:
+	acting = clampf(amount, 0.0, 1.0)
+
+
+## Turn the head and shoulders toward a point in the world. Used while
+## somebody else is talking in a cutscene.
+func glance_toward(target: Vector3) -> void:
+	var body := get_parent() as Node3D
+	if body == null:
+		return
+	var to := target - body.global_position
+	to.y = 0.0
+	if to.length_squared() < 0.01:
+		return
+	var forward := -body.global_transform.basis.z
+	set_glance(rad_to_deg(forward.signed_angle_to(to.normalized(), Vector3.UP)))
+
+
+func set_glance(degrees: float) -> void:
+	glance = clampf(degrees, -85.0, 85.0)
+
+
+## Back to normal: standing still, looking wherever the player looks.
+func clear_acting() -> void:
+	acting = 0.0
+	glance = 0.0

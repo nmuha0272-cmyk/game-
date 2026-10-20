@@ -23,6 +23,17 @@ static func server_use(item: Dictionary, player: Player, target_id: int) -> bool
 		"flare":
 			ItemSpawner.find(player.get_tree()).server_throw_flare(player)
 			return true
+		"pouch", "backpack":
+			# Wearing a pack adds gear slots; the item itself is used up.
+			# (slots are appended, so the slot holding it is still valid after.)
+			var added := player.inventory.server_expand(int(item.get("pack_slots", 1)))
+			if added <= 0:
+				player.inventory.server_tell("Your pack is already as big as it gets.")
+				return false
+			player.inventory.server_tell("Strapped on the %s: +%d gear slot%s. You now carry %d items." % [
+					Items.display_name(item), added, "" if added == 1 else "s",
+					player.inventory.slot_count()])
+			return true
 		"walkie":
 			_radio_call(player)
 		"ammo_38", "ammo_9mm", "ammo_12ga", "ammo_308", "ammo_dart", "ammo_flare_shell":

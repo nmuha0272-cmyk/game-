@@ -77,7 +77,7 @@ func _remove_player(id: int) -> void:
 	var player: Player = players.get_node(str(id))
 	# Drop everything they carried so the team doesn't lose it.
 	var spawner := ItemSpawner.find(get_tree())
-	for slot in Inventory.SLOT_COUNT:
+	for slot in player.inventory.slot_count():
 		var item := player.inventory.server_remove(slot)
 		if spawner and not item.is_empty():
 			spawner.server_drop(item, player)

@@ -15,6 +15,11 @@ signal stepped
 ## Speed that counts as "normal" bob size. Faster = bigger bob.
 @export var reference_speed := 3.5
 
+## Where the camera sits when the bob is zero. Third-person view (see
+## perspective.gd) sets this to pull the camera back over the shoulder;
+## first person leaves it at zero, so nothing changes there.
+var camera_offset := Vector3.ZERO
+
 var _phase := 0.0
 
 
@@ -30,7 +35,9 @@ func _process(delta: float) -> void:
 
 		var strength := clampf(speed / reference_speed, 0.5, 1.5)
 		# At every multiple of PI the camera is at its lowest (foot lands).
-		position.y = absf(sin(_phase)) * bob_height * strength
-		position.x = sin(_phase) * bob_sway * strength
+		position = camera_offset + Vector3(
+				sin(_phase) * bob_sway * strength,
+				absf(sin(_phase)) * bob_height * strength,
+				0.0)
 	else:
-		position = position.lerp(Vector3.ZERO, clampf(return_speed * delta, 0.0, 1.0))
+		position = position.lerp(camera_offset, clampf(return_speed * delta, 0.0, 1.0))

@@ -4,7 +4,12 @@
 #include "GameFramework/GameModeBase.h"
 #include "SZGameMode.generated.h"
 
-/** The game's rules (host only): which classes to use and where players start. */
+class USZChapterManager;
+
+/**
+ * The game's rules (host only): which classes to use and where players start.
+ * Initializes the chapter system on the server.
+ */
 UCLASS()
 class SUBJECTZERO_API ASZGameMode : public AGameModeBase
 {
@@ -13,8 +18,10 @@ class SUBJECTZERO_API ASZGameMode : public AGameModeBase
 public:
 	ASZGameMode();
 
+	virtual void BeginPlay() override;
 	virtual void RestartPlayer(AController* NewPlayer) override;
 
-private:
-	int32 NextSpawn = 0;
+protected:
+	UPROPERTY()
+	TObjectPtr<USZChapterManager> ChapterManager;
 };

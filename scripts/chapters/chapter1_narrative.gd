@@ -64,7 +64,9 @@ func _create_eli_cole_promise_trigger() -> void:
 func _make_trigger(event_name: String, position: Vector3, radius: float) -> Area3D:
 	var trigger = Area3D.new()
 	trigger.name = "NarrativeTrigger_" + event_name
-	trigger.global_position = position
+	# Not in the tree yet, so this is a local position (the chapter root sits
+	# at the origin); asking for global_position here would just log an error.
+	trigger.position = position
 	
 	var collision = CollisionShape3D.new()
 	var sphere = SphereShape3D.new()

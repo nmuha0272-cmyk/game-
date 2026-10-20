@@ -12,13 +12,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return
-	for i in Inventory.SLOT_COUNT:
-		if event.is_action_pressed("slot_%d" % (i + 1)):
+	var count := inventory.slot_count()
+	for i in count:
+		# Only the first three slots have keys; the mouse wheel reaches the rest.
+		var action := "slot_%d" % (i + 1)
+		if InputMap.has_action(action) and event.is_action_pressed(action):
 			inventory.select_slot(i)
 	if event.is_action_pressed("slot_next"):
-		inventory.select_slot((inventory.active_slot + 1) % Inventory.SLOT_COUNT)
+		inventory.select_slot((inventory.active_slot + 1) % count)
 	elif event.is_action_pressed("slot_prev"):
-		inventory.select_slot((inventory.active_slot + Inventory.SLOT_COUNT - 1) % Inventory.SLOT_COUNT)
+		inventory.select_slot((inventory.active_slot + count - 1) % count)
 	elif event.is_action_pressed("use_item") and not inventory.player.weapon.drawn:
 		var looked_at := interactor.get_collider()
 		inventory.request_use(looked_at.name.to_int() if looked_at is Player else 0)

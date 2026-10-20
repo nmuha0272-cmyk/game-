@@ -67,7 +67,7 @@ func _setup_microphone() -> void:
 
 
 func _process(delta: float) -> void:
-	if not _enabled or not multiplayer.is_connected():
+	if not _enabled or not NetworkManager.is_online():
 		return
 	
 	_buffer_timer += delta
@@ -77,9 +77,7 @@ func _process(delta: float) -> void:
 
 
 func _capture_and_send() -> void:
-	if not _capture_effect or not _capture_effect.is_capturing():
-		# Try to start capture
-		_capture_effect.start_capture()
+	if not _capture_effect:
 		return
 	
 	var frames_available = _capture_effect.get_frames_available()
@@ -115,15 +113,17 @@ func _capture_and_send() -> void:
 		else:
 			_send_noise_level.rpc_id(1, my_id, _current_noise_level)
 	
-	# Emit noise level for UI (noise meter)
+	# Nothing draws this on screen; listeners (monsters, tests) just watch it.
 	noise_level_changed.emit(multiplayer.get_unique_id(), _current_noise_level)
 
 
 func _calculate_rms(data: Array) -> float:
+	# The capture buffer hands back stereo frames (one Vector2 per frame).
 	var sum_sq := 0.0
-	for sample in data:
-		sum_sq += sample * sample
-	return sqrt(sum_sq / data.size())
+	for frame in data:
+		var v: Vector2 = frame
+		sum_sq += (v.x * v.x + v.y * v.y) * 0.5
+	return sqrt(sum_sq / maxf(data.size(), 1.0))
 
 
 func _apply_noise_gate(rms: float) -> float:
@@ -134,12 +134,12 @@ func _apply_noise_gate(rms: float) -> float:
 
 
 func _compress_audio(data: Array) -> Array:
-	# Simple compression: downsample by 2, quantize to 8-bit
+	# Simple compression: downsample by 2, quantize to 8-bit.
+	# Each entry is a stereo frame (Vector2); fold it to one sample first.
 	var compressed = []
 	for i in range(0, data.size(), 2):
-		var sample = data[i]
-		# Clamp and quantize
-		sample = clamp(sample, -1.0, 1.0)
+		var frame: Vector2 = data[i]
+		var sample := clampf((frame.x + frame.y) * 0.5, -1.0, 1.0)
 		compressed.append(int((sample + 1.0) * 127.5))
 	return compressed
 
@@ -237,7 +237,7 @@ func _receive_noise_level(player_id: int, level: float) -> void:
 	if range > 0.0:
 		get_tree().call_group("monsters", "hear_noise", player.global_position, range)
 	
-	# Update noise meter for all players
+	# Tell the listeners how loud that player was (no on-screen meter).
 	noise_level_changed.emit(player_id, level)
 
 

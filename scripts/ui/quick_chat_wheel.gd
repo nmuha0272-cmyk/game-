@@ -21,9 +21,6 @@ func _ready() -> void:
 		options[i].gui_input.connect(_on_option_gui_input.bind(i))
 		options[i].mouse_entered.connect(_on_option_hovered.bind(i))
 		options[i].mouse_exited.connect(_on_option_unhovered.bind(i))
-	
-	# Listen for noise level to show tier indicator
-	VoiceChat.noise_level_changed.connect(_on_noise_level_changed)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -70,18 +67,10 @@ func _select_option(index: int) -> void:
 	
 	var text = options[index].text
 	
-	# Send as a "radio" message to nearby players
-	var msg = "%s: \"%s\"" % [GameState.get_player_name(multiplayer.get_unique_id()), text]
-	
-	# Play locally as subtitle
-	get_tree().call_group("player_hud", "show_subtitle_near", 
-		player.global_position if player else global_position, 15.0, 
-		GameState.get_player_name(multiplayer.get_unique_id()), text, 4.0)
-	
 	# Send to others via RPC
 	_send_quick_chat.rpc(text)
 	
-	hide()
+	close()
 
 
 @rpc("authority", "call_local", "reliable")
@@ -95,19 +84,14 @@ func _send_quick_chat(text: String) -> void:
 			GameState.get_player_name(sender_id), text, 4.0)
 
 
-func _on_noise_level_changed(player_id: int, level: float) -> void:
-	# Could add visual indicator on wheel center
-	pass
-
-
 func toggle() -> void:
 	if _visible:
-		hide()
+		close()
 	else:
-		show()
+		open()
 
 
-func show() -> void:
+func open() -> void:
 	_visible = true
 	wheel.visible = true
 	wheel.scale = Vector2(0.8, 0.8)
@@ -123,7 +107,7 @@ func show() -> void:
 	_set_hovered(-1)
 
 
-func hide() -> void:
+func close() -> void:
 	_visible = false
 	var tween = wheel.create_tween()
 	tween.tween_property(wheel, "scale", Vector2(0.8, 0.8), 0.1).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)

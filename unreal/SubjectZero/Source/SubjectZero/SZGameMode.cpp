@@ -4,6 +4,9 @@
 #include "SZHUD.h"
 #include "SZPlayerController.h"
 #include "SZWorldBuilder.h"
+#include "SZChapterManager.h"
+#include "SZDefaultChapters.h"
+#include "Engine/GameInstance.h"
 
 ASZGameMode::ASZGameMode()
 {
@@ -12,13 +15,26 @@ ASZGameMode::ASZGameMode()
 	HUDClass = ASZHUD::StaticClass();
 }
 
+void ASZGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		ChapterManager = GameInstance->GetSubsystem<USZChapterManager>();
+		if (ChapterManager)
+		{
+			USZDefaultChapters::RegisterDefaultChapters(ChapterManager);
+		}
+	}
+}
+
 void ASZGameMode::RestartPlayer(AController* NewPlayer)
 {
 	if (NewPlayer == nullptr || NewPlayer->IsPendingKillPending())
 	{
 		return;
 	}
-	// Start players on the road, at the spawn points from the level file.
 	const TArray<FTransform> Spawns = USZWorldBuilder::GetSpawnTransforms();
 	if (Spawns.Num() == 0)
 	{

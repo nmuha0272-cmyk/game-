@@ -1,7 +1,7 @@
 class_name Weapons
 ## Every gun in the game, in one place (see GAME_PLAN.md, "Weapons and
 ## Ammunition"). A weapon lives in the player's single weapon slot and is
-## separate from the three gear slots.
+## separate from the gear slots.
 ##
 ## Every gunshot (except the suppressed ones and the tranq) is LOUD: it calls
 ## hear_noise on all monsters, so firing always risks drawing them in.

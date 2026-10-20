@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/character_model.gd" id="cm_script"]
 [ext_resource type="Script" path="res://scripts/player/player_movement.gd" id="1_move"]
@@ -23,6 +23,7 @@
 [ext_resource type="Script" path="res://scripts/items/weapon_holder.gd" id="20_weapon"]
 [ext_resource type="Script" path="res://scripts/items/weapon_hand.gd" id="21_weapon_hand"]
 [ext_resource type="Script" path="res://scripts/items/weapon_controls.gd" id="22_weapon_controls"]
+[ext_resource type="Script" path="res://scripts/player/perspective.gd" id="23_perspective"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 resource_local_to_scene = true
@@ -179,6 +180,10 @@ modulate = Color(0.85, 0.9, 0.88, 0.85)
 font_size = 28
 outline_size = 6
 script = ExtResource("12_nameplate")
+player = NodePath("..")
+
+[node name="Perspective" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("23_perspective")
 player = NodePath("..")
 
 [node name="Ownership" type="Node" parent="."]

@@ -21,7 +21,8 @@ get stuck is the whole point.
 
 Controls: WASD move, Shift sprint, Ctrl crouch, E interact (hold for some
 things), Q ability, F flashlight, Left Mouse use item, G drop, T give,
-1-3 / mouse wheel switch slot, J journal, Z or middle mouse ping, Esc pause.
+1-3 / mouse wheel switch gear slot (find pouches and backpacks for more
+slots), C third-person view, J journal, Z or middle mouse ping, Esc pause.
 
 ## Session info
 

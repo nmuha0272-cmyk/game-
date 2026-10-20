@@ -54,6 +54,20 @@ const INFO := {
 		"color": Color(0.1, 0.1, 0.1),
 		"hint": "Click to radio your team (they see where you are). Careful: the Long Man hears the static!",
 	},
+	# --- Pack upgrades: found in the world, click to wear. They never go
+	# away, they just make the inventory bigger (see Inventory.MAX_SLOTS).
+	"pouch": {
+		"name": "Field Pouch", "shape": "box", "size": Vector3(0.17, 0.13, 0.08),
+		"color": Color(0.42, 0.34, 0.2),
+		"hint": "Click to strap it on: adds 1 gear slot (up to 8).",
+		"extra": {"pack_slots": 1},
+	},
+	"backpack": {
+		"name": "Backpack", "shape": "box", "size": Vector3(0.26, 0.34, 0.16),
+		"color": Color(0.24, 0.32, 0.24),
+		"hint": "Click to strap it on: adds 2 gear slots (up to 8).",
+		"extra": {"pack_slots": 2},
+	},
 	"reel_tape": {
 		"name": "Reel Tape", "shape": "cylinder", "size": Vector3(0.07, 0.02, 0),
 		"color": Color(0.35, 0.22, 0.12),

@@ -10,7 +10,10 @@ const ROLL := Vector3(0, 0, 1)
 
 ## phase: where in the step. amount: 0 standing, 1 walking, 2 running.
 ## crouch: 0..1. look: head up (+) or down (-) in degrees. breath: -1..1.
-func set_pose(phase: float, amount: float, crouch: float, look: float, breath: float) -> void:
+## glance: degrees the head and shoulders turn toward someone (cutscenes).
+## acting: 0..1 talking gestures (cutscenes).
+func set_pose(phase: float, amount: float, crouch: float, look: float, breath: float,
+		glance := 0.0, acting := 0.0) -> void:
 	if _sk == null:
 		return
 	_reset()
@@ -45,3 +48,28 @@ func set_pose(phase: float, amount: float, crouch: float, look: float, breath: f
 	_turn("RightArm", SIDE, -s * arm - 8.0 * crouch)
 	_turn("LeftForeArm", SIDE, -12.0 - 35.0 * run - maxf(0.0, s) * 15.0 * walk)
 	_turn("RightForeArm", SIDE, -12.0 - 35.0 * run - maxf(0.0, -s) * 15.0 * walk)
+	if not is_zero_approx(glance) or acting > 0.0:
+		_acting(glance, acting)
+
+
+## Cutscene acting: everyone turns their head and shoulders toward whoever
+## is speaking (glance, in degrees), and the speaker punctuates the line
+## with hand gestures and small nods (acting, 0..1). The cadence comes from
+## the clock, so the gestures keep moving while a line is on screen.
+func _acting(glance: float, acting: float) -> void:
+	_turn("Hips", TWIST, glance * 0.15)
+	_turn("Spine1", TWIST, glance * 0.3)
+	_turn("Neck", TWIST, glance * 0.3)
+	_turn("Head", TWIST, glance * 0.4)
+	if acting <= 0.0:
+		return
+	var t := Time.get_ticks_msec() / 1000.0
+	var beat := sin(t * 5.4)
+	var sway := sin(t * 3.3 + 1.1)
+	# The free hand makes the point, the head nods along with the words.
+	_turn("RightArm", SIDE, (-8.0 + sway * 5.0) * acting)
+	_turn("RightForeArm", SIDE, (-25.0 + beat * 14.0) * acting)
+	_turn("RightForeArm", TWIST, sway * 8.0 * acting)
+	_turn("LeftArm", SIDE, sway * 3.0 * acting)
+	_turn("Spine2", SIDE, sway * 1.5 * acting)
+	_turn("Head", SIDE, sin(t * 4.4) * 2.5 * acting)

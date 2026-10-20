@@ -7,6 +7,27 @@
 
 class SEditableTextBox;
 class SWidget;
+class SListView;
+class USZChapterData;
+class USZChapterManager;
+
+USTRUCT()
+struct FSZChapterMenuEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TObjectPtr<USZChapterData> ChapterData;
+
+	UPROPERTY()
+	FText DisplayText;
+
+	UPROPERTY()
+	bool bIsAvailable = false;
+
+	UPROPERTY()
+	bool bIsCompleted = false;
+};
 
 /**
  * Your connection to the game. When the game first opens (not hosting or
@@ -27,7 +48,13 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetupInputComponent() override;
 
-private:
+	UFUNCTION(BlueprintCallable, Category = "Chapter")
+	void ShowChapterSelectMenu();
+
+	UFUNCTION(BlueprintCallable, Category = "Chapter")
+	void OnChapterSelected(USZChapterData* ChapterData);
+
+protected:
 	void ShowMenu();
 	void HideMenu();
 	void BackToMenu();
@@ -35,8 +62,18 @@ private:
 	FReply OnHostClicked();
 	FReply OnJoinClicked();
 	FReply OnQuitClicked();
+	FReply OnChapterSelectClicked();
+
+	void RefreshChapterList();
 
 	TSharedPtr<SWidget> Menu;
+	TSharedPtr<SWidget> ChapterSelectMenu;
 	TSharedPtr<SEditableTextBox> AddressBox;
+	TSharedPtr<SListView<TSharedPtr<FSZChapterMenuEntry>>> ChapterListView;
+	TArray<TSharedPtr<FSZChapterMenuEntry>> ChapterEntries;
+
 	FSlateColorBrush Background = FSlateColorBrush(FLinearColor(0.005f, 0.005f, 0.01f, 0.92f));
+
+	UPROPERTY()
+	TObjectPtr<USZChapterManager> ChapterManager;
 };

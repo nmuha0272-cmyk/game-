@@ -630,3 +630,12 @@ transform = Transform3D(0.977, 0, 0.211, 0, 1, 0, -0.211, 0, 0.977, -3, 0, 7)
 
 [node name="Spawn4" type="Marker3D" parent="SpawnPoints"]
 transform = Transform3D(0.977, 0, 0.211, 0, 1, 0, -0.211, 0, 0.977, -1.5, 0, 7)
+[node name="Pouch20" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.2, 6.3)
+script = ExtResource("19_item_point")
+item_id = "pouch"
+
+[node name="Backpack21" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.2, 6.3)
+script = ExtResource("19_item_point")
+item_id = "backpack"

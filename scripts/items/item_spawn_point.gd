@@ -5,6 +5,7 @@ extends Marker3D
 
 @export_enum("battery", "fuse", "keycard_green", "keycard_yellow", "keycard_red",
 		"crowbar", "flare", "medkit", "gas_mask", "walkie", "reel_tape",
+		"pouch", "backpack",
 		"car_battery", "fuel_can", "ammo_38", "ammo_9mm", "ammo_12ga",
 		"ammo_308", "ammo_dart", "ammo_flare_shell",
 		"weapon_revolver", "weapon_pistol", "weapon_suppressed_9mm",

@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## The on-screen overlay: crosshair, prompts, stamina, ability cooldown,
 ## progress bar, gear hotbar, flashlight battery, messages, camera-flash
-## whiteout, toxic gas warning, noise meter, and the "you are down" screen.
+## whiteout, toxic gas warning, and the "you are down" screen.
 ## Only your own player has a HUD.
 
 @export var player: Player
@@ -21,9 +21,6 @@ extends CanvasLayer
 @onready var hotbar: HBoxContainer = $Hotbar
 @onready var battery_label: Label = $BatteryLabel
 @onready var subtitle_label: Label = $SubtitleLabel
-@onready var noise_meter: HBoxContainer = $NoiseMeter
-@onready var noise_meter_fill: ProgressBar = $NoiseMeter/NoiseMeterBG/NoiseMeterFill
-@onready var noise_meter_label: Label = $NoiseMeter/NoiseMeterLabel
 @onready var quick_chat_wheel: Node = $QuickChatWheel
 
 var _slot_labels: Array[Label] = []
@@ -31,7 +28,6 @@ var _slot_panels: Array[PanelContainer] = []
 
 var _message_tween: Tween
 var _subtitle_left := 0.0
-var _noise_level := 0.0
 
 
 func _ready() -> void:
@@ -79,7 +75,6 @@ func _process(_delta: float) -> void:
 	if status_label.text.is_empty() and HoldSwitch.held_by(player):
 		status_label.text = "Holding it up. Stay still!   [E] Let go"
 	_show_gas_warning()
-	_update_noise_meter()
 	downed_overlay.visible = player.is_downed
 	if player.downed.is_out:
 		var watching: String = player.get_node("Spectator").watched_name()
@@ -98,31 +93,6 @@ func _process(_delta: float) -> void:
 		quick_chat_wheel.toggle()
 
 
-func _update_noise_meter() -> void:
-	# Get noise level from VoiceChat autoload
-	var voice_chat = VoiceChat
-	if voice_chat:
-		_noise_level = lerp(_noise_level, voice_chat._current_noise_level, 0.2)
-	
-	noise_meter_fill.value = _noise_level
-	
-	# Color based on tier
-	var tier = voice_chat.get_noise_tier() if voice_chat else "silent"
-	match tier:
-		"silent":
-			noise_meter_fill.modulate = Color(0.3, 0.3, 0.3)
-			noise_meter_label.text = ""
-		"whisper":
-			noise_meter_fill.modulate = Color(0.3, 1.0, 0.3)
-			noise_meter_label.text = "WHISPER"
-		"talk":
-			noise_meter_fill.modulate = Color(1.0, 0.8, 0.2)
-			noise_meter_label.text = "TALK"
-		"yell":
-			noise_meter_fill.modulate = Color(1.0, 0.2, 0.2)
-			noise_meter_label.text = "YELL"
-
-
 func _show_gas_warning() -> void:
 	var in_gas := false
 	for gas in get_tree().get_nodes_in_group("toxic_gas"):
@@ -139,9 +109,17 @@ func _show_gas_warning() -> void:
 
 
 func _build_hotbar() -> void:
-	for i in Inventory.SLOT_COUNT:
+	var inventory: Inventory = player.get_node("Inventory")
+	for child in hotbar.get_children():
+		hotbar.remove_child(child)
+		child.queue_free()
+	_slot_panels.clear()
+	_slot_labels.clear()
+	# Narrow the slots as the pack grows so the row always fits on screen.
+	var width := clampi(980 / max(inventory.slot_count(), 1), 90, 150)
+	for i in inventory.slot_count():
 		var panel := PanelContainer.new()
-		panel.custom_minimum_size = Vector2(150, 34)
+		panel.custom_minimum_size = Vector2(width, 34)
 		var label := Label.new()
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -154,10 +132,14 @@ func _build_hotbar() -> void:
 
 func _refresh_hotbar() -> void:
 	var inventory: Inventory = player.get_node("Inventory")
-	for i in Inventory.SLOT_COUNT:
+	if _slot_labels.size() != inventory.slot_count():
+		_build_hotbar()  # a pouch or backpack was strapped on
+	for i in _slot_labels.size():
 		var item := inventory.get_item(i)
 		var item_name := Items.display_name(item) if not item.is_empty() else "-"
-		_slot_labels[i].text = "%d  %s" % [i + 1, item_name]
+		# Only the first three slots have number keys; the wheel reaches the rest.
+		_slot_labels[i].text = ("%d  %s" % [i + 1, item_name]) if i < Inventory.BASE_SLOTS \
+				else item_name
 		var selected := i == inventory.active_slot
 		_slot_panels[i].modulate = Color(1, 1, 1, 1) if selected else Color(1, 1, 1, 0.45)
 
