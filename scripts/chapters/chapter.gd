@@ -8,6 +8,8 @@ extends Node3D
 ## ...unless the team restarted from this checkpoint (order) or later.
 @export var drain_from_checkpoint := 2
 
+@onready var narrative_manager = preload("res://scripts/chapters/chapter1_narrative.gd").new()
+
 
 func _ready() -> void:
 	# Only the host knows which checkpoint we restarted from, so it decides.
@@ -18,6 +20,11 @@ func _ready() -> void:
 	if GameState.checkpoint_order == 0:
 		await get_tree().create_timer(1.5).timeout
 		_show_title.rpc()
+	
+	# Initialize narrative triggers for Chapter 1
+	if title.begins_with("CHAPTER 1"):
+		add_child(narrative_manager)
+		narrative_manager._ready()
 
 
 @rpc("authority", "call_local", "reliable")

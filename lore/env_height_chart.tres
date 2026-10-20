@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "env_height_chart"
+title = "Height Chart"
+type = 0
+text = "A crude height chart painted on the tunnel wall, marks climbing week by week.\nThe numbers go: 6'0\" ... 7'11\" ... 9'2\" ... and then the marks continue past the ceiling.\n\nSomeone wrote beside the highest mark:\nHE DOESN'T FIT ANYMORE."
+owner_character = -1
+voice_line = ""
