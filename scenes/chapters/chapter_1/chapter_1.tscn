@@ -10813,12 +10813,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -1.5, 0)
 
 [node name="Spawn4" type="Marker3D" parent="Checkpoints/Dorm"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 1)
-[node name="pouch_1600" type="Marker3D" parent="ItemSpawnPoints"]
+
+[node name="pouch_1621" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 0.2, 41)
 script = ExtResource("31_x")
 item_id = "pouch"
 
-[node name="backpack_1601" type="Marker3D" parent="ItemSpawnPoints"]
+[node name="backpack_1622" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, -3.8, -24)
 script = ExtResource("31_x")
 item_id = "backpack"

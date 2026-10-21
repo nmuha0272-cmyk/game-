@@ -1323,5 +1323,8 @@ sc.node("ElevatorAuxSign","Label3D",U,transform=xform((34,-6.6,-59.1),180),pixel
 # declared last so its box-shape subresource doesn't renumber the stairs' meshes
 checkpoint("Dorm",4,(15,-7.5,-52),(6,3,4),[(-2,0),(0,0),(2,0),(0,1)])
 
+# pack upgrades: a pouch out by the informant's car, a backpack on the stairwell landing
+item("pouch",(-6.8,0.2,41)); item("backpack",(7.6,-3.8,-24))
+
 sc.write("scenes/chapters/chapter_1/chapter_1.tscn")
 print("chapter 1 written,", len(sc.nodes), "nodes")
