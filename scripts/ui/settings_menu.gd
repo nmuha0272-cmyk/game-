@@ -30,6 +30,25 @@ func _ready() -> void:
 	_add_slider(content, "Flashlight brightness", 0.4, 2.0, Settings.flashlight_brightness,
 			Settings.set_flashlight_brightness)
 	
+	# Camera perspective
+	var cam_heading := Label.new()
+	cam_heading.text = "\nCamera"
+	content.add_child(cam_heading)
+	
+	var cam_picker := OptionButton.new()
+	cam_picker.add_item("First Person")
+	cam_picker.add_item("Third Person")
+	cam_picker.selected = Settings.camera_perspective
+	cam_picker.item_selected.connect(Settings.set_camera_perspective)
+	var cam_row := HBoxContainer.new()
+	cam_row.add_theme_constant_override("separation", 12)
+	content.add_child(cam_row)
+	var cam_label := Label.new()
+	cam_label.text = "Perspective"
+	cam_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cam_row.add_child(cam_label)
+	cam_row.add_child(cam_picker)
+
 	# Voice chat settings
 	var voice_heading := Label.new()
 	voice_heading.text = "\nVoice Chat"

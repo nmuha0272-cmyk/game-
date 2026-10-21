@@ -26,6 +26,9 @@ var mic_sensitivity := 1.0
 ## Noise gate threshold (0.0 - 0.5)
 var noise_gate_threshold := 0.01
 
+## Camera perspective: 0 = First person, 1 = Third person
+var camera_perspective := 0
+
 ## The controls the player is allowed to change, and the name shown in the menu.
 const REMAP_ACTIONS := [
 	["move_forward", "Move forward"],
@@ -102,6 +105,12 @@ func set_noise_gate_threshold(value: float) -> void:
 	changed.emit()
 
 
+func set_camera_perspective(value: int) -> void:
+	camera_perspective = clampi(value, 0, 1)
+	_save()
+	changed.emit()
+
+
 func set_graphics(value: int) -> void:
 	graphics = clampi(value, 0, 2)
 	_apply()
@@ -171,6 +180,7 @@ func _load() -> void:
 	voice_chat_mode = config.get_value("settings", "voice_chat_mode", voice_chat_mode)
 	mic_sensitivity = config.get_value("settings", "mic_sensitivity", mic_sensitivity)
 	noise_gate_threshold = config.get_value("settings", "noise_gate_threshold", noise_gate_threshold)
+	camera_perspective = config.get_value("settings", "camera_perspective", camera_perspective)
 	_controls.clear()
 	for pair in REMAP_ACTIONS:
 		var action: String = pair[0]
@@ -192,6 +202,7 @@ func _save() -> void:
 	config.set_value("settings", "voice_chat_mode", voice_chat_mode)
 	config.set_value("settings", "mic_sensitivity", mic_sensitivity)
 	config.set_value("settings", "noise_gate_threshold", noise_gate_threshold)
+	config.set_value("settings", "camera_perspective", camera_perspective)
 	for action in _controls:
 		config.set_value("input", action, _controls[action])
 	config.save(SAVE_PATH)

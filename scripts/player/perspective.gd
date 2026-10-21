@@ -34,13 +34,11 @@ func _ready() -> void:
 		# Other people's view of you is never our business.
 		set_process(false)
 		set_process_unhandled_input(false)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("toggle_view") and not GameState.menu_open \
-			and not player.is_downed and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		third_person = not third_person
-		get_viewport().set_input_as_handled()
+		return
+	
+	# Apply saved perspective setting
+	third_person = Settings.camera_perspective == 1
+	_apply()
 
 
 func _process(_delta: float) -> void:
