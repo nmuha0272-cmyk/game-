@@ -54,7 +54,6 @@ var _head_stand_y := 0.0
 @onready var downed: DownedState = $Downed
 @onready var flashlight: Flashlight = $Head/Camera3D/Flashlight
 @onready var inventory: Inventory = $Inventory
-@onready var weapon: WeaponHolder = $Weapon
 
 
 ## Finds the player with this network ID (or null).

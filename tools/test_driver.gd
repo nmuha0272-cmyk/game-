@@ -192,38 +192,48 @@ func _run() -> void:
 	check(my_cam.camera_offset == Vector3.ZERO, "camera back at the eye")
 	check(bool(my_cam.get_node("HeldItem").visible), "view models back in first person")
 
-	# --- Inventory upgrades: find a pack, wear it, get more slots ---
+	# --- Inventory upgrades: find a pack, wear it, get more storage slots ---
 	var inv: Node = p.get_node("Inventory")
-	var base: int = inv.slot_count()
-	check(base == 3, "starts with 3 gear slots (%d)" % base)
-	check(hud._slot_panels.size() == base, "hotbar shows %d slots" % base)
+	var base_total: int = inv.total_capacity()
+	var base_storage: int = inv.storage_count()
+	check(base_total == 6, "starts with 6 total slots (4 quick + 2 storage)")
+	check(base_storage == 2, "starts with 2 storage slots")
+	check(hud._quick_panels.size() == 4, "hotbar always shows 4 quick slots")
 
+	# Wear backpack (+2 storage)
 	inv.server_add(Items.create("backpack"))
-	inv.select_slot(inv.find_item("backpack"))
+	var result: Array = inv.find_item("backpack")
+	inv.select_quick(result[1])  # select the quick slot it landed in
 	inv.request_use(0)
-	check(inv.slot_count() == base + 2, "backpack adds 2 slots (%d)" % inv.slot_count())
-	check(inv.find_item("backpack") == -1, "backpack is used up when worn")
+	check(inv.storage_count() == base_storage + 2, "backpack adds 2 storage slots (%d)" % inv.storage_count())
+	check(inv.total_capacity() == base_total + 2, "total capacity is 8")
+	check(inv.find_item("backpack")[1] == -1, "backpack is used up when worn")
 
+	# Wear pouch (+1 storage)
 	inv.server_add(Items.create("pouch"))
-	inv.select_slot(inv.find_item("pouch"))
+	result = inv.find_item("pouch")
+	inv.select_quick(result[1])
 	inv.request_use(0)
-	check(inv.slot_count() == base + 3, "pouch adds 1 slot (%d)" % inv.slot_count())
+	check(inv.storage_count() == base_storage + 3, "pouch adds 1 storage slot (%d)" % inv.storage_count())
+	check(inv.total_capacity() == base_total + 3, "total capacity is 9")
 	await _timer(0.2)
-	check(hud._slot_panels.size() == inv.slot_count(),
-			"hotbar grew with the pack (%d)" % hud._slot_panels.size())
 
-	while inv.slot_count() < Inventory.MAX_SLOTS:
+	# Fill to max storage
+	while inv.storage_count() < Inventory.MAX_STORAGE:
 		inv.server_add(Items.create("pouch"))
-		inv.select_slot(inv.find_item("pouch"))
+		result = inv.find_item("pouch")
+		inv.select_quick(result[1])
 		inv.request_use(0)
-	check(inv.slot_count() == Inventory.MAX_SLOTS,
-			"inventory caps at %d slots" % Inventory.MAX_SLOTS)
+	check(inv.storage_count() == Inventory.MAX_STORAGE, "storage caps at %d slots" % Inventory.MAX_STORAGE)
+	check(inv.total_capacity() == 4 + Inventory.MAX_STORAGE, "total capacity is 14")
+
+	# Extra pouch kept when storage full
 	inv.server_add(Items.create("pouch"))
-	var spare: int = inv.find_item("pouch")
-	inv.select_slot(spare)
+	var spare_idx: int = inv.find_item("pouch")[1]
+	inv.select_quick(spare_idx)
 	inv.request_use(0)
-	check(inv.slot_count() == Inventory.MAX_SLOTS, "no more slots past the cap")
-	check(inv.find_item("pouch") == spare, "extra pouch kept when it can't be worn")
+	check(inv.storage_count() == Inventory.MAX_STORAGE, "no more storage slots past the cap")
+	check(inv.find_item("pouch")[1] == spare_idx, "extra pouch kept when it can't be worn")
 
 	finish()
 

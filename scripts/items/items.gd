@@ -170,6 +170,155 @@ const INFO := {
 		"hint": "Lights the area and draws monsters. Pick it up to arm yourself.",
 		"extra": {"weapon": "flare_gun", "loaded": 1, "reserve": {"flare_shell": 1}},
 	},
+	# --- Craftable Melee Weapons ---
+	"weapon_improvised_axe": {
+		"name": "Improvised Axe", "shape": "box", "size": Vector3(0.6, 0.18, 0.08),
+		"color": Color(0.35, 0.25, 0.15),
+		"hint": "Pipe with an axe head taped on. High damage, slow.",
+		"extra": {"weapon": "improvised_axe", "durability": 150, "max_durability": 150},
+	},
+	"weapon_machete": {
+		"name": "Machete", "shape": "box", "size": Vector3(0.5, 0.1, 0.04),
+		"color": Color(0.25, 0.25, 0.28),
+		"hint": "Fast, causes bleeding.",
+		"extra": {"weapon": "machete", "durability": 120, "max_durability": 120},
+	},
+	"weapon_gear_axe": {
+		"name": "Gear Axe", "shape": "box", "size": Vector3(0.7, 0.22, 0.1),
+		"color": Color(0.3, 0.3, 0.35),
+		"hint": "Heavy industrial axe. Pierces armor.",
+		"extra": {"weapon": "gear_axe", "durability": 180, "max_durability": 180},
+	},
+	# --- Crafting Ingredients ---
+	"bandage": {
+		"name": "Bandage", "shape": "box", "size": Vector3(0.08, 0.04, 0.02),
+		"color": Color(0.9, 0.9, 0.85),
+		"hint": "Crafting ingredient. Combine with Antiseptic to make a Med Kit.",
+		"extra": {"max_stack": 10},
+	},
+	"antiseptic": {
+		"name": "Antiseptic", "shape": "cylinder", "size": Vector3(0.025, 0.08, 0),
+		"color": Color(0.6, 0.8, 0.9),
+		"hint": "Crafting ingredient. Combine with Bandage to make a Med Kit.",
+		"extra": {"max_stack": 10},
+	},
+	"gunpowder": {
+		"name": "Gunpowder", "shape": "cylinder", "size": Vector3(0.04, 0.1, 0),
+		"color": Color(0.2, 0.18, 0.15),
+		"hint": "Crafting ingredient. Combine with Empty Shells to make Ammo.",
+		"extra": {"max_stack": 10},
+	},
+	"empty_shells": {
+		"name": "Empty Shells", "shape": "box", "size": Vector3(0.06, 0.04, 0.06),
+		"color": Color(0.65, 0.55, 0.4),
+		"hint": "Crafting ingredient. Combine with Gunpowder to make Ammo.",
+		"extra": {"max_stack": 10},
+	},
+	"duct_tape": {
+		"name": "Duct Tape", "shape": "cylinder", "size": Vector3(0.05, 0.03, 0),
+		"color": Color(0.7, 0.6, 0.2),
+		"hint": "Crafting ingredient. Used in many recipes.",
+		"extra": {"max_stack": 10},
+	},
+	"pipe": {
+		"name": "Pipe", "shape": "cylinder", "size": Vector3(0.03, 0.4, 0),
+		"color": Color(0.4, 0.35, 0.3),
+		"hint": "Crafting ingredient. Base for melee weapons.",
+		"extra": {"max_stack": 10},
+	},
+	"alarm_clock": {
+		"name": "Alarm Clock", "shape": "box", "size": Vector3(0.1, 0.08, 0.1),
+		"color": Color(0.5, 0.5, 0.55),
+		"hint": "Crafting ingredient. Combine with Battery to make a Sound Lure.",
+		"extra": {"max_stack": 5},
+	},
+	"cloth": {
+		"name": "Cloth", "shape": "box", "size": Vector3(0.15, 0.02, 0.1),
+		"color": Color(0.8, 0.75, 0.7),
+		"hint": "Crafting ingredient. Combine with Alcohol + Lighter for Fire Bottle.",
+		"extra": {"max_stack": 10},
+	},
+	"alcohol": {
+		"name": "Alcohol", "shape": "cylinder", "size": Vector3(0.04, 0.15, 0),
+		"color": Color(0.7, 0.85, 0.95),
+		"hint": "Crafting ingredient. Combine with Cloth + Lighter for Fire Bottle.",
+		"extra": {"max_stack": 10},
+	},
+	"lighter": {
+		"name": "Lighter", "shape": "box", "size": Vector3(0.03, 0.05, 0.015),
+		"color": Color(0.2, 0.2, 0.2),
+		"hint": "Crafting ingredient. Combine with Cloth + Alcohol for Fire Bottle.",
+		"extra": {"max_stack": 5},
+	},
+	"axe_head": {
+		"name": "Axe Head", "shape": "box", "size": Vector3(0.18, 0.12, 0.04),
+		"color": Color(0.35, 0.35, 0.38),
+		"hint": "Crafting ingredient. Combine with Pipe + Duct Tape for Improvised Axe.",
+		"extra": {"max_stack": 5},
+	},
+	"scrap_metal": {
+		"name": "Scrap Metal", "shape": "box", "size": Vector3(0.12, 0.08, 0.04),
+		"color": Color(0.45, 0.45, 0.48),
+		"hint": "Crafting ingredient. Combine for Machete.",
+		"extra": {"max_stack": 10},
+	},
+	"heavy_pipe": {
+		"name": "Heavy Pipe", "shape": "cylinder", "size": Vector3(0.05, 0.5, 0),
+		"color": Color(0.3, 0.28, 0.25),
+		"hint": "Crafting ingredient. Combine with Gears + Duct Tape for Gear Axe.",
+		"extra": {"max_stack": 5},
+	},
+	"gears": {
+		"name": "Gears", "shape": "box", "size": Vector3(0.08, 0.08, 0.03),
+		"color": Color(0.4, 0.4, 0.42),
+		"hint": "Crafting ingredient. Combine with Heavy Pipe + Duct Tape for Gear Axe.",
+		"extra": {"max_stack": 5},
+	},
+	# --- Recipe Notes (pickup to unlock for team) ---
+	"recipe_ammo": {
+		"name": "Note: Ammo Recipe", "shape": "paper",
+		"color": Color(0.8, 0.75, 0.5),
+		"hint": "Shows how to craft ammo: Gunpowder + Empty Shells.",
+		"extra": {"recipe_unlock": "ammo"},
+	},
+	"recipe_axe": {
+		"name": "Note: Axe Recipe", "shape": "paper",
+		"color": Color(0.8, 0.75, 0.5),
+		"hint": "Shows how to craft an Improvised Axe: Pipe + Axe Head + Duct Tape.",
+		"extra": {"recipe_unlock": "improvised_axe"},
+	},
+	"recipe_machete": {
+		"name": "Note: Machete Recipe", "shape": "paper",
+		"color": Color(0.8, 0.75, 0.5),
+		"hint": "Shows how to craft a Machete: Scrap Metal x2 + Duct Tape + Pipe.",
+		"extra": {"recipe_unlock": "machete"},
+	},
+	"recipe_gear_axe": {
+		"name": "Note: Gear Axe Recipe", "shape": "paper",
+		"color": Color(0.8, 0.75, 0.5),
+		"hint": "Shows how to craft a Gear Axe: Heavy Pipe + Gears + Duct Tape.",
+		"extra": {"recipe_unlock": "gear_axe"},
+	},
+	# --- Throwable Outputs ---
+	"sound_lure": {
+		"name": "Sound Lure", "shape": "cylinder", "size": Vector3(0.06, 0.12, 0),
+		"color": Color(0.7, 0.6, 0.2),
+		"hint": "Throw to create a loud noise distraction for 8 seconds.",
+		"extra": {"throwable": "sound_lure"},
+	},
+	"fire_bottle": {
+		"name": "Fire Bottle", "shape": "cylinder", "size": Vector3(0.07, 0.18, 0),
+		"color": Color(0.8, 0.2, 0.1),
+		"hint": "Throw to create a wall of fire monsters won't cross for 8 seconds.",
+		"extra": {"throwable": "fire_bottle"},
+	},
+	# --- Melee Outputs (reinforced pipe) ---
+	"reinforced_pipe": {
+		"name": "Reinforced Pipe", "shape": "cylinder", "size": Vector3(0.04, 0.55, 0),
+		"color": Color(0.45, 0.35, 0.25),
+		"hint": "Pipe wrapped in duct tape. 2x durability.",
+		"extra": {"weapon": "reinforced_pipe", "durability": 200, "max_durability": 200},
+	},
 }
 
 ## How much slower everyone except the Guard moves while carrying something heavy.
@@ -196,7 +345,7 @@ static func is_heavy(item: Dictionary) -> bool:
 	return not item.is_empty() and INFO[item.id].get("heavy", false)
 
 
-## True if the item in hand is a gun (goes in the weapon slot, not a gear slot).
+## True if the item in hand is a weapon (gun or melee).
 static func is_weapon(item: Dictionary) -> bool:
 	return not item.is_empty() and item.has("weapon")
 
@@ -204,6 +353,14 @@ static func is_weapon(item: Dictionary) -> bool:
 ## The weapon id inside a weapon item ("" if it isn't one).
 static func weapon_id(item: Dictionary) -> String:
 	return str(item.get("weapon", "")) if is_weapon(item) else ""
+
+
+## True if the weapon is a melee weapon (vs firearm).
+static func is_melee(item: Dictionary) -> bool:
+	if not is_weapon(item):
+		return false
+	var w_id := weapon_id(item)
+	return Weapons.is_melee(w_id)
 
 
 ## The item's 3D look: its real model if it has one (see "model"), sized to

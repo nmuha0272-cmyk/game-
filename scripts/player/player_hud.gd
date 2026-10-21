@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## The on-screen overlay: crosshair, prompts, stamina, ability cooldown,
-## progress bar, gear hotbar, flashlight battery, messages, camera-flash
-## whiteout, toxic gas warning, and the "you are down" screen.
+## progress bar, gear hotbar (4 quick slots), flashlight battery, messages,
+## camera-flash whiteout, toxic gas warning, and the "you are down" screen.
 ## Only your own player has a HUD.
 
 @export var player: Player
@@ -22,31 +22,37 @@ extends CanvasLayer
 @onready var battery_label: Label = $BatteryLabel
 @onready var subtitle_label: Label = $SubtitleLabel
 @onready var quick_chat_wheel: Node = $QuickChatWheel
+@onready var storage_panel: PanelContainer = $StoragePanel
 
-var _slot_labels: Array[Label] = []
-var _slot_panels: Array[PanelContainer] = []
+var _quick_panels: Array[PanelContainer] = []
+var _quick_labels: Array[Label] = []
+var _storage_slots: Array[PanelContainer] = []
+var _storage_labels: Array[Label] = []
+var _durability_bar: ProgressBar = null
+var _durability_bg: PanelContainer = null
 
 var _message_tween: Tween
 var _subtitle_left := 0.0
 
 
 func _ready() -> void:
-	# Other scripts can reach this HUD with get_tree().call_group("player_hud", ...)
 	add_to_group("player_hud")
 	stamina.changed.connect(_on_stamina_changed)
 	_on_stamina_changed(stamina.current, stamina.max_stamina)
 	message_label.modulate.a = 0.0
 	flash_overlay.modulate.a = 0.0
-	_build_hotbar()
-	# (The HUD starts before the player, so look the node up directly.)
-	player.get_node("Inventory").changed.connect(_refresh_hotbar)
-	_refresh_hotbar()
+	_build_quick_hotbar()
+	_build_storage_panel()
+	_build_durability_bar()
+
+	player.get_node("Inventory").changed.connect(_refresh_all)
+	_refresh_all()
 
 
 func _process(_delta: float) -> void:
 	var target := interactor.current_target
 	var teammate: Player = player.get_node("InventoryControls").get_teammate_in_reach()
-	var held := player.inventory.get_active_item()
+	var held := player.inventory.get_active_quick()
 	prompt_label.visible = not player.is_downed and (target != null or (teammate != null and not held.is_empty()))
 	if target:
 		prompt_label.text = target.get_prompt(player)
@@ -67,7 +73,6 @@ func _process(_delta: float) -> void:
 		status_label.text = ability.status_text
 	else:
 		ability_label.text = ""
-	# Holding E on something (fuse box, darkroom table...) uses the same bar.
 	if interactor.hold_progress >= 0.0:
 		action_bar.visible = true
 		action_bar.value = interactor.hold_progress * 100.0
@@ -87,10 +92,12 @@ func _process(_delta: float) -> void:
 		_subtitle_left -= _delta
 		if _subtitle_left <= 0.0:
 			subtitle_label.text = ""
-	
+
 	# Quick chat wheel input
 	if Input.is_action_just_pressed("quick_chat"):
 		quick_chat_wheel.toggle()
+
+	_update_durability_bar()
 
 
 func _show_gas_warning() -> void:
@@ -102,50 +109,227 @@ func _show_gas_warning() -> void:
 	if not gas_overlay.visible:
 		return
 	var mask := player.inventory.find_working_gas_mask()
-	if mask >= 0:
-		status_label.text = "Toxic gas! Gas mask filter: %ds" % ceili(player.inventory.slots[mask].filter)
+	if mask[1] >= 0:
+		var item := player.inventory.get_quick(mask[1]) if mask[0] else player.inventory.get_storage(mask[1])
+		status_label.text = "Toxic gas! Gas mask filter: %ds" % ceili(item.filter)
 	else:
 		status_label.text = "TOXIC GAS! Get out, or find a gas mask!"
 
 
-func _build_hotbar() -> void:
-	var inventory: Inventory = player.get_node("Inventory")
+func _build_quick_hotbar() -> void:
 	for child in hotbar.get_children():
 		hotbar.remove_child(child)
 		child.queue_free()
-	_slot_panels.clear()
-	_slot_labels.clear()
-	# Narrow the slots as the pack grows so the row always fits on screen.
-	var width := clampi(980 / max(inventory.slot_count(), 1), 90, 150)
-	for i in inventory.slot_count():
+	_quick_panels.clear()
+	_quick_labels.clear()
+
+	# Fixed 4 quick slots, wider
+	var width := 160
+	for i in Inventory.QUICK_SLOTS:
 		var panel := PanelContainer.new()
-		panel.custom_minimum_size = Vector2(width, 34)
-		var label := Label.new()
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		label.clip_text = true
-		panel.add_child(label)
+		panel.custom_minimum_size = Vector2(width, 50)
+		panel.add_theme_constant_override("margin_left", 4)
+		panel.add_theme_constant_override("margin_right", 4)
+		panel.add_theme_constant_override("margin_top", 4)
+		panel.add_theme_constant_override("margin_bottom", 4)
+		var vbox := VBoxContainer.new()
+		vbox.add_theme_constant_override("separation", 2)
+		panel.add_child(vbox)
+		var key_label := Label.new()
+		key_label.text = "[%d]" % (i + 1)
+		key_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		key_label.add_theme_font_size_override("font_size", 12)
+		key_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		vbox.add_child(key_label)
+		var item_label := Label.new()
+		item_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		item_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		item_label.clip_text = true
+		item_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		vbox.add_child(item_label)
 		hotbar.add_child(panel)
-		_slot_panels.append(panel)
-		_slot_labels.append(label)
+		_quick_panels.append(panel)
+		_quick_labels.append(item_label)
 
 
-func _refresh_hotbar() -> void:
+func _build_storage_panel() -> void:
+	storage_panel.visible = false
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	storage_panel.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "STORAGE  (Click item, then click quick slot to swap)"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 16)
+	title.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
+	vbox.add_child(title)
+
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(400, 300)
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	vbox.add_child(scroll)
+
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("v_separation", 8)
+	scroll.add_child(grid)
+
+	_storage_grid = grid
+	_storage_vbox = vbox
+
+
+func _build_durability_bar() -> void:
+	# Created dynamically when melee is equipped
+	_durability_bg = PanelContainer.new()
+	_durability_bg.custom_minimum_size = Vector2(160, 6)
+	_durability_bg.add_theme_constant_override("margin_left", 2)
+	_durability_bg.add_theme_constant_override("margin_right", 2)
+	_durability_bg.add_theme_constant_override("margin_top", 2)
+	_durability_bg.add_theme_constant_override("margin_bottom", 2)
+	_durability_bg.visible = false
+
+	_durability_bar = ProgressBar.new()
+	_durability_bar.min_value = 0
+	_durability_bar.max_value = 100
+	_durability_bar.value = 100
+	_durability_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_durability_bar.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_durability_bg.add_child(_durability_bar)
+
+
+func _refresh_all() -> void:
+	_refresh_quick_hotbar()
+	_refresh_storage_panel()
+	_update_durability_bar()
+
+
+func _refresh_quick_hotbar() -> var:
 	var inventory: Inventory = player.get_node("Inventory")
-	if _slot_labels.size() != inventory.slot_count():
-		_build_hotbar()  # a pouch or backpack was strapped on
-	for i in _slot_labels.size():
-		var item := inventory.get_item(i)
+	for i in Inventory.QUICK_SLOTS:
+		var item := inventory.get_quick(i)
 		var item_name := Items.display_name(item) if not item.is_empty() else "-"
-		# Only the first three slots have number keys; the wheel reaches the rest.
-		_slot_labels[i].text = ("%d  %s" % [i + 1, item_name]) if i < Inventory.BASE_SLOTS \
-				else item_name
-		var selected := i == inventory.active_slot
-		_slot_panels[i].modulate = Color(1, 1, 1, 1) if selected else Color(1, 1, 1, 0.45)
+		_quick_labels[i].text = item_name
+		var selected := i == inventory.active_quick
+		_quick_panels[i].modulate = Color(1, 1, 1, 1) if selected else Color(1, 1, 1, 0.45)
 
 
-## Someone speaks near a spot (a voice line or a tape). Only shown if your
-## player is close enough to hear it.
+func _refresh_storage_panel() -> void:
+	var inventory: Inventory = player.get_node("Inventory")
+	var grid := _storage_grid
+
+	# Clear existing
+	for child in grid.get_children():
+		grid.remove_child(child)
+		child.queue_free()
+
+	for i in inventory.storage_count():
+		var item := inventory.get_storage(i)
+		var panel := PanelContainer.new()
+		panel.custom_minimum_size = Vector2(90, 50)
+		panel.add_theme_constant_override("margin_left", 4)
+		panel.add_theme_constant_override("margin_right", 4)
+		panel.add_theme_constant_override("margin_top", 4)
+		panel.add_theme_constant_override("margin_bottom", 4)
+		var vbox := VBoxContainer.new()
+		vbox.add_theme_constant_override("separation", 2)
+		panel.add_child(vbox)
+
+		var item_label := Label.new()
+		item_label.text = Items.display_name(item) if not item.is_empty() else "Empty"
+		item_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		item_label.clip_text = true
+		item_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		vbox.add_child(item_label)
+
+		# Store indices for click handling
+		panel.set_meta("storage_idx", i)
+		panel.set_meta("is_storage", true)
+		panel.gui_input.connect(_on_storage_slot_gui_input.bind(i))
+
+		grid.add_child(panel)
+
+
+func open_storage_menu() -> void:
+	storage_panel.visible = true
+	_refresh_storage_panel()
+
+
+func close_storage_menu() -> void:
+	storage_panel.visible = false
+
+
+func refresh_storage_menu() -> void:
+	if storage_panel.visible:
+		_refresh_storage_panel()
+
+
+func _on_storage_slot_gui_input(event: InputEvent, storage_idx: int) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		# Clicked a storage item - now wait for quick slot click
+		_pending_storage_swap = storage_idx
+		# Highlight quick slots to indicate swap mode
+		for p in _quick_panels:
+			p.add_theme_color_override("panel_color", Color(0.3, 0.5, 0.3, 0.8))
+
+
+func _gui_input(event: InputEvent) -> void:
+	if _pending_storage_swap >= 0 and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		# Check if clicked on a quick slot
+		for i in _quick_panels.size():
+			var panel := _quick_panels[i]
+			if _is_mouse_over(panel, event.position):
+				# Swap!
+				player.inventory.request_swap(i, _pending_storage_swap)
+				_pending_storage_swap = -1
+				for p in _quick_panels:
+					p.add_theme_color_override("panel_color", Color(1, 1, 1, 1))
+				return
+		# Clicked elsewhere - cancel
+		_pending_storage_swap = -1
+		for p in _quick_panels:
+			p.add_theme_color_override("panel_color", Color(1, 1, 1, 1))
+
+
+func _is_mouse_over(control: Control, mouse_pos: Vector2) -> bool:
+	var rect := Rect2(control.global_position, control.size)
+	return rect.has_point(mouse_pos)
+
+
+var _pending_storage_swap := -1
+
+
+func _update_durability_bar() -> void:
+	var inventory: Inventory = player.get_node("Inventory")
+	var item := inventory.get_active_quick()
+	if item.is_empty() or not item.has("weapon") or not Items.is_melee(item):
+		if _durability_bg:
+			_durability_bg.visible = false
+		return
+
+	var max_dur := item.get("max_durability", 100)
+	var cur_dur := item.get("durability", max_dur)
+
+	# Find the active quick panel and show durability under it
+	var active_panel := _quick_panels[inventory.active_quick]
+	if not _durability_bg.get_parent():
+		active_panel.add_child(_durability_bg)
+
+	_durability_bg.visible = true
+	_durability_bar.max_value = max_dur
+	_durability_bar.value = cur_dur
+
+	var ratio := cur_dur / max_dur
+	if ratio > 0.5:
+		_durability_bar.modulate = Color(0.2, 0.8, 0.2)
+	elif ratio > 0.25:
+		_durability_bar.modulate = Color(0.9, 0.8, 0.1)
+	else:
+		_durability_bar.modulate = Color(0.9, 0.2, 0.2)
+
+
 func show_subtitle_near(where: Vector3, hearing_range: float, speaker: String, text: String,
 		seconds: float) -> void:
 	if player.global_position.distance_to(where) > hearing_range:
@@ -164,7 +348,6 @@ func show_message(text: String) -> void:
 	_message_tween.tween_property(message_label, "modulate:a", 0.0, 1.0)
 
 
-## A quick white flash, used by the Journalist's camera.
 func flash_screen() -> void:
 	flash_overlay.modulate.a = 0.8
 	create_tween().tween_property(flash_overlay, "modulate:a", 0.0, 0.4)
@@ -173,5 +356,4 @@ func flash_screen() -> void:
 func _on_stamina_changed(current: float, maximum: float) -> void:
 	stamina_bar.max_value = maximum
 	stamina_bar.value = current
-	# Only show the bar when stamina isn't full.
 	stamina_bar.visible = current < maximum

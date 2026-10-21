@@ -31,7 +31,8 @@ func get_prompt(by: Player) -> String:
 		if by.weapon.has_weapon():
 			text += "  (replaces %s)" % by.weapon.info().get("name", "your gun")
 		return text
-	if by.inventory.free_slot() < 0:
+	var free_result: Array = by.inventory.free_slot()
+	if free_result[1] < 0:
 		text = "%s  (hands full: drop something with G)" % Items.display_name(item)
 	elif Items.is_heavy(item) and by.character != Characters.Id.GUARD:
 		text += "  (heavy: you'll move slowly)"

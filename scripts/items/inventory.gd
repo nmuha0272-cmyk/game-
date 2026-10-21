@@ -1,132 +1,186 @@
 class_name Inventory
 extends Node
-## A player's gear slots (3 to start, more when a pouch or backpack is
-## strapped on — see ItemEffects).
+## Player inventory: 4 quick slots (keys 1-4) + storage slots (grows with pouches/backpacks, up to 10).
+## Total capacity = 4 + storage (2 to 10) = 6 to 14 items.
 ##
 ## The HOST owns the real contents and sends a copy to every computer whenever
-## they change. Picking up, dropping and handing items over all happen in one
-## step on the host, so items can never be duplicated or lost.
+## they change. Picking up, dropping, giving, and crafting all happen on the host.
 
 signal changed
 
-## Slots everyone starts with.
-const BASE_SLOTS := 3
-## Biggest an inventory can get (3 + pouches and backpacks found in the world).
-const MAX_SLOTS := 8
+## Quick slots everyone starts with (always 4).
+const QUICK_SLOTS := 4
+## Base storage slots (grows with packs).
+const BASE_STORAGE := 2
+## Maximum storage slots (with all pouches/backpacks).
+const MAX_STORAGE := 10
 
-## Each slot is {} when empty, or an item like {"id": "battery"}.
-var slots: Array = [{}, {}, {}]
-## The selected slot (shown in your hand). Chosen by the owner.
-var active_slot := 0
+## Quick slots: fixed 4, used for active items (guns, melee, throwables, medkits...).
+var quick_slots: Array = [{}, {}, {}, {}]
+## Storage slots: dynamic array, grows with pouches/backpacks.
+var storage_slots: Array = [{}, {}]
+## Currently selected quick slot (0-3).
+var active_quick := 0
 
 @onready var player: Player = get_parent()
 
 
 # ------------------------------------------------------------- questions
 
-## How many gear slots this player has right now (grows with packs).
-func slot_count() -> int:
-	return slots.size()
+## Total item capacity (quick + storage).
+func total_capacity() -> int:
+	return QUICK_SLOTS + storage_slots.size()
 
+## Current storage slot count (grows with packs).
+func storage_count() -> int:
+	return storage_slots.size()
 
-func get_item(slot: int) -> Dictionary:
-	return slots[slot] if slot >= 0 and slot < slots.size() else {}
+## Check if a quick slot index is valid.
+func is_valid_quick(idx: int) -> bool:
+	return idx >= 0 and idx < QUICK_SLOTS
 
+## Check if a storage slot index is valid.
+func is_valid_storage(idx: int) -> bool:
+	return idx >= 0 and idx < storage_slots.size()
 
-func get_active_item() -> Dictionary:
-	return get_item(active_slot)
+## Get item from quick slot.
+func get_quick(idx: int) -> Dictionary:
+	if not is_valid_quick(idx):
+		return {}
+	return quick_slots[idx]
 
+## Get item from storage slot.
+func get_storage(idx: int) -> Dictionary:
+	if not is_valid_storage(idx):
+		return {}
+	return storage_slots[idx]
 
-func find_item(id: String) -> int:
-	for i in slots.size():
-		if slots[i].get("id") == id:
-			return i
-	return -1
+## Get currently active quick item (the one in hand).
+func get_active_quick() -> Dictionary:
+	return get_quick(active_quick)
 
+## Find item by id across both quick and storage. Returns (is_quick, index).
+func find_item(id: String) -> Array:
+	for i in QUICK_SLOTS:
+		if quick_slots[i].get("id") == id:
+			return [true, i]
+	for i in storage_slots.size():
+		if storage_slots[i].get("id") == id:
+			return [false, i]
+	return [false, -1]
 
+## True if player has item anywhere.
 func has_item(id: String) -> bool:
-	return find_item(id) >= 0
+	var result := find_item(id)
+	return result[1] >= 0
 
+## First empty storage slot, then first empty quick slot.
+func free_slot() -> Array:
+	for i in storage_slots.size():
+		if storage_slots[i].is_empty():
+			return [false, i]
+	for i in QUICK_SLOTS:
+		if quick_slots[i].is_empty():
+			return [true, i]
+	return [false, -1]
 
-func free_slot() -> int:
-	# Prefer the selected slot so a picked-up item lands in your hand.
-	if slots[active_slot].is_empty():
-		return active_slot
-	for i in slots.size():
-		if slots[i].is_empty():
-			return i
-	return -1
-
-
+## Check if carrying any heavy item (in quick or storage).
 func is_carrying_heavy() -> bool:
-	for item in slots:
+	for item in quick_slots:
+		if Items.is_heavy(item):
+			return true
+	for item in storage_slots:
 		if Items.is_heavy(item):
 			return true
 	return false
 
-
-## The Guard carries heavy things at full speed. Everyone else slows down.
+## Speed multiplier from heavy items (Guard ignores).
 func speed_multiplier() -> float:
 	if is_carrying_heavy() and player.character != Characters.Id.GUARD:
 		return Items.HEAVY_SPEED_MULTIPLIER
 	return 1.0
 
-
-## Slot of a gas mask that still has filter left (-1 if none).
-func find_working_gas_mask() -> int:
-	for i in slots.size():
-		if slots[i].get("id") == "gas_mask" and slots[i].get("filter", 0.0) > 0.0:
-			return i
-	return -1
+## Slot of a gas mask with filter left (-1 if none). Checks both quick and storage.
+func find_working_gas_mask() -> Array:
+	for i in QUICK_SLOTS:
+		var item: Dictionary = quick_slots[i]
+		if item.get("id") == "gas_mask" and item.get("filter", 0.0) > 0.0:
+			return [true, i]
+	for i in storage_slots.size():
+		var item: Dictionary = storage_slots[i]
+		if item.get("id") == "gas_mask" and item.get("filter", 0.0) > 0.0:
+			return [false, i]
+	return [false, -1]
 
 
 # ------------------------------------------------------------- host-only changes
 
+## Host only: add item to inventory. Prefers storage, then quick.
 func server_add(item: Dictionary) -> bool:
-	var slot := free_slot()
-	if not multiplayer.is_server() or slot < 0:
+	if not multiplayer.is_server():
 		return false
-	slots[slot] = item
+	var result: Array = free_slot()
+	if result[1] < 0:
+		return false
+	if result[0]: # is_quick
+		quick_slots[result[1]] = item
+	else:
+		storage_slots[result[1]] = item
 	_send_to_everyone()
 	return true
 
-
-## Host only: strap on a pouch / backpack. Returns how many gear slots it
-## added (0 if the pack is already as big as it gets — then the item is kept).
+## Host only: strap on a pouch/backpack. Adds storage slots.
 func server_expand(extra_slots: int) -> int:
-	if not multiplayer.is_server() or slots.size() >= MAX_SLOTS:
+	if not multiplayer.is_server() or storage_slots.size() >= MAX_STORAGE:
 		return 0
-	var added := clampi(extra_slots, 1, MAX_SLOTS - slots.size())
+	var added := clampi(extra_slots, 1, MAX_STORAGE - storage_slots.size())
 	for i in added:
-		slots.append({})
+		storage_slots.append({})
 	_send_to_everyone()
 	return added
 
-
-## Host only: replace all slots at once (restoring gear at a checkpoint).
-func server_set_slots(new_slots: Array) -> void:
+## Host only: replace all slots at once (checkpoint restore).
+func server_set_slots(new_quick: Array, new_storage: Array) -> void:
 	if multiplayer.is_server():
-		slots = new_slots
+		quick_slots = new_quick
+		storage_slots = new_storage
+		active_quick = clampi(active_quick, 0, QUICK_SLOTS - 1)
 		_send_to_everyone()
 
-
-func server_remove(slot: int) -> Dictionary:
-	var item := get_item(slot)
-	if multiplayer.is_server() and not item.is_empty():
-		slots[slot] = {}
-		_send_to_everyone()
+## Host only: remove item from quick or storage.
+func server_remove(is_quick: bool, slot: int) -> Dictionary:
+	var item := {} 
+	if is_quick and is_valid_quick(slot):
+		item = quick_slots[slot]
+		if multiplayer.is_server() and not item.is_empty():
+			quick_slots[slot] = {}
+			_send_to_everyone()
+	elif not is_quick and is_valid_storage(slot):
+		item = storage_slots[slot]
+		if multiplayer.is_server() and not item.is_empty():
+			storage_slots[slot] = {}
+			_send_to_everyone()
 	return item
 
-
-## Used by toxic gas to drain a gas mask's filter.
-func server_drain_filter(slot: int, seconds: float) -> void:
-	var mask := get_item(slot)
-	if not multiplayer.is_server() or not mask.has("filter"):
+## Host only: swap quick <-> storage.
+func server_swap(quick_idx: int, storage_idx: int) -> void:
+	if not multiplayer.is_server():
 		return
-	var before := ceili(mask.filter)
-	mask.filter = maxf(mask.filter - seconds, 0.0)
-	# Only send an update when the whole-second number changes.
-	if ceili(mask.filter) != before:
+	if not is_valid_quick(quick_idx) or not is_valid_storage(storage_idx):
+		return
+	var tmp: Dictionary = quick_slots[quick_idx]
+	quick_slots[quick_idx] = storage_slots[storage_idx]
+	storage_slots[storage_idx] = tmp
+	_send_to_everyone()
+
+## Used by toxic gas to drain a gas mask's filter (checks both arrays).
+func server_drain_filter(is_quick: bool, slot: int, seconds: float) -> void:
+	var item := get_quick(slot) if is_quick else get_storage(slot)
+	if not multiplayer.is_server() or not item.has("filter"):
+		return
+	var before := ceili(item.filter)
+	item.filter = maxf(item.filter - seconds, 0.0)
+	if ceili(item.filter) != before:
 		_send_to_everyone()
 
 
@@ -141,6 +195,14 @@ const PING_SCENE := preload("res://scenes/player/ping_marker.tscn")
 func server_radio(text: String, caller_position: Vector3, caller_name: String) -> void:
 	if multiplayer.is_server():
 		_radio.rpc(text, caller_position, caller_name)
+
+
+## Host only: show a message on this player's screen.
+func server_tell(text: String) -> void:
+	if player.is_multiplayer_authority():
+		get_tree().call_group("player_hud", "show_message", text)
+	else:
+		_show_message.rpc_id(player.get_multiplayer_authority(), text)
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -166,102 +228,131 @@ func _radio(text: String, caller_position: Vector3, caller_name: String) -> void
 		marker.global_position = caller_position + Vector3.UP * 1.8
 
 
-func server_tell(text: String) -> void:
-	if player.is_multiplayer_authority():
+@rpc("any_peer", "call_local", "reliable")
+func _show_message(text: String) -> void:
+	if multiplayer.get_remote_sender_id() == 1:
 		get_tree().call_group("player_hud", "show_message", text)
-	else:
-		_show_message.rpc_id(player.get_multiplayer_authority(), text)
 
 
 # ------------------------------------------------------------- requests (owner's computer)
 
-func select_slot(slot: int) -> void:
-	active_slot = clampi(slot, 0, slots.size() - 1)
+## Owner selects quick slot 0-3.
+func select_quick(idx: int) -> void:
+	active_quick = clampi(idx, 0, QUICK_SLOTS - 1)
 	changed.emit()
 	if multiplayer.is_server():
 		_send_to_everyone()
 	else:
-		_request_select.rpc_id(1, active_slot)
+		_request_select_quick.rpc_id(1, active_quick)
 
-
-func request_drop() -> void:
-	_ask("drop", active_slot, 0)
-
-
-func request_give(target_id: int) -> void:
-	_ask("give", active_slot, target_id)
-
-
-func request_use(target_id: int) -> void:
-	_ask("use", active_slot, target_id)
-
-
-func _ask(action: String, slot: int, target_id: int) -> void:
+## Owner requests swap between quick and storage.
+func request_swap(quick_idx: int, storage_idx: int) -> void:
 	if multiplayer.is_server():
-		_server_action(action, slot, target_id)
+		server_swap(quick_idx, storage_idx)
 	else:
-		_request_action.rpc_id(1, action, slot, target_id)
+		_request_swap.rpc_id(1, quick_idx, storage_idx)
+
+## Owner drops active quick item.
+func request_drop() -> void:
+	_ask("drop", true, active_quick, 0)
+
+## Owner gives active quick item to teammate.
+func request_give(target_id: int) -> void:
+	_ask("give", true, active_quick, target_id)
+
+## Owner uses active quick item.
+func request_use(target_id: int) -> void:
+	_ask("use", true, active_quick, target_id)
+
+## Owner uses item from storage (for crafting outputs, etc.).
+func request_use_storage(storage_idx: int, target_id: int) -> void:
+	_ask("use", false, storage_idx, target_id)
+
+func _ask(action: String, is_quick: bool, slot: int, target_id: int) -> void:
+	if multiplayer.is_server():
+		_server_action(action, is_quick, slot, target_id)
+	else:
+		_request_action.rpc_id(1, action, is_quick, slot, target_id)
 
 
 # ------------------------------------------------------------- networking
 
 @rpc("any_peer", "reliable")
-func _request_action(action: String, slot: int, target_id: int) -> void:
+func _request_action(action: String, is_quick: bool, slot: int, target_id: int) -> void:
 	if multiplayer.is_server() and multiplayer.get_remote_sender_id() == player.get_multiplayer_authority():
-		_server_action(action, slot, target_id)
-
+		_server_action(action, is_quick, slot, target_id)
 
 @rpc("any_peer", "reliable")
-func _request_select(slot: int) -> void:
+func _request_select_quick(slot: int) -> void:
 	if multiplayer.is_server() and multiplayer.get_remote_sender_id() == player.get_multiplayer_authority():
-		active_slot = clampi(slot, 0, slots.size() - 1)
+		active_quick = clampi(slot, 0, QUICK_SLOTS - 1)
 		_send_to_everyone()
 
+@rpc("any_peer", "reliable")
+func _request_swap(quick_idx: int, storage_idx: int) -> void:
+	if multiplayer.is_server() and multiplayer.get_remote_sender_id() == player.get_multiplayer_authority():
+		server_swap(quick_idx, storage_idx)
 
-## Host only: do what the player asked, if it's allowed.
-func _server_action(action: String, slot: int, target_id: int) -> void:
-	var item := get_item(slot)
+
+## Host only: execute action.
+func _server_action(action: String, is_quick: bool, slot: int, target_id: int) -> void:
+	var item := get_quick(slot) if is_quick else get_storage(slot)
 	if item.is_empty() or player.is_downed:
 		return
 	match action:
 		"drop":
-			server_remove(slot)
+			server_remove(is_quick, slot)
 			ItemSpawner.find(get_tree()).server_drop(item, player)
 		"give":
 			var teammate := Player.find(get_tree(), target_id)
 			if teammate == null or teammate == player or teammate.is_downed \
 					or teammate.global_position.distance_to(player.global_position) > 3.0:
 				return
-			if teammate.inventory.free_slot() < 0:
+			if teammate.inventory.free_slot()[1] < 0:
 				server_tell("%s's hands are full." % GameState.get_player_name(target_id))
 				return
-			server_remove(slot)
+			server_remove(is_quick, slot)
 			teammate.inventory.server_add(item)
 			teammate.inventory.server_tell("%s gave you: %s" % [
 					GameState.get_player_name(player.name.to_int()), Items.display_name(item)])
 		"use":
 			if ItemEffects.server_use(item, player, target_id):
-				server_remove(slot)
+				server_remove(is_quick, slot)
 
 
 func _send_to_everyone() -> void:
-	_receive.rpc(slots, active_slot)
+	_receive.rpc(quick_slots, storage_slots, active_quick)
 
 
 # Only the host (network ID 1) may send these.
 @rpc("any_peer", "call_local", "reliable")
-func _receive(new_slots: Array, new_active: int) -> void:
+func _receive(new_quick: Array, new_storage: Array, new_active: int) -> void:
 	if multiplayer.get_remote_sender_id() != 1:
 		return
-	slots = new_slots
-	# Our own selection stays as we chose it; others follow the host.
+	quick_slots = new_quick
+	storage_slots = new_storage
 	if not player.is_multiplayer_authority():
-		active_slot = new_active
-	active_slot = clampi(active_slot, 0, slots.size() - 1)
+		active_quick = new_active
+	active_quick = clampi(active_quick, 0, QUICK_SLOTS - 1)
 	changed.emit()
 
 
-@rpc("any_peer", "reliable")
-func _show_message(text: String) -> void:
-	if multiplayer.get_remote_sender_id() == 1:
-		get_tree().call_group("player_hud", "show_message", text)
+# ------------------------------------------------------------- compatibility (for old code)
+
+## Old API: slot_count() -> total slots (for HUD width calc, etc.)
+func slot_count() -> int:
+	return total_capacity()
+
+## Old API: get_item(idx) -> checks quick first, then storage (for legacy HUD)
+func get_item(idx: int) -> Dictionary:
+	if idx < QUICK_SLOTS:
+		return get_quick(idx)
+	var s_idx := idx - QUICK_SLOTS
+	return get_storage(s_idx)
+
+## Old API: active_slot property (for legacy code)
+func get_active_slot() -> int:
+	return active_quick
+
+func set_active_slot(val: int) -> void:
+	select_quick(val)
