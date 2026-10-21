@@ -38,7 +38,7 @@ const STAND_IN_OFFSETS := [
 	Vector3(1.8, 0.0, -2.4),
 ]
 
-var _played := false
+var played := false
 var _camera: Camera3D = null
 var _bars: CanvasLayer = null
 var _caption_name: Label = null
@@ -105,9 +105,17 @@ func _wait_for_intro() -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _trigger_dialogue() -> void:
-	if _played:
+	if played:
 		return
-	_played = true
+
+	# Ask each player for their perspective preference before the cutscene.
+	_prompt_perspective.rpc()
+
+	# Wait for all players to choose (host waits, clients respond).
+	if multiplayer.is_server():
+		await _wait_for_perspective_choices()
+
+	played = true
 
 	# The characters act while nobody can move or look around.
 	get_tree().call_group("players", "set_movement_enabled", false)
@@ -475,3 +483,82 @@ func _make_bars() -> void:
 	layer.add_child(hint)
 	add_child(layer)
 	_bars = layer
+
+
+## Each player chooses first/third person before the chapter starts.
+## Runs on all clients; host waits for all to respond.
+@rpc("authority", "call_local", "reliable")
+func _prompt_perspective() -> void:
+	# In playtest mode, auto-choose first person so the test can proceed.
+	if OS.get_cmdline_user_args().has("--playtest"):
+		var me_test := Player.find(get_tree(), multiplayer.get_unique_id())
+		if me_test:
+			var persp_test := me_test.get_node_or_null("Perspective") as Perspective
+			if persp_test:
+				persp_test.third_person = false
+		# Directly append since we're on the host in playtest.
+		_perspective_choices.append(false)
+		return
+
+	var me := Player.find(get_tree(), multiplayer.get_unique_id())
+	if me == null:
+		_report_perspective_choice.rpc_id(1, false)
+		return
+	var persp := me.get_node_or_null("Perspective") as Perspective
+	if persp == null:
+		_report_perspective_choice.rpc_id(1, false)
+		return
+
+	# Simple prompt: show text, wait for 1 or 3 key.
+	var layer := CanvasLayer.new()
+	layer.layer = 20
+	var bg := ColorRect.new()
+	bg.color = Color(0, 0, 0, 0.85)
+	bg.anchors_preset = Control.PRESET_FULL_RECT
+	layer.add_child(bg)
+
+	var label := Label.new()
+	label.text = "Choose camera:\n[1] First Person\n[3] Third Person (C toggles later)"
+	label.anchors_preset = Control.PRESET_FULL_RECT
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.add_theme_font_size_override("font_size", 32)
+	label.add_theme_color_override("font_color", Color.WHITE)
+	layer.add_child(label)
+
+	add_child(layer)
+
+	var chosen_third := false
+
+	# Poll for key press (1 or 3) since we can't use a local function with nonlocal.
+	while true:
+		await get_tree().process_frame
+		if Input.is_key_pressed(KEY_1) or Input.is_key_pressed(KEY_KP_1):
+			chosen_third = false
+			break
+		if Input.is_key_pressed(KEY_3) or Input.is_key_pressed(KEY_KP_3):
+			chosen_third = true
+			break
+
+	persp.third_person = chosen_third
+	layer.queue_free()
+	_report_perspective_choice.rpc_id(1, chosen_third)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _report_perspective_choice(third: bool) -> void:
+	_perspective_choices.append(third)
+
+
+var _perspective_choices: Array[bool] = []
+
+
+## Host only: wait until every player has reported a choice.
+func _wait_for_perspective_choices() -> void:
+	_perspective_choices.clear()
+	var expected := GameState.players.size()
+	if expected == 0:
+		expected = 1
+	while _perspective_choices.size() < expected:
+		await get_tree().process_frame

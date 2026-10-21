@@ -82,7 +82,7 @@ func _run() -> void:
 	check(packs >= 2, "level has %d pack upgrades to find" % packs)
 
 	# --- Dialogue cutscene triggers (intro ~15s + 2s delay) ---
-	ok = await _until(func() -> bool: return od._played, 60.0)
+	ok = await _until(func() -> bool: return od.get("played") or false, 60.0)
 	if not ok:
 		return finish("dialogue never triggered")
 	_log("dialogue triggered at %0.1fs" % ((Time.get_ticks_msec() - t0) / 1000.0))

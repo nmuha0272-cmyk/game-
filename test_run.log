@@ -9,56 +9,5 @@ PASS: newspaper intro appears after character select
 newspaper phase 1 up, skipping
 level loaded: Chapter1, waiting for dialogue...
 PASS: level has 2 pack upgrades to find
-dialogue triggered at 33.4s
-PASS: controls frozen (menu_open) during dialogue
-PASS: cutscene camera created
-PASS: letterbox bars created
-PASS: caption shows line 0: There it is. The Blackwater Weather Station. Or what's left of it.
-PASS: caption shows who speaks: THE JOURNALIST
-PASS: player spawned (1 found)
-PASS: 3 stand-in bodies spawned (3)
-PASS: stand-in bodies have rigged models
-PASS: own nameplate hidden during scene
-PASS: own model fully visible, not shadow-only (1 meshes)
-PASS: speaker is acting (gesturing)
-PASS: camera close-up on speaker (dist=2.63 m)
-tapped continue after line 0 at 33.5s
-tapped continue after line 1 at 33.8s
-tapped continue after line 2 at 34.1s
-tapped continue after line 3 at 34.4s
-tapped continue after line 4 at 34.8s
-tapped continue after line 5 at 35.1s
-tapped continue after line 6 at 35.4s
-PASS: cutscene ended and controls restored
-PASS: menu_open false after scene
-PASS: bars freed after scene
-PASS: caption freed after scene
-PASS: stand-in bodies freed after scene
-PASS: own nameplate hidden again after scene
-PASS: movement re-enabled after scene
-PASS: player camera active again after scene
-PASS: acting/glance cleared after scene
-PASS: no loudness meter on the HUD
-PASS: perspective node exists
-PASS: toggle_view is bound (C)
-PASS: camera starts in first person
-PASS: pressed action reaches _unhandled_input
-note: headless mouse mode=0, driving perspective directly
-PASS: third person turns on
-PASS: camera pulled back over the shoulder
-PASS: view models hidden in third person
-PASS: your own body is drawn in third person
-note: headless mouse mode=0, driving perspective directly
-PASS: third person turns back off
-PASS: camera back at the eye
-PASS: view models back in first person
-PASS: starts with 3 gear slots (3)
-PASS: hotbar shows 3 slots
-PASS: backpack adds 2 slots (5)
-PASS: backpack is used up when worn
-PASS: pouch adds 1 slot (6)
-PASS: hotbar grew with the pack (6)
-PASS: inventory caps at 8 slots
-PASS: no more slots past the cap
-PASS: extra pouch kept when it can't be worn
-TEST_RESULT: ALL PASS
+FAIL: dialogue never triggered
+TEST_RESULT: 1 FAILURES: ["dialogue never triggered"]
