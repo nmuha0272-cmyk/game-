@@ -118,6 +118,37 @@ reel-to-reel tapes, propaganda posters, gas masks, bulky old computers.
 
 ---
 
+## Main Menu: The Deepwell Home Screen
+
+The game opens on a car driving down a dark forest road at night, on the way
+to the Blackwater Weather Station. Files: `scenes/main_menu/deepwell/`
+(`main_menu_car.tscn` is the home screen, `main_menu.tscn` the title and
+buttons on top of it). `scripts/main.gd` opens it when the game starts.
+
+**Flow:**
+1. **Title:** DEEPWELL, with Host Game, Join Game, Settings, Credits, Quit.
+2. **Host or Join:** the camera moves into the back seat. (Join first asks
+   for the host's IP and waits until it connects.)
+3. **Pick a character in the car:** Eli drives, Cole sits next to him, Nora
+   and Walter are in the back. Hover a name card or a person: the camera
+   glides to them and shows their role, story and abilities. Click, then
+   **PLAY AS ...**. Seats other players already took show **TAKEN**.
+   - Eli = The Son, Cole = The Guard, Nora = The Journalist, Walter = The Engineer
+4. **The drive:** the camera moves behind the car, it drives up to the
+   station gate, stops, and fades to black (Enter or Esc skips it).
+5. **Lobby:** everyone is listed with their character; the host presses
+   **Start Game**, then the opening cutscene and Chapter 1 begin.
+
+**Rules:**
+- Host/Join/character picks go through the game's own `NetworkManager` and
+  `GameState` (the host decides), so every player's screen agrees.
+- Settings opens the game's own Settings menu (one settings file).
+- Leaving a game or losing the connection returns to the home screen.
+- Real character models can sit in the seats later (see the README in that
+  folder); until then they are simple stand-in shapes.
+
+---
+
 ## Characters
 
 Every player picks one character. Each character can only be picked once per
@@ -431,7 +462,7 @@ res://
 
 ### Phase 3 — Multiplayer Foundation
 - [ ] `NetworkManager` autoload: host a game, join by IP, handle disconnects
-- [ ] Simple main menu: Host, Join (IP box), Quit
+- [x] Main menu: the Deepwell home screen (Host, Join with IP box, Settings, Credits, Quit)
 - [ ] Spawn a player for each person who joins (up to 4)
 - [ ] Sync player movement, camera direction, and flashlight on/off
 - [ ] Each player only controls their own character
@@ -439,7 +470,7 @@ res://
 
 ### Phase 4 — Lobby and Character Select
 - [ ] Lobby screen listing connected players
-- [ ] Character select: each of the four characters can only be picked once
+- [x] Character select in the Deepwell car: each of the four characters can only be picked once
 - [ ] Host presses Start when everyone has picked
 - [ ] Each character shows their held item in first-person view (placeholder shapes)
 
