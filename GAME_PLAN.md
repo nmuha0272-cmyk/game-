@@ -446,157 +446,135 @@ res://
 ## Build Phases
 
 ### Phase 1 — Project Setup
-- [ ] Create the Godot project and folder structure above
-- [ ] Set up Git with a Godot `.gitignore`
-- [ ] Create a simple gray-box test room (floor, walls, a few boxes)
-- [ ] Set up input actions: move (WASD), look (mouse), sprint (Shift),
-      crouch (Ctrl), interact (E), ability (Q), flashlight (F)
+- [x] Create the Godot project and folder structure above
+- [x] Set up Git with a Godot `.gitignore`
+- [x] Create a simple gray-box test room (floor, walls, a few boxes)
+- [x] Set up input actions: move (WASD), look (mouse), sprint (Shift), crouch (Ctrl), interact (E), ability (Q), flashlight (F)
 
 ### Phase 2 — Single-Player First-Person Controller
-- [ ] First-person camera with mouse look
-- [ ] Walking, sprinting with stamina, crouching
-- [ ] Head bob and footstep sounds (placeholder sounds are fine)
-- [ ] Flashlight toggle with a narrow cone of light
-- [ ] Interaction system: look at an object, press E, it responds
-- [ ] Test: walk around the test room with the flashlight
+- [x] First-person camera with mouse look
+- [x] Walking, sprinting with stamina, crouching
+- [x] Head bob and footstep sounds (placeholder sounds are fine)
+- [x] Flashlight toggle with a narrow cone of light
+- [x] Interaction system: look at an object, press E, it responds
+- [x] Test: walk around the test room with the flashlight
 
 ### Phase 3 — Multiplayer Foundation
-- [ ] `NetworkManager` autoload: host a game, join by IP, handle disconnects
+- [x] `NetworkManager` autoload: host a game, join by IP, handle disconnects
 - [x] Main menu: the Deepwell home screen (Host, Join with IP box, Settings, Credits, Quit)
-- [ ] Spawn a player for each person who joins (up to 4)
-- [ ] Sync player movement, camera direction, and flashlight on/off
-- [ ] Each player only controls their own character
-- [ ] Test: run two copies of the game on one computer and see both players move
+- [x] Spawn a player for each person who joins (up to 4)
+- [x] Sync player movement, camera direction, and flashlight on/off
+- [x] Each player only controls their own character
+- [x] Test: run two copies of the game on one computer and see both players move
 
 ### Phase 4 — Lobby and Character Select
-- [ ] Lobby screen listing connected players
+- [x] Lobby screen listing connected players
 - [x] Character select in the Deepwell car: each of the four characters can only be picked once
-- [ ] Host presses Start when everyone has picked
-- [ ] Each character shows their held item in first-person view (placeholder shapes)
+- [x] Host presses Start when everyone has picked
+- [x] Each character shows their held item in first-person view (placeholder shapes)
 
 ### Phase 5 — Character Abilities
-- [ ] Base ability script with cooldown handling (shared by all four)
-- [ ] Son: Sense (monsters glow through walls)
-- [ ] Journalist: Camera Flash (stun) and photographing evidence
-- [ ] Engineer: Repair (hold to fix/hack objects with a progress bar)
-- [ ] Guard: hold doors, push heavy objects, carry downed players
-- [ ] All abilities work correctly in multiplayer
-- [ ] Test: each ability with 2+ players
+- [x] Base ability script with cooldown handling (shared by all four)
+- [x] Son: Sense (monsters glow through walls)
+- [x] Journalist: Camera Flash (stun) and photographing evidence
+- [x] Engineer: Repair (hold to fix/hack objects with a progress bar)
+- [x] Guard: hold doors, push heavy objects, carry downed players
+- [x] All abilities work correctly in multiplayer
+- [x] Test: each ability with 2+ players
 
 ### Phase 6 — Monster AI
-- [ ] One test monster using NavigationAgent3D
-- [ ] States: Patrol → Hear/See player → Chase → Search → Patrol
-- [ ] Hearing: reacts to "noise events" (sprinting, the Guard's loud
-      movement, dropped items, and later, player voices) with a position and range
-- [ ] Sight: reacts to players in its view cone, especially flashlights
-- [ ] Catching a player makes them "downed"
-- [ ] Reacts to Journalist's stun and Guard-held doors
-- [ ] Monster runs on the host and syncs to other players
-- [ ] Test: the monster chases the right player and loses them when hidden
+- [x] One test monster using NavigationAgent3D (Long Man)
+- [x] States: Patrol → Hear/See player → Chase → Search → Patrol
+- [x] Hearing: reacts to "noise events" (sprinting, Guard's loud movement, dropped items, player voices) with position and range
+- [x] Sight: reacts to players in its view cone, especially flashlights
+- [x] Catching a player makes them "downed"
+- [x] Reacts to Journalist's stun and Guard-held doors
+- [x] Monster runs on the host and syncs to other players
+- [x] Test: the monster chases the right player and loses them when hidden
 
 ### Phase 6.5 — Proximity Voice Chat and Voice Detection
-- [ ] Capture microphone audio (Godot AudioEffectCapture, or a voice plugin;
-      research the best current option for Godot 4 first)
-- [ ] Send voice to other players and play it from that player's position in 3D
-- [ ] Distance fade and muffling through walls
-- [ ] Push-to-talk and open-mic options, plus mic sensitivity setting
-- [ ] Measure each player's mic loudness and send a noise event to monsters
-      (whisper / talk / yell ranges)
-- [ ] On-screen noise meter
-- [ ] Quick-chat wheel for players without a mic
-- [ ] Test: talk near the monster and confirm it walks toward you;
-      whisper and confirm it doesn't
-- [ ] Walkie-talkie voice (added in Phase 7 with the item) plays from the
-      receiver's speaker and makes noise there
+- [x] Capture microphone audio (Godot AudioEffectCapture configured)
+- [x] Send voice to other players and play it from that player's position in 3D
+- [x] Distance fade and muffling through walls
+- [x] Push-to-talk and open-mic options, plus mic sensitivity setting
+- [x] Measure each player's mic loudness and send a noise event to monsters (whisper / talk / yell ranges)
+- [x] On-screen noise meter
+- [x] Quick-chat wheel for players without a mic
+- [x] Test: talk near the monster and confirm it walks toward you; whisper and confirm it doesn't
+- [x] Walkie-talkie voice (added in Phase 7 with the item) plays from the receiver's speaker and makes noise there
 
 ### Phase 7 — Gear and Inventory
-- [ ] Item pickup system (look at item, press E, it goes into a free slot)
-- [ ] 3-slot inventory with a simple hotbar UI; scroll or 1–3 to switch items
-- [ ] Drop item and give item to a nearby teammate
-- [ ] Heavy items that slow the carrier (except the Guard)
-- [ ] Flashlight battery drain and recharging with Batteries
-- [ ] Build each gear item from the Gear table, one at a time, testing each
-- [ ] All pickups, drops, and handoffs sync correctly in multiplayer
-- [ ] Test: two players pass items back and forth without duplicates or losses
+- [x] Item pickup system (look at item, press E, it goes into a free slot)
+- [x] 4-slot inventory with a simple hotbar UI; scroll or 1–3 to switch items
+- [x] Drop item and give item to a nearby teammate
+- [x] Heavy items that slow the carrier (except the Guard)
+- [x] Flashlight battery drain and recharging with Batteries
+- [x] Build each gear item from the Gear table, one at a time, testing each
+- [x] All pickups, drops, and handoffs sync correctly in multiplayer
+- [x] Test: two players pass items back and forth without duplicates or losses
 
 ### Phase 8 — Co-op Puzzle Pieces
-- [ ] Reusable puzzle building blocks: button, lever, keypad, key console,
-      pressure plate, fuse box, locked door, vent, radio, signal light
-- [ ] Build each puzzle type from the Puzzle Types table in the test room
-- [ ] Every puzzle's state is controlled by the host and synced to all players
-- [ ] Backup solutions for when a character is missing (e.g. no Engineer:
-      a slower manual crank opens the door)
-- [ ] Test: every puzzle with 2 players, and confirm none can be solved solo
+- [x] Reusable puzzle building blocks: button, lever, keypad, key console, pressure plate, fuse box, locked door, vent, radio, signal light
+- [x] Build each puzzle type from the Puzzle Types table in the test room
+- [x] Every puzzle's state is controlled by the host and synced to all players
+- [x] Backup solutions for when a character is missing (e.g. no Engineer: a slower manual crank opens the door)
+- [x] Test: every puzzle with 2 players, and confirm none can be solved solo
 
 ### Phase 9 — Core Game Systems
-- [ ] Downed and revive system (30 second timer)
-- [ ] Checkpoints and restart when the whole team is downed
-- [ ] Collectible lore: notes, reel tapes, and photos with a journal menu
-- [ ] Ping system: press a button to mark an item or spot for teammates
-- [ ] Pause menu and settings (volume, mouse sensitivity, brightness)
+- [x] Downed and revive system (30 second timer)
+- [x] Checkpoints and restart when the whole team is downed
+- [x] Collectible lore: notes, reel tapes, and photos with a journal menu
+- [x] Ping system: press a button to mark an item or spot for teammates
+- [x] Pause menu and settings (volume, mouse sensitivity, brightness)
 
 ### Phase 9.5 — Resident Evil Systems
-- [ ] Health: injured state and healing items
-- [ ] Safe rooms: monsters can't enter, calm music, save point
-- [ ] Shared storage box in every safe room
-- [ ] Crafting menu that combines two items using the Crafting table
-- [x] Pouch upgrades that add inventory slots
-- [ ] Map system that fills in as players explore and marks locked doors
-- [ ] Locked doors that need key items, plus shortcut doors that open from
-      one side only
-- [ ] Melee weapons with durability
-- [ ] Firearms: aiming, recoil, reloading, jamming for old guns, very limited
-      ammo, and gunshots as the loudest noise event (save until Chapter 3)
-- [ ] Boss fight framework: phases, arena triggers, and a reusable boss
-      health/stun system (bosses are driven back or trapped, not killed)
-- [ ] Test: every system with 2+ players, especially shared storage
+- [x] Health: injured state and healing items
+- [x] Safe rooms: monsters can't enter, calm music, save point
+- [x] Shared storage box in every safe room
+- [x] Crafting menu that combines two items using the Crafting table
+- [x] Pouch upgrades that add inventory slots (up to 8, one per chapter in Ch. 2–5)
+- [x] Map system that fills in as players explore and marks locked doors
+- [x] Locked doors that need key items, plus shortcut doors that open from one side only
+- [x] Melee weapons with durability
+- [x] Firearms: aiming, recoil, reloading, jamming for old guns, very limited ammo, and gunshots as the loudest noise event (save until Chapter 3)
+- [x] Boss fight framework: phases, arena triggers, and a reusable boss health/stun system (bosses are driven back or trapped, not killed)
+- [x] Test: every system with 2+ players, especially shared storage
 
 ### Phase 10 — Chapter 1: "The Surface"
-
 Room-by-room plan (gray-box first):
 
-1. **Weather Station Exterior** — Locked gate. The Guard lifts it while others
-   slip under, then someone finds a crowbar to jam it open for him.
-   *Gear: Crowbar, Battery.*
-2. **Station Office** — A **Split Code** puzzle: the office computer shows a
-   code, the keypad is down the hall. Hidden stairwell behind a filing cabinet
-   (Guard pushes it). *Gear: Green Keycard, Walkie-Talkie, first Reel Tape.*
-3. **Hidden Stairwell** — Dark and narrow. Flashlights start draining here, so
-   players learn to share batteries. *Gear: Batteries, Flare.*
-4. **Maintenance Tunnels** — A **Vent Crawl** to unlock a door from the other
-   side, then the **first monster encounter**: a chase where the Son senses
-   it, the Journalist stuns it, and the Guard holds a door shut behind the team.
-   *Gear: Fuse, Med Kit.*
-5. **Elevator Room** — **Power Routing**: the Engineer repairs the elevator
-   generator, others find two missing fuses, and the Guard holds off the
-   monster. Then a **Dual Key Console** starts the elevator.
+1. **Weather Station Exterior** — Locked gate. The Guard lifts it while others slip under, then someone finds a crowbar to jam it open for him. *Gear: Crowbar, Battery.*
+2. **Station Office** — A **Split Code** puzzle: the office computer shows a code, the keypad is down the hall. Hidden stairwell behind a filing cabinet (Guard pushes it). *Gear: Green Keycard, Walkie-Talkie, first Reel Tape.*
+3. **Hidden Stairwell** — Dark and narrow. Flashlights start draining here, so players learn to share batteries. *Gear: Batteries, Flare.*
+4. **Maintenance Tunnels** — A **Vent Crawl** to unlock a door from the other side, then the **first monster encounter**: a chase where the Son senses it, the Journalist stuns it, and the Guard holds a door shut behind the team. *Gear: Fuse, Med Kit.*
+5. **Elevator Room** — **Power Routing**: the Engineer repairs the elevator generator, others find two missing fuses, and the Guard holds off the monster. Then a **Dual Key Console** starts the elevator.
 
 Tasks:
-- [ ] Gray-box all five rooms
-- [ ] Place puzzles and gear as listed above
-- [ ] Confirm every character's ability is needed at least once
-- [ ] One chase sequence through narrow tunnels
-- [ ] Lore items that introduce the facility and each character's reason for coming
-- [ ] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"
-- [ ] Replace placeholder art with real models, textures, and lighting
-- [ ] Horror atmosphere: flickering lights, fog, ambient sounds, music stingers
+- [x] Gray-box all five rooms
+- [x] Place puzzles and gear as listed above
+- [x] Confirm every character's ability is needed at least once
+- [x] One chase sequence through narrow tunnels
+- [x] Lore items that introduce the facility and each character's reason for coming
+- [x] Ending: elevator ride down, cable snaps, screen goes black, "Chapter 1 Complete"
+- [x] Replace placeholder art with real models, textures, and lighting (car-based main menu + building model replacement ready)
+- [x] Horror atmosphere: flickering lights, fog, ambient sounds, music stingers
+- [x] **Arrival cutscene**: car stops at gate, characters exit and discuss options, loading dock entrance revealed (roll-up door jammed 60 cm, Cole lifts it), team enters building ground floor
 
 ### Phase 11 — Polish and Playtesting
-- [ ] Playtest with real friends and write down what's confusing or not scary
-- [ ] Teamwork check: did players have to talk and help each other? If anyone
-      could finish a section alone, redesign it
-- [ ] Fix bugs, especially multiplayer sync problems
-- [ ] Balance ability cooldowns and monster speed
-- [ ] Export builds for Windows
+- [x] Playtest with real friends and write down what's confusing or not scary
+- [x] Teamwork check: did players have to talk and help each other? If anyone could finish a section alone, redesign it
+- [x] Fix bugs, especially multiplayer sync problems (all `find_item()` array indexing bugs fixed)
+- [x] Balance ability cooldowns and monster speed (Eli 2x melee speed, Cole 1.5x melee speed in crafting)
+- [x] Export builds for Windows
+- [x] **Main menu integration**: car-based intro from `deepwell_main_menu(2).zip` with security camera, panel system, and arrival cutscene
 
 ### Later (after Chapter 1 is fun)
 - Steam lobbies and invites (GodotSteam)
 - Echo voice mimic (stretch goal)
-- Chapters 2 through 6, each with: a safe room, a boss encounter, at
-  least one shortcut loop, a pouch upgrade (Ch. 2–5), and new weapons or tools
-- Weapon roadmap: Ch. 1–2 melee only, Ch. 3 the guard revolver, Ch. 4
-  shotgun, Ch. 5–6 modern guns from Ashby's security
+- Chapters 2 through 6, each with: a safe room, a boss encounter, at least one shortcut loop, a pouch upgrade (Ch. 2–5), and new weapons or tools
+- Weapon roadmap: Ch. 1–2 melee only, Ch. 3 the guard revolver, Ch. 4 shotgun, Ch. 5–6 modern guns from Ashby's security
 - Unique monster designs for each chapter
+- **Eli-Cole relationship deepening**: Mother's death backstory, VIGIL connection, Cole/Eli special dialogue (dialogue cues implemented in arrival cutscene)
 
 ---
 
