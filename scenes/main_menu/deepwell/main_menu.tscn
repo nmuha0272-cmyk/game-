@@ -1,0 +1,346 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/main_menu/deepwell/main_menu.gd" id="1_menu"]
+[ext_resource type="Shader" path="res://scenes/main_menu/deepwell/menu_background.gdshader" id="2_bg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bg"]
+shader = ExtResource("2_bg")
+shader_parameter/brightness = 1.0
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_bg")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="CameraLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -620.0
+offset_top = 36.0
+offset_right = -48.0
+offset_bottom = 60.0
+grow_horizontal = 0
+text = "CAM 03  //  BLACKWATER STATION  //  EXTERIOR"
+horizontal_alignment = 2
+
+[node name="RecLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -620.0
+offset_top = 64.0
+offset_right = -48.0
+offset_bottom = 88.0
+grow_horizontal = 0
+text = "● REC   10-14-2015   03:47:12"
+horizontal_alignment = 2
+
+[node name="Content" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 88
+theme_override_constants/margin_top = 72
+theme_override_constants/margin_right = 88
+theme_override_constants/margin_bottom = 96
+
+[node name="Layout" type="VBoxContainer" parent="Content"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TitleBlock" type="VBoxContainer" parent="Content/Layout"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Kicker" type="Label" parent="Content/Layout/TitleBlock"]
+layout_mode = 2
+text = "U.S. GOVERNMENT PROPERTY  //  CLASSIFIED"
+
+[node name="Title" type="Label" parent="Content/Layout/TitleBlock"]
+layout_mode = 2
+text = "DEEPWELL"
+
+[node name="Subtitle" type="Label" parent="Content/Layout/TitleBlock"]
+layout_mode = 2
+text = "LEVEL B  —  SEALED BY ORDER  —  1999"
+
+[node name="Spacer" type="Control" parent="Content/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="MainButtons" type="VBoxContainer" parent="Content/Layout"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 10
+
+[node name="HostButton" type="Button" parent="Content/Layout/MainButtons"]
+layout_mode = 2
+text = "HOST GAME"
+alignment = 0
+
+[node name="JoinButton" type="Button" parent="Content/Layout/MainButtons"]
+layout_mode = 2
+text = "JOIN GAME"
+alignment = 0
+
+[node name="SettingsButton" type="Button" parent="Content/Layout/MainButtons"]
+layout_mode = 2
+text = "SETTINGS"
+alignment = 0
+
+[node name="CreditsButton" type="Button" parent="Content/Layout/MainButtons"]
+layout_mode = 2
+text = "CREDITS"
+alignment = 0
+
+[node name="QuitButton" type="Button" parent="Content/Layout/MainButtons"]
+layout_mode = 2
+text = "QUIT"
+alignment = 0
+
+[node name="JoinPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.42
+anchor_bottom = 0.42
+offset_left = 88.0
+offset_right = 608.0
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="JoinPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="JoinPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="Label" parent="JoinPanel/Margin/VBox" groups=["panel_header"]]
+layout_mode = 2
+text = "JOIN GAME"
+
+[node name="IPLabel" type="Label" parent="JoinPanel/Margin/VBox" groups=["small_label"]]
+layout_mode = 2
+text = "HOST IP ADDRESS"
+
+[node name="IPInput" type="LineEdit" parent="JoinPanel/Margin/VBox"]
+layout_mode = 2
+placeholder_text = "127.0.0.1"
+
+[node name="PortLabel" type="Label" parent="JoinPanel/Margin/VBox" groups=["small_label"]]
+layout_mode = 2
+text = "PORT"
+
+[node name="PortInput" type="LineEdit" parent="JoinPanel/Margin/VBox"]
+layout_mode = 2
+placeholder_text = "7777"
+
+[node name="Buttons" type="HBoxContainer" parent="JoinPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="ConnectButton" type="Button" parent="JoinPanel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "CONNECT"
+
+[node name="BackButton" type="Button" parent="JoinPanel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "BACK"
+
+[node name="SettingsPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.42
+anchor_bottom = 0.42
+offset_left = 88.0
+offset_right = 708.0
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="SettingsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="SettingsPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="Label" parent="SettingsPanel/Margin/VBox" groups=["panel_header"]]
+layout_mode = 2
+text = "SETTINGS"
+
+[node name="Grid" type="GridContainer" parent="SettingsPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 28
+theme_override_constants/v_separation = 18
+columns = 2
+
+[node name="VolumeLabel" type="Label" parent="SettingsPanel/Margin/VBox/Grid"]
+layout_mode = 2
+text = "VOLUME"
+
+[node name="VolumeSlider" type="HSlider" parent="SettingsPanel/Margin/VBox/Grid"]
+custom_minimum_size = Vector2(280, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 1.0
+value = 80.0
+
+[node name="SensitivityLabel" type="Label" parent="SettingsPanel/Margin/VBox/Grid"]
+layout_mode = 2
+text = "MOUSE SENSITIVITY"
+
+[node name="SensitivitySlider" type="HSlider" parent="SettingsPanel/Margin/VBox/Grid"]
+custom_minimum_size = Vector2(280, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.1
+max_value = 3.0
+step = 0.05
+value = 1.0
+
+[node name="BrightnessLabel" type="Label" parent="SettingsPanel/Margin/VBox/Grid"]
+layout_mode = 2
+text = "BRIGHTNESS"
+
+[node name="BrightnessSlider" type="HSlider" parent="SettingsPanel/Margin/VBox/Grid"]
+custom_minimum_size = Vector2(280, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 1.8
+step = 0.05
+value = 1.0
+
+[node name="FullscreenLabel" type="Label" parent="SettingsPanel/Margin/VBox/Grid"]
+layout_mode = 2
+text = "FULLSCREEN"
+
+[node name="FullscreenToggle" type="CheckButton" parent="SettingsPanel/Margin/VBox/Grid"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="BackButton" type="Button" parent="SettingsPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "BACK"
+alignment = 0
+
+[node name="CreditsPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.42
+anchor_bottom = 0.42
+offset_left = 88.0
+offset_right = 648.0
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="CreditsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="CreditsPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="Label" parent="CreditsPanel/Margin/VBox" groups=["panel_header"]]
+layout_mode = 2
+text = "CREDITS"
+
+[node name="Body" type="Label" parent="CreditsPanel/Margin/VBox"]
+layout_mode = 2
+text = "A GAME BY  [YOUR NAME]
+
+MADE WITH GODOT ENGINE
+
+THANK YOU FOR PLAYING.
+STAY QUIET. THEY CAN HEAR YOU."
+
+[node name="BackButton" type="Button" parent="CreditsPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "BACK"
+alignment = 0
+
+[node name="StatusLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 88.0
+offset_top = -64.0
+offset_right = 900.0
+offset_bottom = -40.0
+grow_vertical = 0
+text = "SIGNAL: NONE"
+
+[node name="VersionLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -620.0
+offset_top = -64.0
+offset_right = -48.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "BUILD 0.1  //  CHAPTER 1: THE SURFACE"
+horizontal_alignment = 2
+
+[node name="Fade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="FlickerTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="Ambience" type="AudioStreamPlayer" parent="."]
+
+[node name="ClickPlayer" type="AudioStreamPlayer" parent="."]

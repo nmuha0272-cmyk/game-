@@ -1,0 +1,802 @@
+extends Node3D
+## Deepwell home screen: a car driving down a dark forest road at night.
+##
+## MENU:   the camera watches the car from outside, with the title and buttons
+##         (main_menu.tscn) on top.
+## SELECT: after Host or Join, the camera moves into the back seat, looking
+##         forward: Eli is driving, Cole is next to him, Nora and Walter are in
+##         the back. Hover over a name card (or a character) and the camera
+##         moves to that character's side and shows what they can do.
+##         Click to choose them. Arrow keys and Enter also work.
+##
+## Characters are simple stand-in shapes until real models exist. To use a real
+## model, save it as res://assets/models/characters/<id>.glb (eli, cole, nora,
+## walter) and it will be placed in that seat automatically.
+
+signal character_confirmed(character_id: String)
+
+const MENU_UI := preload("res://scenes/main_menu/deepwell/main_menu.tscn")
+const LOBBY_SCENE := "res://scenes/lobby/lobby.tscn"
+const MODEL_PATH := "res://assets/models/characters/%s.glb"
+
+const COLOR_TEXT := Color("d9d3c1")
+const COLOR_DIM := Color("7b786c")
+const COLOR_HIGHLIGHT := Color("e8b04a")
+const COLOR_RED := Color("c0392b")
+
+const DRIVE_SPEED := 17.0  # meters per second
+const ROAD_LENGTH := 160.0
+
+## Order is the order the arrow keys cycle through.
+const CHARACTER_ORDER := ["eli", "cole", "nora", "walter"]
+const CHARACTERS := {
+	"eli": {
+		"side_cam": Vector3(0.3, 1.52, -0.66),
+		"side_look": Vector3(-0.38, 1.4, -0.05),
+		"name": "ELI REYES",
+		"role": "THE SON  //  TRACKER",
+		"seat": Vector3(-0.38, 0.0, -0.1),
+		"color": Color(0.38, 0.23, 0.12),
+		"size": 1.0,
+		"about": "21. College student and Army Reserve soldier. His father died here in 1999, and Eli has come to bring him home.",
+		"abilities": [
+			"SENSE: hold to see nearby monsters through walls for 3 seconds (20s cooldown).",
+			"MILITARY TRAINING: steadier aim and faster reloads. Reads Morse code and military maps.",
+			"MENTOR BOND: works better when Cole is close by.",
+		],
+		"quote": "\"Dad always said: slow is smooth, smooth is fast.\"",
+	},
+	"cole": {
+		"side_cam": Vector3(-0.3, 1.52, -0.66),
+		"side_look": Vector3(0.38, 1.42, -0.05),
+		"name": "COLE BRENNAN",
+		"role": "THE GUARD  //  PROTECTOR",
+		"seat": Vector3(0.38, 0.0, -0.1),
+		"color": Color(0.29, 0.32, 0.19),
+		"size": 1.12,
+		"about": "35. Former soldier and Eli's mentor. Knows this place better than he admits.",
+		"abilities": [
+			"STRENGTH: hold doors shut, move heavy objects, build barricades, carry downed teammates.",
+			"FIELD TRAINING: longer stuns, and can study a monster to show the team its weak point.",
+			"Best with firearms, but slower and louder than everyone else.",
+		],
+		"quote": "\"Eyes up, kid. Stay behind me.\"",
+	},
+	"nora": {
+		"side_cam": Vector3(0.08, 1.52, 0.38),
+		"side_look": Vector3(-0.55, 1.4, 1.02),
+		"name": "NORA VANCE",
+		"role": "THE JOURNALIST  //  STUNNER",
+		"seat": Vector3(-0.55, 0.08, 1.02),
+		"color": Color(0.7, 0.58, 0.4),
+		"size": 0.95,
+		"about": "35. Investigative journalist. Her source vanished trying to expose Deepwell. She wants the proof.",
+		"abilities": [
+			"CAMERA FLASH: stuns a monster in front of her for 2 seconds (15s cooldown).",
+			"EVIDENCE: photograph clues to unlock story files for the whole team.",
+		],
+		"quote": "\"If it's real, I'm getting it on film.\"",
+	},
+	"walter": {
+		"side_cam": Vector3(-0.08, 1.52, 0.38),
+		"side_look": Vector3(0.55, 1.4, 1.02),
+		"name": "WALTER KESSLER",
+		"role": "THE ENGINEER  //  FIXER",
+		"seat": Vector3(0.55, 0.08, 1.02),
+		"color": Color(0.13, 0.17, 0.32),
+		"size": 0.97,
+		"about": "60. Worked at Deepwell before it was sealed. Nervous, quiet, and hiding something.",
+		"abilities": [
+			"REPAIR: the only one who can fix generators, elevators and panels.",
+			"HACK: opens locked security doors, but it takes time, so someone has to guard him.",
+		],
+		"quote": "\"I can fix it. Just keep them away from me.\"",
+	},
+}
+
+enum State { MENU, SELECT }
+
+var state := State.MENU
+var hovered := ""
+var selected := ""
+var taken: Array[String] = []
+
+var _time := 0.0
+var _car: Node3D
+var _roof: Node3D
+var _camera: Camera3D
+var _scrollers: Array[Node3D] = []
+var _figures := {}      # id -> {"root": Node3D, "materials": Array, "label": Label3D}
+var _menu: Control
+var _select_ui: Control
+var _info_name: Label
+var _info_role: Label
+var _info_about: Label
+var _info_abilities: Label
+var _info_quote: Label
+var _confirm_button: Button
+var _hint: Label
+var _cards := {}  # id -> Button
+var _unhover_timer: SceneTreeTimer
+
+const MENU_CAM_POS := Vector3(-4.2, 1.35, -6.0)
+const MENU_CAM_TARGET := Vector3(-1.4, 0.95, 0.4)
+const BACKSEAT_CAM_POS := Vector3(0.0, 1.5, 1.18)
+const BACKSEAT_CAM_TARGET := Vector3(0.0, 1.32, -3.0)
+
+
+func _ready() -> void:
+	get_viewport().physics_object_picking = true
+	randomize()
+	_build_environment()
+	_build_road_and_forest()
+	_build_car()
+	for id: String in CHARACTER_ORDER:
+		_build_character(id)
+	_build_camera()
+	_build_ui()
+	_set_state(State.MENU)
+
+
+func _process(delta: float) -> void:
+	_time += delta
+
+	# Move the world toward the camera so the car looks like it's driving.
+	for node in _scrollers:
+		node.position.z += DRIVE_SPEED * delta
+		if node.position.z > 30.0:
+			node.position.z -= ROAD_LENGTH
+			if node.has_meta("side"):
+				node.position.x = float(node.get_meta("side")) * randf_range(5.5, 20.0)
+
+	# Bumpy road: the car bobs and sways a little.
+	_car.position.y = sin(_time * 9.0) * 0.008 + sin(_time * 2.3) * 0.012
+	_car.rotation.z = sin(_time * 1.7) * 0.006
+	_car.rotation.x = sin(_time * 3.1) * 0.003
+
+	# Characters breathe and sway with the car.
+	for id: String in _figures:
+		var root: Node3D = _figures[id]["root"]
+		root.position.y = sin(_time * 1.6 + root.position.x * 3.0) * 0.006
+
+	# Glide the camera toward where it should be right now.
+	var pos := MENU_CAM_POS + Vector3(sin(_time * 0.21) * 0.35, sin(_time * 0.33) * 0.08, 0.0)
+	var look := MENU_CAM_TARGET
+	if state == State.SELECT:
+		if hovered != "":
+			pos = CHARACTERS[hovered]["side_cam"]
+			look = CHARACTERS[hovered]["side_look"]
+		else:
+			pos = BACKSEAT_CAM_POS
+			look = BACKSEAT_CAM_TARGET
+		pos += Vector3(sin(_time * 0.6) * 0.012, sin(_time * 0.9) * 0.01, 0.0)  # road bumps
+	var target := Transform3D().looking_at(look - pos)
+	target.origin = pos
+	_camera.global_transform = _camera.global_transform.interpolate_with(target, 1.0 - exp(-4.0 * delta))
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if state != State.SELECT:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		_set_state(State.MENU)
+	elif (event.is_action_pressed("ui_right") or event.is_action_pressed("ui_left")) and get_viewport().gui_get_focus_owner() == null:
+		var step := 1 if event.is_action_pressed("ui_right") else -1
+		var current := CHARACTER_ORDER.find(hovered if hovered != "" else selected)
+		var next: String = CHARACTER_ORDER[wrapi(current + step, 0, CHARACTER_ORDER.size())]
+		_set_hovered(next)
+		_select(next)
+	elif event.is_action_pressed("ui_accept") and selected != "":
+		_confirm()
+
+
+# ------------------------------------------------------------------ Public
+
+## Mark a character as taken by another player (call this from the lobby/network code).
+func set_character_taken(id: String, is_taken: bool) -> void:
+	if is_taken and not taken.has(id):
+		taken.append(id)
+	elif not is_taken:
+		taken.erase(id)
+	if is_taken and selected == id:
+		selected = ""
+	_refresh_highlights()
+	_refresh_info()
+
+
+# ------------------------------------------------------------------ States
+
+func _set_state(new_state: State) -> void:
+	if new_state == State.SELECT:
+		state = State.SELECT
+		hovered = ""
+		_menu.hide()
+		# Show the character cards once the camera has moved into the back seat.
+		get_tree().create_timer(1.2).timeout.connect(func() -> void:
+			if state == State.SELECT:
+				_select_ui.show()
+				_set_hovered(""))
+		_refresh_info()
+	else:
+		state = State.MENU
+		hovered = ""
+		_select_ui.hide()
+		_menu.show()
+		if _menu.has_method("show_main_buttons"):
+			_menu.show_main_buttons()
+	_refresh_highlights()
+
+
+func _on_play_requested(_a: Variant = null, _b: Variant = null) -> void:
+	if state == State.MENU:
+		_set_state(State.SELECT)
+
+
+# ------------------------------------------------------------------ Selection
+
+func _set_hovered(id: String) -> void:
+	if state != State.SELECT:
+		return
+	_unhover_timer = null
+	hovered = id
+	_refresh_highlights()
+	_refresh_info()
+
+
+## Waits a moment before going back to the back-seat view, so moving the mouse
+## between cards doesn't make the camera jump around.
+func _unhover(id: String) -> void:
+	var timer := get_tree().create_timer(0.35)
+	_unhover_timer = timer
+	timer.timeout.connect(func() -> void:
+		if _unhover_timer == timer and hovered == id:
+			_set_hovered(""))
+
+
+func _select(id: String) -> void:
+	if state != State.SELECT or taken.has(id):
+		return
+	selected = id
+	_refresh_highlights()
+	_refresh_info()
+
+
+func _confirm() -> void:
+	if selected == "":
+		return
+	character_confirmed.emit(selected)
+	var network := get_node_or_null("/root/NetworkManager")
+	if network and network.has_method("select_character"):
+		network.select_character(selected)
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state and "chosen_character" in game_state:
+		game_state.chosen_character = selected
+	if ResourceLoader.exists(LOBBY_SCENE):
+		get_tree().change_scene_to_file(LOBBY_SCENE)
+	else:
+		_hint.text = "%s CHOSEN. (LOBBY SCENE NOT BUILT YET)" % CHARACTERS[selected]["name"]
+
+
+func _refresh_highlights() -> void:
+	for id: String in _figures:
+		var data: Dictionary = _figures[id]
+		var glow := 0.0
+		if state == State.SELECT:
+			glow = 0.9 if id == selected else 0.45 if id == hovered else 0.0
+		for mat: StandardMaterial3D in data["materials"]:
+			mat.emission_enabled = glow > 0.0
+			mat.emission = Color(COLOR_HIGHLIGHT, 1.0)
+			mat.emission_energy_multiplier = glow * 0.18
+			mat.albedo_color.a = 1.0
+		var label: Label3D = data["label"]
+		label.visible = false  # name cards at the bottom show the names instead
+		var label_text: String = CHARACTERS[id]["name"].split(" ")[0]
+		if taken.has(id):
+			label_text += "  (TAKEN)"
+		label.text = label_text
+		label.modulate = COLOR_RED if taken.has(id) else COLOR_HIGHLIGHT if (id == hovered or id == selected) else COLOR_TEXT
+
+
+func _refresh_cards() -> void:
+	for id: String in _cards:
+		var card: Button = _cards[id]
+		var c: Dictionary = CHARACTERS[id]
+		var first: String = c["name"].split(" ")[0]
+		var role: String = c["role"].split("  //  ")[0]
+		card.text = "%s\n%s" % [first, "TAKEN" if taken.has(id) else role]
+		card.disabled = taken.has(id)
+		var style := card.get_theme_stylebox("normal") as StyleBoxFlat
+		style.border_color = COLOR_HIGHLIGHT if id == selected else c["color"].lightened(0.25)
+		style.set_border_width_all(3 if id == selected else 0)
+		style.border_width_left = 8
+
+
+func _refresh_info() -> void:
+	var id := hovered if hovered != "" else selected
+	if id == "":
+		_info_name.text = "WHO ARE YOU?"
+		_info_role.text = "HOVER OVER SOMEONE IN THE CAR"
+		_info_about.text = "Four people. One road in. Each of them has a reason to go into Deepwell, and a skill the others need to survive."
+		_info_abilities.text = ""
+		_info_quote.text = ""
+	else:
+		var c: Dictionary = CHARACTERS[id]
+		_info_name.text = c["name"]
+		_info_role.text = c["role"] + ("   [TAKEN]" if taken.has(id) else "")
+		_info_about.text = c["about"]
+		var lines := PackedStringArray()
+		for ability: String in c["abilities"]:
+			lines.append("•  " + ability)
+		_info_abilities.text = "\n".join(lines)
+		_info_quote.text = c["quote"]
+
+	_refresh_cards()
+	if selected != "":
+		_confirm_button.disabled = false
+		_confirm_button.text = "PLAY AS %s" % CHARACTERS[selected]["name"].split(" ")[0]
+	else:
+		_confirm_button.disabled = true
+		_confirm_button.text = "CLICK A NAME TO CHOOSE"
+
+
+# ------------------------------------------------------------------ World
+
+func _build_environment() -> void:
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.015, 0.02, 0.03)
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.25, 0.3, 0.4)
+	env.ambient_light_energy = 0.25
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.fog_enabled = true
+	env.fog_light_color = Color(0.05, 0.06, 0.08)
+	env.fog_density = 0.045
+	var world_env := WorldEnvironment.new()
+	world_env.environment = env
+	add_child(world_env)
+
+	var moon := DirectionalLight3D.new()
+	moon.light_color = Color(0.55, 0.65, 0.85)
+	moon.light_energy = 0.12
+	moon.rotation_degrees = Vector3(-35, 30, 0)
+	add_child(moon)
+
+
+func _mat(color: Color, roughness := 0.9, emission := Color.BLACK, energy := 0.0) -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = color
+	m.roughness = roughness
+	if energy > 0.0:
+		m.emission_enabled = true
+		m.emission = emission
+		m.emission_energy_multiplier = energy
+	if color.a < 1.0:
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	return m
+
+
+func _box(parent: Node3D, size: Vector3, pos: Vector3, mat: Material) -> MeshInstance3D:
+	var mesh := BoxMesh.new()
+	mesh.size = size
+	var mi := MeshInstance3D.new()
+	mi.mesh = mesh
+	mi.position = pos
+	mi.material_override = mat
+	parent.add_child(mi)
+	return mi
+
+
+func _build_road_and_forest() -> void:
+	var ground := MeshInstance3D.new()
+	var ground_mesh := PlaneMesh.new()
+	ground_mesh.size = Vector2(120, 260)
+	ground.mesh = ground_mesh
+	ground.position = Vector3(0, -0.01, -100)
+	ground.material_override = _mat(Color(0.03, 0.045, 0.03))
+	add_child(ground)
+
+	var road := MeshInstance3D.new()
+	var road_mesh := PlaneMesh.new()
+	road_mesh.size = Vector2(7.5, 260)
+	road.mesh = road_mesh
+	road.position = Vector3(0.9, 0.0, -100)
+	road.material_override = _mat(Color(0.06, 0.06, 0.065), 0.7)
+	add_child(road)
+
+	var paint := _mat(Color(0.75, 0.68, 0.4), 0.6)
+	var edge := _mat(Color(0.55, 0.55, 0.52), 0.6)
+	for i in int(ROAD_LENGTH / 6.0):
+		var dash := _box(self, Vector3(0.12, 0.02, 2.4), Vector3(-0.9 + 1.8, 0.01, 25.0 - i * 6.0), paint)
+		_scrollers.append(dash)
+	for x in [-2.8, 4.6]:
+		_box(self, Vector3(0.1, 0.02, 260.0), Vector3(x, 0.01, -100), edge)
+
+	# Pine trees on both sides of the road.
+	var trunk_mat := _mat(Color(0.05, 0.035, 0.025))
+	var needle_mat := _mat(Color(0.02, 0.05, 0.03))
+	for i in 70:
+		var side := -1.0 if i % 2 == 0 else 1.0
+		var tree := Node3D.new()
+		tree.set_meta("side", side)
+		tree.position = Vector3(side * randf_range(5.5, 20.0) + 0.9, 0, 30.0 - randf() * ROAD_LENGTH)
+		var height := randf_range(7.0, 13.0)
+		var trunk := MeshInstance3D.new()
+		var trunk_mesh := CylinderMesh.new()
+		trunk_mesh.top_radius = 0.12
+		trunk_mesh.bottom_radius = 0.2
+		trunk_mesh.height = height
+		trunk.mesh = trunk_mesh
+		trunk.position.y = height * 0.5
+		trunk.material_override = trunk_mat
+		tree.add_child(trunk)
+		for layer in 3:
+			var cone := MeshInstance3D.new()
+			var cone_mesh := CylinderMesh.new()
+			cone_mesh.top_radius = 0.0
+			cone_mesh.bottom_radius = randf_range(1.6, 2.4) - layer * 0.45
+			cone_mesh.height = height * 0.45
+			cone.mesh = cone_mesh
+			cone.position.y = height * (0.35 + layer * 0.22)
+			cone.material_override = needle_mat
+			tree.add_child(cone)
+		add_child(tree)
+		_scrollers.append(tree)
+
+	# A few old road signs and reflector posts passing by.
+	var post_mat := _mat(Color(0.5, 0.5, 0.48), 0.5, Color(0.9, 0.8, 0.5), 0.25)
+	for i in 12:
+		var post := _box(self, Vector3(0.08, 0.9, 0.08), Vector3(5.1, 0.45, 25.0 - i * 14.0), post_mat)
+		_scrollers.append(post)
+
+
+func _build_car() -> void:
+	_car = Node3D.new()
+	add_child(_car)
+
+	var paint := _mat(Color(0.34, 0.1, 0.08), 0.4)
+	var trim := _mat(Color(0.06, 0.06, 0.06), 0.6)
+	var chrome := _mat(Color(0.5, 0.5, 0.5), 0.25)
+	var glass := _mat(Color(0.35, 0.42, 0.5, 0.2), 0.05)
+	var seat := _mat(Color(0.12, 0.09, 0.07))
+	var dash := _mat(Color(0.05, 0.05, 0.05), 0.8, Color(0.3, 0.9, 0.6), 0.06)
+
+	# Body: lower shell (sides, hood, trunk) leaves the cabin open on top.
+	_box(_car, Vector3(2.0, 0.45, 4.8), Vector3(0, 0.55, 0.2), paint)       # floor/lower body
+	_box(_car, Vector3(1.84, 0.02, 2.6), Vector3(0, 0.79, 0.4), _mat(Color(0.05, 0.045, 0.04)))  # cabin floor
+	_box(_car, Vector3(2.0, 0.35, 1.5), Vector3(0, 0.95, -1.55), paint)     # hood
+	_box(_car, Vector3(2.0, 0.35, 1.0), Vector3(0, 0.95, 2.1), paint)       # trunk
+	_box(_car, Vector3(0.08, 0.38, 2.4), Vector3(-0.96, 0.95, 0.4), paint)  # door left
+	_box(_car, Vector3(0.08, 0.38, 2.4), Vector3(0.96, 0.95, 0.4), paint)   # door right
+	_box(_car, Vector3(2.04, 0.1, 4.9), Vector3(0, 0.3, 0.2), chrome)       # bumper line
+	_roof = _box(_car, Vector3(1.86, 0.06, 2.1), Vector3(0, 1.84, 0.5), paint)  # roof
+	_box(_car, Vector3(1.8, 0.02, 2.04), Vector3(0, 1.8, 0.5), _mat(Color(0.13, 0.12, 0.11)))  # ceiling lining
+
+	# Pillars.
+	for x in [-0.93, 0.93]:
+		var a := _box(_car, Vector3(0.07, 0.78, 0.07), Vector3(x, 1.47, -0.75), trim)
+		a.rotation_degrees.x = 28.0
+		_box(_car, Vector3(0.07, 0.72, 0.07), Vector3(x, 1.48, 0.55), trim)
+		var c := _box(_car, Vector3(0.07, 0.78, 0.07), Vector3(x, 1.47, 1.6), trim)
+		c.rotation_degrees.x = -25.0
+
+	# Glass: windshield (leaning back), rear window, side windows.
+	var windshield := _box(_car, Vector3(1.8, 0.8, 0.02), Vector3(0, 1.47, -0.75), glass)
+	windshield.rotation_degrees.x = 28.0
+	var rear := _box(_car, Vector3(1.8, 0.78, 0.02), Vector3(0, 1.47, 1.63), glass)
+	rear.rotation_degrees.x = -25.0
+	for x in [-0.95, 0.95]:
+		_box(_car, Vector3(0.02, 0.66, 2.2), Vector3(x, 1.47, 0.45), glass)
+
+	# Dashboard with a faint green glow, steering wheel, and seats.
+	_box(_car, Vector3(1.8, 0.22, 0.4), Vector3(0, 1.08, -0.82), dash)
+	var wheel := MeshInstance3D.new()
+	var wheel_mesh := TorusMesh.new()
+	wheel_mesh.inner_radius = 0.15
+	wheel_mesh.outer_radius = 0.18
+	wheel.mesh = wheel_mesh
+	wheel.position = Vector3(-0.38, 1.18, -0.55)
+	wheel.rotation_degrees = Vector3(65, 0, 0)
+	wheel.material_override = trim
+	_car.add_child(wheel)
+	for pos in [Vector3(-0.38, 0.85, 0.15), Vector3(0.38, 0.85, 0.15)]:
+		_box(_car, Vector3(0.55, 0.12, 0.55), pos, seat)
+		_box(_car, Vector3(0.55, 0.5, 0.12), pos + Vector3(0, 0.3, 0.3), seat)
+	_box(_car, Vector3(1.8, 0.12, 0.6), Vector3(0, 0.9, 1.05), seat)
+	_box(_car, Vector3(1.8, 0.65, 0.12), Vector3(0, 1.25, 1.38), seat)
+
+	# Wheels.
+	var tire := _mat(Color(0.02, 0.02, 0.02))
+	for pos in [Vector3(-0.95, 0.38, -1.4), Vector3(0.95, 0.38, -1.4), Vector3(-0.95, 0.38, 1.7), Vector3(0.95, 0.38, 1.7)]:
+		var w := MeshInstance3D.new()
+		var w_mesh := CylinderMesh.new()
+		w_mesh.top_radius = 0.38
+		w_mesh.bottom_radius = 0.38
+		w_mesh.height = 0.25
+		w.mesh = w_mesh
+		w.position = pos
+		w.rotation_degrees.z = 90.0
+		w.material_override = tire
+		_car.add_child(w)
+
+	# Headlights, taillights, and a dim dome light inside.
+	var head_mat := _mat(Color(1, 1, 0.9), 0.2, Color(1, 0.95, 0.8), 3.0)
+	var tail_mat := _mat(Color(0.5, 0.02, 0.02), 0.3, Color(1, 0.05, 0.03), 2.0)
+	for x in [-0.7, 0.7]:
+		_box(_car, Vector3(0.32, 0.14, 0.04), Vector3(x, 0.9, -2.31), head_mat)
+		_box(_car, Vector3(0.3, 0.1, 0.04), Vector3(x, 0.92, 2.61), tail_mat)
+		var beam := SpotLight3D.new()
+		beam.position = Vector3(x, 0.9, -2.4)
+		beam.rotation_degrees.x = -4.0
+		beam.light_color = Color(1, 0.94, 0.8)
+		beam.light_energy = 4.0
+		beam.spot_range = 45.0
+		beam.spot_angle = 28.0
+		_car.add_child(beam)
+	var dome := OmniLight3D.new()
+	dome.position = Vector3(0, 1.45, 0.35)
+	dome.light_color = Color(1.0, 0.9, 0.78)
+	dome.light_energy = 0.55
+	dome.omni_range = 2.4
+	_car.add_child(dome)
+	var dash_light := OmniLight3D.new()
+	dash_light.position = Vector3(0, 1.25, -0.6)
+	dash_light.light_color = Color(0.4, 1.0, 0.7)
+	dash_light.light_energy = 0.15
+	dash_light.omni_range = 1.6
+	_car.add_child(dash_light)
+
+
+func _build_character(id: String) -> void:
+	var c: Dictionary = CHARACTERS[id]
+	var root := Node3D.new()
+	root.position = c["seat"]
+	var holder := Node3D.new()  # bobbing happens on root, seat offset on holder
+	root.add_child(holder)
+	_car.add_child(root)
+	var materials: Array = []
+
+	var model_path := MODEL_PATH % id
+	if ResourceLoader.exists(model_path):
+		var model: Node3D = load(model_path).instantiate()
+		holder.add_child(model)
+	else:
+		var s: float = c["size"]
+		var body_mat := _mat(c["color"], 0.85)
+		var skin_mat := _mat(Color(0.62, 0.48, 0.38), 0.7)
+		var leg_mat := _mat(Color(0.08, 0.09, 0.12), 0.9)
+		materials = [body_mat, skin_mat, leg_mat]
+
+		var torso := MeshInstance3D.new()
+		var torso_mesh := CapsuleMesh.new()
+		torso_mesh.radius = 0.2 * s
+		torso_mesh.height = 0.68 * s
+		torso.mesh = torso_mesh
+		torso.position = Vector3(0, 1.12, 0.12)
+		torso.rotation_degrees.x = 8.0
+		torso.material_override = body_mat
+		holder.add_child(torso)
+
+		var head := MeshInstance3D.new()
+		var head_mesh := SphereMesh.new()
+		head_mesh.radius = 0.12 * s
+		head_mesh.height = 0.26 * s
+		head.mesh = head_mesh
+		head.position = Vector3(0, 1.12 + 0.44 * s, 0.1)
+		head.material_override = skin_mat
+		holder.add_child(head)
+
+		for side in [-1.0, 1.0]:
+			var thigh := MeshInstance3D.new()
+			var thigh_mesh := CapsuleMesh.new()
+			thigh_mesh.radius = 0.08 * s
+			thigh_mesh.height = 0.5
+			thigh.mesh = thigh_mesh
+			thigh.position = Vector3(side * 0.1, 0.98, -0.12)
+			thigh.rotation_degrees.x = 90.0
+			thigh.material_override = leg_mat
+			holder.add_child(thigh)
+
+			var arm := MeshInstance3D.new()
+			var arm_mesh := CapsuleMesh.new()
+			arm_mesh.radius = 0.06 * s
+			arm_mesh.height = 0.5 * s
+			arm.mesh = arm_mesh
+			arm.position = Vector3(side * 0.22 * s, 1.12, -0.05)
+			arm.rotation_degrees.x = 55.0 if id == "eli" else 25.0
+			arm.material_override = body_mat
+			holder.add_child(arm)
+
+	# Clickable area around the whole figure.
+	var body := StaticBody3D.new()
+	var shape := CollisionShape3D.new()
+	var capsule := CapsuleShape3D.new()
+	capsule.radius = 0.28
+	capsule.height = 1.0
+	shape.shape = capsule
+	shape.position = Vector3(0, 1.2, 0.05)
+	body.add_child(shape)
+	root.add_child(body)
+	body.mouse_entered.connect(func() -> void:
+		if hovered == "":
+			_set_hovered(id))
+	body.input_event.connect(func(_cam: Node, event: InputEvent, _pos: Vector3, _normal: Vector3, _shape: int) -> void:
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_select(id))
+
+	var label := Label3D.new()
+	label.text = c["name"].split(" ")[0]
+	label.position = Vector3(0, 1.9, 0.25)
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.no_depth_test = true
+	label.pixel_size = 0.0022
+	label.font_size = 40
+	label.outline_size = 10
+	label.outline_modulate = Color(0, 0, 0, 0.85)
+	var label_font := SystemFont.new()
+	label_font.font_names = PackedStringArray(["Courier Prime", "Courier New", "Liberation Mono", "DejaVu Sans Mono", "monospace"])
+	label_font.font_weight = 700
+	label.font = label_font
+	label.visible = false
+	root.add_child(label)
+
+	_figures[id] = {"root": root, "materials": materials, "label": label}
+
+
+func _build_camera() -> void:
+	_camera = Camera3D.new()
+	_camera.fov = 55.0
+	add_child(_camera)
+	_camera.look_at_from_position(MENU_CAM_POS, MENU_CAM_TARGET)
+	_camera.make_current()
+
+
+# ------------------------------------------------------------------ UI
+
+func _build_ui() -> void:
+	var layer := CanvasLayer.new()
+	add_child(layer)
+
+	# Dark gradient on the left so the menu text is easy to read.
+	var shade := TextureRect.new()
+	var gradient := Gradient.new()
+	gradient.set_color(0, Color(0, 0, 0, 0.85))
+	gradient.set_color(1, Color(0, 0, 0, 0.0))
+	var tex := GradientTexture2D.new()
+	tex.gradient = gradient
+	tex.fill_to = Vector2(0.6, 0.0)
+	shade.texture = tex
+	shade.stretch_mode = TextureRect.STRETCH_SCALE
+	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(shade)
+
+	_menu = MENU_UI.instantiate()
+	_menu.show_background = false
+	_menu.auto_go_to_lobby = false
+	layer.add_child(_menu)
+	_menu.host_requested.connect(_on_play_requested)
+	_menu.join_requested.connect(_on_play_requested)
+
+	_build_select_ui(layer)
+
+
+func _build_select_ui(layer: CanvasLayer) -> void:
+	_select_ui = Control.new()
+	_select_ui.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_select_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_select_ui.theme = _menu.theme
+	_select_ui.hide()
+	layer.add_child(_select_ui)
+
+	var header := Label.new()
+	header.text = "CHOOSE YOUR CHARACTER"
+	header.add_theme_font_size_override("font_size", 34)
+	header.add_theme_color_override("font_color", COLOR_TEXT)
+	header.position = Vector2(88, 64)
+	_select_ui.add_child(header)
+
+	_hint = Label.new()
+	_hint.text = "HOVER OVER A NAME TO MEET THEM.  CLICK TO CHOOSE.  ARROW KEYS + ENTER ALSO WORK."
+	_hint.add_theme_font_size_override("font_size", 15)
+	_hint.add_theme_color_override("font_color", COLOR_DIM)
+	_hint.position = Vector2(90, 112)
+	_select_ui.add_child(_hint)
+
+	var panel := PanelContainer.new()
+	panel.anchor_left = 1.0
+	panel.anchor_right = 1.0
+	panel.anchor_top = 0.5
+	panel.anchor_bottom = 0.5
+	panel.offset_left = -560
+	panel.offset_right = -56
+	panel.offset_top = -250
+	panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_select_ui.add_child(panel)
+
+	var margin := MarginContainer.new()
+	for side in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 28)
+	panel.add_child(margin)
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	margin.add_child(vbox)
+
+	_info_name = Label.new()
+	_info_name.add_theme_font_size_override("font_size", 36)
+	_info_name.add_theme_color_override("font_color", COLOR_TEXT)
+	vbox.add_child(_info_name)
+
+	_info_role = Label.new()
+	_info_role.add_theme_font_size_override("font_size", 16)
+	_info_role.add_theme_color_override("font_color", COLOR_HIGHLIGHT)
+	vbox.add_child(_info_role)
+
+	for label_name in ["_info_about", "_info_abilities", "_info_quote"]:
+		var l := Label.new()
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size.x = 440
+		l.add_theme_font_size_override("font_size", 17)
+		l.add_theme_color_override("font_color", COLOR_DIM if label_name == "_info_quote" else COLOR_TEXT)
+		vbox.add_child(l)
+		set(label_name, l)
+
+	# Big name cards along the bottom: the easy way to pick.
+	var cards := HBoxContainer.new()
+	cards.anchor_left = 0.5
+	cards.anchor_right = 0.5
+	cards.anchor_top = 1.0
+	cards.anchor_bottom = 1.0
+	cards.offset_top = -250
+	cards.offset_bottom = -150
+	cards.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	cards.add_theme_constant_override("separation", 18)
+	cards.alignment = BoxContainer.ALIGNMENT_CENTER
+	_select_ui.add_child(cards)
+	for id: String in CHARACTER_ORDER:
+		var card := Button.new()
+		card.custom_minimum_size = Vector2(250, 96)
+		card.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		card.add_theme_font_size_override("font_size", 22)
+		var normal := StyleBoxFlat.new()
+		normal.bg_color = Color(0.03, 0.035, 0.035, 0.88)
+		normal.content_margin_left = 22
+		normal.content_margin_right = 14
+		var hover := normal.duplicate() as StyleBoxFlat
+		hover.bg_color = Color(0.12, 0.11, 0.08, 0.95)
+		hover.border_color = COLOR_HIGHLIGHT
+		hover.set_border_width_all(2)
+		hover.border_width_left = 8
+		card.add_theme_stylebox_override("normal", normal)
+		card.add_theme_stylebox_override("hover", hover)
+		card.add_theme_stylebox_override("focus", hover)
+		card.add_theme_stylebox_override("pressed", hover)
+		card.add_theme_stylebox_override("disabled", normal.duplicate())
+		card.add_theme_color_override("font_disabled_color", COLOR_RED)
+		card.mouse_entered.connect(func() -> void:
+			card.grab_focus()
+			_set_hovered(id))
+		card.mouse_exited.connect(_unhover.bind(id))
+		card.focus_entered.connect(_set_hovered.bind(id))
+		card.pressed.connect(_select.bind(id))
+		cards.add_child(card)
+		_cards[id] = card
+
+	var bottom := HBoxContainer.new()
+	bottom.anchor_top = 1.0
+	bottom.anchor_bottom = 1.0
+	bottom.offset_left = 88
+	bottom.offset_top = -110
+	bottom.add_theme_constant_override("separation", 48)
+	_select_ui.add_child(bottom)
+
+	var back := Button.new()
+	back.text = "BACK"
+	back.pressed.connect(_set_state.bind(State.MENU))
+	bottom.add_child(back)
+
+	_confirm_button = Button.new()
+	_confirm_button.pressed.connect(_confirm)
+	bottom.add_child(_confirm_button)
+	_refresh_cards()
