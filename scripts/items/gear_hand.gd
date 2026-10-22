@@ -13,8 +13,9 @@ func _ready() -> void:
 
 
 func _refresh() -> void:
-	var item := inventory.get_active_item()
-	var id: String = item.get("id", "")
+	var item: Dictionary = inventory.get_active_quick()
+	# Weapons are shown by WeaponHand instead (in the right hand, when drawn).
+	var id: String = "" if Items.is_weapon(item) else str(item.get("id", ""))
 	if id == _shown_id:
 		return
 	_shown_id = id

@@ -61,7 +61,9 @@ func _process(delta: float) -> void:
 	_pry_left -= delta
 	if _pry_left <= 0.0:
 		_pryer_id = 0
-		pryer.inventory.server_remove(pryer.inventory.find_item("crowbar"))
+		var bar: Array = pryer.inventory.find_item("crowbar")
+		if bar[1] >= 0:
+			pryer.inventory.server_remove(bar[0], bar[1])
 		pryer.inventory.server_tell("The door gives way. The crowbar snaps.")
 		_unlock.rpc()
 		door.server_force_open()

@@ -1,20 +1,30 @@
 extends Node3D
-## Shows the player's gun in their hand while it's drawn, and hides it when
-## holstered. Built from boxes for now (no animations yet).
+## Shows the player's weapon in their hand while it's drawn (4), and hides it
+## when holstered. The weapon is the item in the active quick slot.
+## Built from boxes for now (no animations yet).
 
-@export var weapon: WeaponHolder
+@export var controls: Node
+@export var inventory: Inventory
 
 var _shown := ""
 
 
 func _ready() -> void:
-	if weapon:
-		weapon.changed.connect(_refresh)
+	if inventory:
+		inventory.changed.connect(_refresh)
+	_refresh()
+
+
+func _process(_delta: float) -> void:
+	# Drawing/holstering doesn't change the inventory, so check each frame
+	# (cheap: it only rebuilds when the answer changes).
 	_refresh()
 
 
 func _refresh() -> void:
-	var id := weapon.weapon_id if weapon and weapon.drawn else ""
+	var item: Dictionary = inventory.get_active_quick() if inventory else {}
+	var drawn: bool = controls != null and controls.get("_drawn") == true
+	var id: String = Items.weapon_id(item) if drawn else ""
 	if id == _shown:
 		return
 	_shown = id
@@ -23,5 +33,4 @@ func _refresh() -> void:
 		child.queue_free()
 	if id.is_empty() or not Weapons.INFO.has(id):
 		return
-	var mesh := Weapons.make_mesh(id)
-	add_child(mesh)
+	add_child(Weapons.make_mesh(id))

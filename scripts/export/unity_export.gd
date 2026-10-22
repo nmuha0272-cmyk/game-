@@ -1,82 +1,32 @@
-class_name UnityExport
-extends Node
-## Exports Godot items/crafting data to JSON for Unity/Unreal integration.
+extends SceneTree
+## Exports the game's items and weapons to JSON so the Unity version uses
+## the same data. Run from the project folder:
+##     godot --headless -s scripts/export/unity_export.gd
+## It writes res://exports/unity/items.json
 
-import json
+const OUT := "res://exports/unity/items.json"
 
-func export_items() -> String:
-	var items_data := []
-	for id in Items.INFO:
-		var info := Items.INFO[id]
-		var entry := {
+
+func _initialize() -> void:
+	var data := {"items": [], "weapons": [], "ammo": []}
+	for id: String in Items.INFO:
+		var info: Dictionary = Items.INFO[id]
+		data.items.append({
 			"id": id,
-			"name": info.has("name") ? info.name : id,
-			"description": info.has("description") ? info.description : "",
-			"max_stack": info.has("max_stack") ? info.max_stack : 1,
-			"type": info.has("type") ? info.type : "generic"
-		}
-		items_data.append(entry)
-	return to_json(items_data)
-
-func export_recipes() -> String:
-	var recipes_data := []
-	var Crafting = load("res://scripts/items/crafting.gd")
-	
-	for recipe_id, recipe in Crafting.RECIPES:
-		var ingredients := []
-		for mat_id, count in recipe.ingredients:
-			ingredients.append({"item_id": mat_id, "count": count})
-		
-		var entry := {
-			"id": recipe_id,
-			"name": recipe.has("name") ? recipe.name : recipe_id,
-			"category": recipe.has("category") ? recipe.category : "other",
-			"craft_time": recipe.has("craft_time") ? recipe.craft_time : 0.0,
-			"is_melee": recipe.has("is_melee") ? recipe.is_melee : false,
-			"ingredients": ingredients,
-			"output": recipe.output
-		}
-		recipes_data.append(entry)
-	
-	return to_json(recipes_data)
-
-func export_inventory(inv) -> String:
-	var quick := []
-	var storage := []
-	
-	for i in Inventory.QUICK_SLOTS:
-		var item := inv.get_quick(i)
-		if not item.is_empty():
-			quick.append({
-				"id": item.has("id") ? item.id : "",
-				"stack": item.has("stack") ? item.stack : 1
-			})
-	
-	for i in inv.storage_count():
-		var item := inv.get_storage(i)
-		if not item.is_empty():
-			storage.append({
-				"id": item.has("id") ? item.id : "",
-				"stack": item.has("stack") ? item.stack : 1
-			})
-	
-	var state := {"quick_slots": quick, "storage_slots": storage}
-	return to_json(state)
-
-func export_game_state() -> String:
-	var gs = load("res://scripts/autoload/game_state.gd")
-	var unlocks := 0
-	if gs.has("crafting_unlocks"):
-		unlocks = gs.get("crafting_unlocks")
-	else:
-		unlocks = gs._team_unlocks
-	
-	var state := {"team_unlocks": unlocks}
-	return to_json(state)
-
-func to_json(data) -> String:
-	var json := JSON.new()
-	var ok := json.print(data)
-	if ok:
-		return json.print(data)
-	return '{}'
+			"name": info.get("name", id),
+			"hint": info.get("hint", ""),
+			"heavy": info.get("heavy", false),
+			"extra": info.get("extra", {}),
+		})
+	for id: String in Weapons.INFO:
+		var weapon: Dictionary = Weapons.INFO[id].duplicate()
+		weapon["id"] = id
+		data.weapons.append(weapon)
+	for id: String in Weapons.AMMO:
+		data.ammo.append({"id": id, "name": Weapons.AMMO[id].get("name", id)})
+	DirAccess.make_dir_recursive_absolute(OUT.get_base_dir())
+	var file := FileAccess.open(OUT, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data, "  "))
+	print("exported %d items, %d weapons, %d ammo types to %s" % [
+		data.items.size(), data.weapons.size(), data.ammo.size(), OUT])
+	quit()

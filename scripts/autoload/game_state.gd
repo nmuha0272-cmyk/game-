@@ -204,7 +204,9 @@ func server_reach_checkpoint(checkpoint: Checkpoint) -> void:
 	checkpoint_order = checkpoint.order
 	checkpoint_inventories.clear()
 	for player: Player in get_tree().get_nodes_in_group("players"):
-		checkpoint_inventories[player.name.to_int()] = player.inventory.slots.duplicate(true)
+		checkpoint_inventories[player.name.to_int()] = {
+			"quick": player.inventory.quick_slots.duplicate(true),
+			"storage": player.inventory.storage_slots.duplicate(true)}
 	_announce.rpc("Checkpoint reached.")
 
 

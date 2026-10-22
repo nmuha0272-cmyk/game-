@@ -37,9 +37,19 @@ static func server_use(item: Dictionary, player: Player, target_id: int) -> bool
 		"walkie":
 			_radio_call(player)
 		"ammo_38", "ammo_9mm", "ammo_12ga", "ammo_308", "ammo_dart", "ammo_flare_shell":
-			player.weapon.server_add_ammo(item.ammo_type, int(item.rounds))
-			player.inventory.server_tell("Added %d x %s." % [
-					int(item.rounds), Weapons.AMMO.get(item.ammo_type, {}).get("name", "ammo")])
+			# The rounds go into the spare ammo of a gun you carry that takes them.
+			var gun: Dictionary = player.inventory.find_gun_for_ammo(str(item.ammo_type))
+			if gun.is_empty():
+				player.inventory.server_tell("You don't have a gun that takes %s." % \
+						Weapons.AMMO.get(item.ammo_type, {}).get("name", "this ammo"))
+				return false
+			var reserve: Dictionary = gun.get("reserve", {}).duplicate()
+			reserve[item.ammo_type] = int(reserve.get(item.ammo_type, 0)) + int(item.rounds)
+			gun.reserve = reserve
+			player.inventory.server_refresh()
+			player.inventory.server_tell("Added %d x %s to your %s." % [
+					int(item.rounds), Weapons.AMMO.get(item.ammo_type, {}).get("name", "ammo"),
+					Weapons.display_name(Items.weapon_id(gun))])
 			return true
 		_:
 			player.inventory.server_tell(Items.INFO[item.id].hint)

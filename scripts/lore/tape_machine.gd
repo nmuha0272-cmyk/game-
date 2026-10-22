@@ -37,9 +37,9 @@ func get_prompt(by: Player) -> String:
 func _on_interact(by: Player) -> void:
 	if _playing:
 		return
-	var slot := by.inventory.find_item("reel_tape")
-	if slot >= 0:
-		var tape := by.inventory.server_remove(slot)
+	var slot: Array = by.inventory.find_item("reel_tape")
+	if slot[1] >= 0:
+		var tape: Dictionary = by.inventory.server_remove(slot[0], slot[1])
 		_tape_lore = tape.get("lore", "")
 	if _tape_lore.is_empty():
 		return

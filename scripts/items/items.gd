@@ -328,7 +328,8 @@ const HEAVY_SPEED_MULTIPLIER := 0.55
 ## A fresh item of this type, ready to put in an inventory.
 static func create(id: String) -> Dictionary:
 	var item := {"id": id}
-	item.merge(INFO[id].get("extra", {}).duplicate())
+	# Deep copy: nested data (like a gun's spare ammo) must not be shared.
+	item.merge(INFO[id].get("extra", {}).duplicate(true))
 	return item
 
 

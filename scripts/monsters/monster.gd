@@ -428,9 +428,11 @@ func stun(seconds: float) -> void:
 
 ## Host only: a gunshot hit us. Enough damage drives it off for a while,
 ## and every hit staggers it: it flinches and stops dead for a moment.
-func take_damage(amount: float, from: Node = null) -> void:
+## armor_pierce (0..1): heavy melee hits a bit harder (extra damage).
+func take_damage(amount: float, from: Node = null, armor_pierce := 0.0) -> void:
 	if not multiplayer.is_server() or amount <= 0.0:
 		return
+	amount *= 1.0 + clampf(armor_pierce, 0.0, 1.0) * 0.5
 	if state == State.DORMANT and from is Player:
 		_chase(from as Player)
 	health -= amount
@@ -440,6 +442,17 @@ func take_damage(amount: float, from: Node = null) -> void:
 		_drive_off()
 		return
 	_stagger(clampf(amount * 0.03, 0.3, 1.0))
+
+
+## Host only: a blade made it bleed: a few small hits over the next seconds.
+func apply_bleed(ticks := 3, damage_per_tick := 4.0) -> void:
+	if not multiplayer.is_server():
+		return
+	for i in ticks:
+		await get_tree().create_timer(1.0).timeout
+		if not is_inside_tree():
+			return
+		take_damage(damage_per_tick)
 
 
 ## Host only: a bullet made it flinch. No state change, so it goes right back

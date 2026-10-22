@@ -35,9 +35,9 @@ func _physics_process(delta: float) -> void:
 			continue
 		var id: int = body.name.to_int()
 		inside[id] = true
-		var mask: int = body.inventory.find_working_gas_mask()
-		if mask >= 0:
-			body.inventory.server_drain_filter(mask, delta)
+		var mask: Array = body.inventory.find_working_gas_mask()
+		if mask[1] >= 0:
+			body.inventory.server_drain_filter(mask[0], mask[1], delta)
 			_exposure[id] = 0.0
 		else:
 			_exposure[id] = _exposure.get(id, 0.0) + delta

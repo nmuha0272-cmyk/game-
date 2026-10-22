@@ -30,6 +30,8 @@ var _storage_slots: Array[PanelContainer] = []
 var _storage_labels: Array[Label] = []
 var _durability_bar: ProgressBar = null
 var _durability_bg: PanelContainer = null
+var _storage_grid: GridContainer = null
+var _storage_vbox: VBoxContainer = null
 
 var _message_tween: Tween
 var _subtitle_left := 0.0
@@ -206,7 +208,7 @@ func _refresh_all() -> void:
 	_update_durability_bar()
 
 
-func _refresh_quick_hotbar() -> var:
+func _refresh_quick_hotbar() -> void:
 	var inventory: Inventory = player.get_node("Inventory")
 	for i in Inventory.QUICK_SLOTS:
 		var item := inventory.get_quick(i)
@@ -218,7 +220,7 @@ func _refresh_quick_hotbar() -> var:
 
 func _refresh_storage_panel() -> void:
 	var inventory: Inventory = player.get_node("Inventory")
-	var grid := _storage_grid
+	var grid: GridContainer = _storage_grid
 
 	# Clear existing
 	for child in grid.get_children():
@@ -309,8 +311,8 @@ func _update_durability_bar() -> void:
 			_durability_bg.visible = false
 		return
 
-	var max_dur := item.get("max_durability", 100)
-	var cur_dur := item.get("durability", max_dur)
+	var max_dur := float(item.get("max_durability", 100))
+	var cur_dur := float(item.get("durability", max_dur))
 
 	# Find the active quick panel and show durability under it
 	var active_panel := _quick_panels[inventory.active_quick]
@@ -321,7 +323,7 @@ func _update_durability_bar() -> void:
 	_durability_bar.max_value = max_dur
 	_durability_bar.value = cur_dur
 
-	var ratio := cur_dur / max_dur
+	var ratio := cur_dur / maxf(max_dur, 1.0)
 	if ratio > 0.5:
 		_durability_bar.modulate = Color(0.2, 0.8, 0.2)
 	elif ratio > 0.25:

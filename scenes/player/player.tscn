@@ -20,7 +20,6 @@
 [ext_resource type="Script" path="res://scripts/items/gear_hand.gd" id="17_gear_hand"]
 [ext_resource type="Script" path="res://scripts/player/pinger.gd" id="18_pinger"]
 [ext_resource type="Script" path="res://scripts/game/spectator.gd" id="19_spectator"]
-[ext_resource type="Script" path="res://scripts/items/weapon_holder.gd" id="20_weapon"]
 [ext_resource type="Script" path="res://scripts/items/weapon_hand.gd" id="21_weapon_hand"]
 [ext_resource type="Script" path="res://scripts/items/weapon_controls.gd" id="22_weapon_controls"]
 [ext_resource type="Script" path="res://scripts/player/perspective.gd" id="23_perspective"]
@@ -89,9 +88,6 @@ script = ExtResource("13_downed")
 [node name="Inventory" type="Node" parent="."]
 script = ExtResource("15_inventory")
 
-[node name="Weapon" type="Node" parent="."]
-script = ExtResource("20_weapon")
-
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 script = ExtResource("3_look")
@@ -129,10 +125,11 @@ transform = Transform3D(0.94, 0, -0.342, 0, 1, 0, 0.342, 0, 0.94, -0.27, -0.24, 
 script = ExtResource("17_gear_hand")
 inventory = NodePath("../../../Inventory")
 
-[node name="WeaponHand" type="Node3D" parent="Head/Camera3D" node_paths=PackedStringArray("weapon")]
+[node name="WeaponHand" type="Node3D" parent="Head/Camera3D" node_paths=PackedStringArray("controls", "inventory")]
 transform = Transform3D(0.94, 0, -0.342, 0, 1, 0, 0.342, 0, 0.94, 0.3, -0.26, -0.6)
 script = ExtResource("21_weapon_hand")
-weapon = NodePath("../../../Weapon")
+controls = NodePath("../../../WeaponControls")
+inventory = NodePath("../../../Inventory")
 
 [node name="InteractRay" type="RayCast3D" parent="Head/Camera3D" node_paths=PackedStringArray("player")]
 target_position = Vector3(0, 0, -2.5)
@@ -151,9 +148,9 @@ script = ExtResource("16_inv_controls")
 inventory = NodePath("../Inventory")
 interactor = NodePath("../Head/Camera3D/InteractRay")
 
-[node name="WeaponControls" type="Node" parent="." node_paths=PackedStringArray("weapon")]
+[node name="WeaponControls" type="Node" parent="." node_paths=PackedStringArray("inventory")]
 script = ExtResource("22_weapon_controls")
-weapon = NodePath("../Weapon")
+inventory = NodePath("../Inventory")
 
 [node name="Pinger" type="Node" parent="." node_paths=PackedStringArray("player")]
 script = ExtResource("18_pinger")

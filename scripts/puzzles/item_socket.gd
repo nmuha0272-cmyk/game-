@@ -41,7 +41,9 @@ func _on_interact(by: Player) -> void:
 	if not _can_insert(by):
 		by.inventory.server_tell(get_prompt(by))
 		return
-	by.inventory.server_remove(by.inventory.find_item(item_id))
+	var found: Array = by.inventory.find_item(item_id)
+	if found[1] >= 0:
+		by.inventory.server_remove(found[0], found[1])
 	server_set_active(true)
 
 

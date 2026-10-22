@@ -69,6 +69,16 @@ func find_item(id: String) -> Array:
 			return [false, i]
 	return [false, -1]
 
+## A carried gun (quick slots first) that fires this ammo type, or {}.
+## The dictionary is the real slot item, so changes to it stick.
+func find_gun_for_ammo(ammo_type: String) -> Dictionary:
+	for item: Dictionary in quick_slots + storage_slots:
+		if Items.is_weapon(item) and not Items.is_melee(item) \
+				and Weapons.ammo_type(Items.weapon_id(item)) == ammo_type:
+			return item
+	return {}
+
+
 ## True if player has item anywhere.
 func has_item(id: String) -> bool:
 	var result := find_item(id)
@@ -128,6 +138,13 @@ func server_add(item: Dictionary) -> bool:
 		storage_slots[result[1]] = item
 	_send_to_everyone()
 	return true
+
+## Host only: an item inside a slot was changed in place (ammo, filter...):
+## send the new state to everyone.
+func server_refresh() -> void:
+	if multiplayer.is_server():
+		_send_to_everyone()
+
 
 ## Host only: strap on a pouch/backpack. Adds storage slots.
 func server_expand(extra_slots: int) -> int:

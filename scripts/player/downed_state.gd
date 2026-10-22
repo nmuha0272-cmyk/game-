@@ -49,7 +49,7 @@ func server_set_downed(value: bool) -> void:
 		# Going down costs you your gun: it drops so it can be picked back up
 		# (or grabbed by a teammate). Do this before is_downed flips, so the
 		# drop is allowed to run.
-		player.weapon.server_drop()
+		player.get_node("WeaponControls").server_drop_active_weapon()
 	_set_downed.rpc(value)
 
 

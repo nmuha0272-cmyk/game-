@@ -158,7 +158,7 @@ func _server_fire() -> void:
 	if not data:
 		return
 
-	var capacity := data.get("capacity", 0)
+	var capacity: int = int(data.get("capacity", 0))
 	var loaded := int(item.get("loaded", capacity))
 	if loaded <= 0:
 		inventory.server_tell("Empty! Press R to reload.")
@@ -206,8 +206,8 @@ func _server_reload() -> void:
 	if loaded >= capacity:
 		return
 
-	var ammo_type := data.get("ammo", "")
-	var reserve := item.get("reserve", {})
+	var ammo_type: String = str(data.get("ammo", ""))
+	var reserve: Dictionary = item.get("reserve", {})
 	var have := int(reserve.get(ammo_type, 0))
 	if have <= 0:
 		inventory.server_tell("No %s left." % Weapons.AMMO.get(ammo_type, {}).get("name", "ammo"))
@@ -220,6 +220,11 @@ func _server_reload() -> void:
 	item.reserve = reserve
 	_sync_item(item)
 	inventory.server_tell("Reloaded. %d/%d" % [loaded, reserve.get(ammo_type, 0)])
+
+
+## Host only: drop the gun/melee weapon in the active quick slot (going down).
+func server_drop_active_weapon() -> void:
+	_server_drop()
 
 
 func _server_drop() -> void:
@@ -283,11 +288,11 @@ func _swing_melee(data: Dictionary, weapon_id: String, item: Dictionary) -> void
 		if monster:
 			var damage := float(data.get("damage", 25.0))
 			if data.has("armor_pierce"):
-				monster.take_damage(damage, inventory.player, data.armor_pierce)
+				monster.take_damage(damage, inventory.player, float(data.armor_pierce))
 			else:
 				monster.take_damage(damage, inventory.player)
 			# Bleed chance
-			if data.has("bleed_chance") and randf() < data.bleed_chance:
+			if data.has("bleed_chance") and randf() < float(data.bleed_chance):
 				monster.apply_bleed()
 		# Hit something solid - make noise
 		inventory.player.get_tree().call_group("monsters", "hear_noise", origin, float(data.get("noise", 4.0)))
@@ -314,14 +319,14 @@ func _get_label(item: Dictionary) -> String:
 	var weapon_id := Items.weapon_id(item)
 	if Items.is_melee(item):
 		var data := Weapons.get_melee_info(weapon_id)
-		var dur := item.get("durability", data.get("max_durability", 100))
-		var max_dur := data.get("max_durability", 100)
+		var dur := int(item.get("durability", data.get("max_durability", 100)))
+		var max_dur := int(data.get("max_durability", 100))
 		return "%s (%d/%d)" % [data.name, dur, max_dur]
 	else:
 		var data := Weapons.get_info(weapon_id)
 		var loaded := int(item.get("loaded", data.get("capacity", 0)))
-		var reserve := item.get("reserve", {})
-		var ammo_type := data.get("ammo", "")
+		var reserve: Dictionary = item.get("reserve", {})
+		var ammo_type: String = str(data.get("ammo", ""))
 		var have := int(reserve.get(ammo_type, 0))
 		return "%s   %d/%d" % [data.name, loaded, have]
 

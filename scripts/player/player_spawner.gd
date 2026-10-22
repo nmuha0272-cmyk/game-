@@ -44,10 +44,10 @@ func _add_player(id: int) -> void:
 	var player := spawn(data)
 	# Give back the gear they had at the checkpoint (once everyone has the player).
 	if GameState.checkpoint_inventories.has(id):
-		var slots: Array = GameState.checkpoint_inventories[id].duplicate(true)
+		var saved: Dictionary = GameState.checkpoint_inventories[id].duplicate(true)
 		get_tree().create_timer(0.5).timeout.connect(func() -> void:
 			if is_instance_valid(player):
-				player.inventory.server_set_slots(slots))
+				player.inventory.server_set_slots(saved.get("quick", [{}, {}, {}, {}]), saved.get("storage", [{}, {}])))
 
 
 func _current_checkpoint() -> Checkpoint:
@@ -77,10 +77,12 @@ func _remove_player(id: int) -> void:
 	var player: Player = players.get_node(str(id))
 	# Drop everything they carried so the team doesn't lose it.
 	var spawner := ItemSpawner.find(get_tree())
-	for slot in player.inventory.slot_count():
-		var item := player.inventory.server_remove(slot)
-		if spawner and not item.is_empty():
-			spawner.server_drop(item, player)
+	for is_quick in [true, false]:
+		var count: int = Inventory.QUICK_SLOTS if is_quick else player.inventory.storage_count()
+		for slot in count:
+			var item: Dictionary = player.inventory.server_remove(is_quick, slot)
+			if spawner and not item.is_empty():
+				spawner.server_drop(item, player)
 	player.queue_free()
 
 
