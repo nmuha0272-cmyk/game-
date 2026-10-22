@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_entry")
 id = "personal_guard_logbook"
-title = "Guard's Logbook (F. Kowalski)"
+title = "Guard's Logbook (C. Brennan)"
 type = 3
-text = "F. KOWALSKI - GUARD LOG, LEVEL B\nNight 1: They put the volunteers in the dormitory. Kids, most of them.\nNight 9: The big one walks the halls at night. They call it Subject 7. I call it Tommy. It was Tommy.\nNight 12: The order came to seal the doors. I sealed them.\nI hid in a locker and listened to him look for me. He walked right past. He knows the lockers now.\nGod forgive me."
+text = "C. BRENNAN - GUARD LOG, LEVEL B\nNight 1: They put the volunteers in the dormitory. Kids, most of them.\nNight 9: The big one walks the halls at night. They call it Subject 7. I call it Tommy. It was Tommy.\nNight 12: The order came to seal the doors. I sealed them.\nI hid in a locker and listened to him look for me. He walked right past. He knows the lockers now.\nGod forgive me."
 owner_character = 3
 voice_line = ""

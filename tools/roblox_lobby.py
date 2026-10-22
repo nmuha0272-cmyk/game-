@@ -169,7 +169,7 @@ while not workspace:GetAttribute("Mode") do task.wait() end
 if workspace:GetAttribute("Mode") ~= "Game" then return end
 
 local ROAD = { --ROAD-- }
-local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
+local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST (Nora)", Engineer = "THE ENGINEER (Walter)", Guard = "THE GUARD (Cole)" }
 local ORDER = { "Son", "Journalist", "Engineer", "Guard" }
 local COUNTDOWN = 10
 -- In a private game started from the lobby, the group is already together.

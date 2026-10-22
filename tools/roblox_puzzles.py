@@ -375,7 +375,7 @@ push.Triggered:Connect(function(player)
 		if other ~= player and other.Parent then count += 1 end
 	end
 	if count < 2 and player:GetAttribute("Character") ~= "Guard" then
-		say(player, "It's too heavy for one person. Push it together at the same time (or Frank, the Guard, can move it alone)!")
+		say(player, "It's too heavy for one person. Push it together at the same time (or Cole, the Guard, can move it alone)!")
 		return
 	end
 	if cabinetMoved then return end

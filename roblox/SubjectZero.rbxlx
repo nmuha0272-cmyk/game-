@@ -309,11 +309,11 @@ local function think(dt)
 		moveAlong(CHASE_SPEED * burst, dt)
 		if (head.Position - eyePosition()).Magnitude < CATCH_RANGE + 2 then
 			-- Caught! A jump scare on their screen... and they die (so the team dies).
-			-- Except Frank the Guard: once per life he shoves him off.
+			-- Except Cole the Guard: once per life he shoves him off.
 			local character = target.Character
 			if character and character:GetAttribute("Tough") then
 				character:SetAttribute("Tough", false)
-				ReplicatedStorage.PuzzleMessage:FireAllClients(target.DisplayName .. " (Frank) SHOVES the Long Man off! He can only do that once...")
+				ReplicatedStorage.PuzzleMessage:FireAllClients(target.DisplayName .. " (Cole) SHOVES the Long Man off! He can only do that once...")
 				model:SetAttribute("StunUntil", workspace:GetServerTimeNow() + 1.5)
 			else
 				jumpScare:FireClient(target)
@@ -498,7 +498,7 @@ end)
 
 local player = game:GetService("Players"):GetPlayerFromCharacter(script.Parent)
 RunService.Heartbeat:Connect(function(dt)
-	-- Frank the Guard is big: a bit slower.
+	-- Cole the Guard is big: a bit slower.
 	local big = player and player:GetAttribute("Character") == "Guard"
 	WALK, RUN = big and 12.5 or 14, big and 19.5 or 22
 	if humanoid:GetAttribute("Frozen") then
@@ -1115,11 +1115,11 @@ local abilityEvent = ReplicatedStorage:WaitForChild("UseAbility")
 local ROLES = {
 	{ id = "Son", name = "THE SON", who = "Eli, 21 - looking for his dad", color = Color3.fromRGB(150, 100, 60),
 		trait = "Hood up, always jumpy.", ability = "SENSE  [Q]\nSee the Long Man and useful things through walls for 4 seconds.", cooldown = 15 },
-	{ id = "Journalist", name = "THE JOURNALIST", who = "35, tan trench coat", color = Color3.fromRGB(205, 175, 125),
+	{ id = "Journalist", name = "THE JOURNALIST", who = "Nora, 35, tan trench coat", color = Color3.fromRGB(205, 175, 125),
 		trait = "Here for the story.", ability = "CAMERA FLASH  [Q]\nBlinds the Long Man for 3 seconds. Point it at him!", cooldown = 12 },
-	{ id = "Engineer", name = "THE ENGINEER", who = "60, navy coveralls", color = Color3.fromRGB(90, 120, 200),
+	{ id = "Engineer", name = "THE ENGINEER", who = "Walter, 60, navy coveralls", color = Color3.fromRGB(90, 120, 200),
 		trait = "Knows these old machines.", ability = "FIXER  (always on)\nRepairs the generator and puts in fuses 3x faster." },
-	{ id = "Guard", name = "THE GUARD", who = "Frank, 35, olive jacket", color = Color3.fromRGB(130, 150, 90),
+	{ id = "Guard", name = "THE GUARD", who = "Cole, 35, olive jacket", color = Color3.fromRGB(130, 150, 90),
 		trait = "Big and strong, a bit slower.", ability = "STRONG + TOUGH  (always on)\nMoves the heavy cabinet alone. Once per life, shoves the Long Man off." },
 }
 
@@ -1409,7 +1409,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TextChatService = game:GetService("TextChatService")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
-local NAMES = { Son = "ELI", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "FRANK" }
+local NAMES = { Son = "ELI", Journalist = "THE JOURNALIST (Nora)", Engineer = "THE ENGINEER (Walter)", Guard = "COLE" }
 local COLORS = { Son = Color3.fromRGB(205, 150, 100), Journalist = Color3.fromRGB(225, 200, 150),
 	Engineer = Color3.fromRGB(140, 170, 240), Guard = Color3.fromRGB(170, 195, 120) }
 
@@ -1846,7 +1846,7 @@ push.Triggered:Connect(function(player)
 		if other ~= player and other.Parent then count += 1 end
 	end
 	if count < 2 and player:GetAttribute("Character") ~= "Guard" then
-		say(player, "It's too heavy for one person. Push it together at the same time (or Frank, the Guard, can move it alone)!")
+		say(player, "It's too heavy for one person. Push it together at the same time (or Cole, the Guard, can move it alone)!")
 		return
 	end
 	if cabinetMoved then return end
@@ -2161,7 +2161,7 @@ end
 --                      (he hates light). Point it at him!
 --  The Engineer ...... FIXER: repairs the generator and puts in fuses
 --                      about 3 times faster.
---  The Guard (Frank) . STRONG: moves the heavy cabinet alone. TOUGH: once
+--  The Guard (Cole) . STRONG: moves the heavy cabinet alone. TOUGH: once
 --                      per life he can shove the Long Man off. A bit slower.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -2172,9 +2172,9 @@ local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
 
 local ROLES = {
 	Son = { name = "Eli (The Son)", color = Color3.fromRGB(150, 100, 60) },
-	Journalist = { name = "The Journalist", color = Color3.fromRGB(205, 175, 125) },
-	Engineer = { name = "The Engineer", color = Color3.fromRGB(90, 120, 200) },
-	Guard = { name = "Frank (The Guard)", color = Color3.fromRGB(130, 150, 90) },
+	Journalist = { name = "Nora (The Journalist)", color = Color3.fromRGB(205, 175, 125) },
+	Engineer = { name = "Walter (The Engineer)", color = Color3.fromRGB(90, 120, 200) },
+	Guard = { name = "Cole (The Guard)", color = Color3.fromRGB(130, 150, 90) },
 }
 
 local function takenBy(id)
@@ -2515,7 +2515,7 @@ while not workspace:GetAttribute("Mode") do task.wait() end
 if workspace:GetAttribute("Mode") ~= "Game" then return end
 
 local ROAD = { Vector3.new(-4.80, 0.64, 144.00), Vector3.new(4.80, 0.64, 144.00), Vector3.new(-4.80, 0.64, 148.80), Vector3.new(4.80, 0.64, 148.80) }
-local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
+local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST (Nora)", Engineer = "THE ENGINEER (Walter)", Guard = "THE GUARD (Cole)" }
 local ORDER = { "Son", "Journalist", "Engineer", "Guard" }
 local COUNTDOWN = 10
 -- In a private game started from the lobby, the group is already together.
@@ -2799,7 +2799,7 @@ local scrawl2 = sign(hall:WaitForChild("Scrawl2"), Enum.NormalId.Back, Color3.fr
 scrawl2.Text = "IT CAN SEE YOU"
 scrawl2.Font = Enum.Font.Creepster
 sign(hall:WaitForChild("ObsSign"), Enum.NormalId.Left, Color3.fromRGB(200, 60, 40)).Text = "OBSERVATION  -  SUBJECT 7"
-local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
+local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST (Nora)", Engineer = "THE ENGINEER (Walter)", Guard = "THE GUARD (Cole)" }
 for id, name in pairs(NAMES) do
 	local s = hall:FindFirstChild("PedestalSign_" .. id)
 	if s then sign(s, Enum.NormalId.Front, Color3.fromRGB(230, 220, 195)).Text = name .. "\n(pick in the game - you keep your avatar)" end
@@ -3076,7 +3076,7 @@ end
 --                 came home. Eli wants to know what his dad went through.
 --  THE JOURNALIST: chasing the "weather station" cover-up.
 --  THE ENGINEER: kept these machines running for 20 years. Feels guilty.
---  FRANK (the Guard): the guard on duty in 1999 who sealed the doors.
+--  COLE (the Guard): the guard on duty in 1999 who sealed the doors.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local sayEvent = ReplicatedStorage:WaitForChild("SayLine")

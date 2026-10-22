@@ -86,7 +86,7 @@ func _eli_leg_injury() -> void:
 	if cole:
 		_show_dialogue("Cole", "ELI! Hang on— I'm getting you out!", 4.0)
 		await get_tree().create_timer(0.5).timeout
-		_show_dialogue("Cole", "Journalist, Engineer— help me lift this! NOW!", 4.0)
+		_show_dialogue("Cole", "Nora, Walter— help me lift this! NOW!", 4.0)
 	
 	# Slow Eli down significantly
 	eli.movement_enabled = false
@@ -127,7 +127,7 @@ func _eli_rescue() -> void:
 			light.queue_free()
 		eli.remove_meta("injury_light")
 	
-	_show_dialogue("Eli", "*panting* I... I can move. Thanks, Frank.", 5.0)
+	_show_dialogue("Eli", "*panting* I... I can move. Thanks, Cole.", 5.0)
 	
 	var cole := _find_cole()
 	if cole:
@@ -145,7 +145,7 @@ func _vigil_surveillance() -> void:
 	var journalist := _find_player_by_character(Characters.Id.JOURNALIST)
 	
 	if eli:
-		_show_dialogue("Eli", "Wait... Frank. What did you see?", 4.0)
+		_show_dialogue("Eli", "Wait... Cole. What did you see?", 4.0)
 		await get_tree().create_timer(1.0).timeout
 	
 	if cole:
@@ -157,9 +157,9 @@ func _vigil_surveillance() -> void:
 		await get_tree().create_timer(1.0).timeout
 	
 	if journalist:
-		_show_dialogue("Journalist", "VIGIL... that's the program that replaced BASTION.", 5.0)
+		_show_dialogue("Nora", "VIGIL... that's the program that replaced BASTION.", 5.0)
 		await get_tree().create_timer(1.0).timeout
-		_show_dialogue("Journalist", "My informant mentioned them. He said they never stopped watching.", 5.0)
+		_show_dialogue("Nora", "My informant mentioned them. He said they never stopped watching.", 5.0)
 		await get_tree().create_timer(1.0).timeout
 	
 	if eli:
@@ -227,11 +227,11 @@ func _find_player_by_character_name(speaker_name: String) -> Player:
 	match speaker_name:
 		"Eli", "Son":
 			char_id = Characters.Id.SON
-		"Journalist":
+		"Nora", "Journalist":
 			char_id = Characters.Id.JOURNALIST
-		"Engineer":
+		"Walter", "Engineer":
 			char_id = Characters.Id.ENGINEER
-		"Cole", "Guard", "Frank":
+		"Cole", "Guard":
 			char_id = Characters.Id.GUARD
 	if char_id == Characters.Id.NONE:
 		return null

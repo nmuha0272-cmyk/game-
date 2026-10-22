@@ -1,11 +1,11 @@
 extends Ability
-## Frank's strength.
+## Cole's strength.
 ## - Hold Q on a closed door: hold it shut (nobody can open it).
 ## - Hold Q on something heavy: move it around.
 ## - Press Q on a downed teammate: pick them up. Press Q again to put them down.
-## Frank is also slower and louder than the others (see characters.gd).
+## Cole is also slower and louder than the others (see characters.gd).
 
-## Let go automatically if Frank walks further away than this.
+## Let go automatically if Cole walks further away than this.
 const MAX_REACH := 3.0
 
 var _held_door: Door = null

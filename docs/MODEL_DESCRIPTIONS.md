@@ -14,7 +14,7 @@ or paste the **AI Prompt** lines into a 3D generator like Meshy or Tripo.
 - **1994:** The Son is born.
 - **1999:** The Son, age 5, mails a crayon drawing to his parent at Site 12.
   Months later, the experiments go wrong and Site 12 is sealed with people
-  inside. Frank, age 20, is the guard on duty.
+  inside. Cole, age 20, is the guard on duty.
 - **2015:** The game takes place.
 
 **Look of the game:** The facility never upgraded its Cold War equipment, so
@@ -74,7 +74,7 @@ everything inside looks like the 1960s–70s. The four characters wear modern
   thick glasses, faded navy blue work coveralls, heavy tool belt, work boots,
   modern day, realistic game character, full body, T-pose"*
 
-### The Guard — Frank Doyle
+### The Guard — Cole Brennan
 - **Age:** About 35
 - **Build:** Tall, broad shoulders, big and strong
 - **Face:** Buzz-cut dark hair, square jaw, a scar through one eyebrow,

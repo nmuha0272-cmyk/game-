@@ -7,6 +7,6 @@ script = ExtResource("1_entry")
 id = "personal_guard_roster"
 title = "Guard Duty Roster"
 type = 3
-text = "Guard duty roster, Level B, the night of the sealing.\n22:00 - 06:00: KOWALSKI, F.\n\nThe signature at the bottom is Frank's."
+text = "Guard duty roster, Level B, the night of the sealing.\n22:00 - 06:00: BRENNAN, C.\n\nThe signature at the bottom is Cole's."
 owner_character = 3
 voice_line = "That's my name. That was the night... I signed it. I was there."

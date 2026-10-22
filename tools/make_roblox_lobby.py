@@ -351,7 +351,7 @@ local scrawl2 = sign(hall:WaitForChild("Scrawl2"), Enum.NormalId.Back, Color3.fr
 scrawl2.Text = "IT CAN SEE YOU"
 scrawl2.Font = Enum.Font.Creepster
 sign(hall:WaitForChild("ObsSign"), Enum.NormalId.Left, Color3.fromRGB(200, 60, 40)).Text = "OBSERVATION  -  SUBJECT 7"
-local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "THE GUARD (Frank)" }
+local NAMES = { Son = "THE SON (Eli)", Journalist = "THE JOURNALIST (Nora)", Engineer = "THE ENGINEER (Walter)", Guard = "THE GUARD (Cole)" }
 for id, name in pairs(NAMES) do
 	local s = hall:FindFirstChild("PedestalSign_" .. id)
 	if s then sign(s, Enum.NormalId.Front, Color3.fromRGB(230, 220, 195)).Text = name .. "\n(pick in the game - you keep your avatar)" end

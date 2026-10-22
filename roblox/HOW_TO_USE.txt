@@ -22,7 +22,7 @@ SUBJECT ZERO - Roblox version (Chapter 1 map)
                          blind him for 3 seconds.
      THE ENGINEER ...... FIXER: repairs the generator and puts in fuses
                          3x faster.
-     THE GUARD (Frank) . STRONG: moves the heavy cabinet alone.
+     THE GUARD (Cole) . STRONG: moves the heavy cabinet alone.
                          TOUGH: once per life, shoves the Long Man off.
                          A bit slower.
    (On a controller the ability button is B / Circle. On a phone, tap
@@ -103,7 +103,7 @@ What's in this Roblox version:
                     never came home. Eli wants to know what he went through.
     THE JOURNALIST - chasing the "weather station" cover-up story.
     THE ENGINEER - kept these machines running for 20 years. Feels guilty.
-    FRANK (the Guard) - the guard on duty in 1999 who sealed the doors.
+    COLE (the Guard) - the guard on duty in 1999 who sealed the doors.
   (Change what they say in Explorer -> ServerScriptService -> Story.)
 - A new outside: real terrain (grass, a dirt yard, a cracked path, the
   road with muddy edges, rocks, rolling hills), pine trees, drifting

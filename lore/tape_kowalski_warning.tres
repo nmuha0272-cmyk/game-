@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_entry")
 id = "tape_kowalski_warning"
-title = "Reel Tape: Kowalski's Warning"
+title = "Reel Tape: Brennan's Warning"
 type = 1
-text = "KOWALSKI: This is Frank Kowalski. If you're hearing this, you got further than most.\nKOWALSKI: He hates light. A flash in the face makes him stop and scream. Use it.\nKOWALSKI: He hears radios. He hears doors. He hears you RUN.\nKOWALSKI: And if he sees you hide... he remembers where.\nKOWALSKI: I'm sorry. I sealed the doors. I'm going down to find the ones I left behind.\n(Static. A long, low breath that isn't Frank's.)"
+text = "BRENNAN: This is Cole Brennan. If you're hearing this, you got further than most.\nBRENNAN: He hates light. A flash in the face makes him stop and scream. Use it.\nBRENNAN: He hears radios. He hears doors. He hears you RUN.\nBRENNAN: And if he sees you hide... he remembers where.\nBRENNAN: I'm sorry. I sealed the doors. I'm going down to find the ones I left behind.\n(Static. A long, low breath that isn't Cole's.)"
 owner_character = 3
 voice_line = ""

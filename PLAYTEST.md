@@ -39,7 +39,7 @@ For each room, write how long it took, where people got stuck, and whether it
 was scary. Tick the questions.
 
 ### 1. Outside the fence (gate, crowbar)
-- [ ] Did anyone figure out on their own that Frank lifts the gate?
+- [ ] Did anyone figure out on their own that Cole lifts the gate?
 - [ ] Did they find the crowbar in the yard without help?
 - Time / notes:
 
@@ -56,7 +56,7 @@ was scary. Tick the questions.
 ### 4. Tunnels (vent crawl, Long Man chase)
 - [ ] Did they figure out the vent: one holds, one crawls, opens the bolt?
 - [ ] The chase: scary? Too hard? Too easy?
-- [ ] Did the Son use Sense / the Journalist use the flash / Frank hold the door?
+- [ ] Did the Son use Sense / the Journalist use the flash / Cole hold the door?
 - [ ] When someone got caught (and everyone died), did the team blame each other or laugh?
 - Time / notes:
 
@@ -86,7 +86,7 @@ was scary. Tick the questions.
 |---|---|---|
 | Walk / sprint speed | 3.5 / 6.0 m/s | `scripts/player/player_movement.gd` |
 | Sprint stamina | 4 s of sprint, refills after 1 s rest | `scripts/player/stamina.gd` |
-| Frank speed | 0.85x (sprint 5.1) | `scripts/characters.gd` |
+| Cole speed | 0.85x (sprint 5.1) | `scripts/characters.gd` |
 | Long Man chase speed | 4.2 m/s | `chase_speed` in `scripts/monsters/monster.gd` |
 | Long Man gives up a chase | 3 s without seeing you | `lose_target_time` in `monster.gd` |
 | After catching someone | walks away, ignores everyone for 6 s | `catch_cooldown` in `monster.gd` |

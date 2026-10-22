@@ -9,7 +9,7 @@ ROLES_SERVER = r'''-- THE FOUR CHARACTERS. Each player picks one (no two players
 --                      (he hates light). Point it at him!
 --  The Engineer ...... FIXER: repairs the generator and puts in fuses
 --                      about 3 times faster.
---  The Guard (Frank) . STRONG: moves the heavy cabinet alone. TOUGH: once
+--  The Guard (Cole) . STRONG: moves the heavy cabinet alone. TOUGH: once
 --                      per life he can shove the Long Man off. A bit slower.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -20,9 +20,9 @@ local messageEvent = ReplicatedStorage:WaitForChild("PuzzleMessage")
 
 local ROLES = {
 	Son = { name = "Eli (The Son)", color = Color3.fromRGB(150, 100, 60) },
-	Journalist = { name = "The Journalist", color = Color3.fromRGB(205, 175, 125) },
-	Engineer = { name = "The Engineer", color = Color3.fromRGB(90, 120, 200) },
-	Guard = { name = "Frank (The Guard)", color = Color3.fromRGB(130, 150, 90) },
+	Journalist = { name = "Nora (The Journalist)", color = Color3.fromRGB(205, 175, 125) },
+	Engineer = { name = "Walter (The Engineer)", color = Color3.fromRGB(90, 120, 200) },
+	Guard = { name = "Cole (The Guard)", color = Color3.fromRGB(130, 150, 90) },
 }
 
 local function takenBy(id)
@@ -124,11 +124,11 @@ local abilityEvent = ReplicatedStorage:WaitForChild("UseAbility")
 local ROLES = {
 	{ id = "Son", name = "THE SON", who = "Eli, 21 - looking for his dad", color = Color3.fromRGB(150, 100, 60),
 		trait = "Hood up, always jumpy.", ability = "SENSE  [Q]\nSee the Long Man and useful things through walls for 4 seconds.", cooldown = 15 },
-	{ id = "Journalist", name = "THE JOURNALIST", who = "35, tan trench coat", color = Color3.fromRGB(205, 175, 125),
+	{ id = "Journalist", name = "THE JOURNALIST", who = "Nora, 35, tan trench coat", color = Color3.fromRGB(205, 175, 125),
 		trait = "Here for the story.", ability = "CAMERA FLASH  [Q]\nBlinds the Long Man for 3 seconds. Point it at him!", cooldown = 12 },
-	{ id = "Engineer", name = "THE ENGINEER", who = "60, navy coveralls", color = Color3.fromRGB(90, 120, 200),
+	{ id = "Engineer", name = "THE ENGINEER", who = "Walter, 60, navy coveralls", color = Color3.fromRGB(90, 120, 200),
 		trait = "Knows these old machines.", ability = "FIXER  (always on)\nRepairs the generator and puts in fuses 3x faster." },
-	{ id = "Guard", name = "THE GUARD", who = "Frank, 35, olive jacket", color = Color3.fromRGB(130, 150, 90),
+	{ id = "Guard", name = "THE GUARD", who = "Cole, 35, olive jacket", color = Color3.fromRGB(130, 150, 90),
 		trait = "Big and strong, a bit slower.", ability = "STRONG + TOUGH  (always on)\nMoves the heavy cabinet alone. Once per life, shoves the Long Man off." },
 }
 

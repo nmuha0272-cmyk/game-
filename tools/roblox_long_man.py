@@ -411,11 +411,11 @@ local function think(dt)
 		moveAlong(CHASE_SPEED * burst, dt)
 		if (head.Position - eyePosition()).Magnitude < CATCH_RANGE + 2 then
 			-- Caught! A jump scare on their screen... and they die (so the team dies).
-			-- Except Frank the Guard: once per life he shoves him off.
+			-- Except Cole the Guard: once per life he shoves him off.
 			local character = target.Character
 			if character and character:GetAttribute("Tough") then
 				character:SetAttribute("Tough", false)
-				ReplicatedStorage.PuzzleMessage:FireAllClients(target.DisplayName .. " (Frank) SHOVES the Long Man off! He can only do that once...")
+				ReplicatedStorage.PuzzleMessage:FireAllClients(target.DisplayName .. " (Cole) SHOVES the Long Man off! He can only do that once...")
 				model:SetAttribute("StunUntil", workspace:GetServerTimeNow() + 1.5)
 			else
 				jumpScare:FireClient(target)
@@ -773,7 +773,7 @@ end)
 
 local player = game:GetService("Players"):GetPlayerFromCharacter(script.Parent)
 RunService.Heartbeat:Connect(function(dt)
-	-- Frank the Guard is big: a bit slower.
+	-- Cole the Guard is big: a bit slower.
 	local big = player and player:GetAttribute("Character") == "Guard"
 	WALK, RUN = big and 12.5 or 14, big and 19.5 or 22
 	if humanoid:GetAttribute("Frozen") then

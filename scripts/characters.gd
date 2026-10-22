@@ -14,7 +14,7 @@ const INFO := {
 		"ability_script": "res://scripts/abilities/son_sense.gd",
 	},
 	Id.JOURNALIST: {
-		"name": "The Journalist",
+		"name": "The Journalist (Nora)",
 		"role": "Stunner / Lore",
 		"ability": "Camera Flash: stun a monster. Photograph evidence.",
 		"held_item": "res://scenes/player/held_items/film_camera.tscn",
@@ -22,7 +22,7 @@ const INFO := {
 		"ability_script": "res://scripts/abilities/journalist_flash.gd",
 	},
 	Id.ENGINEER: {
-		"name": "The Engineer",
+		"name": "The Engineer (Walter)",
 		"role": "Fixer",
 		"ability": "Repair: fix machines and hack security doors.",
 		"held_item": "res://scenes/player/held_items/wrench.tscn",
@@ -30,13 +30,13 @@ const INFO := {
 		"ability_script": "res://scripts/abilities/engineer_repair.gd",
 	},
 	Id.GUARD: {
-		"name": "The Guard (Frank)",
+		"name": "The Guard (Cole)",
 		"role": "Protector",
 		"ability": "Strength: hold doors, move heavy things, carry teammates.",
 		"held_item": "res://scenes/player/held_items/heavy_flashlight.tscn",
 		"color": Color(0.3, 0.33, 0.22),  # olive field jacket
 		"ability_script": "res://scripts/abilities/guard_strength.gd",
-		# Frank is big: a bit slower, and his footsteps are louder.
+		# Cole is big: a bit slower, and his footsteps are louder.
 		"speed_multiplier": 0.85,
 		"footstep_volume_db": 5.0,
 	},

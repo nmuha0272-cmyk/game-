@@ -6,7 +6,7 @@ place, about why THEY came to Site 12. Used by make_roblox.py.
                         never came home. Eli wants to know what he went through.
   THE JOURNALIST ...... chasing the "weather station" cover-up story.
   THE ENGINEER ........ kept these machines running for 20 years. Guilty.
-  FRANK (the Guard) ... was the guard on duty in 1999 when the doors were sealed.
+  COLE (the Guard) ... was the guard on duty in 1999 when the doors were sealed.
 """
 S = 3.2
 
@@ -107,7 +107,7 @@ STORY_SERVER = r'''-- THE STORY: the characters talk (speech bubbles + subtitles
 --                 came home. Eli wants to know what his dad went through.
 --  THE JOURNALIST: chasing the "weather station" cover-up.
 --  THE ENGINEER: kept these machines running for 20 years. Feels guilty.
---  FRANK (the Guard): the guard on duty in 1999 who sealed the doors.
+--  COLE (the Guard): the guard on duty in 1999 who sealed the doors.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local sayEvent = ReplicatedStorage:WaitForChild("SayLine")
@@ -205,7 +205,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TextChatService = game:GetService("TextChatService")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
-local NAMES = { Son = "ELI", Journalist = "THE JOURNALIST", Engineer = "THE ENGINEER", Guard = "FRANK" }
+local NAMES = { Son = "ELI", Journalist = "THE JOURNALIST (Nora)", Engineer = "THE ENGINEER (Walter)", Guard = "COLE" }
 local COLORS = { Son = Color3.fromRGB(205, 150, 100), Journalist = Color3.fromRGB(225, 200, 150),
 	Engineer = Color3.fromRGB(140, 170, 240), Guard = Color3.fromRGB(170, 195, 120) }
 
