@@ -8,12 +8,24 @@ extends Node3D
 ##         the back. Hover over a name card (or a character) and the camera
 ##         moves to that character's side and shows what they can do.
 ##         Click to choose them. Arrow keys and Enter also work.
+## ARRIVING: once a character is confirmed, the camera moves behind the car
+##         and it drives up to the gate of the Blackwater Weather Station,
+##         slows to a stop, and the screen fades to black before the lobby
+##         (or next scene) loads. Press Enter or Esc to skip the drive.
 ##
 ## Characters are simple stand-in shapes until real models exist. To use a real
 ## model, save it as res://assets/models/characters/<id>.glb (eli, cole, nora,
 ## walter) and it will be placed in that seat automatically.
 
 signal character_confirmed(character_id: String)
+## Only when `embedded`: the arrival drive finished and the screen is black.
+signal arrived(character_id: String)
+
+## True when this home screen runs inside the game's main scene
+## (scenes/main.tscn). Then main.gd does the networking: Host/Join only send
+## signals, main.gd calls enter_select() once the game is hosted/joined, and
+## after the drive it emits `arrived` instead of changing scene.
+var embedded := false
 
 const MENU_UI := preload("res://scenes/main_menu/deepwell/main_menu.tscn")
 const LOBBY_SCENE := "res://scenes/lobby/lobby.tscn"
@@ -25,6 +37,8 @@ const COLOR_HIGHLIGHT := Color("e8b04a")
 const COLOR_RED := Color("c0392b")
 
 const DRIVE_SPEED := 17.0  # meters per second
+const STATION_START_Z := -75.0  # where the station appears, far down the road
+const STATION_STOP_Z := -9.0    # where its gate is when the car has stopped
 const ROAD_LENGTH := 160.0
 
 ## Order is the order the arrow keys cycle through.
@@ -94,7 +108,7 @@ const CHARACTERS := {
 	},
 }
 
-enum State { MENU, SELECT }
+enum State { MENU, SELECT, ARRIVING }
 
 var state := State.MENU
 var hovered := ""
@@ -118,9 +132,17 @@ var _confirm_button: Button
 var _hint: Label
 var _cards := {}  # id -> Button
 var _unhover_timer: SceneTreeTimer
+var _speed := DRIVE_SPEED
+var _station: Node3D
+var _trees: Array[Node3D] = []
+var _fade: ColorRect
+var _arrival_label: Label
+var _arrived := false
 
 const MENU_CAM_POS := Vector3(-4.2, 1.35, -6.0)
 const MENU_CAM_TARGET := Vector3(-1.4, 0.95, 0.4)
+const ARRIVE_CAM_POS := Vector3(-2.4, 2.6, 7.0)
+const ARRIVE_CAM_TARGET := Vector3(0.6, 1.6, -14.0)
 const BACKSEAT_CAM_POS := Vector3(0.0, 1.5, 1.18)
 const BACKSEAT_CAM_TARGET := Vector3(0.0, 1.32, -3.0)
 
@@ -130,6 +152,7 @@ func _ready() -> void:
 	randomize()
 	_build_environment()
 	_build_road_and_forest()
+	_build_station()
 	_build_car()
 	for id: String in CHARACTER_ORDER:
 		_build_character(id)
@@ -142,17 +165,21 @@ func _process(delta: float) -> void:
 	_time += delta
 
 	# Move the world toward the camera so the car looks like it's driving.
+	if state == State.ARRIVING:
+		_update_arrival(delta)
+
 	for node in _scrollers:
-		node.position.z += DRIVE_SPEED * delta
+		node.position.z += _speed * delta
 		if node.position.z > 30.0:
 			node.position.z -= ROAD_LENGTH
 			if node.has_meta("side"):
 				node.position.x = float(node.get_meta("side")) * randf_range(5.5, 20.0)
 
 	# Bumpy road: the car bobs and sways a little.
-	_car.position.y = sin(_time * 9.0) * 0.008 + sin(_time * 2.3) * 0.012
-	_car.rotation.z = sin(_time * 1.7) * 0.006
-	_car.rotation.x = sin(_time * 3.1) * 0.003
+	var shake := _speed / DRIVE_SPEED
+	_car.position.y = (sin(_time * 9.0) * 0.008 + sin(_time * 2.3) * 0.012) * shake
+	_car.rotation.z = sin(_time * 1.7) * 0.006 * shake
+	_car.rotation.x = sin(_time * 3.1) * 0.003 * shake
 
 	# Characters breathe and sway with the car.
 	for id: String in _figures:
@@ -162,7 +189,10 @@ func _process(delta: float) -> void:
 	# Glide the camera toward where it should be right now.
 	var pos := MENU_CAM_POS + Vector3(sin(_time * 0.21) * 0.35, sin(_time * 0.33) * 0.08, 0.0)
 	var look := MENU_CAM_TARGET
-	if state == State.SELECT:
+	if state == State.ARRIVING:
+		pos = ARRIVE_CAM_POS
+		look = ARRIVE_CAM_TARGET
+	elif state == State.SELECT:
 		if hovered != "":
 			pos = CHARACTERS[hovered]["side_cam"]
 			look = CHARACTERS[hovered]["side_look"]
@@ -176,6 +206,10 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if state == State.ARRIVING:
+		if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_cancel"):
+			_finish_arrival()  # skip the drive
+		return
 	if state != State.SELECT:
 		return
 	if event.is_action_pressed("ui_cancel"):
@@ -227,6 +261,17 @@ func _set_state(new_state: State) -> void:
 	_refresh_highlights()
 
 
+## The title/buttons part of the screen (main_menu.tscn).
+func get_menu_ui() -> Control:
+	return _menu
+
+
+## Move into the car to pick a character (main.gd calls this once the game
+## is hosted or the join went through).
+func enter_select() -> void:
+	_on_play_requested()
+
+
 func _on_play_requested(_a: Variant = null, _b: Variant = null) -> void:
 	if state == State.MENU:
 		_set_state(State.SELECT)
@@ -265,16 +310,62 @@ func _confirm() -> void:
 	if selected == "":
 		return
 	character_confirmed.emit(selected)
-	var network := get_node_or_null("/root/NetworkManager")
-	if network and network.has_method("select_character"):
-		network.select_character(selected)
-	var game_state := get_node_or_null("/root/GameState")
-	if game_state and "chosen_character" in game_state:
-		game_state.chosen_character = selected
-	if ResourceLoader.exists(LOBBY_SCENE):
-		get_tree().change_scene_to_file(LOBBY_SCENE)
+	if not embedded:
+		var network := get_node_or_null("/root/NetworkManager")
+		if network and network.has_method("select_character"):
+			network.select_character(selected)
+		var game_state := get_node_or_null("/root/GameState")
+		if game_state and "chosen_character" in game_state:
+			game_state.chosen_character = selected
+	_start_arrival()
+
+
+# ------------------------------------------------------------------ Arrival
+
+## The car drives up to the Blackwater Weather Station and stops at the gate.
+func _start_arrival() -> void:
+	state = State.ARRIVING
+	hovered = ""
+	_arrived = false
+	_select_ui.hide()
+	_refresh_highlights()
+	_station.position.z = STATION_START_Z
+	_station.show()
+	var tween := create_tween()
+	tween.tween_interval(2.5)
+	tween.tween_property(_arrival_label, "modulate:a", 1.0, 2.0)
+
+
+func _update_arrival(delta: float) -> void:
+	_station.position.z += _speed * delta
+	# Brake smoothly so the gate stops right in front of the car.
+	var remaining := STATION_STOP_Z - _station.position.z
+	if remaining > 0.05 and _speed > 0.3:
+		_speed = maxf(_speed - (_speed * _speed) / (2.0 * remaining) * delta, 0.3)
 	else:
-		_hint.text = "%s CHOSEN. (LOBBY SCENE NOT BUILT YET)" % CHARACTERS[selected]["name"]
+		_speed = 0.0
+		if not _arrived:
+			_arrived = true
+			get_tree().create_timer(2.0).timeout.connect(_finish_arrival)
+	# Trees past the gate would stand inside the station grounds, so hide them.
+	for tree in _trees:
+		tree.visible = tree.position.z > _station.position.z + 3.0 or absf(tree.position.x) > 40.0
+
+
+func _finish_arrival() -> void:
+	if state != State.ARRIVING or _fade.visible:
+		return
+	_fade.show()
+	var tween := create_tween()
+	tween.tween_property(_fade, "color:a", 1.0, 1.5)
+	tween.tween_callback(func() -> void:
+		if embedded:
+			arrived.emit(selected)
+		elif ResourceLoader.exists(LOBBY_SCENE):
+			get_tree().change_scene_to_file(LOBBY_SCENE)
+		else:
+			_arrival_label.get_parent().move_child(_arrival_label, -1)
+			_arrival_label.text = "%s HAS ARRIVED.\n(LOBBY SCENE NOT BUILT YET)" % CHARACTERS[selected]["name"])
 
 
 func _refresh_highlights() -> void:
@@ -442,12 +533,97 @@ func _build_road_and_forest() -> void:
 			tree.add_child(cone)
 		add_child(tree)
 		_scrollers.append(tree)
+		_trees.append(tree)
 
 	# A few old road signs and reflector posts passing by.
 	var post_mat := _mat(Color(0.5, 0.5, 0.48), 0.5, Color(0.9, 0.8, 0.5), 0.25)
 	for i in 12:
 		var post := _box(self, Vector3(0.08, 0.9, 0.08), Vector3(5.1, 0.45, 25.0 - i * 14.0), post_mat)
 		_scrollers.append(post)
+
+
+## The Blackwater Weather Station: fence and gate on the road, the 1960s
+## building behind it (left wing, taller center entrance block with a mural
+## over glass doors, right wing with a weather tower on the roof).
+## Simple shapes for now; replace with a real model later.
+func _build_station() -> void:
+	_station = Node3D.new()
+	_station.position = Vector3(0.9, 0.0, STATION_START_Z)
+	_station.hide()
+	add_child(_station)
+
+	var concrete := _mat(Color(0.5, 0.5, 0.47), 0.95)
+	var dark_glass := _mat(Color(0.03, 0.035, 0.04), 0.2)
+	var lit_glass := _mat(Color(0.3, 0.25, 0.15), 0.3, Color(1.0, 0.75, 0.4), 0.6)
+	var metal := _mat(Color(0.3, 0.3, 0.3), 0.5)
+	var fence_mesh := _mat(Color(0.45, 0.45, 0.45, 0.25), 0.6)
+
+	# Fence along the gate line, with a rolling gate across the road.
+	for i in 21:
+		var px: float = -40.0 + i * 4.0
+		if absf(px) < 3.9:
+			continue
+		_box(_station, Vector3(0.08, 2.4, 0.08), Vector3(px, 1.2, 0), metal)
+	for side in [-1.0, 1.0]:
+		_box(_station, Vector3(36.0, 2.2, 0.02), Vector3(side * 22.0, 1.1, 0), fence_mesh)
+		_box(_station, Vector3(36.0, 0.05, 0.05), Vector3(side * 22.0, 2.4, 0), metal)
+		_box(_station, Vector3(0.16, 2.8, 0.16), Vector3(side * 4.0, 1.4, 0), metal)
+	_box(_station, Vector3(7.8, 2.2, 0.03), Vector3(0, 1.15, 0), fence_mesh)
+	_box(_station, Vector3(7.8, 0.06, 0.06), Vector3(0, 2.25, 0), metal)
+	_box(_station, Vector3(7.8, 0.06, 0.06), Vector3(0, 0.1, 0), metal)
+
+	# Warning sign on the gate.
+	_box(_station, Vector3(1.6, 0.9, 0.03), Vector3(1.6, 1.4, 0.05), _mat(Color(0.75, 0.72, 0.62)))
+	var sign_text := Label3D.new()
+	sign_text.text = "U.S. GOVERNMENT PROPERTY\nBLACKWATER WEATHER STATION\nNO TRESPASSING"
+	sign_text.position = Vector3(1.6, 1.4, 0.08)
+	sign_text.font_size = 22
+	sign_text.pixel_size = 0.0035
+	sign_text.modulate = Color(0.12, 0.08, 0.06)
+	sign_text.outline_size = 0
+	_station.add_child(sign_text)
+
+	# The building, 25-30 m behind the gate.
+	_box(_station, Vector3(22.0, 7.0, 12.0), Vector3(-19.5, 3.5, -30.0), concrete)   # left wing
+	_box(_station, Vector3(17.0, 10.5, 14.0), Vector3(0.0, 5.25, -29.0), concrete)   # center block
+	_box(_station, Vector3(26.0, 8.0, 12.0), Vector3(21.5, 4.0, -30.0), concrete)    # right wing
+	var front_wing := -24.0 + 0.06
+	var front_center := -22.0 + 0.06
+	# Left wing windows: two rows.
+	for row in [2.0, 4.8]:
+		for wx in [-28.0, -23.5, -19.0, -14.5, -10.5]:
+			var lit: bool = row == 4.8 and wx == -19.0
+			_box(_station, Vector3(2.6, 1.3, 0.1), Vector3(wx, row, front_wing), lit_glass if lit else dark_glass)
+	# Right wing: big grid windows.
+	for row in [2.2, 5.6]:
+		for wx in [12.0, 19.0, 26.0, 32.0]:
+			_box(_station, Vector3(5.0, 1.9, 0.1), Vector3(wx, row, front_wing), dark_glass)
+	# Center block: small windows beside the mural, mural, canopy, glass doors.
+	for wx in [-6.5, -4.0, 4.0, 6.5]:
+		for row in [3.4, 5.6, 7.8]:
+			_box(_station, Vector3(0.8, 1.0, 0.1), Vector3(wx, row, front_center), dark_glass)
+	_box(_station, Vector3(4.4, 3.6, 0.1), Vector3(0.0, 7.6, front_center), _mat(Color(0.18, 0.16, 0.14)))  # mural
+	_box(_station, Vector3(6.0, 0.25, 1.6), Vector3(0.0, 3.2, front_center + 0.8), concrete)               # canopy
+	_box(_station, Vector3(3.8, 3.0, 0.1), Vector3(0.0, 1.5, front_center), _mat(Color(0.05, 0.06, 0.06), 0.2, Color(0.4, 0.9, 0.7), 0.15))
+	# Weather tower and antenna on the right wing roof.
+	_box(_station, Vector3(0.25, 9.0, 0.25), Vector3(26.0, 12.5, -31.0), metal)
+	_box(_station, Vector3(2.4, 0.1, 0.1), Vector3(26.0, 16.2, -31.0), metal)
+	_box(_station, Vector3(0.1, 0.1, 2.0), Vector3(26.0, 15.0, -31.0), metal)
+
+	# Lights: a floodlight over the doors and a lamp at the gate.
+	var flood := OmniLight3D.new()
+	flood.position = Vector3(0.0, 4.0, -19.5)
+	flood.light_color = Color(1.0, 0.85, 0.6)
+	flood.light_energy = 2.0
+	flood.omni_range = 14.0
+	_station.add_child(flood)
+	_box(_station, Vector3(0.12, 4.5, 0.12), Vector3(-5.0, 2.25, 0.4), metal)
+	var gate_lamp := OmniLight3D.new()
+	gate_lamp.position = Vector3(-5.0, 4.6, 0.6)
+	gate_lamp.light_color = Color(0.85, 0.9, 1.0)
+	gate_lamp.light_energy = 1.4
+	gate_lamp.omni_range = 9.0
+	_station.add_child(gate_lamp)
 
 
 func _build_car() -> void:
@@ -674,11 +850,29 @@ func _build_ui() -> void:
 	_menu = MENU_UI.instantiate()
 	_menu.show_background = false
 	_menu.auto_go_to_lobby = false
+	_menu.embedded = embedded
 	layer.add_child(_menu)
-	_menu.host_requested.connect(_on_play_requested)
-	_menu.join_requested.connect(_on_play_requested)
+	if not embedded:  # in the game, main.gd calls enter_select() when ready
+		_menu.host_requested.connect(_on_play_requested)
+		_menu.join_requested.connect(_on_play_requested)
 
 	_build_select_ui(layer)
+
+	_arrival_label = Label.new()
+	_arrival_label.text = "BLACKWATER WEATHER STATION\nOCTOBER 14, 2015   03:52 AM"
+	_arrival_label.theme = _menu.theme
+	_arrival_label.add_theme_font_size_override("font_size", 22)
+	_arrival_label.add_theme_color_override("font_color", COLOR_TEXT)
+	_arrival_label.position = Vector2(88, 72)
+	_arrival_label.modulate.a = 0.0
+	layer.add_child(_arrival_label)
+
+	_fade = ColorRect.new()
+	_fade.color = Color(0, 0, 0, 0)
+	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fade.hide()
+	layer.add_child(_fade)
 
 
 func _build_select_ui(layer: CanvasLayer) -> void:

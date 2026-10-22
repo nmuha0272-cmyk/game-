@@ -9,9 +9,9 @@ WHAT'S INSIDE (scenes/main_menu/)
                              Only used if you open main_menu.tscn by itself.
 
 SET UP
-1. (Already in the project, in scenes/main_menu/deepwell/.)
+1. Copy the "scenes/main_menu" folder into your project's "scenes" folder.
 2. Project > Project Settings > Application > Run > Main Scene:
-   res://scenes/main_menu/deepwell/main_menu_car.tscn
+   res://scenes/main_menu/main_menu_car.tscn
 3. Press F5.
 
 HOW IT WORKS
@@ -19,7 +19,10 @@ HOW IT WORKS
   select. Eli drives, Cole sits next to him, Nora and Walter are in the back.
 - Hover over a name card (or a character) and the camera glides to that
   character and shows what they can do. Click to choose, then "PLAY AS ...".
-  Arrow keys + Enter work too. Esc goes back.
+  Arrow keys + Enter work too (and a controller's d-pad + A). Esc goes back.
+- After "PLAY AS ...", the camera moves behind the car and it drives up to the
+  gate of the Blackwater Weather Station, stops, and fades to black, then
+  opens the lobby. Press Enter or Esc to skip the drive.
 - Host/Join call your NetworkManager autoload if it exists:
   host_game(port), join_game(ip, port), select_character(id).
 - When a character is confirmed, the scene emits character_confirmed(id),

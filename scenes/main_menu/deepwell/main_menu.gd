@@ -10,6 +10,13 @@ extends Control
 
 signal host_requested(port: int)
 signal join_requested(ip: String, port: int)
+## Only used when `embedded`: the game's own Settings menu should open.
+signal settings_requested
+
+## True when this menu runs inside the game's main scene (scenes/main.tscn).
+## Then it only emits signals: main.gd does the hosting/joining and opens the
+## game's own Settings (so the two don't fight over settings.cfg).
+var embedded := false
 
 const LOBBY_SCENE := "res://scenes/lobby/lobby.tscn"
 const AMBIENCE_PATH := "res://assets/audio/menu_ambience.ogg"
@@ -122,7 +129,7 @@ func _connect_signals() -> void:
 
 	host_button.pressed.connect(_on_host_pressed)
 	join_button.pressed.connect(_show_panel.bind(join_panel))
-	settings_button.pressed.connect(_show_panel.bind(settings_panel))
+	settings_button.pressed.connect(_on_settings_pressed)
 	credits_button.pressed.connect(_show_panel.bind(credits_panel))
 	quit_button.pressed.connect(_on_quit_pressed)
 
@@ -188,9 +195,23 @@ func _show_panel(panel: Control) -> void:
 
 # ---------------------------------------------------------------- Networking
 
+func _on_settings_pressed() -> void:
+	if embedded:
+		settings_requested.emit()
+	else:
+		_show_panel(settings_panel)
+
+
+## Shows a line of text under the buttons (main.gd uses this for errors).
+func show_status(text: String, is_error := false) -> void:
+	_set_status(text.to_upper(), COLOR_RED if is_error else COLOR_HIGHLIGHT)
+
+
 func _on_host_pressed() -> void:
 	_set_status("STARTING SERVER ON PORT %d..." % DEFAULT_PORT, COLOR_HIGHLIGHT)
 	host_requested.emit(DEFAULT_PORT)
+	if embedded:
+		return
 
 	var network := get_node_or_null("/root/NetworkManager")
 	if network and network.has_method("host_game"):
@@ -212,6 +233,8 @@ func _on_connect_pressed() -> void:
 	_set_status("CONNECTING TO %s:%d..." % [ip, port], COLOR_HIGHLIGHT)
 	_save_setting("network", "last_ip", ip)
 	join_requested.emit(ip, port)
+	if embedded:
+		return
 
 	var network := get_node_or_null("/root/NetworkManager")
 	if network and network.has_method("join_game"):
@@ -249,8 +272,9 @@ func _load_settings() -> void:
 	fullscreen_toggle.button_pressed = _config.get_value("video", "fullscreen", false)
 	ip_input.text = _config.get_value("network", "last_ip", "127.0.0.1")
 	port_input.text = str(DEFAULT_PORT)
-	_apply_volume(volume_slider.value)
-	_apply_brightness(brightness_slider.value)
+	if not embedded:  # in the game, Settings (the autoload) owns these
+		_apply_volume(volume_slider.value)
+		_apply_brightness(brightness_slider.value)
 
 
 func _save_setting(section: String, key: String, value: Variant) -> void:
