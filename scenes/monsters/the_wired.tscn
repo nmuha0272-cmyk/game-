@@ -136,8 +136,9 @@ chase_speed = 4.0
 script = ExtResource("1_monster")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-animation_library = ExtResource("39_monster_anim_lib")
-playback_process_mode = 1
+libraries = {
+&"": ExtResource("39_monster_anim_lib")
+}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)

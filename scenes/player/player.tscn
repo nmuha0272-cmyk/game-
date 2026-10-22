@@ -81,8 +81,9 @@ shape = SubResource("Shape_body")
 script = ExtResource("cm_script")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-animation_library = ExtResource("24_anim_lib")
-playback_process_mode = 1
+libraries = {
+&"": ExtResource("24_anim_lib")
+}
 
 [node name="Stamina" type="Node" parent="."]
 script = ExtResource("2_stamina")

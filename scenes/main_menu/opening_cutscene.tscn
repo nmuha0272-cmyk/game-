@@ -19,8 +19,9 @@ grow_vertical = 2
 script = ExtResource("1_opening")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-animation_library = ExtResource("2_cutscene_anim_lib")
-playback_process_mode = 1
+libraries = {
+&"": ExtResource("2_cutscene_anim_lib")
+}
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
