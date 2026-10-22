@@ -90,7 +90,7 @@ void ASZTheWardenAIController::SetTrap(FVector Location, FName TrapType)
 void ASZTheWardenAIController::EvaluateTactics()
 {
 	// Simple tactical AI - could be expanded significantly
-	if (LastKnownPlayerLocation.IsValid())
+	if (IsValid(LastKnownPlayerLocation))
 	{
 		// Has recent contact - choose aggressive tactic
 		float Rand = FMath::FRand();

@@ -7,6 +7,7 @@
 #include "SZChapterData.generated.h"
 
 class UWorld;
+class UUserWidget;
 class USZCharacterData;
 
 UENUM(BlueprintType)

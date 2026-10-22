@@ -96,7 +96,7 @@ protected:
 	TObjectPtr<USZChapterData> CurrentChapter = nullptr;
 
 	UPROPERTY()
-	FName SaveSlotName = TEXT("SubjectZero_Save");
+	FString SaveSlotName = TEXT("SubjectZero_Save");
 
 	UPROPERTY()
 	int32 SaveUserIndex = 0;

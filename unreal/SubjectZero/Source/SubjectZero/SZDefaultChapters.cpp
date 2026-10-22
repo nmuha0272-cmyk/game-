@@ -2,6 +2,7 @@
 #include "SZChapterManager.h"
 #include "SZChapterData.h"
 #include "SZCharacterData.h"
+#include "SZDefaultCharacters.h"
 #include "Engine/Engine.h"
 
 void USZDefaultChapters::RegisterDefaultChapters(USZChapterManager* ChapterManager)

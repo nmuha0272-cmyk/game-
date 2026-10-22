@@ -132,7 +132,7 @@ void USZDefaultItems::RegisterDefaultItems(TArray<TObjectPtr<USZItemData>>& OutI
 	{
 		FGameplayTagContainer Tags;
 		Tags.AddTag(FGameplayTag::RequestGameplayTag(FName("Item.CarBattery")));
-		USZItemData* CarBattery = CreateItem(FName("Item_CarBattery"), FText::FromString(TEXT("Car Battery")), 
+		CreateItem(FName("Item_CarBattery"), FText::FromString(TEXT("Car Battery")), 
 			FText::FromString(TEXT("Powers a single heavy machine. Heavy item - only the Guard carries at normal speed.")),
 			ESZItemCategory::Heavy, ESZItemRarity::Uncommon, Tags, false, 1, true, 5.f);
 	}

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
+#include "SZInventorySystem.h"
 #include "SZItemData.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
@@ -63,7 +64,7 @@ public:
 	bool bIsRanged = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item|Weapon")
-	TSubclassOf<class AProjectile> ProjectileClass;
+	TSubclassOf<class AActor> ProjectileClass;  // no projectile class yet
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item|Consumable")
 	float HealthRestore = 0.f;

@@ -10,6 +10,8 @@ class SUBJECTZERO_API USZVIGILData : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 public:
+	USZVIGILData();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "VIGIL")
 	FText OrganizationName;
 

@@ -209,7 +209,7 @@ public:
 	FOnCraftingResult OnCraftingResult;
 
 protected:
-	UPROPERTY()
+	// Not a UPROPERTY: Unreal doesn't allow a TArray inside a TMap there.
 	TMap<int32, TArray<FSZInventorySlot>> PlayerInventories; // PlayerId -> Slots
 
 	UPROPERTY()
@@ -225,7 +225,7 @@ protected:
 	TArray<FSZCraftingRecipe> CraftingRecipes;
 
 	UPROPERTY()
-	FName SaveSlotName = TEXT("SubjectZero_InventorySave");
+	FString SaveSlotName = TEXT("SubjectZero_InventorySave");
 
 	UPROPERTY()
 	int32 SaveUserIndex = 0;

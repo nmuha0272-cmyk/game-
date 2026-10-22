@@ -6,6 +6,7 @@
 
 class UCameraComponent;
 class USpotLightComponent;
+class UStaticMeshComponent;
 class ASZInteractable;
 
 /**

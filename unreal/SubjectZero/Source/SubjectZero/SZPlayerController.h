@@ -3,11 +3,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Brushes/SlateColorBrush.h"
+#include "Input/Reply.h"
 #include "SZPlayerController.generated.h"
 
 class SEditableTextBox;
 class SWidget;
-class SListView;
+template <typename ItemType> class SListView;
 class USZChapterData;
 class USZChapterManager;
 
@@ -57,12 +58,14 @@ public:
 protected:
 	void ShowMenu();
 	void HideMenu();
+	void HideChapterSelectMenu();
 	void BackToMenu();
 
 	FReply OnHostClicked();
 	FReply OnJoinClicked();
 	FReply OnQuitClicked();
 	FReply OnChapterSelectClicked();
+	FReply OnChapterSelectBackClicked();
 
 	void RefreshChapterList();
 

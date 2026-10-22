@@ -60,6 +60,11 @@ void USZJournalWidget::SelectTab(int32 TabIndex)
 	PopulateLoreList();
 }
 
+void USZJournalWidget::SelectLoreEntry(UObject* EntryObject)
+{
+	OnLoreEntrySelected(EntryObject);
+}
+
 void USZJournalWidget::OnTabFilesClicked() { SelectTab(0); }
 void USZJournalWidget::OnTabTapesClicked() { SelectTab(1); }
 void USZJournalWidget::OnTabPhotosClicked() { SelectTab(2); }
@@ -147,11 +152,11 @@ void USZJournalWidget::ShowLoreDetail(const FSZChapterLoreItem& LoreItem)
 			FString OwnerName;
 			switch (LoreItem.OwnerCharacter)
 			{
-				case ESZCharacterID::EliReyes: OwnerName = "The Son (Eli)"; break;
-				case ESZCharacterID::NoraVance: OwnerName = "The Journalist (Nora)"; break;
-				case ESZCharacterID::WalterKessler: OwnerName = "The Engineer (Walter)"; break;
-				case ESZCharacterID::ColeBrennan: OwnerName = "The Guard (Cole)"; break;
-				default: OwnerName = "Unknown"; break;
+				case ESZCharacterID::EliReyes: OwnerName = TEXT("The Son (Eli)"); break;
+				case ESZCharacterID::NoraVance: OwnerName = TEXT("The Journalist (Nora)"); break;
+				case ESZCharacterID::WalterKessler: OwnerName = TEXT("The Engineer (Walter)"); break;
+				case ESZCharacterID::ColeBrennan: OwnerName = TEXT("The Guard (Cole)"); break;
+				default: OwnerName = TEXT("Unknown"); break;
 			}
 			DetailOwnerText->SetText(FText::FromString(FString::Printf(TEXT("Personal Item: %s"), *OwnerName)));
 			DetailOwnerText->SetVisibility(ESlateVisibility::Visible);

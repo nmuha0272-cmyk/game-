@@ -4,6 +4,8 @@
 #include "SZInteractable.h"
 #include "SZDoor.generated.h"
 
+class UStaticMeshComponent;
+
 /** A door anyone can open or close with E. It swings on its hinge. */
 UCLASS()
 class SUBJECTZERO_API ASZDoor : public ASZInteractable

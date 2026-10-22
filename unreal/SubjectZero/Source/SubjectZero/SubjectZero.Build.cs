@@ -11,7 +11,7 @@ public class SubjectZero : ModuleRules
 			"Slate", "SlateCore",
 			"Json", "JsonUtilities",
 			"GeometryCore", "GeometryFramework", "GeometryScriptingCore",
-			"GameplayTags", "UMG", "Slate", "SlateCore",
+			"GameplayTags", "UMG",
 			"AIModule", "NavigationSystem", "GameplayTasks",
 		});
 	}

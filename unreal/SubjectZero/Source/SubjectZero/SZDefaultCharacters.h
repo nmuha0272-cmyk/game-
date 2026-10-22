@@ -17,6 +17,6 @@ class SUBJECTZERO_API USZDefaultCharacters : public UObject
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Character|Setup")
+	// Not a UFUNCTION: Blueprints can't take a TMap of TObjectPtr by reference.
 	static void RegisterDefaultCharacters(TMap<ESZCharacterID, TObjectPtr<USZCharacterData>>& OutCharacterRegistry);
 };

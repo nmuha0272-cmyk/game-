@@ -81,6 +81,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = "Monster|Behavior")
 	void OnPlayerSpotted(APawn* PlayerPawn);
 
+	/** Bound to USZVoiceChatManager::OnVoiceNoiseEvent. */
+	UFUNCTION()
+	void OnVoiceNoiseEventReceived(FVector Location, float Radius, int32 PlayerId);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Monster|State")
 	ESZMonsterState CurrentState = ESZMonsterState::Patrol;

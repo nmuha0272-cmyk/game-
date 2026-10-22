@@ -3,6 +3,7 @@
 #include "NavigationSystem.h"
 #include "GameFramework/Character.h"
 #include "Engine/World.h"
+#include "Engine/GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 ASZMonsterAIController::ASZMonsterAIController()
@@ -170,8 +171,8 @@ void ASZMonsterAIController::UpdateState(float DeltaTime)
 
 void ASZMonsterAIController::HandlePatrolState(float DeltaTime)
 {
-	APawn* Pawn = GetPawn();
-	if (!Pawn || PatrolPoints.Num() == 0)
+	APawn* MyPawn = GetPawn();
+	if (!MyPawn || PatrolPoints.Num() == 0)
 	{
 		return;
 	}
@@ -181,7 +182,7 @@ void ASZMonsterAIController::HandlePatrolState(float DeltaTime)
 		if (!NavSys->IsNavigationBeingBuiltOrStreamed())
 		{
 			FVector TargetPoint = GetNextPatrolPoint();
-			float Distance = FVector::Dist(Pawn->GetActorLocation(), TargetPoint);
+			float Distance = FVector::Dist(MyPawn->GetActorLocation(), TargetPoint);
 			
 			if (Distance < 100.f)
 			{
@@ -203,8 +204,8 @@ void ASZMonsterAIController::HandlePatrolState(float DeltaTime)
 
 void ASZMonsterAIController::HandleInvestigateState(float DeltaTime)
 {
-	APawn* Pawn = GetPawn();
-	if (!Pawn || !LastKnownPlayerLocation.IsValid())
+	APawn* MyPawn = GetPawn();
+	if (!MyPawn || !IsValid(LastKnownPlayerLocation))
 	{
 		return;
 	}
@@ -213,7 +214,7 @@ void ASZMonsterAIController::HandleInvestigateState(float DeltaTime)
 	{
 		MoveToActor(LastKnownPlayerLocation.Get());
 		
-		float Distance = FVector::Dist(Pawn->GetActorLocation(), LastKnownPlayerLocation->GetActorLocation());
+		float Distance = FVector::Dist(MyPawn->GetActorLocation(), LastKnownPlayerLocation->GetActorLocation());
 		if (Distance < 200.f)
 		{
 			// Reached noise location, search
@@ -224,8 +225,8 @@ void ASZMonsterAIController::HandleInvestigateState(float DeltaTime)
 
 void ASZMonsterAIController::HandleChaseState(float DeltaTime)
 {
-	APawn* Pawn = GetPawn();
-	if (!Pawn || !LastKnownPlayerLocation.IsValid())
+	APawn* MyPawn = GetPawn();
+	if (!MyPawn || !IsValid(LastKnownPlayerLocation))
 	{
 		SetMonsterState(ESZMonsterState::Search);
 		return;
@@ -267,13 +268,13 @@ bool ASZMonsterAIController::CanSeePlayer(APawn* PlayerPawn) const
 		return false;
 	}
 
-	APawn* Pawn = GetPawn();
-	if (!Pawn)
+	APawn* MyPawn = GetPawn();
+	if (!MyPawn)
 	{
 		return false;
 	}
 
-	FVector ToPlayer = PlayerPawn->GetActorLocation() - Pawn->GetActorLocation();
+	FVector ToPlayer = PlayerPawn->GetActorLocation() - MyPawn->GetActorLocation();
 	float Distance = ToPlayer.Size();
 	
 	if (Distance > SightRange)
@@ -281,7 +282,7 @@ bool ASZMonsterAIController::CanSeePlayer(APawn* PlayerPawn) const
 		return false;
 	}
 
-	FVector Forward = Pawn->GetActorForwardVector();
+	FVector Forward = MyPawn->GetActorForwardVector();
 	ToPlayer.Normalize();
 	
 	float Dot = FVector::DotProduct(Forward, ToPlayer);
@@ -297,13 +298,13 @@ float ASZMonsterAIController::CalculateNoiseInterest(const FSZNoiseEvent& NoiseE
 		return 0.f;
 	}
 
-	APawn* Pawn = GetPawn();
-	if (!Pawn)
+	APawn* MyPawn = GetPawn();
+	if (!MyPawn)
 	{
 		return 0.f;
 	}
 
-	float Distance = FVector::Dist(Pawn->GetActorLocation(), NoiseEvent.Location);
+	float Distance = FVector::Dist(MyPawn->GetActorLocation(), NoiseEvent.Location);
 	float EffectiveRadius = NoiseEvent.Radius * HearingRangeMultiplier;
 
 	// Check for walkie-talkie noise bonus

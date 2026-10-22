@@ -24,4 +24,7 @@ public:
 protected:
 	UPROPERTY()
 	TObjectPtr<USZChapterManager> ChapterManager;
+
+	/** Which spawn point the next player gets. */
+	int32 NextSpawn = 0;
 };

@@ -63,7 +63,10 @@ USZChapterData* USZChapterManager::GetChapterByIndex(int32 ChapterIndex) const
 TArray<USZChapterData*> USZChapterManager::GetAllChapters() const
 {
 	TArray<USZChapterData*> Result;
-	ChapterRegistry.GenerateValueArray(Result);
+	for (const auto& Pair : ChapterRegistry)
+	{
+		Result.Add(Pair.Value);
+	}
 	Result.Sort([](const USZChapterData& A, const USZChapterData& B) {
 		return A.GetChapterIndex() < B.GetChapterIndex();
 	});
@@ -246,7 +249,7 @@ void USZChapterManager::ResetAllProgress()
 		{
 			const ESZChapterState InitialState = (Pair.Value->GetChapterIndex() == 0) 
 				? ESZChapterState::Available 
-				::ESZChapterState::Locked;
+				: ESZChapterState::Locked;
 			ChapterStates.Add(Pair.Key, InitialState);
 		}
 	}

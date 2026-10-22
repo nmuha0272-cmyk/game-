@@ -12,6 +12,7 @@
 #include "Components/PointLightComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Dom/JsonObject.h"
+#include "Engine/CollisionProfile.h"
 #include "DynamicMeshActor.h"
 #include "Engine/DirectionalLight.h"
 #include "Engine/ExponentialHeightFog.h"

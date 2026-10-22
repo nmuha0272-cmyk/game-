@@ -1,5 +1,7 @@
 #include "SZVoiceChatManager.h"
 #include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 
 void USZVoiceChatManager::Initialize(FSubsystemCollectionBase& Collection)

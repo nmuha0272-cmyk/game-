@@ -18,6 +18,6 @@ class SUBJECTZERO_API USZDefaultItems : public UObject
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Item|Setup")
+	// Not a UFUNCTION: Blueprints can't take a TArray of TObjectPtr by reference.
 	static void RegisterDefaultItems(TArray<TObjectPtr<USZItemData>>& OutItemRegistry);
 };

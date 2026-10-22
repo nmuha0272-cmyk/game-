@@ -34,4 +34,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster|TheSealed")
 	float KnockInvestigationChance = 0.3f;
+
+	FTimerHandle KnockTimerHandle;
+
+	void CheckDoorKnock();
 };

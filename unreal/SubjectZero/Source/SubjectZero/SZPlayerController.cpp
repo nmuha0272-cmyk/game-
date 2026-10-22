@@ -12,6 +12,7 @@
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Text/STextBlock.h"
 #include "Widgets/Views/SListView.h"
+#include "Widgets/Views/STableRow.h"
 #include "SZChapterManager.h"
 #include "SZChapterData.h"
 #include "Engine/GameInstance.h"
@@ -202,7 +203,7 @@ void ASZPlayerController::ShowChapterSelectMenu()
 					})
 					.OnSelectionChanged_Lambda([this](TSharedPtr<FSZChapterMenuEntry> Entry, ESelectInfo::Type)
 					{
-						if (Entry.IsValid() && Entry->ChapterData.IsValid() && Entry->bIsAvailable)
+						if (Entry.IsValid() && IsValid(Entry->ChapterData) && Entry->bIsAvailable)
 						{
 							OnChapterSelected(Entry->ChapterData.Get());
 						}

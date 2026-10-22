@@ -65,14 +65,13 @@ public:
 	FOnPersonalItemUnlocked OnPersonalItemUnlocked;
 
 protected:
-	UPROPERTY()
+	// Not UPROPERTYs: Unreal doesn't allow a TSet inside a TMap there.
 	TMap<FName, TSet<FName>> DiscoveredLoreByChapter; // ChapterName -> LoreIDs
 
-	UPROPERTY()
 	TMap<FName, TSet<FName>> UnlockedPersonalItemsByChapter; // ChapterName -> LoreIDs
 
 	UPROPERTY()
-	FName SaveSlotName = TEXT("SubjectZero_LoreSave");
+	FString SaveSlotName = TEXT("SubjectZero_LoreSave");
 
 	UPROPERTY()
 	int32 SaveUserIndex = 0;

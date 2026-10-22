@@ -78,4 +78,6 @@ protected:
 
 	UPROPERTY()
 	float TacticTimer = 0.f;
+
+	void EvaluateTactics();
 };

@@ -50,6 +50,3 @@ void ASZTheSealedAIController::CheckDoorKnock()
 		OnDoorKnocked();
 	}
 }
-
-UPROPERTY()
-FTimerHandle KnockTimerHandle;

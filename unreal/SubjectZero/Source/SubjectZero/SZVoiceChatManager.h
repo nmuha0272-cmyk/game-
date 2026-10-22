@@ -28,34 +28,34 @@ struct FSZVoiceSettings
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	ESZVoiceChatMode ChatMode = ESZVoiceChatMode::OpenMic;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	float MicrophoneSensitivity = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	float VoiceDetectionThreshold = 0.1f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	bool bEnableVoiceDetection = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	bool bEnableProximityChat = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	float ProximityMaxDistance = 1000.f; // 10 meters in cm
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	float WhisperRadius = 300.f; // 3 meters
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	float NormalTalkRadius = 1000.f; // 10 meters
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	float YellRadius = 2500.f; // 25 meters
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Voice")
 	float WallOcclusionFactor = 0.3f;
 };
 

@@ -20,7 +20,7 @@ class SUBJECTZERO_API USZJournalWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Journal")
-	void InitializeJournal(USZLoreManager* LoreManager);
+	void InitializeJournal(USZLoreManager* InLoreManager);
 
 	UFUNCTION(BlueprintCallable, Category = "Journal")
 	void RefreshJournal();
