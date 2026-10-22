@@ -1,0 +1,712 @@
+{
+  "ammo": [
+    {
+      "id": "38",
+      "name": ".38 Speedloader"
+    },
+    {
+      "id": "9mm",
+      "name": "9mm Mag"
+    },
+    {
+      "id": "12ga",
+      "name": "12ga Shell"
+    },
+    {
+      "id": "308",
+      "name": ".308 Stripper Clip"
+    },
+    {
+      "id": "dart",
+      "name": "Tranq Dart"
+    },
+    {
+      "id": "flare_shell",
+      "name": "Flare Shell"
+    }
+  ],
+  "items": [
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Click to recharge your flashlight.",
+      "id": "battery",
+      "name": "Battery"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Fits into fuse boxes to power doors and machines.",
+      "id": "fuse",
+      "name": "Fuse"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Opens Green security doors. Just carry it.",
+      "id": "keycard_green",
+      "name": "Green Keycard"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Opens Yellow (and Green) security doors. Just carry it.",
+      "id": "keycard_yellow",
+      "name": "Yellow Keycard"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Opens every security door. Just carry it.",
+      "id": "keycard_red",
+      "name": "Red Keycard"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Pries open jammed doors (breaks after one use).",
+      "id": "crowbar",
+      "name": "Crowbar"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
+      "id": "flare",
+      "name": "Flare"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Click while looking at a downed teammate up close to revive them.",
+      "id": "medkit",
+      "name": "Med Kit"
+    },
+    {
+      "extra": {
+        "filter": 45.0
+      },
+      "heavy": false,
+      "hint": "Protects you in toxic gas while the filter lasts. Just carry it.",
+      "id": "gas_mask",
+      "name": "Gas Mask"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Click to radio your team (they see where you are). Careful: the Long Man hears the static!",
+      "id": "walkie",
+      "name": "Walkie-Talkie"
+    },
+    {
+      "extra": {
+        "pack_slots": 1
+      },
+      "heavy": false,
+      "hint": "Click to strap it on: adds 1 gear slot (up to 8).",
+      "id": "pouch",
+      "name": "Field Pouch"
+    },
+    {
+      "extra": {
+        "pack_slots": 2
+      },
+      "heavy": false,
+      "hint": "Click to strap it on: adds 2 gear slots (up to 8).",
+      "id": "backpack",
+      "name": "Backpack"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Play it on a tape machine to hear what's on it.",
+      "id": "reel_tape",
+      "name": "Reel Tape"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": true,
+      "hint": "Heavy! Powers a heavy machine. Only the Guard can carry it at full speed.",
+      "id": "car_battery",
+      "name": "Car Battery"
+    },
+    {
+      "extra": {
+
+      },
+      "heavy": false,
+      "hint": "Fuel for the power room generator.",
+      "id": "fuel_can",
+      "name": "Fuel Can"
+    },
+    {
+      "extra": {
+        "ammo_type": "38",
+        "rounds": 6
+      },
+      "heavy": false,
+      "hint": "Reloads your .38 Revolver. Click to add to your gun.",
+      "id": "ammo_38",
+      "name": ".38 Speedloader"
+    },
+    {
+      "extra": {
+        "ammo_type": "9mm",
+        "rounds": 15
+      },
+      "heavy": false,
+      "hint": "Reloads 9mm weapons. Click to add to your gun.",
+      "id": "ammo_9mm",
+      "name": "9mm Mag"
+    },
+    {
+      "extra": {
+        "ammo_type": "12ga",
+        "rounds": 6
+      },
+      "heavy": false,
+      "hint": "Reloads the shotgun. Click to add to your gun.",
+      "id": "ammo_12ga",
+      "name": "12ga Shells"
+    },
+    {
+      "extra": {
+        "ammo_type": "308",
+        "rounds": 5
+      },
+      "heavy": false,
+      "hint": "Reloads the bolt-action rifle. Click to add to your gun.",
+      "id": "ammo_308",
+      "name": ".308 Stripper Clip"
+    },
+    {
+      "extra": {
+        "ammo_type": "dart",
+        "rounds": 1
+      },
+      "heavy": false,
+      "hint": "Reloads the tranquilizer gun. Click to add to your gun.",
+      "id": "ammo_dart",
+      "name": "Tranq Dart"
+    },
+    {
+      "extra": {
+        "ammo_type": "flare_shell",
+        "rounds": 1
+      },
+      "heavy": false,
+      "hint": "Reloads the flare gun. Click to add to your gun.",
+      "id": "ammo_flare_shell",
+      "name": "Flare Shell"
+    },
+    {
+      "extra": {
+        "loaded": 6,
+        "reserve": {
+          "38": 6
+        },
+        "weapon": "revolver"
+      },
+      "heavy": false,
+      "hint": "Pick it up to arm yourself. Draw it with 4.",
+      "id": "weapon_revolver",
+      "name": ".38 Revolver"
+    },
+    {
+      "extra": {
+        "loaded": 15,
+        "reserve": {
+          "9mm": 15
+        },
+        "weapon": "pistol"
+      },
+      "heavy": false,
+      "hint": "Pick it up to arm yourself. Draw it with 4.",
+      "id": "weapon_pistol",
+      "name": "9mm Pistol"
+    },
+    {
+      "extra": {
+        "loaded": 12,
+        "reserve": {
+          "9mm": 12
+        },
+        "weapon": "suppressed_9mm"
+      },
+      "heavy": false,
+      "hint": "Quiet. Pick it up to arm yourself.",
+      "id": "weapon_suppressed_9mm",
+      "name": "Suppressed 9mm"
+    },
+    {
+      "extra": {
+        "loaded": 6,
+        "reserve": {
+          "12ga": 6
+        },
+        "weapon": "shotgun"
+      },
+      "heavy": false,
+      "hint": "Devastating up close. Pick it up to arm yourself.",
+      "id": "weapon_shotgun",
+      "name": "12ga Shotgun"
+    },
+    {
+      "extra": {
+        "loaded": 30,
+        "reserve": {
+          "9mm": 30
+        },
+        "weapon": "smg"
+      },
+      "heavy": false,
+      "hint": "Full auto. Pick it up to arm yourself.",
+      "id": "weapon_smg",
+      "name": "SMG"
+    },
+    {
+      "extra": {
+        "loaded": 5,
+        "reserve": {
+          "308": 5
+        },
+        "weapon": "rifle"
+      },
+      "heavy": false,
+      "hint": "High damage at range. Pick it up to arm yourself.",
+      "id": "weapon_rifle",
+      "name": "Bolt-Action Rifle"
+    },
+    {
+      "extra": {
+        "loaded": 1,
+        "reserve": {
+          "dart": 1
+        },
+        "weapon": "tranq"
+      },
+      "heavy": false,
+      "hint": "Stuns a monster. Pick it up to arm yourself.",
+      "id": "weapon_tranq",
+      "name": "Tranquilizer Gun"
+    },
+    {
+      "extra": {
+        "loaded": 1,
+        "reserve": {
+          "flare_shell": 1
+        },
+        "weapon": "flare_gun"
+      },
+      "heavy": false,
+      "hint": "Lights the area and draws monsters. Pick it up to arm yourself.",
+      "id": "weapon_flare_gun",
+      "name": "Flare Gun"
+    },
+    {
+      "extra": {
+        "durability": 150,
+        "max_durability": 150,
+        "weapon": "improvised_axe"
+      },
+      "heavy": false,
+      "hint": "Pipe with an axe head taped on. High damage, slow.",
+      "id": "weapon_improvised_axe",
+      "name": "Improvised Axe"
+    },
+    {
+      "extra": {
+        "durability": 120,
+        "max_durability": 120,
+        "weapon": "machete"
+      },
+      "heavy": false,
+      "hint": "Fast, causes bleeding.",
+      "id": "weapon_machete",
+      "name": "Machete"
+    },
+    {
+      "extra": {
+        "durability": 180,
+        "max_durability": 180,
+        "weapon": "gear_axe"
+      },
+      "heavy": false,
+      "hint": "Heavy industrial axe. Pierces armor.",
+      "id": "weapon_gear_axe",
+      "name": "Gear Axe"
+    },
+    {
+      "extra": {
+        "max_stack": 10
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Antiseptic to make a Med Kit.",
+      "id": "bandage",
+      "name": "Bandage"
+    },
+    {
+      "extra": {
+        "max_stack": 10
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Bandage to make a Med Kit.",
+      "id": "antiseptic",
+      "name": "Antiseptic"
+    },
+    {
+      "extra": {
+        "max_stack": 10
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Empty Shells to make Ammo.",
+      "id": "gunpowder",
+      "name": "Gunpowder"
+    },
+    {
+      "extra": {
+        "max_stack": 10
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Gunpowder to make Ammo.",
+      "id": "empty_shells",
+      "name": "Empty Shells"
+    },
+    {
+      "extra": {
+        "max_stack": 10
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Used in many recipes.",
+      "id": "duct_tape",
+      "name": "Duct Tape"
+    },
+    {
+      "extra": {
+        "max_stack": 10
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Base for melee weapons.",
+      "id": "pipe",
+      "name": "Pipe"
+    },
+    {
+      "extra": {
+        "max_stack": 5
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Battery to make a Sound Lure.",
+      "id": "alarm_clock",
+      "name": "Alarm Clock"
+    },
+    {
+      "extra": {
+        "max_stack": 10
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Alcohol + Lighter for Fire Bottle.",
+      "id": "cloth",
+      "name": "Cloth"
+    },
+    {
+      "extra": {
+        "max_stack": 10
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Cloth + Lighter for Fire Bottle.",
+      "id": "alcohol",
+      "name": "Alcohol"
+    },
+    {
+      "extra": {
+        "max_stack": 5
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Cloth + Alcohol for Fire Bottle.",
+      "id": "lighter",
+      "name": "Lighter"
+    },
+    {
+      "extra": {
+        "max_stack": 5
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Pipe + Duct Tape for Improvised Axe.",
+      "id": "axe_head",
+      "name": "Axe Head"
+    },
+    {
+      "extra": {
+        "max_stack": 10
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine for Machete.",
+      "id": "scrap_metal",
+      "name": "Scrap Metal"
+    },
+    {
+      "extra": {
+        "max_stack": 5
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Gears + Duct Tape for Gear Axe.",
+      "id": "heavy_pipe",
+      "name": "Heavy Pipe"
+    },
+    {
+      "extra": {
+        "max_stack": 5
+      },
+      "heavy": false,
+      "hint": "Crafting ingredient. Combine with Heavy Pipe + Duct Tape for Gear Axe.",
+      "id": "gears",
+      "name": "Gears"
+    },
+    {
+      "extra": {
+        "recipe_unlock": "ammo"
+      },
+      "heavy": false,
+      "hint": "Shows how to craft ammo: Gunpowder + Empty Shells.",
+      "id": "recipe_ammo",
+      "name": "Note: Ammo Recipe"
+    },
+    {
+      "extra": {
+        "recipe_unlock": "improvised_axe"
+      },
+      "heavy": false,
+      "hint": "Shows how to craft an Improvised Axe: Pipe + Axe Head + Duct Tape.",
+      "id": "recipe_axe",
+      "name": "Note: Axe Recipe"
+    },
+    {
+      "extra": {
+        "recipe_unlock": "machete"
+      },
+      "heavy": false,
+      "hint": "Shows how to craft a Machete: Scrap Metal x2 + Duct Tape + Pipe.",
+      "id": "recipe_machete",
+      "name": "Note: Machete Recipe"
+    },
+    {
+      "extra": {
+        "recipe_unlock": "gear_axe"
+      },
+      "heavy": false,
+      "hint": "Shows how to craft a Gear Axe: Heavy Pipe + Gears + Duct Tape.",
+      "id": "recipe_gear_axe",
+      "name": "Note: Gear Axe Recipe"
+    },
+    {
+      "extra": {
+        "throwable": "sound_lure"
+      },
+      "heavy": false,
+      "hint": "Throw to create a loud noise distraction for 8 seconds.",
+      "id": "sound_lure",
+      "name": "Sound Lure"
+    },
+    {
+      "extra": {
+        "throwable": "fire_bottle"
+      },
+      "heavy": false,
+      "hint": "Throw to create a wall of fire monsters won't cross for 8 seconds.",
+      "id": "fire_bottle",
+      "name": "Fire Bottle"
+    },
+    {
+      "extra": {
+        "durability": 200,
+        "max_durability": 200,
+        "weapon": "reinforced_pipe"
+      },
+      "heavy": false,
+      "hint": "Pipe wrapped in duct tape. 2x durability.",
+      "id": "reinforced_pipe",
+      "name": "Reinforced Pipe"
+    }
+  ],
+  "weapons": [
+    {
+      "ammo": "38",
+      "auto": false,
+      "capacity": 6,
+      "damage": 34.0,
+      "fire_delay": 0.45,
+      "hint": "Common sidearm. Loud.",
+      "id": "revolver",
+      "name": ".38 Revolver",
+      "noise": 30.0,
+      "pellets": 1,
+      "reload_time": 2.5
+    },
+    {
+      "ammo": "9mm",
+      "auto": false,
+      "capacity": 15,
+      "damage": 22.0,
+      "fire_delay": 0.18,
+      "hint": "Semi-auto. Moderate noise.",
+      "id": "pistol",
+      "name": "9mm Pistol",
+      "noise": 26.0,
+      "pellets": 1,
+      "reload_time": 1.6
+    },
+    {
+      "ammo": "9mm",
+      "auto": false,
+      "capacity": 12,
+      "damage": 18.0,
+      "fire_delay": 0.2,
+      "hint": "Quiet. Rarer.",
+      "id": "suppressed_9mm",
+      "name": "Suppressed 9mm",
+      "noise": 8.0,
+      "pellets": 1,
+      "reload_time": 1.7,
+      "suppressed": true
+    },
+    {
+      "ammo": "12ga",
+      "auto": false,
+      "capacity": 6,
+      "damage": 70.0,
+      "fire_delay": 0.8,
+      "hint": "Devastating up close. Very loud.",
+      "id": "shotgun",
+      "name": "12ga Shotgun",
+      "noise": 34.0,
+      "pellets": 8,
+      "reload_time": 2.6
+    },
+    {
+      "ammo": "9mm",
+      "auto": true,
+      "capacity": 30,
+      "damage": 14.0,
+      "fire_delay": 0.09,
+      "hint": "Full auto. Burns ammo fast. Loud.",
+      "id": "smg",
+      "name": "SMG",
+      "noise": 28.0,
+      "pellets": 1,
+      "reload_time": 2.0
+    },
+    {
+      "ammo": "308",
+      "auto": false,
+      "capacity": 5,
+      "damage": 55.0,
+      "fire_delay": 1.2,
+      "hint": "High damage at range. Very loud.",
+      "id": "rifle",
+      "name": "Bolt-Action Rifle",
+      "noise": 36.0,
+      "pellets": 1,
+      "reload_time": 3.0
+    },
+    {
+      "ammo": "dart",
+      "auto": false,
+      "capacity": 1,
+      "damage": 0.0,
+      "fire_delay": 1.0,
+      "hint": "Stuns a monster for 5s. Silent. Extremely rare.",
+      "id": "tranq",
+      "name": "Tranquilizer Gun",
+      "noise": 4.0,
+      "pellets": 1,
+      "reload_time": 2.2,
+      "stun": 5.0,
+      "suppressed": true
+    },
+    {
+      "ammo": "flare_shell",
+      "auto": false,
+      "capacity": 1,
+      "damage": 5.0,
+      "fire_delay": 1.0,
+      "hint": "Lights the area and draws monsters. Loud.",
+      "id": "flare_gun",
+      "name": "Flare Gun",
+      "noise": 30.0,
+      "pellets": 1,
+      "reload_time": 2.4
+    },
+    {
+      "craft_time": 5.0,
+      "damage": 30.0,
+      "hint": "Pipe wrapped in duct tape. 2x durability.",
+      "id": "reinforced_pipe",
+      "max_durability": 200,
+      "name": "Reinforced Pipe",
+      "noise": 4.0,
+      "reach": 2.2,
+      "speed": 0.9,
+      "type": "melee"
+    },
+    {
+      "craft_time": 8.0,
+      "damage": 45.0,
+      "hint": "Pipe with an axe head taped on. High damage, slow.",
+      "id": "improvised_axe",
+      "max_durability": 150,
+      "name": "Improvised Axe",
+      "noise": 6.0,
+      "reach": 2.2,
+      "speed": 0.7,
+      "type": "melee"
+    },
+    {
+      "bleed_chance": 0.25,
+      "craft_time": 6.0,
+      "damage": 30.0,
+      "hint": "Fast, causes bleeding.",
+      "id": "machete",
+      "max_durability": 120,
+      "name": "Machete",
+      "noise": 5.0,
+      "reach": 1.8,
+      "speed": 1.3,
+      "type": "melee"
+    },
+    {
+      "armor_pierce": 0.5,
+      "craft_time": 10.0,
+      "damage": 55.0,
+      "hint": "Heavy industrial axe. Pierces armor.",
+      "id": "gear_axe",
+      "max_durability": 180,
+      "name": "Gear Axe",
+      "noise": 8.0,
+      "reach": 2.4,
+      "speed": 0.5,
+      "type": "melee"
+    }
+  ]
+}
