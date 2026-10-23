@@ -249,6 +249,19 @@ func _level_of(node: Node) -> Node:
 	return node
 
 
+## Host only: a story line ("Cole: ...") shown as a subtitle on every
+## player's screen who is within hearing_range of `where`.
+func server_say(speaker: String, text: String, seconds: float, where := Vector3.ZERO,
+		hearing_range := 100000.0) -> void:
+	if multiplayer.is_server():
+		_say.rpc(speaker, text, seconds, where, hearing_range)
+
+
+@rpc("authority", "call_local", "reliable")
+func _say(speaker: String, text: String, seconds: float, where: Vector3, hearing_range: float) -> void:
+	get_tree().call_group("player_hud", "show_subtitle_near", where, hearing_range, speaker, text, seconds)
+
+
 ## Host only: everyone is down. Fade out on every screen, then restart.
 func server_team_wiped(text := "Everyone is down...\nBack to the last checkpoint.") -> void:
 	_show_wipe.rpc(text)

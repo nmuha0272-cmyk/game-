@@ -9,6 +9,7 @@ extends Node3D
 @export var drain_from_checkpoint := 2
 
 @onready var narrative_manager = preload("res://scripts/chapters/chapter1_narrative.gd").new()
+const CHAPTER2_STORY := preload("res://scripts/chapters/chapter2_narrative.gd")
 
 
 func _ready() -> void:
@@ -23,8 +24,9 @@ func _ready() -> void:
 	
 	# Initialize narrative triggers for Chapter 1
 	if title.begins_with("CHAPTER 1"):
-		add_child(narrative_manager)
-		narrative_manager._ready()
+		add_child(narrative_manager)  # (add_child runs its _ready once)
+	elif title.begins_with("CHAPTER 2"):
+		add_child(CHAPTER2_STORY.new())
 
 
 @rpc("authority", "call_local", "reliable")

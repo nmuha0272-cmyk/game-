@@ -198,7 +198,8 @@ func _show_dialogue(speaker: String, text: String, duration: float) -> void:
 	# Show to all players near the speaker
 	var speaker_player := _find_player_by_character_name(speaker)
 	var position := speaker_player.global_position if speaker_player else global_position
-	get_tree().call_group("player_hud", "show_subtitle_near", position, 30.0, speaker, text, duration)
+	# The triggers only exist on the host, so send the line to every player.
+	GameState.server_say(speaker, text, duration, position, 30.0)
 
 
 func _find_eli() -> Player:
