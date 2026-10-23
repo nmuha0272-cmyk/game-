@@ -57,11 +57,11 @@ const COLOR_PANEL := Color(0.04, 0.05, 0.045, 0.94)
 @onready var webrtc_role: OptionButton = $WebRTCPanel/Margin/VBox/RoleOption
 @onready var webrtc_offer_display: TextEdit = $WebRTCPanel/Margin/VBox/OfferDisplay
 @onready var webrtc_answer_input: TextEdit = $WebRTCPanel/Margin/VBox/AnswerInput
-@onready var webrtc_ice_input: TextEdit = $WebRTCPanel/Margin/VBox/ICEInput
-@onready var webrtc_create_button: Button = $WebRTCPanel/Margin/VBox/CreateOfferButton
-@onready var webrtc_join_button: Button = $WebRTCPanel/Margin/VBox/JoinOfferButton
-@onready var webrtc_copy_button: Button = $WebRTCPanel/Margin/VBox/CopyButton
-@onready var webrtc_paste_button: Button = $WebRTCPanel/Margin/VBox/PasteButton
+@onready var webrtc_invite_display: TextEdit = $WebRTCPanel/Margin/VBox/InviteDisplay
+@onready var webrtc_invite_input: LineEdit = $WebRTCPanel/Margin/VBox/InviteInput
+@onready var webrtc_generate_button: Button = $WebRTCPanel/Margin/VBox/GenerateCodeButton
+@onready var webrtc_join_code_button: Button = $WebRTCPanel/Margin/VBox/JoinCodeButton
+@onready var webrtc_copy_code_button: Button = $WebRTCPanel/Margin/VBox/CopyCodeButton
 @onready var webrtc_back_button: Button = $WebRTCPanel/Margin/VBox/BackButton
 @onready var webrtc_status: Label = $WebRTCPanel/Margin/VBox/StatusLabel
 
@@ -136,7 +136,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _connect_signals() -> void:
 	for button: Button in main_buttons.get_children():
 		_style_menu_button(button)
-	for button: Button in [connect_button, join_back_button, settings_back_button, credits_back_button, webrtc_back_button, webrtc_create_button, webrtc_join_button, webrtc_copy_button, webrtc_paste_button]:
+	for button: Button in [connect_button, join_back_button, settings_back_button, credits_back_button, webrtc_back_button, webrtc_generate_button, webrtc_join_code_button, webrtc_copy_code_button]:
 		_style_menu_button(button)
 
 	host_button.pressed.connect(_on_host_pressed)
@@ -151,10 +151,9 @@ func _connect_signals() -> void:
 	settings_back_button.pressed.connect(_show_panel.bind(null))
 	credits_back_button.pressed.connect(_show_panel.bind(null))
 	webrtc_back_button.pressed.connect(_show_panel.bind(null))
-	webrtc_create_button.pressed.connect(_on_webrtc_create_offer)
-	webrtc_join_button.pressed.connect(_on_webrtc_join_offer)
-	webrtc_copy_button.pressed.connect(_on_webrtc_copy_offer)
-	webrtc_paste_button.pressed.connect(_on_webrtc_paste_answer)
+	webrtc_generate_button.pressed.connect(_on_webrtc_generate_code)
+	webrtc_join_code_button.pressed.connect(_on_webrtc_join_code)
+	webrtc_copy_code_button.pressed.connect(_on_webrtc_copy_code)
 
 	volume_slider.value_changed.connect(_on_volume_changed)
 	sensitivity_slider.value_changed.connect(_on_sensitivity_changed)
@@ -571,3 +570,84 @@ func _on_webrtc_paste_answer() -> void:
 	
 	network.receive_webrtc_answer(answer)
 	webrtc_status.text = "ANSWER SENT! CONNECTION ESTABLISHING..."
+
+
+# ---------------------------------------------------------------- Invite Code System (Short Codes)
+
+func _on_webrtc_generate_code() -> void:
+	var network = get_node_or_null("/root/NetworkManager")
+	if not network:
+		webrtc_status.text = "ERROR: NetworkManager not found"
+		return
+	
+	var signaling = network._webrtc_signaling
+	if not signaling:
+		webrtc_status.text = "ERROR: WebRTC not initialized"
+		return
+	
+	webrtc_generate_button.disabled = true
+	webrtc_status.text = "GENERATING INVITE CODE..."
+	
+	# Wait for offer then generate code
+	signaling.invite_code_ready.connect(_on_invite_code_ready)
+	
+	# The offer should already be created, just generate code
+	var code = signaling.generate_invite_code()
+	if code != "":
+		_on_invite_code_ready(code)
+	else:
+		# Wait for offer
+		signaling.offer_created.connect(func(offer: String) -> void:
+			signaling.offer_created.disconnect()
+			var c = signaling.generate_invite_code()
+			if c != "":
+				_on_invite_code_ready(c)
+		)
+
+
+func _on_invite_code_ready(code: String) -> void:
+	var network = get_node_or_null("/root/NetworkManager")
+	if network and network._webrtc_signaling:
+		network._webrtc_signaling.invite_code_ready.disconnect(_on_invite_code_ready)
+	
+	webrtc_invite_display.text = code
+	webrtc_status.text = "INVITE CODE READY! SHARE THIS WITH FRIENDS:"
+	webrtc_copy_code_button.disabled = false
+	webrtc_generate_button.disabled = false
+
+
+func _on_webrtc_copy_code() -> void:
+	DisplayServer.clipboard_set(webrtc_invite_display.text)
+	webrtc_status.text = "INVITE CODE COPIED! SEND TO FRIENDS."
+
+
+func _on_webrtc_join_code() -> void:
+	var code = webrtc_invite_input.text.strip_edges().to_upper()
+	if code.is_empty():
+		webrtc_status.text = "ENTER AN INVITE CODE"
+		return
+	
+	if not code.begins_with("DW-"):
+		code = "DW-" + code
+	
+	var network = get_node_or_null("/root/NetworkManager")
+	if not network:
+		webrtc_status.text = "ERROR: NetworkManager not found"
+		return
+	
+	webrtc_status.text = "JOINING WITH CODE..."
+	webrtc_join_code_button.disabled = true
+	
+	var signaling = network._webrtc_signaling
+	if signaling:
+		signaling.invite_code_received.connect(_on_invite_code_received)
+	
+	network.join_game_webrtc_with_code(code)
+
+
+func _on_invite_code_received(code: String) -> void:
+	var network = get_node_or_null("/root/NetworkManager")
+	if network and network._webrtc_signaling:
+		network._webrtc_signaling.invite_code_received.disconnect(_on_invite_code_received)
+	
+	webrtc_status.text = "CONNECTED! WAITING FOR HOST..."

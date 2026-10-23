@@ -83,6 +83,16 @@ func join_game_webrtc(offer_sdp: String) -> void:
 	peer.create_from_signaling(_webrtc_signaling)
 	multiplayer.multiplayer_peer = peer
 
+## Join a game using an invite code (short code like DW-ABCD-1234)
+func join_game_webrtc_with_code(code: String) -> void:
+	current_backend = Backend.WEBRTC
+	_pending_ice_candidates.clear()
+	_webrtc_signaling.join_with_invite_code(code)
+	
+	var peer = WebRTCMultiplayerPeer.new()
+	peer.create_from_signaling(_webrtc_signaling)
+	multiplayer.multiplayer_peer = peer
+
 ## Call this when you receive an offer from the host (via chat, Discord, etc.)
 func receive_webrtc_offer(offer_sdp: String) -> void:
 	if current_backend != Backend.WEBRTC:

@@ -331,62 +331,44 @@ text = "ARE YOU HOSTING OR JOINING?"
 
 [node name="RoleOption" type="OptionButton" parent="WebRTCPanel/Margin/VBox"]
 layout_mode = 2
-items = ["HOST (CREATE OFFER)", "JOIN (PASTE OFFER)"]
+items = ["HOST (CREATE INVITE CODE)", "JOIN WITH INVITE CODE"]
 selected = 0
 
-[node name="OfferLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
+[node name="InviteCodeLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
 layout_mode = 2
-text = "HOST'S OFFER (COPY THIS AND SEND TO FRIENDS)"
+text = "YOUR INVITE CODE (SHARE THIS WITH FRIENDS)"
 
-[node name="OfferDisplay" type="TextEdit" parent="WebRTCPanel/Margin/VBox"]
-layout_mode = 2
-size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 120)
-readonly = true
-placeholder_text = "OFFER WILL APPEAR HERE AFTER CLICKING CREATE OFFER"
-
-[node name="AnswerLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
-layout_mode = 2
-text = "JOINER'S ANSWER (PASTE HERE IF YOU ARE HOST)"
-
-[node name="AnswerInput" type="TextEdit" parent="WebRTCPanel/Margin/VBox"]
-layout_mode = 2
-size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 120)
-placeholder_text = "PASTE JOINER'S ANSWER HERE"
-
-[node name="ICELLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
-layout_mode = 2
-text = "ICE CANDIDATES (AUTO-HANDLED)"
-
-[node name="ICEInput" type="TextEdit" parent="WebRTCPanel/Margin/VBox"]
+[node name="InviteDisplay" type="TextEdit" parent="WebRTCPanel/Margin/VBox"]
 layout_mode = 2
 size_flags_vertical = 2
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 80)
 readonly = true
-placeholder_text = "ICE CANDIDATES ARE EXCHANGED AUTOMATICALLY"
+placeholder_text = "CLICK 'GENERATE CODE' TO CREATE AN INVITE CODE"
+
+[node name="JoinCodeLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
+layout_mode = 2
+text = "ENTER FRIEND'S INVITE CODE"
+
+[node name="InviteInput" type="LineEdit" parent="WebRTCPanel/Margin/VBox"]
+layout_mode = 2
+placeholder_text = "DW-ABCD-EF12-3456"
 
 [node name="Buttons" type="HBoxContainer" parent="WebRTCPanel/Margin/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="CreateOfferButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
+[node name="GenerateCodeButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
 layout_mode = 2
-text = "CREATE OFFER"
+text = "GENERATE CODE"
 
-[node name="JoinOfferButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
+[node name="JoinCodeButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
 layout_mode = 2
-text = "JOIN WITH OFFER"
+text = "JOIN WITH CODE"
 disabled = true
 
-[node name="CopyButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
+[node name="CopyCodeButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
 layout_mode = 2
-text = "COPY OFFER/ANSWER"
-disabled = true
-
-[node name="PasteButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
-layout_mode = 2
-text = "PASTE ANSWER"
+text = "COPY CODE"
 disabled = true
 
 [node name="BackButton" type="Button" parent="WebRTCPanel/Margin/VBox"]

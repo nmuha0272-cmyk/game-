@@ -11,6 +11,8 @@ signal peer_connected(peer_id: int)
 signal peer_disconnected(peer_id: int)
 signal connection_failed(reason: String)
 signal data_received(data: Array)  # [sender_peer_id, packet_data]
+signal invite_code_ready(code: String)  # Short code for sharing
+signal invite_code_received(code: String)  # When someone joins via code
 
 @export var stun_servers: Array[String] = [
 	"stun:stun.l.google.com:19302",
@@ -26,6 +28,9 @@ var _peer: WebRTCPeerConnection
 var _data_channel: WebRTCDataChannel
 var _is_host: bool = false
 var _connected_peers: Dictionary = {}  # peer_id -> WebRTCDataChannel
+var _pending_offer: String = ""
+var _pending_ice: Array = []
+var _invite_code: String = ""
 
 func _ready() -> void:
 	_peer = WebRTCPeerConnection.new()
@@ -48,6 +53,8 @@ func _build_rtc_config() -> Dictionary:
 func host_game(max_peers: int = 3) -> void:
 	_is_host = true
 	_connected_peers.clear()
+	_pending_offer = ""
+	_pending_ice.clear()
 	
 	# Create data channel for reliable ordered messaging (like ENet)
 	var channel_config = WebRTCDataChannelConfiguration.new()
@@ -61,10 +68,47 @@ func host_game(max_peers: int = 3) -> void:
 	# Create offer
 	_peer.create_offer()
 
+## Generate a short invite code from the current offer
+func generate_invite_code() -> String:
+	if _pending_offer.is_empty():
+		return ""
+	
+	# Compress offer SDP into a shorter code
+	var compressed = _compress_sdp(_pending_offer)
+	_invites_code = compressed
+	invite_code_ready.emit(compressed)
+	return compressed
+
+## Join using an invite code (short code from host)
+func join_with_invite_code(code: String) -> void:
+	if code.is_empty():
+		connection_failed.emit("Invalid invite code")
+		return
+	
+	var offer_sdp = _decompress_sdp(code)
+	if offer_sdp.is_empty():
+		connection_failed.emit("Invalid invite code format")
+		return
+	
+	_is_host = false
+	_connected_peers.clear()
+	_pending_ice.clear()
+	
+	var offer = WebRTCSessionDescription.new()
+	offer.type = WebRTCSessionDescription.TYPE_OFFER
+	offer.sdp = offer_sdp
+	_peer.set_remote_description(offer)
+	
+	# Create answer
+	_peer.create_answer()
+	
+	invite_code_received.emit(code)
+
 ## Join a game using an offer (from host)
 func join_game(offer_sdp: String) -> void:
 	_is_host = false
 	_connected_peers.clear()
+	_pending_ice.clear()
 	
 	var offer = WebRTCSessionDescription.new()
 	offer.type = WebRTCSessionDescription.TYPE_OFFER
@@ -74,10 +118,54 @@ func join_game(offer_sdp: String) -> void:
 	# Create answer
 	_peer.create_answer()
 
-## Join using signaling server (automatic matchmaking)
-func join_via_signaling(lobby_code: String) -> void:
-	if signaling_server.is_empty() or signaling_server.contains("your-signaling-server"):
-		connection_failed.emit("Signaling server not configured. Use manual SDP exchange or deploy a signaling server.")
+## Compress SDP into short invite code
+func _compress_sdp(sdp: String) -> String:
+	# Extract just the important parts and base64 encode
+	var lines = sdp.split("\n")
+	var essential = []
+	for line in lines:
+		if line.begins_with("v=") or line.begins_with("o=") or line.begins_with("s=") \
+		   or line.begins_with("t=") or line.begins_with("a=ice-") \
+		   or line.begins_with("a=fingerprint:") or line.begins_with("a=setup:") \
+		   or line.begins_with("a=mid:") or line.begins_with("a=sendrecv") \
+		   or line.begins_with("m=application") or line.begins_with("c="):
+			essential.append(line)
+	
+	var compressed = "\n".join(essential)
+	var bytes = compressed.to_utf8_buffer()
+	var encoded = bytes.encode_base64()
+	
+	# Split into groups of 4 for readability
+	var result = ""
+	for i in range(0, encoded.length(), 4):
+		if i > 0:
+			result += "-"
+		result += encoded.substr(i, 4)
+	
+	return "DW-" + result  # Deepwell prefix
+
+## Decompress invite code back to SDP
+func _decompress_sdp(code: String) -> String:
+	if not code.begins_with("DW-"):
+		return ""
+	
+	var encoded = code.substr(3).replace("-", "")
+	var bytes = encoded.decode_base64()
+	if bytes.size() == 0:
+		return ""
+	
+	var compressed = bytes.get_string_from_utf8()
+	
+	# Reconstruct minimal valid SDP
+	var base_sdp = """v=0
+o=- 0 0 IN IP4 127.0.0.1
+s=Deepwell
+t=0 0
+a=group:BUNDLE data
+a=msid-semantic: WMS
+""" + compressed + """
+"""
+	return base_sdp
 		return
 	
 	# TODO: Implement HTTP polling to signaling server
