@@ -7,6 +7,6 @@ script = ExtResource("1_entry")
 id = "file_staff_directory"
 title = "Site 12 Staff Directory"
 type = 0
-text = "BLACKWATER WEATHER STATION / SITE 12\nStaff directory, revised 1963.\n\nDr. H. Calloway, Director, Project IRONWOOD\nDr. M. Reyes, Medical\n[NAME SCRATCHED OUT], Engineering, Growth Chamber design\nC. Brennan, Security, Level B\n\nAll staff: volunteers are not to be told the true purpose of Serum H-7."
+text = "BLACKWATER WEATHER STATION / SITE 12\nStaff directory, revised 1998.\n\nDr. H. Calloway, Director, Project IRONWOOD\nDr. Maria Reyes, Medical\n[NAME SCRATCHED OUT], Engineering, Growth Chamber design\nC. Brennan, Security, Level B\n\nAll staff: volunteers are not to be told the true purpose of Serum H-7."
 owner_character = -1
 voice_line = ""

@@ -509,7 +509,7 @@ sc.node("Cutscenes","Node",".")
 sc.node("Intro","Node","Cutscenes",script=ER(S_CUT),play_on_start="true",shots=shots(
     ((-14,9,62),(0,2,-6),(-6,6.5,50),(0,2,-8),5.0,"1999. Site 12 was sealed... with people still inside."),
     ((-6.5,1.8,27),(-4,1.7,22),(-4.6,1.7,24.6),(-4,1.7,22),3.5,"Officially, it was only ever a weather station."),
-    ((7,2.2,15),(-5,3.4,-9),(3,2.8,9),(-5,3.4,-9),4.0,"2015. Four strangers came looking for answers."),
+    ((7,2.2,15),(-5,3.4,-9),(3,2.8,9),(-5,3.4,-9),4.0,"2015. Seven people are missing. Four are going in."),
     ((0.5,1.7,30),(0,1.4,22),(0.2,1.65,26),(0,1.3,22),2.5,"CHAPTER 1  -  THE SURFACE")))
 if LONG_MAN_ON:
   sc.node("Reveal","Node","Cutscenes",script=ER(S_CUT),shots=shots(
@@ -1322,6 +1322,12 @@ area("DormScare","Triggers",(18,-7.65,-52),(9,2.7,8),S_SCARE,steps_from=v3(15,-8
 sc.node("ElevatorAuxSign","Label3D",U,transform=xform((34,-6.6,-59.1),180),pixel_size="0.0028",text=S("CONSOLES NEED AUX POWER\n(DORM WING)"),font_size="32",modulate=col(1,0.8,0.4))
 # declared last so its box-shape subresource doesn't renumber the stairs' meshes
 checkpoint("Dorm",4,(15,-7.5,-52),(6,3,4),[(-2,0),(0,0),(2,0),(0,1)])
+
+# Why the team came: the "MISSING" poster on the station's front wall (seven
+# people, two of them Eli's friends), and the friends' camera on the stairwell
+# landing (they got this far).
+inst("lpaper","MissingPoster","Lore",(3.85,1.5,0.23),0,entry=ER(LORE("file_missing_seven")))
+inst("lpersonal","FriendsCamera","Lore",(9.65,-3.95,-25.7),200,entry=ER(LORE("personal_son_friends_camera")))
 
 # pack upgrades: a pouch out by the informant's car, a backpack on the stairwell landing
 item("pouch",(-6.8,0.2,41)); item("backpack",(7.6,-3.8,-24))

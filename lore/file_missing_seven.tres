@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "file_missing_seven"
+title = "MISSING - Have You Seen Them?"
+type = 0
+text = "A sheriff's poster, stapled over older ones. Seven faces.\n\nMISSING NEAR THE BLACKWATER WEATHER STATION\n\nDaniel Marsh, 41 - reporter\nRuth Alvarez, 58 - hiker\nTomas Greer, 33 - surveyor\nKelly Ann Doss, 19 - student\nOwen Pratt, 27 - trucker\nMarcus Bell, 21 - student\nJenna Park, 20 - student\n\nLast seen: the access road, between August and October 2015.\nIf you have information, call the Sheriff's Office.\n\nSomeone has written across the bottom in marker: THEY WENT IN. NOBODY CAME OUT."
+owner_character = -1
+voice_line = ""

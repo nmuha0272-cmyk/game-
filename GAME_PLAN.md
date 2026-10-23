@@ -38,7 +38,13 @@ and edit everything directly, and multiplayer is built in.
 station. It studied "soldier enhancement." The experiments went wrong, the
 lower levels were sealed with people still inside, and the site was buried.
 The program started during the Cold War but secretly kept running until the
-facility was sealed in 1999. In **2015**, four people break in.
+facility was sealed in 1999. Eli's parents both died there that night (the
+official story was a gas leak).
+
+**Why they go in (2015):** seven people have gone missing near the station
+since August, including Eli's two best friends, **Marcus Bell** and **Jenna
+Park**, who went in to find out what really happened to his parents. Four
+people go in after them.
 
 **Frozen in time:** The facility never upgraded its Cold War equipment, so
 everything inside looks like the 1960s–70s (reel tapes, bulky computers,
@@ -100,9 +106,13 @@ reel-to-reel tapes, propaganda posters, gas masks, bulky old computers.
 | Name | Who or what |
 |---|---|
 | **Eli Reyes** | The Son, age 21 |
-| **Sgt. Daniel Reyes** | Eli's father, Volunteer 14, taken into Project ECHO |
+| **Sgt. Daniel Reyes** | Eli's father, Volunteer 14. Officially died in the 1999 sealing; secretly taken into Project ECHO |
+| **Dr. Maria Reyes** | Eli's mother, a Deepwell doctor. Died in the 1999 sealing; her last message is on a reel tape in Chapter 1 |
+| **Marcus Bell** | Eli's best friend, 21. Missing. Found alive in Chapter 4, then playable (see "The Walter twist") |
+| **Jenna Park** | Eli's best friend, 20. Missing with Marcus |
+| **The Missing Seven** | Daniel Marsh (Nora's source), Ruth Alvarez, Tomas Greer, Kelly Ann Doss, Owen Pratt, Marcus Bell, Jenna Park |
 | **Nora Vance** | The Journalist, age 35 |
-| **Walter Kessler** | The Engineer, age 60, designed the Goliath Chamber |
+| **Walter Kessler** | The Engineer, age 60, designed the Goliath Chamber. **Secretly the main villain** (revealed halfway through Chapter 4) |
 | **Cole Brennan** | The Guard, age 35, sealed Level B in 1999 at age 20 |
 | **Deepwell** | The secret facility under the Blackwater Weather Station |
 | **Project BASTION** | The Cold War super-soldier program (1960s–1991) |
@@ -113,8 +123,8 @@ reel-to-reel tapes, propaganda posters, gas masks, bulky old computers.
 | **The Sealed** | The blind subjects Cole locked in Level B (Ch. 3 monsters) |
 | **Echo** | The final result of Project ECHO, once Sgt. Daniel Reyes; copies voices (Ch. 4 and 6) |
 | **Dr. Harold Ashby** | Original director of Deepwell; his voice is on the welcome tape |
-| **Dr. Lillian Ashby** | His daughter, who secretly restarted the program in 2009 (main villain, Ch. 5–6) |
-| **The Warden** | Ashby's newest, successful modern super-soldier (Ch. 5–6 monster) |
+| **Dr. Lillian Ashby** | His daughter, who pays for Walter's restarted program (Ch. 5–6) |
+| **The Warden** | Walter's newest, successful modern super-soldier (Ch. 5–6 monster) |
 
 ---
 
@@ -156,7 +166,7 @@ game. Each has one unique ability, so the team must work together.
 
 | Character | Role | Ability | Held Item (first-person view) |
 |---|---|---|---|
-| **Eli Reyes** (The Son) | Tracker | **Sense:** Hold a button to see nearby monsters glow through walls for 3 seconds. 20 second cooldown. | Parent's dog tags |
+| **Eli Reyes** (The Son) | Tracker | **Sense:** Hold a button to see nearby monsters glow through walls for 3 seconds, and all his teammates wherever they are (blue, or red if they're down). Only Eli sees it. 20 second cooldown. | Parent's dog tags |
 | **Nora Vance** (The Journalist) | Stunner / Lore | **Camera Flash:** Stuns a monster in front of her for 2 seconds. 15 second cooldown. Photographing evidence unlocks lore entries. | Digital camera with external flash |
 | **Walter Kessler** (The Engineer) | Fixer | **Repair:** Hold to fix generators, elevators, broken panels, and hack locked security doors. Only he can do this. | Wrench |
 | **Cole Brennan** (The Guard) | Protector | **Strength:** Hold doors shut against monsters, move heavy objects, build barricades, carry a downed teammate. Moves slower and makes more noise. | Heavy flashlight |
@@ -311,9 +321,26 @@ Every puzzle below requires teamwork.
 | 1 | The Surface | Nora | Goliath | Break into the weather station, find the hidden elevator, learn the controls | Elevator cable snaps, trapping the team below |
 | 2 | Power Station | Walter | Conduit | Restore three generators to power the facility | Clues reveal Walter built the Goliath Chamber |
 | 3 | Level B | Cole | The Sealed | Get through the sealed holding cells in total silence | The truth about the night Cole sealed the doors |
-| 4 | Project ECHO | Eli | Echo (first appearance) | Find Eli's father's cell and the ECHO lab | Eli realizes Echo **is** his father. Echo escapes deeper into Deepwell |
-| 5 | Still Running | Whole team | The Warden | Discover a hidden modern lab under the old one | The experiments never stopped. Dr. Lillian Ashby has restarted them, and she's been watching Nora |
-| 6 | The Way Out | Whole team | The Warden and Echo | Escape as Ashby floods Deepwell to erase the evidence | Eli must choose to free his father or end him, and the team only escapes if everyone works together |
+| 4 | Project ECHO | Eli | Echo (first appearance) | Find Eli's father's cell and the ECHO lab. **Halfway through: Walter is revealed as the main villain** and leaves the team; soon after, they find Marcus alive | Eli realizes Echo **is** his father. Echo escapes deeper into Deepwell |
+| 5 | Still Running | Whole team (with Marcus) | The Warden | Discover a hidden modern lab under the old one | The experiments never stopped. Walter restarted them (with Lillian Ashby's money) and lured the Missing Seven here as new test subjects |
+| 6 | The Way Out | Whole team (with Marcus) | The Warden and Echo | Escape as Walter floods Deepwell to erase the evidence | Eli must choose to free his father or end him, and the team only escapes if everyone works together |
+
+### The Walter twist and the character switch
+
+- **Chapters 1–3:** Walter is a normal playable character. Small clues hint
+  at him (he knows the way in, he built the Goliath Chamber, he "used to
+  work here").
+- **Halfway through Chapter 4:** the team finds proof that Walter restarted
+  the experiments and lured the Missing Seven here, including Marcus and
+  Jenna. Walter turns on them in a cutscene and leaves; from now on he is
+  the main villain (not playable).
+- **The switch:** whoever was playing Walter watches (spectator camera)
+  until the team finds **Marcus Bell** alive in a holding cell a little
+  later in Chapter 4. That player then plays Marcus for the rest of the game.
+- **Marcus's ability (to decide):** suggestion: he's an engineering student,
+  so he can **Repair** (a bit slower than Walter), which keeps every puzzle
+  that needed the Engineer solvable.
+- **Jenna:** still missing after Chapter 4 (her fate to decide for Ch. 5–6).
 
 **Build Chapter 1 fully before starting Chapter 2.**
 
@@ -572,7 +599,7 @@ Tasks:
 - Steam lobbies and invites (GodotSteam)
 - Echo voice mimic (stretch goal)
 - Chapters 2 through 6, each with: a safe room, a boss encounter, at least one shortcut loop, a pouch upgrade (Ch. 2–5), and new weapons or tools
-- Weapon roadmap: Ch. 1–2 melee only, Ch. 3 the guard revolver, Ch. 4 shotgun, Ch. 5–6 modern guns from Ashby's security
+- Weapon roadmap: Ch. 1–2 melee only, Ch. 3 the guard revolver, Ch. 4 shotgun, Ch. 5–6 modern guns from Walter's security
 - Unique monster designs for each chapter
 - **Eli-Cole relationship deepening**: Mother's death backstory, VIGIL connection, Cole/Eli special dialogue (dialogue cues implemented in arrival cutscene)
 

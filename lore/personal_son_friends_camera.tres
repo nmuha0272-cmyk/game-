@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_son_friends_camera"
+title = "Marcus and Jenna's Camera"
+type = 3
+text = "A small video camera, the red light still blinking. Marcus's sticker is on the side.\n\nThe last clip:\nJENNA: Okay, okay, we're in. Eli is going to be SO mad we came without him.\nMARCUS: He'd never come. You know what happened to his parents in here.\nJENNA: That's why we're doing it. For him. ...Did you hear that?\nMARCUS: Hear what?\n(Something very tall walks past the end of the stairs. The clip ends.)"
+owner_character = 0
+voice_line = "Marcus... Jenna... you came here because of me. Hang on. I'm coming."

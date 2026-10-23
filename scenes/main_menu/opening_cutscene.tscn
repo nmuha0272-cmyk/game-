@@ -65,7 +65,7 @@ theme_override_constants/separation = 15
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
 theme_override_font_sizes/font_size = 14
-text = "The Portland Tribune          October 15, 1992"
+text = "The Blackwater Courier          October 12, 2015"
 horizontal_alignment = 1
 
 [node name="Separator1" type="HSeparator" parent="NewspaperContainer/Newspaper/MarginContainer/VBoxContainer"]
@@ -77,8 +77,8 @@ theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
 layout_mode = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_font_sizes/font_size = 36
-text = "MYSTERY ILLNESS CLAIMS
-ANOTHER VETERAN"
+text = "SEVENTH PERSON MISSING
+NEAR OLD WEATHER STATION"
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -93,17 +93,15 @@ layout_mode = 2
 theme_override_colors/default_color = Color(0.1, 0.1, 0.1, 1)
 theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
-text = "PORTLAND — Another former military volunteer has died under mysterious circumstances, bringing the total to seventeen deaths in the past six months.
+text = "BLACKWATER COUNTY — Two college students have become the sixth and seventh people to vanish near the abandoned Blackwater Weather Station this year.
 
-[b]David Chen, 54[/b], passed away last Thursday after a brief battle with what doctors initially diagnosed as an aggressive form of bone cancer. However, medical examiners are now questioning that diagnosis.
+[b]Marcus Bell, 21, and Jenna Park, 20[/b], told friends they were going to film \"the creepiest place in the state\" for their channel. Their car was found Saturday at the end of the access road, keys still in the ignition.
 
-\"The cell degradation patterns don't match any known cancer,\" said Dr. Sarah Mitchell, who reviewed the autopsy. \"It's almost as if his body was rejecting itself from the inside out.\"
+They join five others missing since August, including reporter [b]Daniel Marsh[/b], who had been investigating the station's past.
 
-Chen is the latest in a growing list of former servicemen who participated in a classified military program in the 1960s. All victims displayed similar symptoms: unexplained bone density changes, organ failure, and rapid deterioration.
+The weather station was closed in 1999 after what officials called a gas leak. Eleven staff members died that night, including a married couple, Dr. Maria Reyes and Sgt. Daniel Reyes.
 
-Family members report that in his final days, Chen spoke repeatedly about \"Project IRONWOOD\" and urged his son to \"stay away from the old weather station.\"
-
-The Department of Defense declined to comment on the nature of Chen's service or the existence of any program by that name.
+\"There is nothing out there but an empty building,\" a county spokesperson said. Search teams have not been allowed past the fence.
 
 [i]Continued on page A4...[/i]"
 fit_content = true
@@ -131,7 +129,7 @@ theme_override_constants/separation = 25
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
 theme_override_font_sizes/font_size = 18
-text = "Six months earlier..."
+text = "That night..."
 horizontal_alignment = 1
 
 [node name="Text" type="RichTextLabel" parent="HospitalContainer/VBoxContainer"]
@@ -140,25 +138,21 @@ layout_mode = 2
 theme_override_colors/default_color = Color(0.85, 0.82, 0.75, 1)
 theme_override_font_sizes/normal_font_size = 22
 bbcode_enabled = true
-text = "[center]The hospital room was quiet except for the beeping monitors.
+text = "[center]Eli Reyes read the article three times.
 
-Eli sat beside his father's bed, watching the man who had always seemed so strong waste away.
+He was five years old in 1999, when his mom and dad drove to work at the weather station and never came home. \"A gas leak,\" they told him. Closed caskets.
 
-\"It's not cancer, son,\" David Chen whispered, his voice thin. \"They told us it was vitamins. Strength supplements for soldiers. But it was something else.\"
+Now Marcus and Jenna, his two best friends, had gone out there. For him. To find out what really happened to his parents.
 
-His father's hand trembled as he pulled out an old dog tag from beneath his hospital gown.
+And they had not come back.
 
-\"VOLUNTEER 14 - IRONWOOD\"
+Cole Brennan, the soldier who had looked out for Eli since he was a kid, said no. Then he said he was coming too.
 
-\"They're all dying now. Everyone from the program. One by one.\" His father's eyes met Eli's. \"Stay away from that place. The old weather station. Promise me.\"
+Nora Vance, a reporter, had lost her source out there.
 
-But Eli couldn't promise that.
+Walter Kessler said he used to work at the station. He said he knew the way in.
 
-Not when seventeen men had died.
-Not when the government claimed ignorance.
-Not when his father deserved the truth.
-
-[i]Three days later, David Chen was gone.[/i][/center]"
+[i]Seven people are missing. Four are going in after them.[/i][/center]"
 fit_content = true
 scroll_active = false
 

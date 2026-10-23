@@ -52,7 +52,7 @@ const CHARACTERS := {
 		"seat": Vector3(-0.38, 0.0, -0.1),
 		"color": Color(0.38, 0.23, 0.12),
 		"size": 1.0,
-		"about": "21. College student and Army Reserve soldier. His father died here in 1999, and Eli has come to bring him home.",
+		"about": "21. College student and Army Reserve soldier. Both his parents died here in 1999. Now his two best friends are missing in there.",
 		"abilities": [
 			"SENSE: hold to see nearby monsters through walls for 3 seconds (20s cooldown).",
 			"MILITARY TRAINING: steadier aim and faster reloads. Reads Morse code and military maps.",

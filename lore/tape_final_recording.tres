@@ -7,6 +7,6 @@ script = ExtResource("1_entry")
 id = "tape_final_recording"
 title = "Reel Tape 2: Final Recording"
 type = 1
-text = "DR. REYES: This is Dr. Reyes, Medical. If anyone finds this...\nDR. REYES: The alarms started twenty minutes ago. Level B is sealing.\nDR. REYES: Subject 7 is out of his cell. He doesn't fit through the doors anymore, so he... folds.\nDR. REYES: The guard on duty has the order. He's closing the doors with people still inside.\nDR. REYES: God forgive us. It was never vitamins.\n(Something heavy scrapes along the ceiling. The tape ends.)"
+text = "DR. REYES: This is Dr. Maria Reyes, Medical. If anyone finds this...\nDR. REYES: The alarms started twenty minutes ago. Level B is sealing.\nDR. REYES: Subject 7 is out of his cell. He doesn't fit through the doors anymore, so he... folds.\nDR. REYES: The guard on duty has the order. He's closing the doors with people still inside.\nDR. REYES: God forgive us. It was never vitamins.\nDR. REYES: Danny went down to Level B to get the others out. He hasn't come back.\nDR. REYES: Eli, baby, if this ever reaches you... Mommy and Daddy love you. Don't ever come here.\n(Something heavy scrapes along the ceiling. The tape ends.)"
 owner_character = -1
 voice_line = ""
