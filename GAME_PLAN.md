@@ -202,11 +202,16 @@ Every level, puzzle, and encounter must follow these rules:
 
 ## Gear and Inventory
 
-**Inventory:** Each player starts with **4 gear slots** plus their
-character's permanent held item. Gear is found around the facility in lockers,
-desks, crates, and on old bodies. Like Resident Evil, players can find
-**pouch upgrades** (one per chapter in Chapters 2–5) that add a slot, up to 8.
-Key items (keycards, story items) don't take up slots.
+**Inventory (as built):** each player has **4 quick slots** (keys 1–4 / mouse
+wheel, what's in your hand) plus **storage** (2 slots to start). **E** opens
+the inventory menu: click an item, then a quick slot, to swap them. A **Field
+Pouch** (+1) and a **Backpack** (+2) add storage, up to 10. Gear is found in
+lockers, desks, crates and on old bodies.
+- **Weapons are items too:** pick a gun up into a slot, select it and press
+  **4** to draw it, left-click to fire, **R** to reload, **H** to drop it.
+  Going down drops the gun you were holding.
+- **Ammo:** using an ammo box adds its rounds to a carried gun that takes
+  that ammo (the gun keeps its own spare ammo).
 
 **Storage box:** Every safe room has a storage box. Items put in one box can
 be taken out of any other box, and the whole team shares it.
@@ -571,6 +576,17 @@ res://
 - [x] Ping system: press a button to mark an item or spot for teammates
 - [x] Pause menu and settings (volume, mouse sensitivity, brightness)
 
+**Built (core systems):**
+- [x] **Progress is kept when the team dies:** doors that were opened stay open,
+      unlocked doors stay unlocked, solved puzzles stay solved and cutscenes
+      don't replay. The host remembers it (`GameState.level_progress`) and puts
+      it all back after the level reloads at the checkpoint.
+- [x] **Cutscenes** wait until every player has loaded, play once, and need
+      Space **held** to skip (so jumping doesn't skip them).
+- [x] **Settings:** volume, mouse sensitivity, brightness, **flashlight
+      brightness** (each player picks their own), graphics, first/third
+      person, voice chat options and rebindable controls.
+
 ### Phase 9.5 — Resident Evil Systems
 - [x] Health: injured state and healing items
 - [x] Safe rooms: monsters can't enter, calm music, save point
@@ -604,6 +620,31 @@ Tasks:
 - [x] Horror atmosphere: flickering lights, fog, ambient sounds, music stingers
 - [x] **Arrival cutscene**: car stops at gate, characters exit and discuss options, loading dock entrance revealed (roll-up door jammed 60 cm, Cole lifts it), team enters building ground floor
 
+**Chapter 1 as built** (in play order; the level is made by
+`tools/make_chapter1.py`, so change the level there, not in the .tscn):
+
+| # | Section | What you do |
+|---|---|---|
+| 1 | Exterior | Lift the gate (Cole), find the crowbar. A **MISSING poster** with the seven names is on the station's front wall |
+| 2 | Front door power | Terminal (lights-out puzzle) + breaker by the front door: the station's lights come on |
+| 3 | Office | Split code (computer + keypad), tape machine, safe, infirmary, push the filing cabinet to find the stairs |
+| 4 | Hidden stairwell | Real steps, batteries drain from here. **Marcus and Jenna's camera** is on the landing (Eli's personal item) |
+| 5 | Junction + Power Room | Fuel can on the landing → generator starts itself → set 3 breakers to the wiring diagram → the security shutter opens |
+| 6 | Dorm Wing (required) | Throw the aux lever, set 5 breakers to the card in the bunk room |
+| 7 | Maintenance bypass | The main tunnel caved in: a winding hallway with failing lights, puddles, dripping water, a supply room (hiding locker) and a shower room |
+| 8 | Armory | Behind a door off the bypass: guns, ammo, the sign-out sheet. Everyone starts unarmed, so this is where the team arms up |
+| 9 | Tunnels | Vent crawl, darkroom photo clue, flood → pump room drain code, the Long Man's cell and the **RUN!** chase |
+| 10 | Elevator Room | Fuses, generator (Walter repairs), Containment Order, two consoles turned together |
+| 11 | Boiler Room (optional) | Two relief valves in different rooms held at the same time → pressure cage of supplies |
+| 12 | Morgue (optional) | Cold room code split over four toe tags (one is in the boiler room) |
+| 13 | Observation Wing (optional) | One player stands on a plate to hold the booth open, another reads the vault code (changes every minute), someone enters it at the vault |
+| 14 | Lab Wing | Airlock, lab power lever, Archive keypad (code read from the lab monitor), elevator key in the Archive |
+| 15 | Comms Room (required) | Radio tuning: the live frequency is only on the antenna room chart, so one player reads, one tunes |
+| 16 | Ending | The consoles need: power, the Containment Order, the elevator key, the Dorm aux power and the surface relay. Then the elevator drops and the cable snaps |
+
+- [x] Extra Chapter 1 sections built: bypass, armory, Dorm Wing, Boiler Room, Morgue, Observation Wing, Comms Room
+- [x] Every door opening and locker checked by an automatic test (no blocked doorways)
+
 ### Phase 11 — Polish and Playtesting
 - [x] Playtest with real friends and write down what's confusing or not scary
 - [x] Teamwork check: did players have to talk and help each other? If anyone could finish a section alone, redesign it
@@ -619,6 +660,26 @@ Tasks:
 - Weapon roadmap: Ch. 1–2 melee only, Ch. 3 the guard revolver, Ch. 4 shotgun, Ch. 5–6 modern guns from Walter's security
 - Unique monster designs for each chapter
 - **Eli-Cole relationship deepening**: Mother's death backstory, VIGIL connection, Cole/Eli special dialogue (dialogue cues implemented in arrival cutscene)
+
+---
+
+## Other Versions and Tools
+
+- **Unreal Engine 5 version** (`unreal/SubjectZero/`): being ported phase by
+  phase; see its README. Its Chapter 1 level comes from the Godot one:
+  `godot --headless -s tools/export_for_unreal.gd` writes
+  `Content/Data/chapter1.json`, and `scripts/export/unreal_export.gd` writes
+  the items and weapons list (`items.json`). Not compiled yet: build errors go
+  to Claude to fix.
+- **Unity export:** `scripts/export/unity_export.gd` writes `exports/unity/items.json`.
+- **Roblox version** (`roblox/`): made by the `tools/roblox_*.py` scripts.
+- **Animations:** `assets/animations/` holds the animation libraries
+  (player, monsters, cutscenes, props). The player, the Long Man, the Wired,
+  the opening cutscene and Eli's T-pose scene each have an AnimationPlayer
+  using them. Real animations (for example from Mixamo) go into these files.
+- **Models:** the team's own models are used exactly as made (never
+  changed, shrunk or re-rigged); file names stay the same (for example
+  Cole's model is still `frank.glb`).
 
 ---
 
