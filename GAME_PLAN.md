@@ -115,6 +115,7 @@ reel-to-reel tapes, propaganda posters, gas masks, bulky old computers.
 | **Nora Vance** | The Journalist, age 35 |
 | **Walter Kessler** | The Engineer, age 60. **Secretly the main villain** (revealed halfway through Chapter 4): he started Project ECHO, designed the Goliath Chamber, killed Eli's parents in 1999, and has kept the experiments going ever since |
 | **Cole Brennan** | The Guard, age 36. Sealed Level B in 1999 at age 20, then **took 5-year-old Eli in and raised him like his own son**. They have a father-and-son relationship (Eli doesn't know Cole sealed his dad inside) |
+| **Sentry** | A German Shepherd from Deepwell's K-9 unit, given the Goliath Serum in 1999: now horse-sized. Daniel Reyes used to feed him. Joins Eli in Chapter 2 as a companion Eli commands (see [Chapter 2 plan](docs/CHAPTER2_PLAN.md)) |
 | **Deepwell** | The secret facility under the Blackwater Weather Station |
 | **Project BASTION** | The Cold War super-soldier program (1960s–1991) |
 | **Project ECHO** | Walter's secret branch of the program. Officially ended in 1999; Walter never stopped it |
