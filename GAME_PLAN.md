@@ -106,24 +106,24 @@ reel-to-reel tapes, propaganda posters, gas masks, bulky old computers.
 | Name | Who or what |
 |---|---|
 | **Eli Reyes** | The Son, age 21 |
-| **Sgt. Daniel Reyes** | Eli's father, Volunteer 14. Officially died in the 1999 sealing; secretly taken into Project ECHO |
-| **Dr. Maria Reyes** | Eli's mother, a Deepwell doctor. Died in the 1999 sealing; her last message is on a reel tape in Chapter 1 |
-| **Marcus Bell** | Eli's best friend, 21. Missing. Found alive in Chapter 4, then playable (see "The Walter twist") |
+| **Sgt. Daniel Reyes** | Eli's father, Volunteer 14. Officially died in the 1999 sealing; really Walter took him into Project ECHO, and he became **Echo** |
+| **Dr. Maria Reyes** | Eli's mother, a Deepwell doctor. Murdered by Walter in 1999 when she tried to get the volunteers out; her last message is on a reel tape in Chapter 1 |
+| **Marcus Bell** | Eli's best friend, 21, engineering student. Missing. Found alive in Chapter 4, then playable (see "The Walter twist") |
 | **Jenna Park** | Eli's best friend, 20. Missing with Marcus |
 | **The Missing Seven** | Daniel Marsh (Nora's source), Ruth Alvarez, Tomas Greer, Kelly Ann Doss, Owen Pratt, Marcus Bell, Jenna Park |
 | **Nora Vance** | The Journalist, age 35 |
-| **Walter Kessler** | The Engineer, age 60, designed the Goliath Chamber. **Secretly the main villain** (revealed halfway through Chapter 4) |
+| **Walter Kessler** | The Engineer, age 60. **Secretly the main villain** (revealed halfway through Chapter 4): he started Project ECHO, designed the Goliath Chamber, killed Eli's parents in 1999, and has kept the experiments going ever since |
 | **Cole Brennan** | The Guard, age 35, sealed Level B in 1999 at age 20 |
 | **Deepwell** | The secret facility under the Blackwater Weather Station |
 | **Project BASTION** | The Cold War super-soldier program (1960s–1991) |
-| **Project ECHO** | The secret branch that kept running until 1999 |
+| **Project ECHO** | Walter's secret branch of the program. Officially ended in 1999; Walter never stopped it |
 | **The Goliath Serum (G-7)** | The serum meant to create giant soldiers |
 | **Goliath** | Subject 7, nicknamed after the serum that changed him (Ch. 1 monster) |
 | **Conduit** | Test subject fused with the facility's wiring (Ch. 2 monster) |
 | **The Sealed** | The blind subjects Cole locked in Level B (Ch. 3 monsters) |
 | **Echo** | The final result of Project ECHO, once Sgt. Daniel Reyes; copies voices (Ch. 4 and 6) |
 | **Dr. Harold Ashby** | Original director of Deepwell; his voice is on the welcome tape |
-| **Dr. Lillian Ashby** | His daughter, who pays for Walter's restarted program (Ch. 5–6) |
+| **Dr. Lillian Ashby** | His daughter, who pays for Walter's program (Ch. 5–6) |
 | **The Warden** | Walter's newest, successful modern super-soldier (Ch. 5–6 monster) |
 
 ---
@@ -327,20 +327,36 @@ Every puzzle below requires teamwork.
 
 ### The Walter twist and the character switch
 
+**The truth about Walter:** Walter Kessler started Project ECHO in the 1990s
+and designed the Goliath Chamber. In 1999 Eli's mother, Dr. Maria Reyes,
+tried to get the volunteers out, so Walter killed her and made it look like
+the "gas leak". He took Eli's father, Sgt. Daniel Reyes (Volunteer 14), into
+Project ECHO, and Daniel slowly became **Echo**. Officially both parents
+died that night. Walter has been alive and running the experiments in
+secret ever since, and in 2015 he lured the Missing Seven (Marcus and Jenna
+too) to Deepwell as new test subjects. He joined the team to bring them
+down deeper.
+
 - **Chapters 1–3:** Walter is a normal playable character. Small clues hint
-  at him (he knows the way in, he built the Goliath Chamber, he "used to
-  work here").
-- **Halfway through Chapter 4:** the team finds proof that Walter restarted
-  the experiments and lured the Missing Seven here, including Marcus and
-  Jenna. Walter turns on them in a cutscene and leaves; from now on he is
-  the main villain (not playable).
+  at him (he knows the way in, he "used to work here", he built the Goliath
+  Chamber, Maria's tape says someone locked Medical from the outside).
+- **Halfway through Chapter 4:** the team finds the proof (Walter's own
+  ECHO logs, and what he did to Eli's parents). Walter turns on them in a
+  cutscene and leaves; from now on he is the main villain (not playable).
 - **The switch:** whoever was playing Walter watches (spectator camera)
   until the team finds **Marcus Bell** alive in a holding cell a little
   later in Chapter 4. That player then plays Marcus for the rest of the game.
-- **Marcus's ability (to decide):** suggestion: he's an engineering student,
-  so he can **Repair** (a bit slower than Walter), which keeps every puzzle
-  that needed the Engineer solvable.
 - **Jenna:** still missing after Chapter 4 (her fate to decide for Ch. 5–6).
+
+**Marcus Bell (The Tinkerer)**
+
+| | |
+|---|---|
+| **Role** | Fixer / Trapper |
+| **Repair** | Fixes generators, elevators, panels and security doors like Walter, so every Engineer puzzle still works. A bit slower (Walter 4s, Marcus 5s). |
+| **His own ability: Jury-Rig** | Press Q to build a beeping **noise-maker** out of scrap and throw it. Monsters within 25 m chase the noise for 8 seconds, so the team can sneak past or get away. 45 second cooldown. The noise-maker breaks when a monster reaches it. |
+| **Held item** | Taped-together multitool |
+| **Personality** | Jokes when he's scared. Feels guilty that Jenna is still missing. |
 
 **Build Chapter 1 fully before starting Chapter 2.**
 
