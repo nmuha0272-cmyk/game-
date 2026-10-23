@@ -1,7 +1,7 @@
-# Opening Cutscene - "The Mystery Illness"
+# Opening Cutscene - "Seven Missing"
 
 ## Overview
-An opening cutscene that plays before the main menu, establishing Eli's backstory and motivation for investigating the weather station.
+An opening cutscene that plays before the main menu, establishing Eli's backstory and motivation for investigating the Blackwater Weather Station.
 
 ## What Was Added
 
@@ -14,20 +14,20 @@ An opening cutscene that plays before the main menu, establishing Eli's backstor
 The cutscene has two phases:
 
 **Phase 1: Newspaper Article (8 seconds)**
-- Shows a newspaper from October 1992
-- Headline: "MYSTERY ILLNESS CLAIMS ANOTHER VETERAN"
-- Reports on David Chen's death and 17 other former volunteers dying
-- Doctors question the "cancer" diagnosis - cell patterns don't match
-- Mentions Project IRONWOOD and the "old weather station"
+- Shows a newspaper from October 2015: *The Blackwater Courier*
+- Headline: "SEVENTH PERSON MISSING NEAR OLD WEATHER STATION"
+- Reports on Marcus Bell (21) and Jenna Park (20) missing near the abandoned station
+- Mentions 5 others missing since August, including reporter Daniel Marsh (Nora's source)
+- References the 1999 sealing, "gas leak" cover story, 11 staff died including Dr. Maria Reyes and Sgt. Daniel Reyes
 
-**Phase 2: Hospital Scene (12 seconds)**
-- Flashback to six months earlier
-- Eli at his father's bedside
-- David Chen reveals the truth: "It's not cancer, son"
-- Shows the dog tag: "VOLUNTEER 14 - IRONWOOD"
-- David warns Eli to stay away from the weather station
-- Eli decides he can't make that promise
-- Text: "Three days later, David Chen was gone."
+**Phase 2: Eli's Flashback (12 seconds)**
+- Text: "That night..."
+- Eli reading the article, remembering 1999 when his parents died
+- Marcus and Jenna went in to find the truth about his parents
+- Cole Brennan (who raised Eli) joins them
+- Nora Vance lost her source (Daniel Marsh)
+- Walter Kessler says he knows the way in
+- Ends: "Seven people are missing. Four are going in after them."
 
 **Controls:**
 - Hold SPACE to skip (requires 1 second hold to prevent accidental skips)
@@ -44,31 +44,49 @@ Modified files:
 To tie into the cutscene backstory:
 
 **personal_son_volunteer_id.tres**
-- Now explicitly names David Chen
-- References his death from the mysterious illness
-- Eli's voice line mentions the fake cancer diagnosis
+- Now names Daniel Reyes (Volunteer 14)
+- References TRANSFERRED — PROJECT ECHO
+- Voice line about ECHO, not cancer
 
 **personal_son_father_letter.tres**
-- Added epilogue text about the delayed effects
-- New voice line about the experiments never leaving his body
+- Updated epilogue: never came home, sealed in Level B in 1999
+- Mom tried to get volunteers out, Walter killed her
+- Voice line references Level B and ECHO
 
-## The Story It Tells
+**personal_son_photo.tres**
+- Updated to family photo: Maria (lab coat), Daniel (uniform), Eli (5 years old)
+- Taken at Blackwater Station, 1998
 
-1. **The Hook**: Seventeen veterans are dying mysteriously
-2. **The Mystery**: Doctors can't explain it - looks like cancer but isn't
-3. **The Personal Stakes**: Eli's father was one of them
-4. **The Warning**: David Chen told Eli to stay away
-5. **The Motivation**: Eli can't ignore seventeen deaths and government lies
-6. **The Legacy**: The experiments killed them slowly, decades later
+**personal_son_drawing.tres**
+- Updated to show both parents (uniform + lab coat)
+- Text: "COME HOME SOON MOM AND DAD"
+
+**personal_son_bracelet.tres**
+- Renamed "Intake Bracelet - Volunteer 14"
+- References PROJECT BASTION, TRANSFER TO LEVEL D
+
+**personal_son_father_letter.tres**
+- Updated epilogue: never came home, sealed in Level B in 1999
+- Mom tried to get volunteers out, Walter killed her
+- Voice line references Level B and ECHO
+
+### The Story It Tells
+
+1. **The Hook**: Seven people missing near the weather station since August 2015
+2. **The Personal Stakes**: Two are Eli's best friends (Marcus & Jenna)
+3. **The Backstory**: Eli's parents died in the 1999 "gas leak" at Deepwell
+4. **The Mystery**: The station was sealed, but something's still happening
+5. **The Team**: Four people going in — Eli, Cole (who raised him), Nora (lost her source), Walter (knows the way)
+6. **The Legacy**: The experiments never stopped. Walter restarted them.
 
 This establishes:
-- Why Eli is investigating (personal loss + justice for 17 men)
-- What Project IRONWOOD did (human experiments disguised as vitamins)
-- The delayed effects (the serum kills you 30 years later)
-- The cover-up (DOD denies everything, doctors call it cancer)
-- The tragedy (Eli watched his father waste away, knowing the truth)
+- Why Eli is investigating (personal loss + his friends are missing)
+- What Project BASTION/ECHO did (human experiments, never stopped)
+- The 1999 cover-up (gas leak story, both parents died)
+- The villain (Walter Kessler, killed Mom, took Dad into ECHO)
+- The team dynamics (Cole raised Eli, Nora seeks truth, Walter is the traitor)
 
-## Testing
+### Testing
 
 1. Launch the game
 2. Cutscene plays automatically

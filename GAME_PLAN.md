@@ -331,8 +331,6 @@ Every puzzle below requires teamwork.
 | 5 | Still Running | Whole team (with Marcus) | The Warden | Discover a hidden modern lab under the old one | The experiments never stopped. Walter restarted them (with Lillian Ashby's money) and lured the Missing Seven here as new test subjects |
 | 6 | The Way Out | Whole team (with Marcus) | The Warden and Echo | Escape as Walter floods Deepwell to erase the evidence | Eli must choose to free his father or end him, and the team only escapes if everyone works together |
 
-**Detailed chapter plans:** [Chapter 2](docs/CHAPTER2_PLAN.md) (Chapters 3–6 to come).
-
 ### The Walter twist and the character switch
 
 **The truth about Walter:** Walter Kessler started Project ECHO in the 1990s

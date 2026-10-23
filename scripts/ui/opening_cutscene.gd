@@ -1,11 +1,11 @@
 extends Control
-## Opening cutscene: newspaper article about dying veterans, then Eli's
-## father's death in the hospital. Plays after character selection.
+## Opening cutscene: newspaper article about 7 missing people near weather station,
+## then Eli's flashback to 1999 when his parents died at Deepwell. Plays after character selection.
 
 signal finished
 
 @onready var newspaper_container: CenterContainer = %NewspaperContainer
-@onready var hospital_container: CenterContainer = %HospitalContainer
+@onready var flashback_container: CenterContainer = %HospitalContainer
 @onready var fade_timer: Timer = $FadeTimer
 
 var _current_phase := 0
@@ -14,13 +14,13 @@ const SKIP_HOLD_TIME := 1.0
 
 # Phase timings
 const NEWSPAPER_TIME := 8.0
-const HOSPITAL_TIME := 12.0
+const FLASHBACK_TIME := 12.0
 const FADE_OUT_TIME := 2.0
 
 
 func _ready() -> void:
 	newspaper_container.modulate.a = 0.0
-	hospital_container.modulate.a = 0.0
+	flashback_container.modulate.a = 0.0
 	hide()
 
 
@@ -62,14 +62,14 @@ func _start_phase_1() -> void:
 			_start_phase_2()
 
 
-## Phase 2: Hospital scene
+## Phase 2: Eli's flashback to 1999
 func _start_phase_2() -> void:
 	_current_phase = 2
-	hospital_container.show()
-	_fade_in(hospital_container, 1.5)
-	await get_tree().create_timer(HOSPITAL_TIME).timeout
+	flashback_container.show()
+	_fade_in(flashback_container, 1.5)
+	await get_tree().create_timer(FLASHBACK_TIME).timeout
 	if _current_phase == 2:  # Not skipped
-		_fade_out(hospital_container, FADE_OUT_TIME)
+		_fade_out(flashback_container, FADE_OUT_TIME)
 		await get_tree().create_timer(FADE_OUT_TIME + 0.5).timeout
 		if _current_phase == 2:
 			_finish()

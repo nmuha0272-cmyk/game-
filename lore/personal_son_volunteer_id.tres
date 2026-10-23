@@ -7,13 +7,14 @@ script = ExtResource("1_entry")
 id = "personal_son_volunteer_id"
 title = "Volunteer 14 ID Card"
 type = 3
-text = "VOLUNTEER IDENTIFICATION, PROJECT IRONWOOD
+text = "VOLUNTEER IDENTIFICATION, PROJECT BASTION
 Volunteer No. 14
-Name: DAVID CHEN
-Status stamped in red: TRANSFERRED - PROGRAM ZERO
+Name: DANIEL REYES
+Status stamped in red: TRANSFERRED — PROJECT ECHO
 
 The photo on the card shows a young man in uniform, smiling.
+On the back, in faded ink: \"For Eli.\"
 
-Dad kept this with him until the end. In the hospital, he said it wasn't cancer. He said they were all dying... everyone from the program."
+Dad kept this with him until the end. In 1999, they said it was a gas leak. But the experiments never stopped. He was taken deeper. Into Project ECHO."
 owner_character = 0
-voice_line = "Dad... you were Volunteer 14. They told you it was vitamins, but it killed you thirty years later."
+voice_line = "Dad... you were Volunteer 14. They told you it was vitamins, but they took you down there. Into ECHO."

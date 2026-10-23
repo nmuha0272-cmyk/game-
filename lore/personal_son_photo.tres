@@ -5,8 +5,9 @@
 [resource]
 script = ExtResource("1_entry")
 id = "personal_son_photo"
-title = "Photo: Two Soldiers"
+title = "Photo: Family at Deepwell"
 type = 2
-text = "An old photo of two young men in uniform, arms around each other's shoulders, laughing.\nOne of them has Eli's eyes. The other is very tall for his age.\nOn the back, in pencil: ME AND TOMMY - FORT BLISS - BEFORE ALL THIS."
+text = "An old photo taken at the Blackwater Weather Station. A woman in a lab coat stands beside a man in uniform, arms around a little boy with bright eyes. The woman is smiling. The man looks tired.
+On the back, in pencil: MARIA & DANIEL & ELI - BLACKWATER STATION - 1998"
 owner_character = 0
-voice_line = ""
+voice_line = "That's them. Mom in her lab coat, Dad in his uniform. Me, five years old. Taken a year before the sealing."
