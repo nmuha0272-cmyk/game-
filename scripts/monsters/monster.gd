@@ -101,6 +101,9 @@ var _pound_timer := 0.0
 ## After giving up on a held door, ignore doors for a moment so we can walk away.
 var _ignore_doors_time := 0.0
 var _ignore_players_time := 0.0
+## Path blocked by solo split - monster patrols this area until cleared
+var _blocked_path: Node3D = null
+var _blocked_path_cleared: bool = false
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 @onready var nav: NavigationAgent3D = $NavigationAgent3D
@@ -383,9 +386,25 @@ func _start_search(around: Vector3) -> void:
 func hear_noise(noise_position: Vector3, radius: float) -> void:
 	if not multiplayer.is_server() or _ignore_players_time > 0.0:
 		return
+	var mode = GameState.voice_mode if GameState else "normal"
+	
+	# Warden hears walkie-talkies through walls (handled by voice_chat multiplier)
+	# Dual hunt: both monsters get the noise (handled by voice_chat multiplier)
+	
 	if state in [State.PATROL, State.INVESTIGATE, State.SEARCH] \
 			and global_position.distance_to(noise_position) <= radius:
 		_investigate(noise_position)
+
+
+## Host only: Echo mimic - voice position reported for stalking
+func hear_voice_position(voice_position: Vector3) -> void:
+	if not multiplayer.is_server():
+		return
+	# Only Echo (or monsters with mimic ability) should react
+	if state in [State.PATROL, State.INVESTIGATE, State.SEARCH]:
+		# Echo stores voice positions to mimic later
+		_last_known_position = voice_position
+		_investigate(voice_position)
 
 
 ## Host only: wake up (if asleep) and hunt this player. Used by chase

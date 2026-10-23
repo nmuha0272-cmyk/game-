@@ -53,6 +53,18 @@ const COLOR_PANEL := Color(0.04, 0.05, 0.045, 0.94)
 @onready var connect_button: Button = $JoinPanel/Margin/VBox/Buttons/ConnectButton
 @onready var join_back_button: Button = $JoinPanel/Margin/VBox/Buttons/BackButton
 
+@onready var webrtc_panel: PanelContainer = $WebRTCPanel
+@onready var webrtc_role: OptionButton = $WebRTCPanel/Margin/VBox/RoleOption
+@onready var webrtc_offer_display: TextEdit = $WebRTCPanel/Margin/VBox/OfferDisplay
+@onready var webrtc_answer_input: TextEdit = $WebRTCPanel/Margin/VBox/AnswerInput
+@onready var webrtc_ice_input: TextEdit = $WebRTCPanel/Margin/VBox/ICEInput
+@onready var webrtc_create_button: Button = $WebRTCPanel/Margin/VBox/CreateOfferButton
+@onready var webrtc_join_button: Button = $WebRTCPanel/Margin/VBox/JoinOfferButton
+@onready var webrtc_copy_button: Button = $WebRTCPanel/Margin/VBox/CopyButton
+@onready var webrtc_paste_button: Button = $WebRTCPanel/Margin/VBox/PasteButton
+@onready var webrtc_back_button: Button = $WebRTCPanel/Margin/VBox/BackButton
+@onready var webrtc_status: Label = $WebRTCPanel/Margin/VBox/StatusLabel
+
 @onready var settings_panel: PanelContainer = $SettingsPanel
 @onready var volume_slider: HSlider = $SettingsPanel/Margin/VBox/Grid/VolumeSlider
 @onready var sensitivity_slider: HSlider = $SettingsPanel/Margin/VBox/Grid/SensitivitySlider
@@ -124,13 +136,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _connect_signals() -> void:
 	for button: Button in main_buttons.get_children():
 		_style_menu_button(button)
-	for button: Button in [connect_button, join_back_button, settings_back_button, credits_back_button]:
+	for button: Button in [connect_button, join_back_button, settings_back_button, credits_back_button, webrtc_back_button, webrtc_create_button, webrtc_join_button, webrtc_copy_button, webrtc_paste_button]:
 		_style_menu_button(button)
 
 	host_button.pressed.connect(_on_host_pressed)
-	join_button.pressed.connect(_show_panel.bind(join_panel))
+	join_button.pressed.connect(_show_join_options)
 	settings_button.pressed.connect(_on_settings_pressed)
-	credits_button.pressed.connect(_show_panel.bind(credits_panel))
+	credits_button.pressed.connect(_on_credits_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
 
 	connect_button.pressed.connect(_on_connect_pressed)
@@ -138,6 +150,11 @@ func _connect_signals() -> void:
 	join_back_button.pressed.connect(_show_panel.bind(null))
 	settings_back_button.pressed.connect(_show_panel.bind(null))
 	credits_back_button.pressed.connect(_show_panel.bind(null))
+	webrtc_back_button.pressed.connect(_show_panel.bind(null))
+	webrtc_create_button.pressed.connect(_on_webrtc_create_offer)
+	webrtc_join_button.pressed.connect(_on_webrtc_join_offer)
+	webrtc_copy_button.pressed.connect(_on_webrtc_copy_offer)
+	webrtc_paste_button.pressed.connect(_on_webrtc_paste_answer)
 
 	volume_slider.value_changed.connect(_on_volume_changed)
 	sensitivity_slider.value_changed.connect(_on_sensitivity_changed)
@@ -178,7 +195,7 @@ func _play_click() -> void:
 
 ## Shows one panel (or the main buttons when panel is null).
 func _show_panel(panel: Control) -> void:
-	for p: Control in [join_panel, settings_panel, credits_panel]:
+	for p: Control in [join_panel, webrtc_panel, settings_panel, credits_panel]:
 		p.visible = p == panel
 	main_buttons.visible = panel == null
 
@@ -187,6 +204,8 @@ func _show_panel(panel: Control) -> void:
 	elif panel == join_panel:
 		ip_input.grab_focus()
 		ip_input.caret_column = ip_input.text.length()
+	elif panel == webrtc_panel:
+		webrtc_role.grab_focus()
 	elif panel == settings_panel:
 		volume_slider.grab_focus()
 	else:
@@ -208,18 +227,59 @@ func show_status(text: String, is_error := false) -> void:
 
 
 func _on_host_pressed() -> void:
-	_set_status("STARTING SERVER ON PORT %d..." % DEFAULT_PORT, COLOR_HIGHLIGHT)
-	host_requested.emit(DEFAULT_PORT)
-	if embedded:
-		return
+	_show_join_options()
 
-	var network := get_node_or_null("/root/NetworkManager")
-	if network and network.has_method("host_game"):
-		network.host_game(DEFAULT_PORT)
-		if auto_go_to_lobby:
-			_go_to_lobby()
-	elif auto_go_to_lobby:
-		_set_status("NETWORKMANAGER NOT FOUND (BUILD PHASE 3 FIRST)", COLOR_RED)
+
+func _show_join_options() -> void:
+	# Show a choice: LAN (ENet) or Internet (WebRTC)
+	var choice_panel = PanelContainer.new()
+	choice_panel.name = "JoinChoicePanel"
+	var margin = MarginContainer.new()
+	margin.theme_override_constants("margin_left", 40)
+	margin.theme_override_constants("margin_right", 40)
+	margin.theme_override_constants("margin_top", 30)
+	margin.theme_override_constants("margin_bottom", 30)
+	choice_panel.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.theme_override_constants("separation", 20)
+	margin.add_child(vbox)
+	
+	var label = Label.new()
+	label.text = "HOW DO YOU WANT TO CONNECT?"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 28)
+	label.add_theme_color_override("font_color", COLOR_HIGHLIGHT)
+	vbox.add_child(label)
+	
+	var lan_button = Button.new()
+	lan_button.text = "LOCAL NETWORK (LAN / DIRECT IP)"
+	lan_button.custom_minimum_size = Vector2(0, 60)
+	lan_button.pressed.connect(func() -> void: _show_panel(join_panel))
+	vbox.add_child(lan_button)
+	
+	var webrtc_button = Button.new()
+	webrtc_button.text = "INTERNET (WebRTC - NO PORT FORWARDING)"
+	webrtc_button.custom_minimum_size = Vector2(0, 60)
+	webrtc_button.pressed.connect(func() -> void: _show_panel(webrtc_panel))
+	vbox.add_child(webrtc_button)
+	
+	var back_button = Button.new()
+	back_button.text = "BACK"
+	back_button.custom_minimum_size = Vector2(0, 50)
+	back_button.pressed.connect(func() -> void: _show_panel(null))
+	vbox.add_child(back_button)
+	
+	_style_menu_button(lan_button)
+	_style_menu_button(webrtc_button)
+	_style_menu_button(back_button)
+	
+	add_child(choice_panel)
+	choice_panel.global_position = get_viewport().get_visible_rect().position + get_viewport().get_visible_rect().size / 2 - choice_panel.size / 2
+	
+	# Store reference to clean up
+	_show_panel(choice_panel)
+	choice_panel.meta = "temp_join_choice"
 
 
 func _on_connect_pressed() -> void:
@@ -441,3 +501,73 @@ func _apply_theme() -> void:
 	version_label.add_theme_font_override("font", spaced)
 	version_label.add_theme_font_size_override("font_size", 15)
 	version_label.add_theme_color_override("font_color", COLOR_DIM)
+
+
+# ---------------------------------------------------------------- WebRTC Internet Play
+
+func _on_webrtc_create_offer() -> void:
+	var network = get_node_or_null("/root/NetworkManager")
+	if not network:
+		webrtc_status.text = "ERROR: NetworkManager not found"
+		return
+	
+	webrtc_role.disabled = true
+	webrtc_create_button.disabled = true
+	webrtc_status.text = "CREATING OFFER..."
+	
+	network.webrtc_offer_created.connect(_on_webrtc_offer_created)
+	network.host_game_webrtc()
+
+func _on_webrtc_offer_created(offer: String) -> void:
+	var network = get_node_or_null("/root/NetworkManager")
+	if network:
+		network.webrtc_offer_created.disconnect(_on_webrtc_offer_created)
+	
+	webrtc_offer_display.text = offer
+	webrtc_status.text = "OFFER CREATED! COPY AND SEND TO FRIENDS."
+	webrtc_copy_button.disabled = false
+	webrtc_join_button.disabled = false
+
+func _on_webrtc_copy_offer() -> void:
+	DisplayServer.clipboard_set(webrtc_offer_display.text)
+	webrtc_status.text = "OFFER COPIED TO CLIPBOARD!"
+
+func _on_webrtc_join_offer() -> void:
+	var offer = webrtc_offer_display.text.strip_edges()
+	if offer.is_empty():
+		webrtc_status.text = "PASTE HOST'S OFFER FIRST"
+		return
+	
+	var network = get_node_or_null("/root/NetworkManager")
+	if not network:
+		webrtc_status.text = "ERROR: NetworkManager not found"
+		return
+	
+	webrtc_status.text = "CONNECTING..."
+	webrtc_join_button.disabled = true
+	
+	network.webrtc_answer_created.connect(_on_webrtc_answer_created)
+	network.join_game_webrtc(offer)
+
+func _on_webrtc_answer_created(answer: String) -> void:
+	var network = get_node_or_null("/root/NetworkManager")
+	if network:
+		network.webrtc_answer_created.disconnect(_on_webrtc_answer_created)
+	
+	webrtc_answer_input.text = answer
+	webrtc_status.text = "ANSWER CREATED! COPY AND SEND BACK TO HOST."
+	webrtc_copy_button.disabled = false
+
+func _on_webrtc_paste_answer() -> void:
+	var answer = webrtc_answer_input.text.strip_edges()
+	if answer.is_empty():
+		webrtc_status.text = "NO ANSWER TO PASTE"
+		return
+	
+	var network = get_node_or_null("/root/NetworkManager")
+	if not network:
+		webrtc_status.text = "ERROR: NetworkManager not found"
+		return
+	
+	network.receive_webrtc_answer(answer)
+	webrtc_status.text = "ANSWER SENT! CONNECTION ESTABLISHING..."

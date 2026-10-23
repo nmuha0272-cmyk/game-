@@ -214,6 +214,36 @@ func _broadcast_noise_level(player_id: int, level: float) -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _receive_noise_level(player_id: int, level: float) -> void:
+	# Check voice mode for quiet sections
+	var mode = GameState.voice_mode if GameState else "normal"
+	var pulse = GameState.pulse_active if GameState else false
+	
+	# In whisper_only mode, only whisper is allowed
+	if mode == "whisper_only":
+		if level >= TALK_THRESHOLD:
+			level = WHISPER_THRESHOLD * 0.9  # Clamp to whisper
+	
+	# In pulse_active mode (Ch 2 EM pulse), any voice triggers noise
+	if pulse and mode == "pulse_active":
+		# Voice during pulse = loud noise
+		get_tree().call_group("monsters", "hear_noise", Player.find(get_tree(), player_id).global_position, 30.0)
+		noise_level_changed.emit(player_id, level)
+		return
+	
+	# In echo_mimic mode, voice creates noise AND marks position for Echo
+	if mode == "echo_mimic" and level >= WHISPER_THRESHOLD:
+		var player = Player.find(get_tree(), player_id)
+		if player:
+			get_tree().call_group("monsters", "hear_voice_position", player.global_position)
+	
+	# In warden_headset mode, walkie-talkie voice has extended range
+	var walkie_multiplier = 1.0
+	if mode == "warden_headset":
+		walkie_multiplier = 3.0  # Warden hears walkie-talkies from 3x further
+	
+	# In dual_hunt mode, both Warden and Echo react (handled by monsters)
+	var dual_hunt = (mode == "dual_hunt")
+	
 	# Determine noise tier and range
 	var tier = "silent"
 	var range = 0.0
@@ -232,6 +262,14 @@ func _receive_noise_level(player_id: int, level: float) -> void:
 	var player = Player.find(get_tree(), player_id)
 	if not player:
 		return
+	
+	# Apply mode multipliers
+	if mode == "quiet":
+		range *= 2.0  # 2x hearing in quiet zones
+	elif mode == "dual_hunt":
+		range *= 1.5  # 1.5x for dual hunt
+	
+	range *= walkie_multiplier
 	
 	# Send noise event to monsters
 	if range > 0.0:

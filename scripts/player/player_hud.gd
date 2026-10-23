@@ -59,8 +59,12 @@ func _process(_delta: float) -> void:
 	if target:
 		prompt_label.text = target.get_prompt(player)
 	elif prompt_label.visible:
-		prompt_label.text = "[T] Give %s to %s" % [Items.display_name(held),
-				GameState.get_player_name(teammate.name.to_int())]
+		var give_prompt := player.get_node("InventoryControls").get_give_prompt()
+		if give_prompt != "":
+			prompt_label.text = give_prompt
+		else:
+			prompt_label.text = "[T] Give %s to %s" % [Items.display_name(held),
+					GameState.get_player_name(teammate.name.to_int())]
 
 	var charge := player.flashlight.charge
 	battery_label.text = "[F] Flashlight  %d%%" % roundi(charge * 100.0)

@@ -35,6 +35,10 @@ var journal: Array = []
 ## Whether flashlight batteries drain (Chapter 1 turns this on in the stairwell).
 var flashlight_drain := true
 
+## Voice detection mode for quiet sections: "normal", "quiet", "whisper_only", "echo_mimic", "warden_headset", "dual_hunt", "pulse_active"
+var voice_mode: String = "normal"
+var pulse_active: bool = false
+
 signal chapter_completed(text: String)
 ## The next chapter starts (path of its level scene).
 signal next_chapter_requested(path: String)
@@ -340,3 +344,19 @@ func server_complete_chapter(text: String) -> void:
 @rpc("authority", "call_local", "reliable")
 func _complete_chapter(text: String) -> void:
 	chapter_completed.emit(text)
+
+
+## Host only: set voice detection mode for quiet sections.
+func server_set_voice_mode(mode: String, pulse_interval: float = 0.0, pulse: bool = false) -> void:
+	if multiplayer.is_server():
+		_set_voice_mode.rpc(mode, pulse_interval, pulse)
+
+
+@rpc("authority", "call_local", "reliable")
+func _set_voice_mode(mode: String, pulse_interval: float, pulse: bool) -> void:
+	voice_mode = mode
+	pulse_active = pulse
+	if mode != "normal":
+		get_tree().call_group("player_hud", "show_message", "Voice mode: %s" % mode.capitalize())
+	else:
+		get_tree().call_group("player_hud", "show_message", "Voice mode: Normal")

@@ -12,6 +12,8 @@ signal changed
 
 ## Seconds until a downed player bleeds out.
 const BLEED_OUT_TIME := 30.0
+## Eli-Cole bond bonus: bleed out time reduced to 15s
+const BOND_BLEED_OUT_TIME := 15.0
 ## Seconds a teammate must hold E to help someone up.
 const HELP_UP_TIME := 3.0
 
@@ -22,6 +24,8 @@ var is_out := false
 var carried_by := 0
 ## Seconds left before bleeding out (counted on every computer for the HUD).
 var time_left := 0.0
+## Current bleed out time (may be reduced by Eli-Cole bond)
+var _current_bleed_time := BLEED_OUT_TIME
 
 @onready var player: Player = get_parent()
 
@@ -30,9 +34,51 @@ func get_carrier() -> Player:
 	return Player.find(get_tree(), carried_by) if carried_by != 0 else null
 
 
+func _is_eli_cole_pair(p1: Player, p2: Player) -> bool:
+	var c1 = p1.character
+	var c2 = p2.character
+	return (c1 == Characters.Id.SON and c2 == Characters.Id.GUARD) or \
+	       (c1 == Characters.Id.GUARD and c2 == Characters.Id.SON)
+
+
+func _get_reviver() -> Player:
+	# This is called when someone is helping up - we need to track who initiated the help
+	# For now, we'll check nearby players when the timer starts
+	return null
+
+
+func _update_bleed_time() -> void:
+	# Check if Eli and Cole are both alive and nearby
+	var downed_id := player.name.to_int()
+	var eli_id := 0
+	var cole_id := 0
+	
+	for p in get_tree().get_nodes_in_group("players"):
+		if p.character == Characters.Id.SON:
+			eli_id = p.name.to_int()
+		elif p.character == Characters.Id.GUARD:
+			cole_id = p.name.to_int()
+	
+	# Check if Eli is helping Cole or vice versa
+	var downed_char := player.character
+	if downed_char == Characters.Id.SON and cole_id != 0:
+		var cole := Player.find(get_tree(), cole_id)
+		if cole and not cole.is_downed and cole.global_position.distance_to(player.global_position) <= 5.0:
+			_current_bleed_time = BOND_BLEED_OUT_TIME
+			return
+	elif downed_char == Characters.Id.GUARD and eli_id != 0:
+		var eli := Player.find(get_tree(), eli_id)
+		if eli and not eli.is_downed and eli.global_position.distance_to(player.global_position) <= 5.0:
+			_current_bleed_time = BOND_BLEED_OUT_TIME
+			return
+	
+	_current_bleed_time = BLEED_OUT_TIME
+
+
 func _process(delta: float) -> void:
 	if not is_downed or is_out or carried_by != 0:
 		return
+	_update_bleed_time()
 	time_left = maxf(time_left - delta, 0.0)
 	if time_left <= 0.0 and multiplayer.is_server():
 		server_set_carried_by(0)
@@ -58,6 +104,7 @@ func server_respawn(at: Vector3) -> void:
 	if not multiplayer.is_server():
 		return
 	server_set_carried_by(0)
+	_current_bleed_time = BLEED_OUT_TIME
 	_set_downed.rpc(false)
 	_teleport.rpc_id(player.get_multiplayer_authority(), at)
 
@@ -106,7 +153,8 @@ func _set_downed(value: bool) -> void:
 		return
 	is_downed = value
 	is_out = false
-	time_left = BLEED_OUT_TIME if value else 0.0
+	_update_bleed_time()
+	time_left = _current_bleed_time if value else 0.0
 	changed.emit()
 
 

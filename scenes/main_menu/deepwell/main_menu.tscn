@@ -300,7 +300,105 @@ size_flags_horizontal = 0
 text = "BACK"
 alignment = 0
 
-[node name="StatusLabel" type="Label" parent="."]
+[node name="WebRTCPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.35
+anchor_bottom = 0.35
+offset_left = 88.0
+offset_right = 808.0
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="WebRTCPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="WebRTCPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["panel_header"]]
+layout_mode = 2
+text = "INTERNET PLAY (WebRTC)"
+
+[node name="RoleLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
+layout_mode = 2
+text = "ARE YOU HOSTING OR JOINING?"
+
+[node name="RoleOption" type="OptionButton" parent="WebRTCPanel/Margin/VBox"]
+layout_mode = 2
+items = ["HOST (CREATE OFFER)", "JOIN (PASTE OFFER)"]
+selected = 0
+
+[node name="OfferLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
+layout_mode = 2
+text = "HOST'S OFFER (COPY THIS AND SEND TO FRIENDS)"
+
+[node name="OfferDisplay" type="TextEdit" parent="WebRTCPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 120)
+readonly = true
+placeholder_text = "OFFER WILL APPEAR HERE AFTER CLICKING CREATE OFFER"
+
+[node name="AnswerLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
+layout_mode = 2
+text = "JOINER'S ANSWER (PASTE HERE IF YOU ARE HOST)"
+
+[node name="AnswerInput" type="TextEdit" parent="WebRTCPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 120)
+placeholder_text = "PASTE JOINER'S ANSWER HERE"
+
+[node name="ICELLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
+layout_mode = 2
+text = "ICE CANDIDATES (AUTO-HANDLED)"
+
+[node name="ICEInput" type="TextEdit" parent="WebRTCPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 2
+custom_minimum_size = Vector2(0, 60)
+readonly = true
+placeholder_text = "ICE CANDIDATES ARE EXCHANGED AUTOMATICALLY"
+
+[node name="Buttons" type="HBoxContainer" parent="WebRTCPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="CreateOfferButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "CREATE OFFER"
+
+[node name="JoinOfferButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "JOIN WITH OFFER"
+disabled = true
+
+[node name="CopyButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "COPY OFFER/ANSWER"
+disabled = true
+
+[node name="PasteButton" type="Button" parent="WebRTCPanel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "PASTE ANSWER"
+disabled = true
+
+[node name="BackButton" type="Button" parent="WebRTCPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "BACK"
+alignment = 0
+
+[node name="StatusLabel" type="Label" parent="WebRTCPanel/Margin/VBox" groups=["small_label"]]
+layout_mode = 2
+text = "SELECT ROLE AND CLICK CREATE OFFER (HOST) OR PASTE OFFER (JOIN)"
+horizontal_alignment = 1
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0

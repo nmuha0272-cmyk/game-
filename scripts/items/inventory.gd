@@ -316,29 +316,48 @@ func _server_action(action: String, is_quick: bool, slot: int, target_id: int) -
 	var item := get_quick(slot) if is_quick else get_storage(slot)
 	if item.is_empty() or player.is_downed:
 		return
-	match action:
-		"drop":
-			server_remove(is_quick, slot)
-			ItemSpawner.find(get_tree()).server_drop(item, player)
-		"give":
-			var teammate := Player.find(get_tree(), target_id)
-			if teammate == null or teammate == player or teammate.is_downed \
-					or teammate.global_position.distance_to(player.global_position) > 3.0:
-				return
-			if teammate.inventory.free_slot()[1] < 0:
-				server_tell("%s's hands are full." % GameState.get_player_name(target_id))
-				return
-			server_remove(is_quick, slot)
-			teammate.inventory.server_add(item)
-			teammate.inventory.server_tell("%s gave you: %s" % [
-					GameState.get_player_name(player.name.to_int()), Items.display_name(item)])
-		"use":
-			if ItemEffects.server_use(item, player, target_id):
+match action:
+			"drop":
 				server_remove(is_quick, slot)
+				ItemSpawner.find(get_tree()).server_drop(item, player)
+			"give":
+				var teammate := Player.find(get_tree(), target_id)
+				if teammate == null or teammate == player or teammate.is_downed \
+						or teammate.global_position.distance_to(player.global_position) > 3.0:
+					return
+				if teammate.inventory.free_slot()[1] < 0:
+					server_tell("%s's hands are full." % GameState.get_player_name(target_id))
+					return
+				server_remove(is_quick, slot)
+				teammate.inventory.server_add(item)
+				teammate.inventory.server_tell("%s gave you: %s" % [
+						GameState.get_player_name(player.name.to_int()), Items.display_name(item)])
+				
+				# Eli-Cole bond bonus: extra magazine/bandage
+				if _is_eli_cole_pair(player, teammate) and Items.is_ammo(item):
+					var bonus_item = item.duplicate(true)
+					bonus_item.amount = 1  # Single extra magazine
+					teammate.inventory.server_add(bonus_item)
+					teammate.inventory.server_tell("Bond bonus! +1 magazine")
+				elif _is_eli_cole_pair(player, teammate) and item.get("id") == "bandage":
+					var bonus_item = item.duplicate(true)
+					bonus_item.amount = 1
+					teammate.inventory.server_add(bonus_item)
+					teammate.inventory.server_tell("Bond bonus! +1 bandage")
+			"use":
+				if ItemEffects.server_use(item, player, target_id):
+					server_remove(is_quick, slot)
 
 
 func _send_to_everyone() -> void:
 	_receive.rpc(quick_slots, storage_slots, active_quick)
+
+
+func _is_eli_cole_pair(p1: Player, p2: Player) -> bool:
+	var c1 = p1.character
+	var c2 = p2.character
+	return (c1 == Characters.Id.SON and c2 == Characters.Id.GUARD) or \
+	       (c1 == Characters.Id.GUARD and c2 == Characters.Id.SON)
 
 
 # Only the host (network ID 1) may send these.

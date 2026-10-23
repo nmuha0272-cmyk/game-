@@ -88,6 +88,8 @@ func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority():
 		return
 
+	_handle_sync_walk()
+
 	var carrier := downed.get_carrier()
 	if carrier:
 		_follow_carrier(carrier, delta)
@@ -234,3 +236,25 @@ func _dragging_speed_multiplier() -> float:
 		elif heavy in get_collision_exceptions():
 			remove_collision_exception_with(heavy)
 	return multiplier
+
+
+func _handle_sync_walk() -> void:
+	if not movement_enabled or is_downed:
+		return
+	
+	var sync_node = get_node_or_null("MovementSync") as MovementSync
+	if not sync_node:
+		return
+	
+	# Toggle sync walk with Shift+F (or dedicated key)
+	if Input.is_action_just_pressed("sync_walk"):
+		if sync_node.is_syncing():
+			sync_node.stop_sync()
+		else:
+			# Find teammate in reach
+			var interactor = get_node_or_null("Head/Camera3D/InteractRay") as Interactor
+			if interactor:
+				var target = interactor.get_collider()
+				if target is Player and target != self and not target.is_downed:
+					if target.global_position.distance_to(global_position) <= 2.0:
+						sync_node.start_sync(target)

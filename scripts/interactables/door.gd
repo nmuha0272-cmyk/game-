@@ -9,8 +9,9 @@ extends Interactable
 @export var swing_time := 0.6
 
 var is_open := false
-## Network ID of the Guard holding it shut (0 = nobody).
-var held_by := 0
+## Network IDs of players holding it shut (0 = nobody). Supports up to 2 holders.
+var held_by_1 := 0
+var held_by_2 := 0
 
 @onready var _sound: AudioStreamPlayer3D = $Sound
 
@@ -35,7 +36,18 @@ func server_restore() -> void:
 
 
 func is_held() -> bool:
-	return held_by != 0
+	return held_by_1 != 0 or held_by_2 != 0
+
+
+func get_holders() -> Array[Player]:
+	var holders := []
+	if held_by_1 != 0:
+		var p1 := Player.find(get_tree(), held_by_1)
+		if p1: holders.append(p1)
+	if held_by_2 != 0:
+		var p2 := Player.find(get_tree(), held_by_2)
+		if p2: holders.append(p2)
+	return holders
 
 
 ## A DoorLock child that hasn't been unlocked yet (keycard or jammed),
@@ -62,11 +74,19 @@ func get_prompt(by: Player) -> String:
 		return "Sealed. It opens from somewhere else."
 	if is_locked():
 		return $Lock.get_prompt(by)
+	
+	var holders := get_holders()
 	var by_id := by.name.to_int()
-	if held_by == by_id:
+	
+	if by_id == held_by_1 or by_id == held_by_2:
 		return "Holding the door shut (let go of Q to release)"
-	if is_held():
-		return "%s is holding the door shut" % GameState.get_player_name(held_by)
+	
+	if holders.size() == 2:
+		var names := holders.map(func(p: Player): return GameState.get_player_name(p.name.to_int()))
+		return "%s and %s are holding the door shut" % names
+	elif holders.size() == 1:
+		return "%s is holding the door shut" % GameState.get_player_name(holders[0].name.to_int())
+	
 	var text := "[E] Close door" if is_open else "[E] Open door"
 	if by.character == Characters.Id.GUARD and not is_open and not is_locked():
 		text += "   [Hold Q] Hold it shut"
@@ -80,12 +100,11 @@ func _on_interact(by: Player) -> void:
 		$Lock.server_try_unlock(by)
 	elif not is_held():
 		_set_open.rpc(not is_open)
-		# Doors are noisy. Monsters nearby come to look.
 		get_tree().call_group("monsters", "hear_noise", global_position, 8.0)
 
 
 ## Host only: open the door (used by monsters and unlocking). Does nothing
-## while the Guard is holding it or it's still locked.
+## while the door is held or it's still locked.
 func server_force_open() -> void:
 	if multiplayer.is_server() and not is_open and not is_held() and not is_locked():
 		_set_open.rpc(true)
@@ -107,7 +126,7 @@ func _play_pound() -> void:
 	tween.tween_property(self, "rotation_degrees:y", 0.0, 0.15)
 
 
-## Called on the Guard's computer when he starts or stops holding the door.
+## Called on a player's computer when they start or stop holding the door.
 func request_hold(by: Player, hold: bool) -> void:
 	if multiplayer.is_server():
 		_server_hold(by, hold)
@@ -121,26 +140,38 @@ func _request_hold(hold: bool) -> void:
 		_server_hold(Player.find(get_tree(), multiplayer.get_remote_sender_id()), hold)
 
 
+func _is_eli_cole_pair(p1: Player, p2: Player) -> bool:
+	var c1 = p1.character
+	var c2 = p2.character
+	return (c1 == Characters.Id.SON and c2 == Characters.Id.GUARD) or \
+	       (c1 == Characters.Id.GUARD and c2 == Characters.Id.SON)
+
+
 func _server_hold(by: Player, hold: bool) -> void:
 	if by == null:
 		return
 	var by_id := by.name.to_int()
-	if hold and not is_open and held_by == 0 and by.character == Characters.Id.GUARD:
-		_set_held.rpc(by_id)
-	elif not hold and held_by == by_id:
-		_set_held.rpc(0)
+	if hold and not is_open and by.character == Characters.Id.GUARD:
+		# First Guard gets slot 1, second gets slot 2
+		if held_by_1 == 0:
+			_set_held.rpc(by_id, 1)
+		elif held_by_2 == 0:
+			_set_held.rpc(by_id, 2)
+	elif not hold and (held_by_1 == by_id or held_by_2 == by_id):
+		_set_held.rpc(0, 1 if held_by_1 == by_id else 2)
 
 
 func _process(_delta: float) -> void:
-	# If the Guard who was holding the door leaves the game, let go.
-	if multiplayer.is_server() and held_by != 0 and Player.find(get_tree(), held_by) == null:
-		_set_held.rpc(0)
+	# If a player who was holding the door leaves the game, let go.
+	if multiplayer.is_server() and held_by_1 != 0 and Player.find(get_tree(), held_by_1) == null:
+		_set_held.rpc(0, 1)
+	if multiplayer.is_server() and held_by_2 != 0 and Player.find(get_tree(), held_by_2) == null:
+		_set_held.rpc(0, 2)
 
 
 @rpc("authority", "call_local", "reliable")
 func _set_open(value: bool) -> void:
 	is_open = value
-	# Remember players' doors (puzzle doors come back with their puzzle).
 	if not puzzle_controlled:
 		GameState.server_save_progress(self, value)
 	var angle := open_angle if is_open else 0.0
@@ -151,5 +182,8 @@ func _set_open(value: bool) -> void:
 
 
 @rpc("authority", "call_local", "reliable")
-func _set_held(guard_id: int) -> void:
-	held_by = guard_id
+func _set_held(guard_id: int, slot: int = 1) -> void:
+	if slot == 1:
+		held_by_1 = guard_id
+	else:
+		held_by_2 = guard_id

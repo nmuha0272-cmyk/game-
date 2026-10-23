@@ -93,3 +93,21 @@ func get_teammate_in_reach() -> Player:
 			and looked_at.global_position.distance_to(inventory.player.global_position) <= 3.0:
 		return looked_at
 	return null
+
+
+func _is_eli_cole_pair(p1: Player, p2: Player) -> bool:
+	var c1 = p1.character
+	var c2 = p2.character
+	return (c1 == Characters.Id.SON and c2 == Characters.Id.GUARD) or \
+	       (c1 == Characters.Id.GUARD and c2 == Characters.Id.SON)
+
+
+func get_give_prompt() -> String:
+	var teammate := get_teammate_in_reach()
+	if teammate and _is_eli_cole_pair(inventory.player, teammate):
+		var item := inventory.get_active_quick()
+		if Items.is_ammo(item):
+			return "[T] Give %s to %s  (Bond bonus: +1 mag)" % [Items.display_name(item), GameState.get_player_name(teammate.name.to_int())]
+		elif item.get("id") == "bandage":
+			return "[T] Give %s to %s  (Bond bonus: +1 bandage)" % [Items.display_name(item), GameState.get_player_name(teammate.name.to_int())]
+	return ""
