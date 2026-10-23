@@ -68,7 +68,7 @@ const CHARACTERS := {
 		"seat": Vector3(0.38, 0.0, -0.1),
 		"color": Color(0.29, 0.32, 0.19),
 		"size": 1.12,
-		"about": "35. Former soldier and Eli's mentor. Knows this place better than he admits.",
+		"about": "36. Former soldier. Raised Eli after his parents died, like a father. Knows this place better than he admits.",
 		"abilities": [
 			"STRENGTH: hold doors shut, move heavy objects, build barricades, carry downed teammates.",
 			"FIELD TRAINING: longer stuns, and can study a monster to show the team its weak point.",

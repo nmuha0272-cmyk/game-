@@ -62,7 +62,7 @@ func _trigger() -> void:
 func _mentor_intro() -> void:
 	_show_dialogue("Cole", "Eli. Stay close. This place... it takes things from you.", 6.0)
 	await get_tree().create_timer(1.0).timeout
-	_show_dialogue("Cole", "Your dad would've wanted you to be careful.", 6.0)
+	_show_dialogue("Cole", "I've kept you safe for sixteen years, son. I'm not stopping now.", 6.0)
 
 
 func _mentor_stairwell() -> void:
@@ -70,9 +70,9 @@ func _mentor_stairwell() -> void:
 	await get_tree().create_timer(1.0).timeout
 	_show_dialogue("Cole", "I've seen what happens when the lights go out. Stay near me.", 5.0)
 	await get_tree().create_timer(1.0).timeout
-	_show_dialogue("Eli", "Since when do you care?", 4.0)
+	_show_dialogue("Eli", "You don't have to treat me like I'm still five, Cole.", 4.0)
 	await get_tree().create_timer(1.0).timeout
-	_show_dialogue("Cole", "Since I promised someone I'd bring you back. Both of you.", 5.0)
+	_show_dialogue("Cole", "You'll always be that kid to me. I promised your dad I'd bring you home. And I will.", 5.0)
 
 
 func _eli_leg_injury() -> void:

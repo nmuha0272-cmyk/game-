@@ -44,7 +44,8 @@ official story was a gas leak).
 **Why they go in (2015):** seven people have gone missing near the station
 since August, including Eli's two best friends, **Marcus Bell** and **Jenna
 Park**, who went in to find out what really happened to his parents. Four
-people go in after them.
+people go in after them, led by **Cole Brennan**, the soldier who raised Eli
+like a son after his parents died.
 
 **Frozen in time:** The facility never upgraded its Cold War equipment, so
 everything inside looks like the 1960s–70s (reel tapes, bulky computers,
@@ -113,7 +114,7 @@ reel-to-reel tapes, propaganda posters, gas masks, bulky old computers.
 | **The Missing Seven** | Daniel Marsh (Nora's source), Ruth Alvarez, Tomas Greer, Kelly Ann Doss, Owen Pratt, Marcus Bell, Jenna Park |
 | **Nora Vance** | The Journalist, age 35 |
 | **Walter Kessler** | The Engineer, age 60. **Secretly the main villain** (revealed halfway through Chapter 4): he started Project ECHO, designed the Goliath Chamber, killed Eli's parents in 1999, and has kept the experiments going ever since |
-| **Cole Brennan** | The Guard, age 35, sealed Level B in 1999 at age 20 |
+| **Cole Brennan** | The Guard, age 36. Sealed Level B in 1999 at age 20, then **took 5-year-old Eli in and raised him like his own son**. They have a father-and-son relationship (Eli doesn't know Cole sealed his dad inside) |
 | **Deepwell** | The secret facility under the Blackwater Weather Station |
 | **Project BASTION** | The Cold War super-soldier program (1960s–1991) |
 | **Project ECHO** | Walter's secret branch of the program. Officially ended in 1999; Walter never stopped it |
