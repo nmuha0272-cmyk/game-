@@ -132,7 +132,17 @@ chart, and a **photo of Daniel Reyes kneeling next to a normal-sized Sentry**
 
 ### What he does: Eli's commands
 
-Eli gives orders with a **command wheel** (hold a key, pick an order).
+**Sentry follows Eli everywhere** (a few steps behind him) and **only takes
+orders from Eli**. Everyone else can pet him, but he ignores their orders.
+Eli gives orders two ways:
+1. **Command wheel (first):** hold a key (for example G), a wheel pops up
+   with the orders below, pick one.
+2. **Voice orders (added later):** Eli says the word into his microphone,
+   for example *"Sentry, stay!"* or *"Sentry, quiet!"*. This needs a speech
+   add-on for Godot (it only listens for the 7 order words, on Eli's
+   computer). The command wheel always works too, in case it mishears.
+   Careful: saying an order out loud is still noise the monsters can hear.
+
 Sentry is run by the host like the monsters, so every player sees the same
 thing.
 
@@ -238,7 +248,9 @@ Room, Blast Tunnel (built).
 - [ ] Marcus and Jenna's "WE'RE ALIVE" message in the Dormitory
 - [ ] K-9 Kennels and the meeting with Sentry (cutscene)
 - [ ] Sentry companion: follows Eli, host-controlled, noise the monsters hear
+- [ ] Sentry follows Eli and only takes orders from Eli
 - [ ] Eli's command wheel: Track, Attack, Guard, Fetch, Find, Stay, Quiet
+- [ ] Later: voice orders ("Sentry, stay!") with a speech add-on, wheel as backup
 - [ ] Sentry's model (the team will make or supply it; used as given)
 - [ ] Generator Hall with the three generator puzzles (Coolant, Fuel, Breakers)
 - [ ] The Conduit hunts the wing of each generator that's turned on
