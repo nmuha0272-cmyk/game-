@@ -117,7 +117,12 @@ void fragment() {
 		// Left wing windows, two rows.
 		float win = 0.0;
 		for (int row = 0; row < 2; row++) {
-			float y0 = row == 0 ? 218.0 : 246.0;
+			float y0;
+			if (row == 0) {
+				y0 = 218.0;
+			} else {
+				y0 = 246.0;
+			}
 			win += grid_window(q, 18.0, y0, 32.0, y0 + 15.0, 1.0, 1.0);
 			win += grid_window(q, 45.0, y0, 70.0, y0 + 15.0, 2.0, 1.0);
 			win += grid_window(q, 82.0, y0, 106.0, y0 + 15.0, 2.0, 1.0);
@@ -126,7 +131,16 @@ void fragment() {
 
 		// Center block: four tall decorative panels, each with three small windows.
 		for (int col = 0; col < 4; col++) {
-			float x0 = col == 0 ? 197.0 : col == 1 ? 222.0 : col == 2 ? 292.0 : 317.0;
+			float x0;
+			if (col == 0) {
+				x0 = 197.0;
+			} else if (col == 1) {
+				x0 = 222.0;
+			} else if (col == 2) {
+				x0 = 292.0;
+			} else {
+				x0 = 317.0;
+			}
 			float panel = rect(q, x0, 183.0, x0 + 20.0, 272.0);
 			float panel_edge = panel - rect(q, x0 + 1.5, 184.5, x0 + 18.5, 270.5);
 			shade -= panel_edge * 0.07;
@@ -139,7 +153,12 @@ void fragment() {
 
 		// Right wing: big grid windows, two rows.
 		for (int row = 0; row < 2; row++) {
-			float y0 = row == 0 ? 186.0 : 234.0;
+			float y0;
+			if (row == 0) {
+				y0 = 186.0;
+			} else {
+				y0 = 234.0;
+			}
 			win += grid_window(q, 410.0, y0, 476.0, y0 + 23.0, 4.0, 2.0);
 			win += grid_window(q, 524.0, y0, 591.0, y0 + 23.0, 4.0, 2.0);
 			win += grid_window(q, 618.0, y0, 690.0, y0 + 23.0, 4.0, 2.0);

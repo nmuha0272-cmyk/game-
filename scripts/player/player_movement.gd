@@ -242,7 +242,7 @@ func _handle_sync_walk() -> void:
 	if not movement_enabled or is_downed:
 		return
 	
-	var sync_node = get_node_or_null("MovementSync") as MovementSync
+	var sync_node = get_node_or_null("MovementSync")
 	if not sync_node:
 		return
 	

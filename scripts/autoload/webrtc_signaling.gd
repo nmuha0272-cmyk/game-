@@ -57,7 +57,7 @@ func host_game(max_peers: int = 3) -> void:
 	_pending_ice.clear()
 	
 	# Create data channel for reliable ordered messaging (like ENet)
-	var channel_config = WebRTCDataChannelConfiguration.new()
+	var channel_config = WebRTCPeerConnection.DataChannelConfiguration.new()
 	channel_config.ordered = true
 	channel_config.reliable = true
 	channel_config.id = 0
@@ -94,8 +94,8 @@ func join_with_invite_code(code: String) -> void:
 	_connected_peers.clear()
 	_pending_ice.clear()
 	
-	var offer = WebRTCSessionDescription.new()
-	offer.type = WebRTCSessionDescription.TYPE_OFFER
+	var offer = WebRTCPeerConnection.SessionDescription.new()
+	offer.type = WebRTCPeerConnection.SessionDescription.TYPE_OFFER
 	offer.sdp = offer_sdp
 	_peer.set_remote_description(offer)
 	
@@ -110,8 +110,8 @@ func join_game(offer_sdp: String) -> void:
 	_connected_peers.clear()
 	_pending_ice.clear()
 	
-	var offer = WebRTCSessionDescription.new()
-	offer.type = WebRTCSessionDescription.TYPE_OFFER
+	var offer = WebRTCPeerConnection.SessionDescription.new()
+	offer.type = WebRTCPeerConnection.SessionDescription.TYPE_OFFER
 	offer.sdp = offer_sdp
 	_peer.set_remote_description(offer)
 	
@@ -166,7 +166,6 @@ a=msid-semantic: WMS
 """ + compressed + """
 """
 	return base_sdp
-		return
 	
 	# TODO: Implement HTTP polling to signaling server
 	# For now, manual SDP exchange
@@ -207,9 +206,9 @@ func _generate_peer_id() -> int:
 # --- WebRTC Callbacks ---
 
 func _on_session_description(type: int, sdp: String) -> void:
-	if type == WebRTCSessionDescription.TYPE_OFFER:
+	if type == WebRTCPeerConnection.SessionDescription.TYPE_OFFER:
 		offer_created.emit(sdp)
-	elif type == WebRTCSessionDescription.TYPE_ANSWER:
+	elif type == WebRTCPeerConnection.SessionDescription.TYPE_ANSWER:
 		answer_created.emit(sdp)
 
 func _on_ice_candidate(mid_name: String, index: int, sdp: String) -> void:
@@ -255,8 +254,8 @@ func add_ice_candidate(candidate: Dictionary) -> void:
 
 ## Set remote answer (for host)
 func set_remote_answer(answer_sdp: String) -> void:
-	var answer = WebRTCSessionDescription.new()
-	answer.type = WebRTCSessionDescription.TYPE_ANSWER
+	var answer = WebRTCPeerConnection.SessionDescription.new()
+	answer.type = WebRTCPeerConnection.SessionDescription.TYPE_ANSWER
 	answer.sdp = answer_sdp
 	_peer.set_remote_description(answer)
 

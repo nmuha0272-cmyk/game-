@@ -245,20 +245,20 @@ func _run() -> void:
 	await _timer(0.2)
 
 	# Fill to max storage
-	while inv.storage_count() < Inventory.MAX_STORAGE:
+	while inv.storage_count() < 10:  # Inventory.MAX_STORAGE
 		inv.server_add(Items.create("pouch"))
 		result = inv.find_item("pouch")
 		inv.select_quick(result[1])
 		inv.request_use(0)
-	check(inv.storage_count() == Inventory.MAX_STORAGE, "storage caps at %d slots" % Inventory.MAX_STORAGE)
-	check(inv.total_capacity() == 4 + Inventory.MAX_STORAGE, "total capacity is 14")
+	check(inv.storage_count() == 10, "storage caps at %d slots" % 10)  # Inventory.MAX_STORAGE
+	check(inv.total_capacity() == 14, "total capacity is 14")  # 4 + Inventory.MAX_STORAGE
 
 	# Extra pouch kept when storage full
 	inv.server_add(Items.create("pouch"))
 	var spare_idx: int = inv.find_item("pouch")[1]
 	inv.select_quick(spare_idx)
 	inv.request_use(0)
-	check(inv.storage_count() == Inventory.MAX_STORAGE, "no more storage slots past the cap")
+	check(inv.storage_count() == 10, "no more storage slots past the cap")  # Inventory.MAX_STORAGE
 	check(inv.find_item("pouch")[1] == spare_idx, "extra pouch kept when it can't be worn")
 
 	finish()

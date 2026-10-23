@@ -351,6 +351,11 @@ static func is_weapon(item: Dictionary) -> bool:
 	return not item.is_empty() and item.has("weapon")
 
 
+## True if the item is an ammo box (ammo_38, ammo_9mm, etc.).
+static func is_ammo(item: Dictionary) -> bool:
+	return not item.is_empty() and item.id.begins_with("ammo_")
+
+
 ## The weapon id inside a weapon item ("" if it isn't one).
 static func weapon_id(item: Dictionary) -> String:
 	return str(item.get("weapon", "")) if is_weapon(item) else ""

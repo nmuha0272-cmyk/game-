@@ -1,13 +1,4 @@
 driver ready
 starting playtest
 main scene up at 0.0s
-requesting solo
-PASS: solo host registered
-PASS: character picked
-starting game
-PASS: newspaper intro appears after character select
-newspaper phase 1 up, skipping
-level loaded: Chapter1, waiting for dialogue...
-PASS: level has 2 pack upgrades to find
-FAIL: dialogue never triggered
-TEST_RESULT: 1 FAILURES: ["dialogue never triggered"]
+requesting solo as The Son (Eli)

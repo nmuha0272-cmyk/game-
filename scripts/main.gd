@@ -100,7 +100,7 @@ func _on_home_host(_port: int) -> void:
 	# Pressing Esc in the car goes back to the title; hosting again starts fresh.
 	if NetworkManager.is_online():
 		NetworkManager.leave_game()
-	var error := NetworkManager.host_game()
+	var error := NetworkManager.host_game_enet()
 	if error != OK:
 		_home_status("Could not host (error %d). Is another copy already hosting?" % error, true)
 		return
@@ -114,7 +114,7 @@ func _on_home_join(ip: String, port: int) -> void:
 	if NetworkManager.is_online():
 		NetworkManager.leave_game()
 	GameState.local_player_name = _typed_name()
-	var error := NetworkManager.join_game(ip, port)
+	var error := NetworkManager.join_game_enet(ip, port)
 	if error != OK:
 		_home_status("Could not start connecting (error %d)." % error, true)
 
@@ -145,7 +145,7 @@ func _update_home_taken() -> void:
 
 
 func _on_host_requested() -> void:
-	var error := NetworkManager.host_game()
+	var error := NetworkManager.host_game_enet()
 	if error != OK:
 		menu.show_status("Could not host (error %d). Is another copy already hosting?" % error)
 		return
@@ -157,7 +157,7 @@ func _on_host_requested() -> void:
 
 ## Solo mode: host alone, but still show the lobby so you pick your character.
 func _on_solo_requested() -> void:
-	var error := NetworkManager.host_game()
+	var error := NetworkManager.host_game_enet()
 	if error != OK:
 		menu.show_status("Could not start (error %d)." % error)
 		return
@@ -169,7 +169,7 @@ func _on_solo_requested() -> void:
 
 func _on_join_requested(address: String) -> void:
 	GameState.local_player_name = _typed_name()
-	var error := NetworkManager.join_game(address)
+	var error := NetworkManager.join_game_enet(address)
 	if error != OK:
 		menu.show_status("Could not start connecting (error %d)." % error)
 		return

@@ -55,13 +55,11 @@ const COLOR_PANEL := Color(0.04, 0.05, 0.045, 0.94)
 
 @onready var webrtc_panel: PanelContainer = $WebRTCPanel
 @onready var webrtc_role: OptionButton = $WebRTCPanel/Margin/VBox/RoleOption
-@onready var webrtc_offer_display: TextEdit = $WebRTCPanel/Margin/VBox/OfferDisplay
-@onready var webrtc_answer_input: TextEdit = $WebRTCPanel/Margin/VBox/AnswerInput
 @onready var webrtc_invite_display: TextEdit = $WebRTCPanel/Margin/VBox/InviteDisplay
 @onready var webrtc_invite_input: LineEdit = $WebRTCPanel/Margin/VBox/InviteInput
-@onready var webrtc_generate_button: Button = $WebRTCPanel/Margin/VBox/GenerateCodeButton
-@onready var webrtc_join_code_button: Button = $WebRTCPanel/Margin/VBox/JoinCodeButton
-@onready var webrtc_copy_code_button: Button = $WebRTCPanel/Margin/VBox/CopyCodeButton
+@onready var webrtc_generate_button: Button = $WebRTCPanel/Margin/VBox/Buttons/GenerateCodeButton
+@onready var webrtc_join_code_button: Button = $WebRTCPanel/Margin/VBox/Buttons/JoinCodeButton
+@onready var webrtc_copy_code_button: Button = $WebRTCPanel/Margin/VBox/Buttons/CopyCodeButton
 @onready var webrtc_back_button: Button = $WebRTCPanel/Margin/VBox/BackButton
 @onready var webrtc_status: Label = $WebRTCPanel/Margin/VBox/StatusLabel
 
@@ -77,7 +75,7 @@ const COLOR_PANEL := Color(0.04, 0.05, 0.045, 0.94)
 
 @onready var camera_label: Label = $CameraLabel
 @onready var rec_label: Label = $RecLabel
-@onready var status_label: Label = $StatusLabel
+@onready var status_label: Label = get_node_or_null("StatusLabel")
 @onready var version_label: Label = $VersionLabel
 @onready var fade: ColorRect = $Fade
 @onready var flicker_timer: Timer = $FlickerTimer
@@ -321,6 +319,10 @@ func _on_quit_pressed() -> void:
 	tween.tween_callback(get_tree().quit)
 
 
+func _on_credits_pressed() -> void:
+	_show_panel(credits_panel)
+
+
 # ---------------------------------------------------------------- Settings
 
 func _load_settings() -> void:
@@ -504,14 +506,14 @@ func _apply_theme() -> void:
 
 # ---------------------------------------------------------------- WebRTC Internet Play
 
-func _on_webrtc_create_offer() -> void:
+func _on_webrtc_generate_code() -> void:
 	var network = get_node_or_null("/root/NetworkManager")
 	if not network:
 		webrtc_status.text = "ERROR: NetworkManager not found"
 		return
 	
 	webrtc_role.disabled = true
-	webrtc_create_button.disabled = true
+	webrtc_generate_button.disabled = true
 	webrtc_status.text = "CREATING OFFER..."
 	
 	network.webrtc_offer_created.connect(_on_webrtc_offer_created)
@@ -522,87 +524,18 @@ func _on_webrtc_offer_created(offer: String) -> void:
 	if network:
 		network.webrtc_offer_created.disconnect(_on_webrtc_offer_created)
 	
-	webrtc_offer_display.text = offer
-	webrtc_status.text = "OFFER CREATED! COPY AND SEND TO FRIENDS."
-	webrtc_copy_button.disabled = false
-	webrtc_join_button.disabled = false
-
-func _on_webrtc_copy_offer() -> void:
-	DisplayServer.clipboard_set(webrtc_offer_display.text)
-	webrtc_status.text = "OFFER COPIED TO CLIPBOARD!"
-
-func _on_webrtc_join_offer() -> void:
-	var offer = webrtc_offer_display.text.strip_edges()
-	if offer.is_empty():
-		webrtc_status.text = "PASTE HOST'S OFFER FIRST"
-		return
-	
-	var network = get_node_or_null("/root/NetworkManager")
-	if not network:
-		webrtc_status.text = "ERROR: NetworkManager not found"
-		return
-	
-	webrtc_status.text = "CONNECTING..."
-	webrtc_join_button.disabled = true
-	
-	network.webrtc_answer_created.connect(_on_webrtc_answer_created)
-	network.join_game_webrtc(offer)
-
-func _on_webrtc_answer_created(answer: String) -> void:
-	var network = get_node_or_null("/root/NetworkManager")
-	if network:
-		network.webrtc_answer_created.disconnect(_on_webrtc_answer_created)
-	
-	webrtc_answer_input.text = answer
-	webrtc_status.text = "ANSWER CREATED! COPY AND SEND BACK TO HOST."
-	webrtc_copy_button.disabled = false
-
-func _on_webrtc_paste_answer() -> void:
-	var answer = webrtc_answer_input.text.strip_edges()
-	if answer.is_empty():
-		webrtc_status.text = "NO ANSWER TO PASTE"
-		return
-	
-	var network = get_node_or_null("/root/NetworkManager")
-	if not network:
-		webrtc_status.text = "ERROR: NetworkManager not found"
-		return
-	
-	network.receive_webrtc_answer(answer)
-	webrtc_status.text = "ANSWER SENT! CONNECTION ESTABLISHING..."
-
-
-# ---------------------------------------------------------------- Invite Code System (Short Codes)
-
-func _on_webrtc_generate_code() -> void:
-	var network = get_node_or_null("/root/NetworkManager")
-	if not network:
-		webrtc_status.text = "ERROR: NetworkManager not found"
-		return
-	
 	var signaling = network._webrtc_signaling
-	if not signaling:
-		webrtc_status.text = "ERROR: WebRTC not initialized"
-		return
-	
-	webrtc_generate_button.disabled = true
-	webrtc_status.text = "GENERATING INVITE CODE..."
-	
-	# Wait for offer then generate code
-	signaling.invite_code_ready.connect(_on_invite_code_ready)
-	
-	# The offer should already be created, just generate code
-	var code = signaling.generate_invite_code()
-	if code != "":
-		_on_invite_code_ready(code)
-	else:
-		# Wait for offer
-		signaling.offer_created.connect(func(offer: String) -> void:
-			signaling.offer_created.disconnect()
-			var c = signaling.generate_invite_code()
-			if c != "":
-				_on_invite_code_ready(c)
-		)
+	if signaling:
+		var code = signaling.generate_invite_code()
+		if code != "":
+			_on_invite_code_ready(code)
+		else:
+			signaling.offer_created.connect(func(offer: String) -> void:
+				signaling.offer_created.disconnect()
+				var c = signaling.generate_invite_code()
+				if c != "":
+					_on_invite_code_ready(c)
+			)
 
 
 func _on_invite_code_ready(code: String) -> void:
@@ -621,6 +554,9 @@ func _on_webrtc_copy_code() -> void:
 	webrtc_status.text = "INVITE CODE COPIED! SEND TO FRIENDS."
 
 
+# ---------------------------------------------------------------- Theme
+
+
 func _on_webrtc_join_code() -> void:
 	var code = webrtc_invite_input.text.strip_edges().to_upper()
 	if code.is_empty():
@@ -635,7 +571,7 @@ func _on_webrtc_join_code() -> void:
 		webrtc_status.text = "ERROR: NetworkManager not found"
 		return
 	
-	webrtc_status.text = "JOINING WITH CODE..."
+	webrtc_status.text = "CONNECTING..."
 	webrtc_join_code_button.disabled = true
 	
 	var signaling = network._webrtc_signaling
@@ -644,10 +580,12 @@ func _on_webrtc_join_code() -> void:
 	
 	network.join_game_webrtc_with_code(code)
 
-
 func _on_invite_code_received(code: String) -> void:
 	var network = get_node_or_null("/root/NetworkManager")
 	if network and network._webrtc_signaling:
 		network._webrtc_signaling.invite_code_received.disconnect(_on_invite_code_received)
 	
 	webrtc_status.text = "CONNECTED! WAITING FOR HOST..."
+
+
+# ---------------------------------------------------------------- Theme
