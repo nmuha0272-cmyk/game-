@@ -155,6 +155,11 @@ func _think(delta: float) -> void:
 			_think_stare()
 			return
 
+	# Handle blocked path patrol (solo splits)
+	if is_blocking_path() and state == State.PATROL:
+		_think_blocked_path_patrol(delta)
+		return
+
 	if _ignore_players_time > 0.0:
 		_ignore_players_time -= delta
 		_think_wander()
@@ -317,6 +322,41 @@ func _think_blocked(delta: float) -> void:
 		nav.target_position = _patrol_position(_patrol_index)
 
 
+## Monster patrols a blocked path area until solo objective complete.
+## Stays near the blocked area, reacts to nearby players but doesn't chase far.
+func _think_blocked_path_patrol(delta: float) -> void:
+	if not is_instance_valid(_blocked_path) or _blocked_path_cleared:
+		# Path cleared, resume normal behavior
+		_blocked_path = null
+		_blocked_path_cleared = false
+		_ignore_players_time = 0.0
+		return
+	
+	# Check for nearby players (react to close threats)
+	var nearby_player := senses.find_visible_player()
+	if nearby_player and global_position.distance_to(nearby_player.global_position) <= 8.0:
+		# Close player - investigate but don't full chase
+		_investigate(nearby_player.global_position)
+		_ignore_players_time = 2.0
+		return
+	
+	# Check for noise near the blocked path
+	var heard := senses.find_heard_player()
+	if heard and global_position.distance_to(heard.global_position) <= 10.0:
+		_investigate(heard.global_position)
+		return
+	
+	# Patrol around the blocked path area
+	if nav.is_navigation_finished():
+		# Pick a new point near the blocked path
+		var patrol_pos := _blocked_path.global_position + Vector3(
+			randf_range(-5.0, 5.0),
+			0.0,
+			randf_range(-5.0, 5.0)
+		)
+		nav.target_position = patrol_pos
+
+
 # ---------------------------------------------------------------- state changes
 
 func _start_patrol() -> void:
@@ -372,6 +412,37 @@ func _wander_off() -> void:
 	_patrol_index = _farthest_patrol_point_from(global_position)
 	nav.target_position = _patrol_position(_patrol_index)
 	_ignore_players_time = catch_cooldown
+
+
+## Host only: set a blocked path area for solo splits.
+## Monster will patrol this area until cleared by solo player completing objective.
+func server_set_blocked_path(blocked_area: Node3D) -> void:
+	if not multiplayer.is_server():
+		return
+	_blocked_path = blocked_area
+	_blocked_path_cleared = false
+	
+	# Start patrolling the blocked area
+	if is_instance_valid(_blocked_path):
+		# Use the blocked area's position as patrol center
+		nav.target_position = _blocked_path.global_position
+		state = State.PATROL
+		_ignore_players_time = 0.0
+
+
+## Host only: clear the blocked path (called when solo objective complete)
+func server_clear_blocked_path() -> void:
+	if not multiplayer.is_server():
+		return
+	_blocked_path = null
+	_blocked_path_cleared = true
+	# Monster resumes normal behavior
+	_ignore_players_time = 0.0
+
+
+## Check if currently patrolling a blocked path
+func is_blocking_path() -> bool:
+	return is_instance_valid(_blocked_path) and not _blocked_path_cleared
 
 
 func _start_search(around: Vector3) -> void:

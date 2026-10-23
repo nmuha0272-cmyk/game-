@@ -24,6 +24,25 @@ func _ready() -> void:
 	call_deferred("_run")
 
 
+func _get_playtest_character() -> int:
+	# Check for --character=<name> argument
+	var args = OS.get_cmdline_user_args()
+	for arg in args:
+		if arg.begins_with("--character="):
+			var char_name = arg.substr(12).to_lower()
+			match char_name:
+				"eli": return Characters.Id.SON
+				"son": return Characters.Id.SON
+				"nora": return Characters.Id.JOURNALIST
+				"journalist": return Characters.Id.JOURNALIST
+				"walter": return Characters.Id.ENGINEER
+				"engineer": return Characters.Id.ENGINEER
+				"cole": return Characters.Id.GUARD
+				"guard": return Characters.Id.GUARD
+	# Default: Journalist (for backward compatibility)
+	return Characters.Id.JOURNALIST
+
+
 func _on_watchdog() -> void:
 	if _done:
 		return
@@ -41,15 +60,17 @@ func _run() -> void:
 	_log("main scene up at %0.1fs" % ((Time.get_ticks_msec() - t0) / 1000.0))
 	await _timer(0.5)
 
-	# --- Solo game with the Journalist (line 0's speaker) ---
-	_log("requesting solo")
+	# --- Solo game with selected character ---
+	var playtest_char := _get_playtest_character()
+	var char_name := Characters.display_name(playtest_char)
+	_log("requesting solo as %s" % char_name)
 	main._on_solo_requested()
 	await _timer(0.5)
 	check(GameState.players.size() == 1, "solo host registered")
 
-	GameState.request_character(Characters.Id.JOURNALIST)
+	GameState.request_character(playtest_char)
 	await _timer(0.5)
-	check(GameState.can_start(), "character picked")
+	check(GameState.can_start(), "character picked: %s" % char_name)
 
 	_log("starting game")
 	GameState.start_game()
@@ -59,8 +80,13 @@ func _run() -> void:
 	ok = await _until(func() -> bool: return main.opening_cutscene._current_phase >= 1, 5.0)
 	if not ok:
 		return finish("newspaper phase never started")
-	_log("newspaper phase 1 up, skipping")
-	main.opening_cutscene._skip()
+	_log("newspaper phase 1 up - NOT skipping, letting it play")
+
+	# Wait for cutscene to finish naturally
+	ok = await _until(func() -> bool: return not main.opening_cutscene.visible, 30.0)
+	if not ok:
+		return finish("opening cutscene never finished")
+	_log("opening cutscene finished naturally")
 	await _timer(0.5)
 
 	# --- Level loads ---
