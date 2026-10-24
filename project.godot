@@ -27,7 +27,7 @@ GameState="*res://scripts/autoload/game_state.gd"
 Settings="*res://scripts/autoload/settings.gd"
 VoiceChat="*res://scripts/autoload/voice_chat.gd"
 TestDriver="*res://tools/test_driver.gd"
-; WebRTCSignaling="*res://scripts/autoload/webrtc_signaling.gd"  ; Temporarily disabled
+; WebRTCSignaling="*res://scripts/autoload/disabled_webrtc/webrtc_signaling.gd"  ; Temporarily disabled
 
 [display]
 

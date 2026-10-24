@@ -1,4 +1,67 @@
 driver ready
 starting playtest
 main scene up at 0.0s
-requesting solo as The Son (Eli)
+requesting solo as The Journalist (Nora)
+PASS: solo host registered
+PASS: character picked: The Journalist (Nora)
+starting game
+PASS: newspaper intro appears after character select
+newspaper phase 1 up - NOT skipping, letting it play
+opening cutscene finished naturally
+level loaded: Chapter1, waiting for dialogue...
+PASS: level has 2 pack upgrades to find
+dialogue triggered at 68.5s
+PASS: controls frozen (menu_open) during dialogue
+PASS: cutscene camera created
+PASS: letterbox bars created
+PASS: caption shows line 0: There it is. The Blackwater Weather Station. Or what's left of it.
+PASS: caption shows who speaks: THE JOURNALIST (NORA)
+PASS: player spawned (1 found)
+PASS: 3 stand-in bodies spawned (3)
+PASS: stand-in bodies have rigged models
+PASS: own nameplate hidden during scene
+PASS: own model fully visible, not shadow-only (1 meshes)
+PASS: speaker is acting (gesturing)
+PASS: camera close-up on speaker (dist=2.63 m)
+tapped continue after line 0 at 68.7s
+tapped continue after line 1 at 69.0s
+tapped continue after line 2 at 69.3s
+tapped continue after line 3 at 69.6s
+tapped continue after line 4 at 69.9s
+tapped continue after line 5 at 70.2s
+tapped continue after line 6 at 70.5s
+PASS: cutscene ended and controls restored
+PASS: menu_open false after scene
+PASS: bars freed after scene
+PASS: caption freed after scene
+PASS: stand-in bodies freed after scene
+PASS: own nameplate hidden again after scene
+PASS: movement re-enabled after scene
+PASS: player camera active again after scene
+PASS: acting/glance cleared after scene
+PASS: no loudness meter on the HUD
+PASS: perspective node exists
+PASS: perspective is a Settings option
+PASS: camera starts in first person
+note: headless mouse mode=0, driving perspective directly
+PASS: third person turns on
+PASS: camera pulled back over the shoulder
+PASS: view models hidden in third person
+PASS: your own body is drawn in third person
+note: headless mouse mode=0, driving perspective directly
+PASS: third person turns back off
+PASS: camera back at the eye
+PASS: view models back in first person
+PASS: starts with 6 total slots (4 quick + 2 storage)
+PASS: starts with 2 storage slots
+PASS: hotbar always shows 4 quick slots
+PASS: backpack adds 2 storage slots (4)
+PASS: total capacity is 8
+PASS: backpack is used up when worn
+PASS: pouch adds 1 storage slot (5)
+PASS: total capacity is 9
+PASS: storage caps at 10 slots
+PASS: total capacity is 14
+PASS: no more storage slots past the cap
+PASS: extra pouch kept when it can't be worn
+TEST_RESULT: ALL PASS

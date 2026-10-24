@@ -22,7 +22,7 @@ var current_backend: Backend = Backend.ENET
 
 func _ready() -> void:
 	# WebRTC temporarily disabled
-	# var WebRTCSignalingClass = preload("res://scripts/autoload/webrtc_signaling.gd")
+	# var WebRTCSignalingClass = preload("res://scripts/autoload/disabled_webrtc/webrtc_signaling.gd")
 	# _webrtc_signaling = WebRTCSignalingClass.new()
 	# add_child(_webrtc_signaling)
 	# _webrtc_signaling.offer_created.connect(_on_webrtc_offer_created)
@@ -45,6 +45,15 @@ func host_game_enet(port := DEFAULT_PORT) -> Error:
 		return error
 	multiplayer.multiplayer_peer = peer
 	return OK
+
+## The old names (some scripts and tests still use them): same as the ENet ones.
+func host_game(port := DEFAULT_PORT) -> Error:
+	return host_game_enet(port)
+
+
+func join_game(address: String, port := DEFAULT_PORT) -> Error:
+	return join_game_enet(address, port)
+
 
 ## Join a game using ENet (LAN / direct IP)
 func join_game_enet(address: String, port := DEFAULT_PORT) -> Error:

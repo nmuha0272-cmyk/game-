@@ -75,7 +75,7 @@ const COLOR_PANEL := Color(0.04, 0.05, 0.045, 0.94)
 
 @onready var camera_label: Label = $CameraLabel
 @onready var rec_label: Label = $RecLabel
-@onready var status_label: Label = get_node_or_null("StatusLabel")
+@onready var status_label: Label = $StatusLabel
 @onready var version_label: Label = $VersionLabel
 @onready var fade: ColorRect = $Fade
 @onready var flicker_timer: Timer = $FlickerTimer
@@ -138,7 +138,7 @@ func _connect_signals() -> void:
 		_style_menu_button(button)
 
 	host_button.pressed.connect(_on_host_pressed)
-	join_button.pressed.connect(_show_join_options)
+	join_button.pressed.connect(_on_join_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	credits_button.pressed.connect(_on_credits_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
@@ -224,59 +224,79 @@ func show_status(text: String, is_error := false) -> void:
 
 
 func _on_host_pressed() -> void:
-	_show_join_options()
+	_set_status("STARTING SERVER ON PORT %d..." % DEFAULT_PORT, COLOR_HIGHLIGHT)
+	host_requested.emit(DEFAULT_PORT)
+	if embedded:
+		return
+
+	var network := get_node_or_null("/root/NetworkManager")
+	if network and network.has_method("host_game"):
+		network.host_game(DEFAULT_PORT)
+		if auto_go_to_lobby:
+			_go_to_lobby()
+	elif auto_go_to_lobby:
+		_set_status("NETWORKMANAGER NOT FOUND (BUILD PHASE 3 FIRST)", COLOR_RED)
+
+
+## Join: the IP box. Once internet play (WebRTC) is switched on, it first asks
+## "LAN or Internet?".
+func _on_join_pressed() -> void:
+	if _internet_play_available():
+		_show_join_options()
+	else:
+		_show_panel(join_panel)
+
+
+## Internet play needs the WebRTCSignaling autoload (switched off for now, see
+## scripts/autoload/disabled_webrtc/README.md).
+func _internet_play_available() -> bool:
+	return get_node_or_null("/root/WebRTCSignaling") != null
 
 
 func _show_join_options() -> void:
-	# Show a choice: LAN (ENet) or Internet (WebRTC)
-	var choice_panel = PanelContainer.new()
+	# A choice: LAN (ENet) or Internet (WebRTC).
+	var choice_panel := PanelContainer.new()
 	choice_panel.name = "JoinChoicePanel"
-	var margin = MarginContainer.new()
-	margin.theme_override_constants("margin_left", 40)
-	margin.theme_override_constants("margin_right", 40)
-	margin.theme_override_constants("margin_top", 30)
-	margin.theme_override_constants("margin_bottom", 30)
+	choice_panel.set_anchors_preset(Control.PRESET_CENTER)
+	choice_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	choice_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	var margin := MarginContainer.new()
+	for side in ["left", "right"]:
+		margin.add_theme_constant_override("margin_" + side, 40)
+	for side in ["top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 30)
 	choice_panel.add_child(margin)
-	
-	var vbox = VBoxContainer.new()
-	vbox.theme_override_constants("separation", 20)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 20)
 	margin.add_child(vbox)
-	
-	var label = Label.new()
+
+	var label := Label.new()
 	label.text = "HOW DO YOU WANT TO CONNECT?"
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", 28)
 	label.add_theme_color_override("font_color", COLOR_HIGHLIGHT)
 	vbox.add_child(label)
-	
-	var lan_button = Button.new()
-	lan_button.text = "LOCAL NETWORK (LAN / DIRECT IP)"
-	lan_button.custom_minimum_size = Vector2(0, 60)
-	lan_button.pressed.connect(func() -> void: _show_panel(join_panel))
-	vbox.add_child(lan_button)
-	
-	var webrtc_button = Button.new()
-	webrtc_button.text = "INTERNET (WebRTC - NO PORT FORWARDING)"
-	webrtc_button.custom_minimum_size = Vector2(0, 60)
-	webrtc_button.pressed.connect(func() -> void: _show_panel(webrtc_panel))
-	vbox.add_child(webrtc_button)
-	
-	var back_button = Button.new()
-	back_button.text = "BACK"
-	back_button.custom_minimum_size = Vector2(0, 50)
-	back_button.pressed.connect(func() -> void: _show_panel(null))
-	vbox.add_child(back_button)
-	
-	_style_menu_button(lan_button)
-	_style_menu_button(webrtc_button)
-	_style_menu_button(back_button)
-	
+
+	var choices := [
+		["LOCAL NETWORK (LAN / DIRECT IP)", join_panel],
+		["INTERNET (WebRTC - NO PORT FORWARDING)", webrtc_panel],
+		["BACK", null],
+	]
+	for choice: Array in choices:
+		var button := Button.new()
+		button.text = choice[0]
+		button.custom_minimum_size = Vector2(0, 60)
+		var target: Control = choice[1]
+		button.pressed.connect(func() -> void:
+			choice_panel.queue_free()
+			_show_panel(target))
+		vbox.add_child(button)
+		_style_menu_button(button)
+
+	main_buttons.visible = false
 	add_child(choice_panel)
-	choice_panel.global_position = get_viewport().get_visible_rect().position + get_viewport().get_visible_rect().size / 2 - choice_panel.size / 2
-	
-	# Store reference to clean up
-	_show_panel(choice_panel)
-	choice_panel.meta = "temp_join_choice"
+	vbox.get_child(1).grab_focus()
 
 
 func _on_connect_pressed() -> void:

@@ -190,17 +190,9 @@ func _run() -> void:
 	check(hud.get_node_or_null("NoiseMeter") == null, "no loudness meter on the HUD")
 	var persp: Node = p.get_node("Perspective")
 	check(persp != null, "perspective node exists")
-	check(InputMap.has_action("toggle_view"), "toggle_view is bound (C)")
+	# First/third person is picked in Settings now (the C key was removed).
+	check("camera_perspective" in Settings, "perspective is a Settings option")
 	check(my_cam.camera_offset == Vector3.ZERO, "camera starts in first person")
-
-	# Does a pressed action actually reach _unhandled_input? (C goes through
-	# the same path; the game just refuses it while the mouse isn't captured.)
-	var probe := _Probe.new()
-	get_tree().root.add_child(probe)
-	_press("toggle_view")
-	await _timer(0.2)
-	check(probe.got, "pressed action reaches _unhandled_input")
-	probe.queue_free()
 
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	await _want_third(persp, true)
@@ -229,8 +221,7 @@ func _run() -> void:
 	# Wear backpack (+2 storage)
 	inv.server_add(Items.create("backpack"))
 	var result: Array = inv.find_item("backpack")
-	inv.select_quick(result[1])  # select the quick slot it landed in
-	inv.request_use(0)
+	_wear(inv, result)  # new pickups land in storage first
 	check(inv.storage_count() == base_storage + 2, "backpack adds 2 storage slots (%d)" % inv.storage_count())
 	check(inv.total_capacity() == base_total + 2, "total capacity is 8")
 	check(inv.find_item("backpack")[1] == -1, "backpack is used up when worn")
@@ -238,8 +229,7 @@ func _run() -> void:
 	# Wear pouch (+1 storage)
 	inv.server_add(Items.create("pouch"))
 	result = inv.find_item("pouch")
-	inv.select_quick(result[1])
-	inv.request_use(0)
+	_wear(inv, result)
 	check(inv.storage_count() == base_storage + 3, "pouch adds 1 storage slot (%d)" % inv.storage_count())
 	check(inv.total_capacity() == base_total + 3, "total capacity is 9")
 	await _timer(0.2)
@@ -248,16 +238,15 @@ func _run() -> void:
 	while inv.storage_count() < 10:  # Inventory.MAX_STORAGE
 		inv.server_add(Items.create("pouch"))
 		result = inv.find_item("pouch")
-		inv.select_quick(result[1])
-		inv.request_use(0)
+		_wear(inv, result)
 	check(inv.storage_count() == 10, "storage caps at %d slots" % 10)  # Inventory.MAX_STORAGE
 	check(inv.total_capacity() == 14, "total capacity is 14")  # 4 + Inventory.MAX_STORAGE
 
 	# Extra pouch kept when storage full
 	inv.server_add(Items.create("pouch"))
-	var spare_idx: int = inv.find_item("pouch")[1]
-	inv.select_quick(spare_idx)
-	inv.request_use(0)
+	var spare: Array = inv.find_item("pouch")
+	var spare_idx: int = spare[1]
+	_wear(inv, spare)
 	check(inv.storage_count() == 10, "no more storage slots past the cap")  # Inventory.MAX_STORAGE
 	check(inv.find_item("pouch")[1] == spare_idx, "extra pouch kept when it can't be worn")
 
@@ -273,6 +262,18 @@ func check(cond: bool, what: String) -> void:
 
 
 ## Listens for the pressed action so we know events reach _unhandled_input.
+## Use (wear) the pack at `where` ([is_quick, slot] from find_item), from a
+## quick slot or from storage.
+func _wear(inv: Node, where: Array) -> void:
+	if where[1] < 0:
+		return
+	if where[0]:
+		inv.select_quick(where[1])
+		inv.request_use(0)
+	else:
+		inv.request_use_storage(where[1], 0)
+
+
 class _Probe:
 	extends Node
 	var got := false

@@ -109,6 +109,8 @@ func _trigger_dialogue() -> void:
 		return
 
 	# Ask each player for their perspective preference before the cutscene.
+	# (Clear old answers first: an answer can arrive right away.)
+	_perspective_choices.clear()
 	_prompt_perspective.rpc()
 
 	# Wait for all players to choose (host waits, clients respond).
@@ -556,9 +558,12 @@ var _perspective_choices: Array[bool] = []
 
 ## Host only: wait until every player has reported a choice.
 func _wait_for_perspective_choices() -> void:
-	_perspective_choices.clear()
 	var expected := GameState.players.size()
 	if expected == 0:
 		expected = 1
-	while _perspective_choices.size() < expected:
+	# Never wait forever: after 30 seconds the scene starts anyway (anyone who
+	# didn't answer keeps their Settings choice).
+	var waited := 0.0
+	while _perspective_choices.size() < expected and waited < 30.0:
 		await get_tree().process_frame
+		waited += get_process_delta_time()

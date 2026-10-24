@@ -59,7 +59,7 @@ func _process(_delta: float) -> void:
 	if target:
 		prompt_label.text = target.get_prompt(player)
 	elif prompt_label.visible:
-		var give_prompt := player.get_node("InventoryControls").get_give_prompt()
+		var give_prompt: String = player.get_node("InventoryControls").get_give_prompt()
 		if give_prompt != "":
 			prompt_label.text = give_prompt
 		else:

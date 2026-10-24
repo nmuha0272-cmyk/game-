@@ -17,9 +17,10 @@ func _ready() -> void:
 	if not multiplayer.is_server():
 		_request_state.rpc_id(1)
 
+@rpc("any_peer", "reliable")
 func _request_state() -> void:
 	if multiplayer.is_server():
-		_set_locked.rpc_id(multiplayer.get_remote_sender_id(), _locked)
+		_send_locked.rpc_id(multiplayer.get_remote_sender_id(), _locked)
 
 func can_interact(_by: Player) -> bool:
 	return enabled
