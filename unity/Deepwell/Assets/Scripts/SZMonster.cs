@@ -161,6 +161,44 @@ namespace Deepwell
             SZAudio.PlayAt("monster_click", Eyes, 0.8f, 20f);
         }
 
+        // ---------------------------------------------------------------- lockers
+
+        SZLocker _dragFrom;
+        int _dragWho = -1;
+
+        // Someone just climbed into a locker. If he was chasing them and had
+        // them in sight, he saw it: he walks over and drags them out.
+        public void SawHide(SZLocker locker, int who)
+        {
+            if (Mode != State.Chase || _target != who || _sinceSeen > 0.5f) return;
+            _dragFrom = locker;
+            _dragWho = who;
+            SZAudio.PlayAt("monster_click", Eyes, 1f, 20f);
+        }
+
+        // Host: walking to the locker he saw someone hide in. True while busy with it.
+        bool DragOut()
+        {
+            if (_dragFrom == null) return false;
+            if (_dragFrom.Occupant != _dragWho)
+            {
+                // They got out (or someone else is in it): back to hunting.
+                _dragFrom = null;
+                return false;
+            }
+            GoTo(_dragFrom.Outside, _d.chase_speed);
+            if (Vector3.Distance(transform.position, _dragFrom.Outside) < 1.4f)
+            {
+                SZAudio.PlayAt("door_pound", _dragFrom.transform.position, 1f, 25f);
+                SZWorld.Instance.SetLocker(_dragFrom, -1);
+                SZWorld.Instance.Caught(_dragWho);
+                _goal = FarthestPatrolPoint(_dragFrom.transform.position);
+                _dragFrom = null;
+                SetState(State.Leave);
+            }
+            return true;
+        }
+
         // Clients: the host's latest word on where he is.
         public void NetUpdate(Vector3 pos, float yaw, State state)
         {
@@ -246,6 +284,7 @@ namespace Deepwell
             }
 
             OpenDoorsInTheWay();
+            if (DragOut()) return;
 
             switch (Mode)
             {
@@ -307,6 +346,7 @@ namespace Deepwell
 
         bool CanSee(SZWorld.PlayerView p, float dist)
         {
+            if (p.hidden) return false;  // in a locker
             float range = p.flashlight ? SightLit : SightDark;
             if (p.crouching) range *= 0.6f;
             if (Mode == State.Chase) range *= 1.5f;  // once he's after you, he keeps you in sight
@@ -321,6 +361,7 @@ namespace Deepwell
 
         bool Heard(SZWorld.PlayerView p, float dist)
         {
+            if (p.hidden) return false;
             if (!p.moving || p.crouching) return false;
             float range = (p.sprinting ? 16f : 5f) * SZCharacters.NoiseMultiplier(p.character);
             return dist < range;

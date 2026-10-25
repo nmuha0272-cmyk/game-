@@ -24,7 +24,7 @@ const SKIP_BRANCHES := ["Players", "Items", "ItemSpawnPoints", "Monsters", "Trig
 
 var data := {"lights": [], "doors": [], "labels": [], "spawns": [], "colliders": [],
 	"items": [], "lore": [], "lore_book": [], "checkpoints": [], "triggers": [], "monster": {},
-	"cutscenes": [], "dialogue": [], "team_car": {}, "puzzles": [],
+	"cutscenes": [], "dialogue": [], "team_car": {}, "puzzles": [], "lockers": [],
 	"moon": {}, "environment": {}}
 var _export_root: Node3D
 var _mesh_count := 0
@@ -76,7 +76,7 @@ func _run() -> void:
 	print("unity export: glb %s, %d meshes, %d lights, %d doors, %d labels, %d spawns, %d colliders" % [
 		"ok" if err == OK else "FAILED (%d)" % err, _mesh_count, data.lights.size(), data.doors.size(),
 		data.labels.size(), data.spawns.size(), data.colliders.size()])
-	print("unity export: %d puzzle pieces" % data.puzzles.size())
+	print("unity export: %d puzzle pieces, %d lockers" % [data.puzzles.size(), data.lockers.size()])
 	print("unity export: %d items, %d lore, %d checkpoints, %d triggers, monster %s (%d patrol points)" % [
 		data.items.size(), data.lore.size(), data.checkpoints.size(), data.triggers.size(),
 		"yes" if data.monster.has("p") else "no", data.monster.get("patrol", []).size()])
@@ -136,6 +136,9 @@ func _walk_child(child: Node, node: Node, level: Node) -> void:
 	if child.scene_file_path != "":
 		if child.get("entry") is LoreEntry:
 			_add_lore(child)
+		elif child.scene_file_path.ends_with("hiding_locker.tscn"):
+			# A locker to hide in (Unity builds it; its door faces +Z).
+			data.lockers.append({"p": pos(child.global_position), "r": rot(child.global_basis)})
 		elif child.scene_file_path == DOOR_SCENE:
 			var lock := child.get_node_or_null("Lock")
 			var lock_kind := ""

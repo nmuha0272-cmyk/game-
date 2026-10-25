@@ -1871,9 +1871,9 @@
    "puzzle": true,
    "r": [
     0.0,
-    -0.0646,
+    -0.09,
     0.0,
-    0.9979
+    0.9959
    ]
   },
   {
@@ -5018,7 +5018,7 @@
    "size": 0.115199997089803,
    "source": 48,
    "template": "WIRING DIAGRAM - POWER ROOM BREAKERS\n%s",
-   "text": "WIRING DIAGRAM - POWER ROOM BREAKERS\n1 UP   2 UP   3 UP"
+   "text": "WIRING DIAGRAM - POWER ROOM BREAKERS\n1 DOWN   2 UP   3 DOWN"
   },
   {
    "billboard": false,
@@ -5172,7 +5172,7 @@
    "size": 0.136000001803041,
    "source": 61,
    "template": "DRAIN CHART - TUNNEL E PUMPS\n%s",
-   "text": "DRAIN CHART - TUNNEL E PUMPS\n1 UP   2 DOWN   3 UP   4 DOWN"
+   "text": "DRAIN CHART - TUNNEL E PUMPS\n1 DOWN   2 UP   3 DOWN   4 DOWN"
   },
   {
    "billboard": false,
@@ -5199,7 +5199,7 @@
    "size": 0.108000000938773,
    "source": 67,
    "template": "BED 1\nTAG: %s",
-   "text": "BED 1\nTAG: 4"
+   "text": "BED 1\nTAG: 6"
   },
   {
    "billboard": false,
@@ -5226,7 +5226,7 @@
    "size": 0.108000000938773,
    "source": 67,
    "template": "BED 2\nTAG: %s",
-   "text": "BED 2\nTAG: 8"
+   "text": "BED 2\nTAG: 3"
   },
   {
    "billboard": false,
@@ -5253,7 +5253,7 @@
    "size": 0.108000000938773,
    "source": 67,
    "template": "BED 3\nTAG: %s",
-   "text": "BED 3\nTAG: 5"
+   "text": "BED 3\nTAG: 0"
   },
   {
    "billboard": false,
@@ -5280,7 +5280,7 @@
    "size": 0.140000004321337,
    "source": 78,
    "template": "dir. safe - %s\n(don't forget AGAIN)",
-   "text": "dir. safe - 0329\n(don't forget AGAIN)"
+   "text": "dir. safe - 1068\n(don't forget AGAIN)"
   },
   {
    "billboard": false,
@@ -5307,7 +5307,7 @@
    "size": 0.0879999995231628,
    "source": 89,
    "template": "VAULT CODE\n%s\n(changes every minute)",
-   "text": "VAULT CODE\n5135\n(changes every minute)"
+   "text": "VAULT CODE\n4908\n(changes every minute)"
   },
   {
    "billboard": false,
@@ -5361,7 +5361,7 @@
    "size": 0.0703999996185303,
    "source": 103,
    "template": "TOE TAG 1 of 4\n%s",
-   "text": "TOE TAG 1 of 4\n0"
+   "text": "TOE TAG 1 of 4\n5"
   },
   {
    "billboard": false,
@@ -5388,7 +5388,7 @@
    "size": 0.0703999996185303,
    "source": 103,
    "template": "TOE TAG 2 of 4\n%s",
-   "text": "TOE TAG 2 of 4\n1"
+   "text": "TOE TAG 2 of 4\n5"
   },
   {
    "billboard": false,
@@ -5415,7 +5415,7 @@
    "size": 0.0703999996185303,
    "source": 103,
    "template": "TOE TAG 3 of 4\n%s",
-   "text": "TOE TAG 3 of 4\n4"
+   "text": "TOE TAG 3 of 4\n6"
   },
   {
    "billboard": false,
@@ -5442,7 +5442,7 @@
    "size": 0.0703999996185303,
    "source": 103,
    "template": "TOE TAG 4 of 4\n%s",
-   "text": "TOE TAG 4 of 4\n1"
+   "text": "TOE TAG 4 of 4\n5"
   },
   {
    "billboard": false,
@@ -5469,7 +5469,7 @@
    "size": 0.115199997089803,
    "source": 110,
    "template": "AUX POWER - DORM BREAKERS\n%s",
-   "text": "AUX POWER - DORM BREAKERS\n1 UP   2 UP   3 UP   4 UP   5 DOWN"
+   "text": "AUX POWER - DORM BREAKERS\n1 DOWN   2 DOWN   3 UP   4 UP   5 UP"
   },
   {
    "billboard": false,
@@ -5632,7 +5632,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.35,
    "group": -1,
    "p": [
@@ -6064,7 +6064,7 @@
     0.5,
     1.0
    ],
-   "energy": 0.150000005960464,
+   "energy": 0.0,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -6118,7 +6118,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.658001899719238,
+   "energy": 0.651671767234802,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6172,7 +6172,7 @@
     0.5,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 1.10000002384186,
    "flicker": 0.55,
    "group": -1,
    "p": [
@@ -6226,7 +6226,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.600000023841858,
+   "energy": 0.0,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -6253,7 +6253,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.9,
    "group": -1,
    "p": [
@@ -6280,7 +6280,7 @@
     0.04,
     1.0
    ],
-   "energy": 0.987002849578857,
+   "energy": 0.977507710456848,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6361,7 +6361,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -6415,7 +6415,7 @@
     0.04,
     1.0
    ],
-   "energy": 0.822502374649048,
+   "energy": 0.814589738845825,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6604,7 +6604,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.349999994039536,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -6658,7 +6658,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.329000949859619,
+   "energy": 0.325835883617401,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6766,7 +6766,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.600000023841858,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -6793,7 +6793,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.550000011920929,
+   "energy": 0.0,
    "flicker": 0.75,
    "group": -1,
    "p": [
@@ -6820,7 +6820,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.550000011920929,
    "flicker": 0.9,
    "group": -1,
    "p": [
@@ -6847,7 +6847,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.550000011920929,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -6901,7 +6901,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.180000007152557,
    "flicker": 0.95,
    "group": -1,
    "p": [
@@ -7009,7 +7009,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.493501424789429,
+   "energy": 0.488753855228424,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -7036,7 +7036,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.3,
    "group": -1,
    "p": [
@@ -7063,7 +7063,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.7,
    "group": -1,
    "p": [
@@ -7090,7 +7090,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -7117,7 +7117,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.85,
    "group": -1,
    "p": [
@@ -7198,7 +7198,7 @@
     0.6,
     1.0
    ],
-   "energy": 0.349999994039536,
+   "energy": 0.0,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -7225,7 +7225,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -7306,7 +7306,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.3,
    "group": -1,
    "p": [
@@ -7360,7 +7360,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.7,
    "group": -1,
    "p": [
@@ -7522,7 +7522,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.9,
    "group": -1,
    "p": [
@@ -7576,7 +7576,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -7622,6 +7622,203 @@
    "shadow": true,
    "spot": false,
    "starts_off": false
+  }
+ ],
+ "lockers": [
+  {
+   "p": [
+    9.4,
+    0.0,
+    -14.3
+   ],
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -9.4,
+    0.0,
+    -3.5
+   ],
+   "r": [
+    0.0,
+    0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -7.9,
+    -9.0,
+    -80.0
+   ],
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -7.9,
+    -9.0,
+    -56.0
+   ],
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -10.1,
+    -9.0,
+    -49.0
+   ],
+   "r": [
+    0.0,
+    0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -12.4,
+    -9.0,
+    -59.2
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "p": [
+    -6.4,
+    -9.0,
+    -66.2
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "p": [
+    -21.6,
+    -9.0,
+    -69.8
+   ],
+   "r": [
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "p": [
+    -44.3,
+    -9.0,
+    -70.0
+   ],
+   "r": [
+    0.0,
+    0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -64.8,
+    -9.0,
+    -70.0
+   ],
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -78.4,
+    -9.0,
+    -88.0
+   ],
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -23.25,
+    -9.0,
+    -61.6
+   ],
+   "r": [
+    0.0,
+    0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -47.25,
+    -9.0,
+    -89.0
+   ],
+   "r": [
+    0.0,
+    0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -49.35,
+    -9.0,
+    -86.0
+   ],
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "p": [
+    -24.2,
+    -9.0,
+    -55.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
   }
  ],
  "lore": [
@@ -10197,9 +10394,9 @@
    "parent": -1,
    "r": [
     0.0,
-    -0.0646,
+    -0.09,
     0.0,
-    0.9979
+    0.9959
    ]
   },
   {

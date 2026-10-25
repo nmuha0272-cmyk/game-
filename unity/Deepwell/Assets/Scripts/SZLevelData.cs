@@ -25,6 +25,7 @@ namespace Deepwell
         public DialogueLine[] dialogue;
         public SpawnData team_car;
         public PuzzleData[] puzzles;
+        public SpawnData[] lockers;   // lockers to hide in (door faces +Z)
         public MoonData moon;
         public EnvironmentData environment;
 

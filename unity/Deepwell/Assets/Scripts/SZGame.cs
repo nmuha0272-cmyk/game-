@@ -639,6 +639,7 @@ namespace Deepwell
                 return;
             }
 
+            if (p.HidingIn != null) DrawLockerView();
             if (p.SenseUntil > Time.time) DrawSense(p);
 
             if (Reading && _screen == Mode.Playing)
@@ -728,6 +729,24 @@ namespace Deepwell
             }
             var line = new GUIStyle(_prompt) { fontSize = BigSubtitles ? 30 : 22, wordWrap = true };
             Shadowed(new Rect(Screen.width * 0.12f, y, Screen.width * 0.76f, BigSubtitles ? 110 : 70), text, line);
+        }
+
+        // Inside a locker: dark, except a few slits in the door to peek through.
+        void DrawLockerView()
+        {
+            float W = Screen.width, H = Screen.height;
+            float top = H * 0.36f, slit = H * 0.035f, gap = H * 0.05f;
+            Box(new Rect(0, 0, W, top), new Color(0.01f, 0.01f, 0.01f, 0.97f));
+            for (int i = 0; i < 4; i++)
+            {
+                float y = top + slit + i * (slit + gap);
+                Box(new Rect(0, y - gap, W, gap), new Color(0.01f, 0.01f, 0.01f, 0.97f));
+            }
+            float bottom = top + slit + 4 * (slit + gap) - gap;
+            Box(new Rect(0, bottom, W, H - bottom), new Color(0.01f, 0.01f, 0.01f, 0.97f));
+            Box(new Rect(0, 0, W * 0.18f, H), new Color(0.01f, 0.01f, 0.01f, 0.97f));
+            Box(new Rect(W * 0.82f, 0, W * 0.18f, H), new Color(0.01f, 0.01f, 0.01f, 0.97f));
+            Shadowed(new Rect(0, H - 60, W, 30), "Hiding. Stay quiet...", _prompt);
         }
 
         // ---------------------------------------------------------------- inventory

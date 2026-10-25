@@ -55,6 +55,7 @@ the Console says what went where, for example
 | Battery, Flare, Medkit, Keycard, Fuse, Crowbar, Gas mask, Walkie, Reel tape, Ammo, Backpack, Pouch, Fuel can, Car battery | items on the floor | the item's name (medkit, first aid, keycard, gas mask, jerry can...) |
 | Notes | notes, files and posters | note, paper, document, letter, folder, clipboard |
 | Doors | every door | door |
+| Lockers | the lockers you hide in | locker, metal cabinet |
 | Car | the team's car (home screen and at the station) | car, sedan, vehicle |
 | Keypads | every keypad | keypad, code lock, numpad |
 | Desks | every desk | desk, office table |
@@ -111,6 +112,10 @@ then click another slot to move it, or press USE / DROP.
 | Cole | **Strength**: hold Q on a closed door to hold it shut; the Long Man can't open it. Cole is a bit slower and louder |
 | Nora | **Camera flash**: stuns the Long Man for a few seconds if he's in front of you |
 | Walter | **Repair**: hold Q at a broken, flickering light to fix it |
+
+**Lockers:** press E at a locker to hide inside, E again to get out. While
+you're in, the Long Man can't see or hear you... unless he saw you climb
+in: then he comes and drags you out. (Same as the Godot version.)
 
 The Long Man wakes up when someone walks into the "RUN!" spot in the
 tunnels. Crouch and turn your flashlight off to stay hidden; running is

@@ -57,6 +57,7 @@ namespace Deepwell
             new SlotInfo("note", "Notes and files", 0.3f, "note", "paper", "document", "letter", "folder", "clipboard"),
             new SlotInfo("car", "The team's car (home screen and at the station)", 4.8f, "car", "sedan", "vehicle", "suv", "pickup truck", "station wagon"),
             new SlotInfo("keypad", "Keypads", 0.26f, "keypad", "key pad", "code lock", "numpad", "pin pad"),
+            new SlotInfo("locker", "Lockers you hide in", 2.15f, "locker", "metal cabinet", "wardrobe"),
             new SlotInfo("desk", "Desks", 1.6f, "desk", "office table", "work table", "writing table"),
             new SlotInfo("computer", "Computers, monitors and the terminal", 0.5f, "computer", "monitor", "crt", "desktop pc", "pc", "terminal"),
             new SlotInfo("door", "Doors (2 m x 3 m)", 3.0f, "door"),

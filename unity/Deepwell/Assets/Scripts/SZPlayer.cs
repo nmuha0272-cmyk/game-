@@ -134,6 +134,17 @@ namespace Deepwell
         {
             UpdateFlashlight();
             if (SZGame.Paused || SZGame.Reading || SZCutscene.Playing || SZGame.InventoryOpen || SZGame.PanelOpen) return;
+            if (HidingIn != null)
+            {
+                // In a locker: look around (a little), E to get out. Nothing else.
+                Look();
+                var forward = HidingIn.transform.forward;
+                float yaw = Vector3.SignedAngle(forward, transform.forward, Vector3.up);
+                if (Mathf.Abs(yaw) > 60f) transform.rotation = Quaternion.LookRotation(Quaternion.Euler(0f, Mathf.Clamp(yaw, -60f, 60f), 0f) * forward);
+                Target = HidingIn;
+                if (SZInput.Down(SZKey.E)) HidingIn.Interact(this);
+                return;
+            }
             Look();
             Move();
             if (SZInput.Down(SZKey.F))
@@ -470,6 +481,33 @@ namespace Deepwell
                 }
             }
             return best;
+        }
+
+        // ---------------------------------------------------------------- lockers
+
+        public SZLocker HidingIn { get; private set; }
+
+        public void EnterLocker(SZLocker locker)
+        {
+            HidingIn = locker;
+            locker.PeekFromInside(true);
+            Flashlight.enabled = false;  // a light would give you away
+            _body.enabled = false;
+            transform.SetPositionAndRotation(locker.Inside, Quaternion.LookRotation(locker.transform.forward));
+            _pitch = 0f;
+            _crouching = false;
+            _head.localPosition = new Vector3(0f, 1.6f, 0f);
+            SZGame.Instance.Say("Hiding. Stay quiet... ([E] to get out)", 3f);
+        }
+
+        public void LeaveLocker(SZLocker locker)
+        {
+            if (HidingIn != locker) return;
+            locker.PeekFromInside(false);
+            HidingIn = null;
+            transform.position = locker.Outside;
+            _body.enabled = true;
+            _verticalSpeed = 0f;
         }
 
         // ---------------------------------------------------------------- caught

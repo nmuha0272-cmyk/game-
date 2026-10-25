@@ -18,6 +18,7 @@ namespace Deepwell
         public readonly List<SZDoor> Doors = new List<SZDoor>();
         public SZMonster Monster { get; private set; }
         public SZPuzzles Puzzles { get; private set; }
+        public readonly List<SZLocker> Lockers = new List<SZLocker>();
         readonly HashSet<string> _heard = new HashSet<string>();  // story entries the team has read or heard
         public SZPlayer Local { get; private set; }
         public int TeamCheckpoint { get; private set; }  // 0 = the start
@@ -39,6 +40,7 @@ namespace Deepwell
             public bool alive;
             public Vector3 position;
             public bool crouching, flashlight, sprinting, moving;
+            public bool hidden;   // in a locker: the Long Man can't see or hear them
             public SZCharacter character;
         }
 
@@ -70,6 +72,9 @@ namespace Deepwell
             foreach (var l in Data.lore ?? new LoreData[0]) SZLore.Create(l, root);
 
             Puzzles = SZPuzzles.Create(Data, transform);
+            root = Group("Lockers");
+            var lockers = Data.lockers ?? new SpawnData[0];
+            for (int i = 0; i < lockers.Length; i++) Lockers.Add(SZLocker.Create(lockers[i], i, root));
             _triggerFired = new bool[Data.triggers != null ? Data.triggers.Length : 0];
             foreach (var flicker in GetComponentsInChildren<SZFlicker>()) _brokenLights.Add(flicker);
             if (Data.monster != null && Data.monster.p != null && Data.monster.p.Length == 3)
@@ -172,6 +177,12 @@ namespace Deepwell
             var list = new List<PlayerView>();
             if (Local) list.Add(Local.View);
             foreach (var r in _remotes.Values) list.Add(r.View);
+            for (int i = 0; i < list.Count; i++)
+            {
+                var v = list[i];
+                v.hidden = Lockers.Exists(l => l.Occupant == v.id);
+                list[i] = v;
+            }
             return list;
         }
 
@@ -316,6 +327,39 @@ namespace Deepwell
         // The reel tape lore entry for a tape machine (or null).
         public LoreData LoreEntry(string id) =>
             Data.lore_book != null && !string.IsNullOrEmpty(id) ? System.Array.Find(Data.lore_book, e => e.id == id) : null;
+
+        // ---------------------------------------------------------------- lockers
+
+        // Getting into (or out of) a locker. The host decides; everyone is told.
+        public void RequestLocker(SZLocker locker, bool enter)
+        {
+            if (SZNet.IsAuthority) HostLocker(locker.Index, enter, SZNet.MyId);
+            else SZNet.Instance.SendToHost(SZNet.Msg("HIDE", locker.Index, enter));
+        }
+
+        void HostLocker(int index, bool enter, int by)
+        {
+            if (index < 0 || index >= Lockers.Count) return;
+            var locker = Lockers[index];
+            if (enter)
+            {
+                if (!locker.Empty || Lockers.Exists(l => l.Occupant == by)) return;
+                SetLocker(locker, by);
+                // Did the Long Man see you climb in? Then he's coming to drag you out.
+                if (Monster) Monster.SawHide(locker, by);
+            }
+            else if (locker.Occupant == by)
+            {
+                SetLocker(locker, -1);
+            }
+        }
+
+        // Host: someone is in (or out of) a locker now.
+        public void SetLocker(SZLocker locker, int who)
+        {
+            locker.SetOccupant(who);
+            if (SZNet.IsHost) SZNet.Instance.Broadcast(SZNet.Msg("LOCKER", locker.Index, who));
+        }
 
         // A keycard or a crowbar opened a locked door: it stays unlocked for everyone.
         public void UnlockDoor(SZDoor door)
@@ -493,8 +537,10 @@ namespace Deepwell
             foreach (var l in _brokenLights) lights.Append(l != null && l.Repaired ? '1' : '0');
             var unlocked = new StringBuilder();
             foreach (var d in Doors) unlocked.Append(d.Unlocked ? '1' : '0');
+            var hiding = new StringBuilder();
+            foreach (var l in Lockers) hiding.Append(l.Occupant).Append(',');
             return SZNet.Msg("WORLD", doors, items, triggers, lights, TeamCheckpoint,
-                Puzzles != null ? Puzzles.Summary() : "", unlocked, string.Join(",", _heard));
+                Puzzles != null ? Puzzles.Summary() : "", unlocked, string.Join(",", _heard), hiding);
         }
 
         void ApplySummary(string[] m)
@@ -512,6 +558,9 @@ namespace Deepwell
             var unlocked = SZNet.T(m, 7);
             for (int i = 0; i < unlocked.Length && i < Doors.Count; i++) if (unlocked[i] == '1') Doors[i].Unlocked = true;
             foreach (var id in SZNet.T(m, 8).Split(',')) if (id.Length > 0) _heard.Add(id);
+            var hiding = SZNet.T(m, 9).Split(',');
+            for (int i = 0; i < hiding.Length && i < Lockers.Count; i++)
+                if (int.TryParse(hiding[i], out var who)) Lockers[i].SetOccupant(who);
             if (!_gotSummary)
             {
                 // Joined late: start where the team is.
@@ -550,6 +599,13 @@ namespace Deepwell
                 case "PZA":
                 case "PZS":
                     Puzzles?.OnMessage(from, m);
+                    break;
+                case "HIDE":
+                    if (host) HostLocker(SZNet.I(m, 1), SZNet.I(m, 2) == 1, from);
+                    break;
+                case "LOCKER":
+                    int lockerIndex = SZNet.I(m, 1);
+                    if (!host && lockerIndex >= 0 && lockerIndex < Lockers.Count) Lockers[lockerIndex].SetOccupant(SZNet.I(m, 2));
                     break;
                 case "END":
                     if (!host) EndChapter();
