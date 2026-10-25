@@ -132,12 +132,19 @@ namespace Deepwell
             if (size <= 0f) size = info != null ? info.size : 0.3f;
             size *= Mathf.Max(slot.sizeMultiplier, 0.01f);
 
-            var go = UnityEngine.Object.Instantiate(slot.prefab, parent);
+            // Made inside a switched-off holder, so the asset's own scripts (car
+            // controllers, demo cameras...) never start; then switched off for good.
+            var holder = new GameObject("Holder");
+            holder.SetActive(false);
+            var go = UnityEngine.Object.Instantiate(slot.prefab, holder.transform);
+            MakeQuiet(go);
+            go.transform.SetParent(parent, false);
+            UnityEngine.Object.Destroy(holder);
             go.name = "Asset " + id;
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.Euler(slot.rotation);
             go.transform.localScale = Vector3.one;
-            MakeQuiet(go);
+            SZGraphics.FixPink(go);   // HDRP/URP assets would be pink
 
             var renderers = go.GetComponentsInChildren<Renderer>();
             if (renderers.Length == 0) return go;
@@ -168,11 +175,20 @@ namespace Deepwell
         // Here they're only for looks, so those are switched off.
         static void MakeQuiet(GameObject go)
         {
-            foreach (var b in go.GetComponentsInChildren<MonoBehaviour>(true)) b.enabled = false;
-            foreach (var c in go.GetComponentsInChildren<Collider>(true)) UnityEngine.Object.Destroy(c);
-            foreach (var rb in go.GetComponentsInChildren<Rigidbody>(true)) UnityEngine.Object.Destroy(rb);
-            foreach (var cam in go.GetComponentsInChildren<Camera>(true)) UnityEngine.Object.Destroy(cam);
-            foreach (var a in go.GetComponentsInChildren<AudioListener>(true)) UnityEngine.Object.Destroy(a);
+            // Removed right away while it's still switched off (scripts first: some need the others).
+            Remove<MonoBehaviour>(go);
+            Remove<Joint>(go);
+            Remove<Collider>(go);
+            Remove<Rigidbody>(go);
+            Remove<Camera>(go);
+            Remove<AudioListener>(go);
+        }
+
+        static void Remove<T>(GameObject go) where T : Component
+        {
+            var list = go.GetComponentsInChildren<T>(true);
+            for (int i = list.Length - 1; i >= 0; i--)
+                if (list[i] != null) UnityEngine.Object.DestroyImmediate(list[i]);
         }
     }
 }

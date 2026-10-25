@@ -87,6 +87,100 @@ namespace Deepwell
             }
         }
 
+        // Store assets made for HDRP or URP show up pink here (this project uses
+        // the built-in renderer). This swaps each pink material for a Standard
+        // one with the same picture, bumps and color, so they look right.
+        public static void FixPink(GameObject root)
+        {
+            var standard = Shader.Find("Standard");
+            if (standard == null) return;
+            var made = new Dictionary<Material, Material>();
+            foreach (var r in root.GetComponentsInChildren<Renderer>(true))
+            {
+                var mats = r.sharedMaterials;
+                bool changed = false;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    var m = mats[i];
+                    if (m == null || !NeedsFix(m)) continue;
+                    if (!made.TryGetValue(m, out var fixedMat)) made[m] = fixedMat = ToStandard(m, standard);
+                    mats[i] = fixedMat;
+                    changed = true;
+                }
+                if (changed) r.sharedMaterials = mats;
+            }
+        }
+
+        static bool NeedsFix(Material m)
+        {
+            var sh = m.shader;
+            if (sh == null || !sh.isSupported) return true;
+            var name = sh.name;
+            return name.StartsWith("HDRP/") || name.StartsWith("Universal Render Pipeline/") || name.StartsWith("Shader Graphs/")
+                   || name.Contains("InternalErrorShader");
+        }
+
+        static Material ToStandard(Material old, Shader standard)
+        {
+            var names = new HashSet<string>();
+            try { foreach (var n in old.GetTexturePropertyNames()) names.Add(n); } catch { }
+
+            var mat = new Material(standard) { name = old.name + " (fixed)" };
+            mat.color = Col(old, "_BaseColor", "_Color") ?? Color.white;
+            var main = Tex(old, names, "_BaseColorMap", "_BaseMap", "_MainTex", "_Albedo", "_AlbedoMap");
+            if (main != null) mat.mainTexture = main;
+            var normal = Tex(old, names, "_NormalMap", "_BumpMap");
+            if (normal != null)
+            {
+                mat.SetTexture("_BumpMap", normal);
+                mat.EnableKeyword("_NORMALMAP");
+            }
+            var glow = Tex(old, names, "_EmissiveColorMap", "_EmissionMap");
+            var glowColor = Col(old, "_EmissiveColor", "_EmissionColor");
+            if (glow != null || (glowColor.HasValue && glowColor.Value.maxColorComponent > 0.01f))
+            {
+                mat.EnableKeyword("_EMISSION");
+                if (glow != null) mat.SetTexture("_EmissionMap", glow);
+                mat.SetColor("_EmissionColor", glowColor ?? Color.white);
+            }
+            mat.SetFloat("_Metallic", Mathf.Min(Num(old, "_Metallic") ?? 0f, 0.3f));
+            mat.SetFloat("_Glossiness", Mathf.Clamp(Num(old, "_Smoothness", "_Glossiness") ?? 0.4f, 0f, 0.6f));
+            // See-through glass (car windows): keep it see-through.
+            bool clear = (Num(old, "_SurfaceType", "_Surface") ?? 0f) > 0.5f || mat.color.a < 0.95f;
+            if (clear)
+            {
+                mat.SetFloat("_Mode", 3f);
+                mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                mat.SetInt("_ZWrite", 0);
+                mat.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+                mat.renderQueue = 3000;
+            }
+            return mat;
+        }
+
+        static Texture Tex(Material m, HashSet<string> names, params string[] props)
+        {
+            foreach (var p in props)
+                if (names.Contains(p))
+                    try { var t = m.GetTexture(p); if (t != null) return t; } catch { }
+            return null;
+        }
+
+        static Color? Col(Material m, params string[] props)
+        {
+            foreach (var p in props)
+                try { if (m.HasProperty(p)) return m.GetColor(p); } catch { }
+            return null;
+        }
+
+        static float? Num(Material m, params string[] props)
+        {
+            foreach (var p in props)
+                try { if (m.HasProperty(p)) return m.GetFloat(p); } catch { }
+            return null;
+        }
+
         // A plain lit material (works in the built-in renderer).
         public static Material Lit(Color color, float smoothness = 0.3f, Color? glow = null)
         {

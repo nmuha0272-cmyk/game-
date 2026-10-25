@@ -20,6 +20,9 @@ namespace Deepwell.EditorTools
     {
         static void OnPostprocessAllAssets(string[] imported, string[] deleted, string[] moved, string[] movedFrom)
         {
+            // HDRP/URP materials would be pink in this project: make them normal ones.
+            var materials = imported.Where(p => p.EndsWith(".mat", System.StringComparison.OrdinalIgnoreCase)).ToList();
+            if (materials.Count > 0) EditorApplication.delayCall += () => SZFixPink.Fix(materials);
             var candidates = imported.Where(SZAssetSlotsTools.IsCandidate).ToList();
             if (candidates.Count == 0) return;
             // Wait until the import is finished before loading the new assets.
