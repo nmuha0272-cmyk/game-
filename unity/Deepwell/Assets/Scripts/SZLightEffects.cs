@@ -5,12 +5,24 @@ using UnityEngine;
 namespace Deepwell
 {
     // A failing light: cuts out for a moment now and then. brokenness 0 = fine, 1 = barely works.
+    // Walter can repair it (hold Q while looking at it).
     public class SZFlicker : MonoBehaviour
     {
         public float brokenness = 0.2f;
+        public bool Repaired { get; private set; }
         Light _light;
         float _base, _timer;
         bool _lit = true;
+
+        public void Repair()
+        {
+            if (Repaired) return;
+            Repaired = true;
+            if (_light == null) _light = GetComponent<Light>();
+            if (_base <= 0f) _base = _light.intensity;
+            _light.intensity = _base * 1.15f;
+            SZAudio.PlayAt("repair_click", transform.position, 0.8f, 10f);
+        }
 
         void Start()
         {
@@ -20,6 +32,7 @@ namespace Deepwell
 
         void Update()
         {
+            if (Repaired) return;
             _timer -= Time.deltaTime;
             if (_timer > 0f) return;
             if (_lit && Random.value < brokenness)

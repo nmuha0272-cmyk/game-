@@ -15,6 +15,12 @@ namespace Deepwell
         public LabelData[] labels;
         public SpawnData[] spawns;
         public ColliderData[] colliders;
+        public ItemData[] items;
+        public LoreData[] lore;
+        public LoreData[] lore_book;
+        public CheckpointData[] checkpoints;
+        public TriggerData[] triggers;
+        public MonsterData monster;
         public MoonData moon;
         public EnvironmentData environment;
 
@@ -73,5 +79,51 @@ namespace Deepwell
         public float[] ambient, fog_color;
         public float ambient_energy, fog_density;
         public bool fog;
+    }
+
+    [Serializable]
+    public class ItemData
+    {
+        public string id, name, hint, lore;
+        public float[] p, color;
+    }
+
+    [Serializable]
+    public class LoreData
+    {
+        public string id, title, text, kind;
+        public float[] p, r;
+    }
+
+    [Serializable]
+    public class CheckpointData
+    {
+        public string name;
+        public int order;
+        public float[] p, r, size;
+        public SpawnPoint[] spawns;
+    }
+
+    // A point written as {"p": [x, y, z]} (JsonUtility can't read arrays of arrays).
+    [Serializable]
+    public class SpawnPoint
+    {
+        public float[] p;
+    }
+
+    [Serializable]
+    public class TriggerData
+    {
+        public string message;
+        public bool chase;
+        public float[] p, r, size;
+    }
+
+    [Serializable]
+    public class MonsterData
+    {
+        public float[] p, r;
+        public float patrol_speed, investigate_speed, chase_speed, catch_distance, catch_cooldown;
+        public SpawnPoint[] patrol;
     }
 }

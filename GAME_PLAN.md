@@ -673,9 +673,15 @@ Tasks:
   the items and weapons list (`items.json`). Not compiled yet: build errors go
   to Claude to fix.
 - **Unity version** (`unity/Deepwell/`): being ported phase by phase like the
-  Unreal one; see its README. Phase U1: Chapter 1 from the Godot level
-  (`tools/export_for_unity.gd` writes the level model and data), walking,
-  flashlight, doors. `scripts/export/unity_export.gd` writes the items list.
+  Unreal one; see its README. Phase U2 (now): Chapter 1 from the Godot level
+  (`tools/export_for_unity.gd` writes the level model plus items, notes,
+  checkpoints, story triggers and the Long Man's route), better graphics
+  (glow, film look, quality settings), online co-op for up to 4 (Host / Join
+  by IP, port 7777), items and inventory, readable notes and tapes, the Long
+  Man (patrol, sight, hearing, chase, opens doors, Nora's flash stuns him),
+  checkpoints, the 4 characters and their abilities, the Godot sounds, and
+  it sets itself up when opened. Next: puzzles (U3).
+  `scripts/export/unity_export.gd` writes the items list.
 - **Roblox version** (`roblox/`): made by the `tools/roblox_*.py` scripts.
 - **Animations:** `assets/animations/` holds the animation libraries
   (player, monsters, cutscenes, props). The player, the Long Man, the Wired,

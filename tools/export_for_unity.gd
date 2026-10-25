@@ -8,7 +8,8 @@ extends SceneTree
 ##   rooms (CSG, baked), walls, props, light fixtures, the forest. Meshes that
 ##   players should bump into are named "COL_..." so Unity gives them colliders.
 ## - chapter1.json        everything else Unity builds itself: lights, doors,
-##   signs, spawn points, extra box colliders, the moon, fog and ambient light.
+##   signs, spawn points, extra box colliders, the moon, fog and ambient light,
+##   items, lore notes, checkpoints, story triggers and the Long Man's patrol.
 ##
 ## Godot and glTF are right-handed; Unity is left-handed. Unity's glTF importer
 ## (glTFast) flips X, so this file does the same for the JSON data:
@@ -22,6 +23,7 @@ const SKIP_BRANCHES := ["Players", "Items", "ItemSpawnPoints", "Monsters", "Trig
 	"Checkpoints", "Cutscenes", "Sound", "SpawnPoints", "Navigation", "OpeningDialogue"]
 
 var data := {"lights": [], "doors": [], "labels": [], "spawns": [], "colliders": [],
+	"items": [], "lore": [], "lore_book": [], "checkpoints": [], "triggers": [], "monster": {},
 	"moon": {}, "environment": {}}
 var _export_root: Node3D
 var _mesh_count := 0
@@ -42,6 +44,7 @@ func _run() -> void:
 	_export_root.name = "Chapter1Level"
 	root.add_child(_export_root)
 	_walk(level, level)
+	_add_lore_book()
 
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
 	var doc := GLTFDocument.new()
@@ -55,6 +58,9 @@ func _run() -> void:
 	print("unity export: glb %s, %d meshes, %d lights, %d doors, %d labels, %d spawns, %d colliders" % [
 		"ok" if err == OK else "FAILED (%d)" % err, _mesh_count, data.lights.size(), data.doors.size(),
 		data.labels.size(), data.spawns.size(), data.colliders.size()])
+	print("unity export: %d items, %d lore, %d checkpoints, %d triggers, monster %s (%d patrol points)" % [
+		data.items.size(), data.lore.size(), data.checkpoints.size(), data.triggers.size(),
+		"yes" if data.monster.has("p") else "no", data.monster.get("patrol", []).size()])
 	quit()
 
 
@@ -82,11 +88,28 @@ func _walk(node: Node, level: Node) -> void:
 				for s in child.get_children():
 					if s is Node3D:
 						data.spawns.append({"p": pos(s.global_position), "r": rot(s.global_basis)})
+			elif child.name == "ItemSpawnPoints":
+				for s in child.get_children():
+					if s.get("item_id") != null:
+						_add_item(s)
+			elif child.name == "Checkpoints":
+				for c in child.get_children():
+					if c is Area3D:
+						_add_checkpoint(c)
+			elif child.name == "Triggers":
+				for t in child.get_children():
+					if t is Area3D and t.get("message") != null and str(t.get("message")) != "":
+						data.triggers.append(_box_of(t).merged({"message": str(t.get("message")),
+							"chase": t.get("monster") != null}))
+			elif child.name == "Monsters":
+				_add_monster(child)
 			continue
 		# Interactive things (doors, puzzles, lore, items) are scenes of their own.
 		# Doors become data; the rest come in later phases.
 		if child.scene_file_path != "":
-			if child.scene_file_path == DOOR_SCENE:
+			if child.get("entry") is LoreEntry:
+				_add_lore(child)
+			elif child.scene_file_path == DOOR_SCENE:
 				data.doors.append({"name": str(child.name), "p": pos(child.global_position),
 					"r": rot(child.global_basis), "puzzle": bool(child.get("puzzle_controlled")),
 					"locked": child.get_node_or_null("Lock") != null})
@@ -195,3 +218,67 @@ func _add_collider(cs: CollisionShape3D) -> void:
 	else:
 		return
 	data.colliders.append(entry)
+
+
+# ---------------------------------------------------------------- gameplay data
+
+func _add_item(point: Node3D) -> void:
+	var id := str(point.get("item_id"))
+	var info: Dictionary = Items.INFO.get(id, {})
+	var c: Color = info.get("color", Color(0.8, 0.8, 0.8))
+	data.items.append({"id": id, "name": str(info.get("name", id.capitalize())),
+		"hint": str(info.get("hint", "")), "color": color(c), "p": pos(point.global_position),
+		"lore": str(point.get("lore_id"))})
+
+
+func _add_lore(node: Node3D) -> void:
+	var entry: LoreEntry = node.get("entry")
+	data.lore.append({"id": entry.id, "title": entry.title, "text": entry.text,
+		"kind": str(node.scene_file_path.get_file().get_basename()),
+		"p": pos(node.global_position), "r": rot(node.global_basis)})
+
+
+func _add_checkpoint(area: Area3D) -> void:
+	var cp := _box_of(area)
+	cp["order"] = int(area.get("order"))
+	cp["name"] = str(area.name)
+	var spawns := []
+	for s in area.get_children():
+		if s is Marker3D:
+			spawns.append({"p": pos(s.global_position)})
+	cp["spawns"] = spawns
+	data.checkpoints.append(cp)
+
+
+## An Area3D's first box shape, as a position, rotation and size.
+func _box_of(area: Area3D) -> Dictionary:
+	for cs in area.get_children():
+		if cs is CollisionShape3D and cs.shape is BoxShape3D:
+			var size: Vector3 = cs.shape.size
+			return {"p": pos(cs.global_position), "r": rot(cs.global_basis), "size": [size.x, size.y, size.z]}
+	return {"p": pos(area.global_position), "r": rot(area.global_basis), "size": [2, 2, 2]}
+
+
+func _add_monster(monsters: Node) -> void:
+	var patrol := []
+	var points := monsters.get_node_or_null("PatrolPoints")
+	if points:
+		for p in points.get_children():
+			if p is Node3D:
+				patrol.append({"p": pos(p.global_position)})
+	var long_man := monsters.get_node_or_null("LongMan") as Node3D
+	if long_man == null:
+		return
+	data.monster = {"p": pos(long_man.global_position), "r": rot(long_man.global_basis), "patrol": patrol,
+		"patrol_speed": long_man.get("patrol_speed"), "investigate_speed": long_man.get("investigate_speed"),
+		"chase_speed": long_man.get("chase_speed"), "catch_distance": long_man.get("catch_distance"),
+		"catch_cooldown": long_man.get("catch_cooldown")}
+
+
+## Every lore entry in res://lore/, so reel tapes can play theirs.
+func _add_lore_book() -> void:
+	for file in DirAccess.get_files_at("res://lore/"):
+		if file.ends_with(".tres"):
+			var entry := load("res://lore/" + file) as LoreEntry
+			if entry:
+				data.lore_book.append({"id": entry.id, "title": entry.title, "text": entry.text})

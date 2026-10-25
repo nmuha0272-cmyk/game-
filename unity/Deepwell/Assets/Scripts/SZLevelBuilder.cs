@@ -1,8 +1,9 @@
 using UnityEngine;
 
 // Builds Chapter 1 when the game starts: the level model (all the walls,
-// rooms and props, exported from Godot), colliders, lights, doors, signs,
-// the moon, fog and ambient light. Change the level in Godot
+// rooms and props, exported from Godot), colliders, lights, signs, the moon,
+// fog and ambient light. (Doors, items, notes and the Long Man are added by
+// SZWorld.) Change the level in Godot
 // (tools/make_chapter1.py), re-export (tools/export_for_unity.gd), and the
 // Unity version matches.
 namespace Deepwell
@@ -27,7 +28,6 @@ namespace Deepwell
             BuildGeometry(chapter, parent);
             BuildEnvironment(data, parent);
             BuildLights(data, parent);
-            BuildDoors(data, parent);
             BuildLabels(data, parent);
             BuildColliders(data, parent);
             return data;
@@ -56,12 +56,16 @@ namespace Deepwell
 
         static void BuildEnvironment(SZLevelData data, Transform parent)
         {
-            Camera.main?.gameObject.SetActive(false);  // the player brings their own camera
             var env = data.environment;
             if (env != null)
             {
-                RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-                RenderSettings.ambientLight = SZLevelData.C(env.ambient) * Mathf.Max(env.ambient_energy, 0.05f);
+                // A little cold light from above, almost none from below: shapes read
+                // in the dark without the flat "grey fog" look.
+                var ambient = SZLevelData.C(env.ambient) * Mathf.Max(env.ambient_energy, 0.05f);
+                RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+                RenderSettings.ambientSkyColor = ambient * 1.4f + new Color(0.006f, 0.008f, 0.014f);
+                RenderSettings.ambientEquatorColor = ambient * 0.8f;
+                RenderSettings.ambientGroundColor = ambient * 0.25f;
                 RenderSettings.fog = env.fog;
                 RenderSettings.fogMode = FogMode.ExponentialSquared;
                 RenderSettings.fogDensity = Mathf.Clamp(env.fog_density * 2.5f, 0.005f, 0.08f);
@@ -79,14 +83,15 @@ namespace Deepwell
                 moon.color = SZLevelData.C(data.moon.color);
                 moon.intensity = data.moon.energy;
                 moon.shadows = LightShadows.Soft;
+                moon.shadowStrength = 0.85f;
             }
+            RenderSettings.reflectionIntensity = 0.35f;
         }
 
         static void BuildLights(SZLevelData data, Transform parent)
         {
             var root = new GameObject("Lights").transform;
             root.SetParent(parent);
-            QualitySettings.pixelLightCount = 8;  // the tunnels have many small lights
             int shadows = 0;
             foreach (var l in data.lights)
             {
@@ -102,21 +107,16 @@ namespace Deepwell
                 if (l.shadow && shadows < MaxShadowLights)
                 {
                     light.shadows = LightShadows.Soft;
+                    light.shadowBias = 0.03f;
+                    light.shadowNormalBias = 0.3f;
                     shadows++;
                 }
+                light.renderMode = LightRenderMode.Auto;
                 if (l.flicker >= 0f) go.AddComponent<SZFlicker>().brokenness = l.flicker;
                 if (l.pulse) go.AddComponent<SZPulse>();
                 // Puzzle lights (a room's power) stay dark until puzzles exist (phase U3).
                 if (l.starts_off) light.enabled = false;
             }
-        }
-
-        static void BuildDoors(SZLevelData data, Transform parent)
-        {
-            var root = new GameObject("Doors").transform;
-            root.SetParent(parent);
-            foreach (var d in data.doors)
-                SZDoor.Create(d, root);
         }
 
         static void BuildLabels(SZLevelData data, Transform parent)

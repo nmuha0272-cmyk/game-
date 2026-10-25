@@ -20,3 +20,7 @@
 *.VC.db
 .vs/
 .idea/
+# Character models are copied from the Godot project by the Deepwell menu
+# (Assets/Editor/SZSetup.cs); they're big, and already in git once.
+/Assets/Resources/Characters/
+/Assets/Resources/Characters.meta

@@ -6,12 +6,12 @@ It's moved over **one phase at a time**.
 
 | Phase | What works in Unity | Status |
 |---|---|---|
-| **U1** | Chapter 1 built from the Godot level (all rooms, props, lights, signs, fog), walk / sprint / crouch / jump, flashlight, doors | **← now** |
-| U2 | Online co-op: Host / Join (Netcode for GameObjects), players see each other | next |
-| U3 | Items + inventory, puzzles (keypads, levers, fuses, generators...), story files | |
-| U4 | The Long Man (patrol, chase, catching), downed / help up, checkpoints | |
-| U5 | The characters and their abilities | |
-| U6 | Polish: sounds, materials, the Deepwell car menu | |
+| U1 | Chapter 1 built from the Godot level (all rooms, props, lights, signs, fog), walk / sprint / crouch / jump, flashlight, doors | done |
+| **U2** | **Better graphics** (glow, film look, shadows, quality settings), **online co-op** (Host / Join, up to 4), **items** (batteries, flares, medkits, keycards...), **story notes and tapes**, **the Long Man** (patrol, sight, hearing, chase, opens doors), **checkpoints**, **story messages**, **the 4 characters and their abilities**, sounds, settings, **sets itself up** | **← now** |
+| U3 | Puzzles (keypads, levers, fuses, generators...), locked doors that need keycards | next |
+| U4 | Downed / help up, hiding in lockers, the reveal cutscene | |
+| U5 | Chapter 2 | |
+| U6 | The Deepwell car menu, animations | |
 
 Until U3, **puzzle doors and locked doors start open**, so you can walk the
 whole chapter.
@@ -25,21 +25,50 @@ whole chapter.
 
 1. In Unity Hub click **Add** → **Add project from disk** and pick this
    `unity/Deepwell` folder. (If it asks which Unity version, pick your Unity 6.)
-2. Open it. The first time takes a while: Unity downloads the **glTFast**
-   package (it reads the level file) and imports everything.
-   - If the Console says glTFast is missing: **Window → Package Manager → +
-     → Add package by name** → `com.unity.cloud.gltfast` → Add.
-3. **Edit → Project Settings → Player → Other Settings → Active Input
-   Handling** → choose **Both** (or **Input Manager (Old)**). Unity restarts.
-4. Open any scene (the empty "SampleScene" is fine) and press **Play**.
-   The game builds itself: you get the DEEPWELL menu → **PLAY CHAPTER 1**.
+2. Open it and wait. The first time takes a few minutes: Unity downloads the
+   **glTFast** package (it reads the level file) and imports everything.
+3. The project **sets itself up**: it opens the **Deepwell** scene and copies
+   the character models from the Godot folder. (If anything looks wrong, use
+   the **Deepwell** menu at the top → **Set Up Project**.)
+4. Press **Play** (the ▶ button at the top middle).
+
+You don't need to change any settings (the old "Active Input Handling" step
+is gone: the game works with either input setting).
 
 If there are red errors in the **Console** window, copy them to Claude.
 
+## Playing online with friends
+
+- **Host:** menu → **HOST ONLINE GAME** → pick a character. The top of your
+  screen shows your IP address (also on the Esc pause screen). Tell your
+  friends that number.
+- **Join:** menu → **JOIN ONLINE GAME** → pick a character → type the
+  host's IP → **CONNECT**.
+- Same Wi-Fi/house: it just works.
+- Over the internet: the host forwards **port 7777 (UDP)** on their router,
+  or everyone installs a free "virtual LAN" app (**Radmin VPN** or
+  **ZeroTier**), joins the same network, and uses that app's IP.
+- Windows may ask "Allow Unity on networks?" the first time: click **Allow**.
+- To test alone: build the game (File → Build Profiles → Build), run the
+  built game and host there, then press Play in Unity and join `127.0.0.1`.
+
 ## Controls
 
-WASD move, mouse look, Shift sprint, Ctrl or C crouch, Space jump, F
-flashlight, E open/close doors, Esc pause.
+WASD move, mouse look, Shift sprint (uses stamina), Ctrl or C crouch, Space
+jump, F flashlight (uses battery), E use / pick up / read, 1 put in a
+battery, 2 throw a flare, Q your ability, Tab your bag, Esc pause.
+
+| Character | Ability (Q) |
+|---|---|
+| Eli | **Sense**: see the Long Man and your friends through walls for 6 s |
+| Cole | **Strength**: hold Q on a closed door to hold it shut; the Long Man can't open it. Cole is a bit slower and louder |
+| Nora | **Camera flash**: stuns the Long Man for a few seconds if he's in front of you |
+| Walter | **Repair**: hold Q at a broken, flickering light to fix it |
+
+The Long Man wakes up when someone walks into the "RUN!" spot in the
+tunnels. Crouch and turn your flashlight off to stay hidden; running is
+loud. If he catches you, you go back to the last checkpoint (a medkit saves
+you once).
 
 ## How it works (for learning)
 
@@ -53,18 +82,33 @@ flashlight, E open/close doors, Esc pause.
 
 | File | Job |
 |---|---|
-| `SZGame` | Starts everything (no scene setup needed), the menu, Esc pause |
-| `SZLevelBuilder` | Builds the chapter: level model + colliders, lights, doors, signs, fog |
+| `SZGame` | Starts everything (no scene setup needed), the menus, the HUD, reading notes |
+| `SZWorld` | One chapter being played: doors, items, notes, triggers, checkpoints, the Long Man, other players, and keeping everyone in sync online |
+| `SZNet` | Online: Host / Join over UDP port 7777 (no extra packages) |
+| `SZLevelBuilder` | Builds the level: model + colliders, lights, signs, fog |
 | `SZLevelData` | The shape of the JSON file |
-| `SZPlayer` | The player: walking, crouching, jumping, mouse look, flashlight, pressing E |
+| `SZPlayer` | You: moving, stamina, flashlight battery, items, abilities, getting caught |
+| `SZRemotePlayer` | Another player in an online game |
+| `SZMonster` | The Long Man's brain (patrol, see, hear, chase, doors, stun) |
+| `SZItems` | Items on the floor, your inventory, thrown flares |
+| `SZLore` | Notes, files, posters you can read |
 | `SZDoor` | A door that swings open and shut |
+| `SZCharacters` | The 4 characters and loading their models |
+| `SZGraphics` | Quality settings and the camera effect (`Resources/Shaders/SZHorrorPost.shader`) |
+| `SZAudio` | Sounds (the Godot project's .wav files, in `Resources/Audio`) |
+| `SZInput` | Keyboard and mouse, whichever input setting the project has |
 | `SZLightEffects` | Flickering and pulsing lights, signs that face you |
+| `Editor/SZSetup` | Sets the project up the first time, and the Deepwell menu |
 
-## Known limits in U1
+## Known limits in U2
 
-- Nothing here has been compiled yet (it was written without Unity
-  available). Expect a few errors the first time: send them to Claude.
+- It was written without Unity open (the code was checked with a C#
+  compiler against Unity's code library, but not run). Expect a few
+  problems the first time: send the red Console errors to Claude.
 - Brightness was guessed. Light strength is `EnergyToIntensity` in
-  `SZLevelBuilder.cs`; fog is in `BuildEnvironment`.
-- The level uses Unity's Built-in renderer (the simplest). URP/HDRP come later
-  if we want fancier graphics.
+  `SZLevelBuilder.cs`; the camera look (exposure, glow, grain, vignette) is
+  at the top of `SZPostEffect` in `SZGraphics.cs`. Settings → Graphics LOW
+  turns the camera effect off.
+- Online play has no password; only share your IP with friends.
+- The Built-in renderer is used (simple, and works on any PC). URP/HDRP can
+  come later.

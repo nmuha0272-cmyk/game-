@@ -1,4 +1,356 @@
 {
+ "checkpoints": [
+  {
+   "name": "Comms",
+   "order": 7,
+   "p": [
+    -76.0,
+    -7.5,
+    -55.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.79999995231628,
+    3.0,
+    2.0
+   ],
+   "spawns": [
+    {
+     "p": [
+      -76.0,
+      -9.0,
+      -55.6
+     ]
+    },
+    {
+     "p": [
+      -76.0,
+      -9.0,
+      -54.4
+     ]
+    },
+    {
+     "p": [
+      -76.0,
+      -9.0,
+      -56.2
+     ]
+    },
+    {
+     "p": [
+      -76.0,
+      -9.0,
+      -53.8
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Yard",
+   "order": 1,
+   "p": [
+    0.0,
+    1.5,
+    17.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    8.0,
+    3.0,
+    4.0
+   ],
+   "spawns": [
+    {
+     "p": [
+      1.5,
+      0.0,
+      17.0
+     ]
+    },
+    {
+     "p": [
+      0.0,
+      0.0,
+      17.0
+     ]
+    },
+    {
+     "p": [
+      -1.5,
+      0.0,
+      17.0
+     ]
+    },
+    {
+     "p": [
+      0.0,
+      0.0,
+      18.5
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Tunnels",
+   "order": 2,
+   "p": [
+    -9.0,
+    -7.5,
+    -38.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    8.0,
+    3.0,
+    4.0
+   ],
+   "spawns": [
+    {
+     "p": [
+      -7.5,
+      -9.0,
+      -37.0
+     ]
+    },
+    {
+     "p": [
+      -9.0,
+      -9.0,
+      -37.0
+     ]
+    },
+    {
+     "p": [
+      -10.5,
+      -9.0,
+      -37.0
+     ]
+    },
+    {
+     "p": [
+      -9.0,
+      -9.0,
+      -36.0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Shutter",
+   "order": 3,
+   "p": [
+    -9.0,
+    -7.5,
+    -52.5
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.0,
+    3.0,
+    2.0
+   ],
+   "spawns": [
+    {
+     "p": [
+      -8.0,
+      -9.0,
+      -52.5
+     ]
+    },
+    {
+     "p": [
+      -9.0,
+      -9.0,
+      -52.5
+     ]
+    },
+    {
+     "p": [
+      -10.0,
+      -9.0,
+      -52.5
+     ]
+    },
+    {
+     "p": [
+      -9.0,
+      -9.0,
+      -51.7
+     ]
+    }
+   ]
+  },
+  {
+   "name": "ElevatorApproach",
+   "order": 5,
+   "p": [
+    -18.0,
+    -7.5,
+    -68.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.0,
+    3.0,
+    2.0
+   ],
+   "spawns": [
+    {
+     "p": [
+      -16.5,
+      -9.0,
+      -68.0
+     ]
+    },
+    {
+     "p": [
+      -18.0,
+      -9.0,
+      -68.0
+     ]
+    },
+    {
+     "p": [
+      -19.5,
+      -9.0,
+      -68.0
+     ]
+    },
+    {
+     "p": [
+      -21.0,
+      -9.0,
+      -68.0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "LabWing",
+   "order": 6,
+   "p": [
+    -65.5,
+    -7.5,
+    -66.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.0,
+    3.0,
+    2.0
+   ],
+   "spawns": [
+    {
+     "p": [
+      -64.0,
+      -9.0,
+      -66.0
+     ]
+    },
+    {
+     "p": [
+      -65.5,
+      -9.0,
+      -66.0
+     ]
+    },
+    {
+     "p": [
+      -67.0,
+      -9.0,
+      -66.0
+     ]
+    },
+    {
+     "p": [
+      -68.5,
+      -9.0,
+      -66.0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Dorm",
+   "order": 4,
+   "p": [
+    -15.0,
+    -7.5,
+    -52.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    6.0,
+    3.0,
+    4.0
+   ],
+   "spawns": [
+    {
+     "p": [
+      -13.0,
+      -9.0,
+      -52.0
+     ]
+    },
+    {
+     "p": [
+      -15.0,
+      -9.0,
+      -52.0
+     ]
+    },
+    {
+     "p": [
+      -17.0,
+      -9.0,
+      -52.0
+     ]
+    },
+    {
+     "p": [
+      -15.0,
+      -9.0,
+      -51.0
+     ]
+    }
+   ]
+  }
+ ],
  "colliders": [
   {
    "box": [
@@ -1174,9 +1526,9 @@
    "puzzle": true,
    "r": [
     0.0,
-    -0.0485,
+    -0.0872,
     0.0,
-    0.9988
+    0.9962
    ]
   },
   {
@@ -1341,6 +1693,1113 @@
   ],
   "fog_density": 0.0219999998807907
  },
+ "items": [
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    6.0,
+    0.2,
+    41.0
+   ]
+  },
+  {
+   "color": [
+    0.55,
+    0.12,
+    0.08,
+    1.0
+   ],
+   "hint": "Pries open jammed doors (breaks after one use).",
+   "id": "crowbar",
+   "lore": "",
+   "name": "Crowbar",
+   "p": [
+    -8.0,
+    0.2,
+    15.5
+   ]
+  },
+  {
+   "color": [
+    0.35,
+    0.22,
+    0.12,
+    1.0
+   ],
+   "hint": "Play it on a tape machine to hear what's on it.",
+   "id": "reel_tape",
+   "lore": "tape_welcome",
+   "name": "Reel Tape",
+   "p": [
+    6.5,
+    0.2,
+    -14.8
+   ]
+  },
+  {
+   "color": [
+    0.1,
+    0.1,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to radio your team (they see where you are). Careful: the Long Man hears the static!",
+   "id": "walkie",
+   "lore": "",
+   "name": "Walkie-Talkie",
+   "p": [
+    2.5,
+    0.2,
+    -1.0
+   ]
+  },
+  {
+   "color": [
+    0.1,
+    0.1,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to radio your team (they see where you are). Careful: the Long Man hears the static!",
+   "id": "walkie",
+   "lore": "",
+   "name": "Walkie-Talkie",
+   "p": [
+    -8.5,
+    0.2,
+    -7.0
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -6.0,
+    1.0,
+    -3.2
+   ]
+  },
+  {
+   "color": [
+    0.8,
+    0.15,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
+   "id": "flare",
+   "lore": "",
+   "name": "Flare",
+   "p": [
+    -6.5,
+    1.0,
+    -2.8
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -8.25,
+    -3.8,
+    -24.0
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -8.25,
+    -3.8,
+    -24.4
+   ]
+  },
+  {
+   "color": [
+    0.8,
+    0.15,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
+   "id": "flare",
+   "lore": "",
+   "name": "Flare",
+   "p": [
+    -9.75,
+    -3.8,
+    -26.9
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.8,
+    0.65,
+    1.0
+   ],
+   "hint": "Fits into fuse boxes to power doors and machines.",
+   "id": "fuse",
+   "lore": "",
+   "name": "Fuse",
+   "p": [
+    -9.2,
+    -8.8,
+    -55.0
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.85,
+    0.82,
+    1.0
+   ],
+   "hint": "Click while looking at a downed teammate up close to revive them.",
+   "id": "medkit",
+   "lore": "",
+   "name": "Med Kit",
+   "p": [
+    -12.8,
+    -8.8,
+    -59.5
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.8,
+    0.65,
+    1.0
+   ],
+   "hint": "Fits into fuse boxes to power doors and machines.",
+   "id": "fuse",
+   "lore": "",
+   "name": "Fuse",
+   "p": [
+    -20.5,
+    -8.8,
+    -72.0
+   ]
+  },
+  {
+   "color": [
+    0.35,
+    0.22,
+    0.12,
+    1.0
+   ],
+   "hint": "Play it on a tape machine to hear what's on it.",
+   "id": "reel_tape",
+   "lore": "tape_final_recording",
+   "name": "Reel Tape",
+   "p": [
+    -43.0,
+    -8.8,
+    -61.0
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -65.5,
+    -8.8,
+    -58.8
+   ]
+  },
+  {
+   "color": [
+    0.8,
+    0.15,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
+   "id": "flare",
+   "lore": "",
+   "name": "Flare",
+   "p": [
+    -78.8,
+    -8.8,
+    -73.0
+   ]
+  },
+  {
+   "color": [
+    0.1,
+    0.1,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to radio your team (they see where you are). Careful: the Long Man hears the static!",
+   "id": "walkie",
+   "lore": "",
+   "name": "Walkie-Talkie",
+   "p": [
+    -66.0,
+    -8.1,
+    -66.0
+   ]
+  },
+  {
+   "color": [
+    0.75,
+    0.1,
+    0.08,
+    1.0
+   ],
+   "hint": "Opens every security door. Just carry it.",
+   "id": "keycard_red",
+   "lore": "",
+   "name": "Red Keycard",
+   "p": [
+    -72.0,
+    -8.0,
+    -95.1
+   ]
+  },
+  {
+   "color": [
+    0.7,
+    0.12,
+    0.08,
+    1.0
+   ],
+   "hint": "Fuel for the power room generator.",
+   "id": "fuel_can",
+   "lore": "",
+   "name": "Fuel Can",
+   "p": [
+    -8.6,
+    -3.8,
+    -25.4
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.75,
+    0.1,
+    1.0
+   ],
+   "hint": "Opens Yellow (and Green) security doors. Just carry it.",
+   "id": "keycard_yellow",
+   "lore": "",
+   "name": "Yellow Keycard",
+   "p": [
+    -9.2,
+    -3.9,
+    -24.8
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -10.6,
+    0.85,
+    12.0
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -2.9,
+    -8.9,
+    -72.0
+   ]
+  },
+  {
+   "color": [
+    0.8,
+    0.15,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
+   "id": "flare",
+   "lore": "",
+   "name": "Flare",
+   "p": [
+    -16.0,
+    -8.9,
+    -88.9
+   ]
+  },
+  {
+   "color": [
+    0.2,
+    0.26,
+    0.2,
+    1.0
+   ],
+   "hint": "Protects you in toxic gas while the filter lasts. Just carry it.",
+   "id": "gas_mask",
+   "lore": "",
+   "name": "Gas Mask",
+   "p": [
+    17.65,
+    1.05,
+    -11.1
+   ]
+  },
+  {
+   "color": [
+    0.2,
+    0.26,
+    0.2,
+    1.0
+   ],
+   "hint": "Protects you in toxic gas while the filter lasts. Just carry it.",
+   "id": "gas_mask",
+   "lore": "",
+   "name": "Gas Mask",
+   "p": [
+    17.65,
+    1.05,
+    -10.6
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.85,
+    0.82,
+    1.0
+   ],
+   "hint": "Click while looking at a downed teammate up close to revive them.",
+   "id": "medkit",
+   "lore": "",
+   "name": "Med Kit",
+   "p": [
+    17.65,
+    0.1,
+    -10.9
+   ]
+  },
+  {
+   "color": [
+    0.15,
+    0.6,
+    0.2,
+    1.0
+   ],
+   "hint": "Opens Green security doors. Just carry it.",
+   "id": "keycard_green",
+   "lore": "",
+   "name": "Green Keycard",
+   "p": [
+    -9.45,
+    0.2,
+    -8.2
+   ]
+  },
+  {
+   "color": [
+    0.35,
+    0.22,
+    0.12,
+    1.0
+   ],
+   "hint": "Play it on a tape machine to hear what's on it.",
+   "id": "reel_tape",
+   "lore": "tape_kowalski_warning",
+   "name": "Reel Tape",
+   "p": [
+    -77.6,
+    -8.0,
+    -69.5
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -20.6,
+    -7.25,
+    -62.38
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -21.7,
+    -8.85,
+    -60.0
+   ]
+  },
+  {
+   "color": [
+    0.6,
+    0.6,
+    0.62,
+    1.0
+   ],
+   "hint": "Reloads 9mm weapons. Click to add to your gun.",
+   "id": "ammo_9mm",
+   "lore": "",
+   "name": "9mm Mag",
+   "p": [
+    -20.4,
+    -8.9,
+    -58.2
+   ]
+  },
+  {
+   "color": [
+    0.3,
+    0.22,
+    0.16,
+    1.0
+   ],
+   "hint": "Devastating up close. Pick it up to arm yourself.",
+   "id": "weapon_shotgun",
+   "lore": "",
+   "name": "12ga Shotgun",
+   "p": [
+    -29.0,
+    -8.75,
+    -64.2
+   ]
+  },
+  {
+   "color": [
+    0.28,
+    0.28,
+    0.3,
+    1.0
+   ],
+   "hint": "Pick it up to arm yourself. Draw it with 4.",
+   "id": "weapon_pistol",
+   "lore": "",
+   "name": "9mm Pistol",
+   "p": [
+    -29.0,
+    -8.75,
+    -63.2
+   ]
+  },
+  {
+   "color": [
+    0.32,
+    0.3,
+    0.3,
+    1.0
+   ],
+   "hint": "Pick it up to arm yourself. Draw it with 4.",
+   "id": "weapon_revolver",
+   "lore": "",
+   "name": ".38 Revolver",
+   "p": [
+    -29.0,
+    -8.75,
+    -62.3
+   ]
+  },
+  {
+   "color": [
+    0.22,
+    0.24,
+    0.24,
+    1.0
+   ],
+   "hint": "Quiet. Pick it up to arm yourself.",
+   "id": "weapon_suppressed_9mm",
+   "lore": "",
+   "name": "Suppressed 9mm",
+   "p": [
+    -27.0,
+    -8.15,
+    -61.4
+   ]
+  },
+  {
+   "color": [
+    0.7,
+    0.2,
+    0.12,
+    1.0
+   ],
+   "hint": "Reloads the shotgun. Click to add to your gun.",
+   "id": "ammo_12ga",
+   "lore": "",
+   "name": "12ga Shells",
+   "p": [
+    -26.4,
+    -8.15,
+    -61.1
+   ]
+  },
+  {
+   "color": [
+    0.6,
+    0.6,
+    0.62,
+    1.0
+   ],
+   "hint": "Reloads 9mm weapons. Click to add to your gun.",
+   "id": "ammo_9mm",
+   "lore": "",
+   "name": "9mm Mag",
+   "p": [
+    -28.0,
+    -8.15,
+    -61.7
+   ]
+  },
+  {
+   "color": [
+    0.6,
+    0.6,
+    0.62,
+    1.0
+   ],
+   "hint": "Reloads 9mm weapons. Click to add to your gun.",
+   "id": "ammo_9mm",
+   "lore": "",
+   "name": "9mm Mag",
+   "p": [
+    -28.9,
+    -8.85,
+    -61.8
+   ]
+  },
+  {
+   "color": [
+    0.75,
+    0.65,
+    0.3,
+    1.0
+   ],
+   "hint": "Reloads your .38 Revolver. Click to add to your gun.",
+   "id": "ammo_38",
+   "lore": "",
+   "name": ".38 Speedloader",
+   "p": [
+    -27.4,
+    -8.05,
+    -65.5
+   ]
+  },
+  {
+   "color": [
+    0.7,
+    0.55,
+    0.25,
+    1.0
+   ],
+   "hint": "Reloads the bolt-action rifle. Click to add to your gun.",
+   "id": "ammo_308",
+   "lore": "",
+   "name": ".308 Stripper Clip",
+   "p": [
+    -28.0,
+    -8.05,
+    -65.5
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.85,
+    0.82,
+    1.0
+   ],
+   "hint": "Click while looking at a downed teammate up close to revive them.",
+   "id": "medkit",
+   "lore": "",
+   "name": "Med Kit",
+   "p": [
+    -26.6,
+    -8.05,
+    -65.5
+   ]
+  },
+  {
+   "color": [
+    0.7,
+    0.2,
+    0.12,
+    1.0
+   ],
+   "hint": "Reloads the shotgun. Click to add to your gun.",
+   "id": "ammo_12ga",
+   "lore": "",
+   "name": "12ga Shells",
+   "p": [
+    -28.8,
+    -7.9,
+    -58.0
+   ]
+  },
+  {
+   "color": [
+    0.8,
+    0.15,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
+   "id": "flare",
+   "lore": "",
+   "name": "Flare",
+   "p": [
+    -25.9,
+    -8.2,
+    -58.1
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -28.85,
+    -7.95,
+    -59.35
+   ]
+  },
+  {
+   "color": [
+    0.35,
+    0.22,
+    0.12,
+    1.0
+   ],
+   "hint": "Play it on a tape machine to hear what's on it.",
+   "id": "reel_tape",
+   "lore": "tape_vault_guard",
+   "name": "Reel Tape",
+   "p": [
+    -51.2,
+    -8.45,
+    -40.45
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.85,
+    0.82,
+    1.0
+   ],
+   "hint": "Click while looking at a downed teammate up close to revive them.",
+   "id": "medkit",
+   "lore": "",
+   "name": "Med Kit",
+   "p": [
+    -59.0,
+    -8.8,
+    -38.3
+   ]
+  },
+  {
+   "color": [
+    0.6,
+    0.6,
+    0.62,
+    1.0
+   ],
+   "hint": "Reloads 9mm weapons. Click to add to your gun.",
+   "id": "ammo_9mm",
+   "lore": "",
+   "name": "9mm Mag",
+   "p": [
+    -59.8,
+    -8.8,
+    -37.3
+   ]
+  },
+  {
+   "color": [
+    0.7,
+    0.2,
+    0.12,
+    1.0
+   ],
+   "hint": "Reloads the shotgun. Click to add to your gun.",
+   "id": "ammo_12ga",
+   "lore": "",
+   "name": "12ga Shells",
+   "p": [
+    -60.6,
+    -8.8,
+    -39.3
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -62.2,
+    -8.35,
+    -38.8
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -70.4,
+    -8.9,
+    -45.0
+   ]
+  },
+  {
+   "color": [
+    0.35,
+    0.22,
+    0.12,
+    1.0
+   ],
+   "hint": "Play it on a tape machine to hear what's on it.",
+   "id": "reel_tape",
+   "lore": "tape_relay_test",
+   "name": "Reel Tape",
+   "p": [
+    -78.0,
+    -8.85,
+    -43.2
+   ]
+  },
+  {
+   "color": [
+    0.8,
+    0.15,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
+   "id": "flare",
+   "lore": "",
+   "name": "Flare",
+   "p": [
+    -73.7,
+    -8.9,
+    -43.4
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.85,
+    0.82,
+    1.0
+   ],
+   "hint": "Click while looking at a downed teammate up close to revive them.",
+   "id": "medkit",
+   "lore": "",
+   "name": "Med Kit",
+   "p": [
+    -45.2,
+    -8.9,
+    -98.8
+   ]
+  },
+  {
+   "color": [
+    0.7,
+    0.2,
+    0.12,
+    1.0
+   ],
+   "hint": "Reloads the shotgun. Click to add to your gun.",
+   "id": "ammo_12ga",
+   "lore": "",
+   "name": "12ga Shells",
+   "p": [
+    -46.0,
+    -8.9,
+    -99.2
+   ]
+  },
+  {
+   "color": [
+    0.6,
+    0.6,
+    0.62,
+    1.0
+   ],
+   "hint": "Reloads 9mm weapons. Click to add to your gun.",
+   "id": "ammo_9mm",
+   "lore": "",
+   "name": "9mm Mag",
+   "p": [
+    -46.8,
+    -8.9,
+    -98.8
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -46.4,
+    -8.9,
+    -98.0
+   ]
+  },
+  {
+   "color": [
+    0.8,
+    0.15,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
+   "id": "flare",
+   "lore": "",
+   "name": "Flare",
+   "p": [
+    -50.0,
+    -8.9,
+    -81.0
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.85,
+    0.82,
+    1.0
+   ],
+   "hint": "Click while looking at a downed teammate up close to revive them.",
+   "id": "medkit",
+   "lore": "",
+   "name": "Med Kit",
+   "p": [
+    -55.0,
+    -8.9,
+    -92.5
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -59.0,
+    -8.9,
+    -92.5
+   ]
+  },
+  {
+   "color": [
+    0.75,
+    0.65,
+    0.3,
+    1.0
+   ],
+   "hint": "Reloads your .38 Revolver. Click to add to your gun.",
+   "id": "ammo_38",
+   "lore": "",
+   "name": ".38 Speedloader",
+   "p": [
+    -56.2,
+    -7.1,
+    -94.65
+   ]
+  },
+  {
+   "color": [
+    0.7,
+    0.55,
+    0.25,
+    1.0
+   ],
+   "hint": "Reloads the bolt-action rifle. Click to add to your gun.",
+   "id": "ammo_308",
+   "lore": "",
+   "name": ".308 Stripper Clip",
+   "p": [
+    -58.0,
+    -7.1,
+    -94.65
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.7,
+    0.15,
+    1.0
+   ],
+   "hint": "Click to recharge your flashlight.",
+   "id": "battery",
+   "lore": "",
+   "name": "Battery",
+   "p": [
+    -20.4,
+    -8.9,
+    -50.0
+   ]
+  },
+  {
+   "color": [
+    0.8,
+    0.15,
+    0.1,
+    1.0
+   ],
+   "hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
+   "id": "flare",
+   "lore": "",
+   "name": "Flare",
+   "p": [
+    -24.4,
+    -8.9,
+    -52.0
+   ]
+  },
+  {
+   "color": [
+    0.42,
+    0.34,
+    0.2,
+    1.0
+   ],
+   "hint": "Click to strap it on: adds 1 gear slot (up to 8).",
+   "id": "pouch",
+   "lore": "",
+   "name": "Field Pouch",
+   "p": [
+    6.8,
+    0.2,
+    41.0
+   ]
+  },
+  {
+   "color": [
+    0.24,
+    0.32,
+    0.24,
+    1.0
+   ],
+   "hint": "Click to strap it on: adds 2 gear slots (up to 8).",
+   "id": "backpack",
+   "lore": "",
+   "name": "Backpack",
+   "p": [
+    -7.6,
+    -3.8,
+    -24.0
+   ]
+  }
+ ],
  "labels": [
   {
    "billboard": false,
@@ -2968,7 +4427,7 @@
     0.7071
    ],
    "size": 0.115199997089803,
-   "text": "WIRING DIAGRAM - POWER ROOM BREAKERS\n1 UP   2 UP   3 DOWN"
+   "text": "WIRING DIAGRAM - POWER ROOM BREAKERS\n1 DOWN   2 DOWN   3 UP"
   },
   {
    "billboard": false,
@@ -3100,7 +4559,7 @@
     1.0
    ],
    "size": 0.136000001803041,
-   "text": "DRAIN CHART - TUNNEL E PUMPS\n1 DOWN   2 UP   3 DOWN   4 DOWN"
+   "text": "DRAIN CHART - TUNNEL E PUMPS\n1 DOWN   2 UP   3 DOWN   4 UP"
   },
   {
    "billboard": false,
@@ -3122,7 +4581,7 @@
     0.7071
    ],
    "size": 0.108000000938773,
-   "text": "BED 1\nTAG: 2"
+   "text": "BED 1\nTAG: 7"
   },
   {
    "billboard": false,
@@ -3144,7 +4603,7 @@
     0.7071
    ],
    "size": 0.108000000938773,
-   "text": "BED 2\nTAG: 7"
+   "text": "BED 2\nTAG: 2"
   },
   {
    "billboard": false,
@@ -3166,7 +4625,7 @@
     0.7071
    ],
    "size": 0.108000000938773,
-   "text": "BED 3\nTAG: 2"
+   "text": "BED 3\nTAG: 1"
   },
   {
    "billboard": false,
@@ -3188,7 +4647,7 @@
     0.0
    ],
    "size": 0.140000004321337,
-   "text": "dir. safe - 2764\n(don't forget AGAIN)"
+   "text": "dir. safe - 5735\n(don't forget AGAIN)"
   },
   {
    "billboard": false,
@@ -3210,7 +4669,7 @@
     1.0
    ],
    "size": 0.0879999995231628,
-   "text": "VAULT CODE\n5537\n(changes every minute)"
+   "text": "VAULT CODE\n1453\n(changes every minute)"
   },
   {
    "billboard": false,
@@ -3232,7 +4691,7 @@
     0.0
    ],
    "size": 0.140000004321337,
-   "text": "RELAY BAND - LIVE\n92.5 MHz\n(it drifts: keep calling it out)"
+   "text": "RELAY BAND - LIVE\n91.5 MHz\n(it drifts: keep calling it out)"
   },
   {
    "billboard": false,
@@ -3254,7 +4713,7 @@
     1.0
    ],
    "size": 0.0703999996185303,
-   "text": "TOE TAG 1 of 4\n0"
+   "text": "TOE TAG 1 of 4\n4"
   },
   {
    "billboard": false,
@@ -3276,7 +4735,7 @@
     0.7071
    ],
    "size": 0.0703999996185303,
-   "text": "TOE TAG 2 of 4\n6"
+   "text": "TOE TAG 2 of 4\n3"
   },
   {
    "billboard": false,
@@ -3298,7 +4757,7 @@
     0.7071
    ],
    "size": 0.0703999996185303,
-   "text": "TOE TAG 3 of 4\n8"
+   "text": "TOE TAG 3 of 4\n3"
   },
   {
    "billboard": false,
@@ -3320,7 +4779,7 @@
     1.0
    ],
    "size": 0.0703999996185303,
-   "text": "TOE TAG 4 of 4\n6"
+   "text": "TOE TAG 4 of 4\n9"
   },
   {
    "billboard": false,
@@ -3342,7 +4801,7 @@
     0.0
    ],
    "size": 0.115199997089803,
-   "text": "AUX POWER - DORM BREAKERS\n1 DOWN   2 UP   3 UP   4 DOWN   5 UP"
+   "text": "AUX POWER - DORM BREAKERS\n1 UP   2 UP   3 UP   4 UP   5 DOWN"
   },
   {
    "billboard": false,
@@ -3463,7 +4922,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.550000011920929,
+   "energy": 0.0,
    "flicker": 0.55,
    "p": [
     -18.0,
@@ -3905,7 +5364,7 @@
     0.5,
     1.0
    ],
-   "energy": 0.150000005960464,
+   "energy": 0.0,
    "flicker": 0.5,
    "p": [
     9.3,
@@ -3931,7 +5390,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.671951055526733,
+   "energy": 0.657668888568878,
    "flicker": -1.0,
    "p": [
     -6.0,
@@ -4035,7 +5494,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.600000023841858,
+   "energy": 0.0,
    "flicker": 0.5,
    "p": [
     -9.0,
@@ -4087,7 +5546,7 @@
     0.04,
     1.0
    ],
-   "energy": 1.0079265832901,
+   "energy": 0.98650336265564,
    "flicker": -1.0,
    "p": [
     -9.0,
@@ -4139,7 +5598,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.400000005960464,
+   "energy": 0.0,
    "flicker": 0.7,
    "p": [
     -20.5,
@@ -4165,7 +5624,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.5,
    "p": [
     -16.0,
@@ -4217,7 +5676,7 @@
     0.04,
     1.0
    ],
-   "energy": 0.839938759803772,
+   "energy": 0.822086095809937,
    "flicker": -1.0,
    "p": [
     -38.0,
@@ -4243,7 +5702,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.349999994039536,
    "flicker": 0.85,
    "p": [
     -51.0,
@@ -4451,7 +5910,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.335975527763367,
+   "energy": 0.328834444284439,
    "flicker": -1.0,
    "p": [
     -21.0,
@@ -4503,7 +5962,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.6,
    "p": [
     -20.5,
@@ -4555,7 +6014,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.600000023841858,
    "flicker": 0.5,
    "p": [
     14.0,
@@ -4633,7 +6092,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.550000011920929,
    "flicker": 0.6,
    "p": [
     -16.2,
@@ -4763,7 +6222,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.699999988079071,
+   "energy": 0.0,
    "flicker": 0.4,
    "p": [
     -27.0,
@@ -4789,7 +6248,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.50396329164505,
+   "energy": 0.49325168132782,
    "flicker": -1.0,
    "p": [
     -25.2,
@@ -4841,7 +6300,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.7,
    "p": [
     -44.0,
@@ -4867,7 +6326,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.5,
    "p": [
     -50.5,
@@ -5127,7 +6586,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.449999988079071,
    "flicker": 0.7,
    "p": [
     -42.5,
@@ -5153,7 +6612,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.449999988079071,
    "flicker": 0.5,
    "p": [
     -37.0,
@@ -5179,7 +6638,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.9,
    "p": [
     -32.9,
@@ -5205,7 +6664,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.4,
    "p": [
     -29.25,
@@ -5231,7 +6690,7 @@
     0.2,
     1.0
    ],
-   "energy": 0.899999976158142,
+   "energy": 0.0,
    "flicker": 0.3,
    "p": [
     -43.0,
@@ -5283,7 +6742,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.9,
    "p": [
     -51.1,
@@ -5335,7 +6794,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.449999988079071,
    "flicker": 0.6,
    "p": [
     -58.0,
@@ -5361,7 +6820,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.449999988079071,
    "flicker": 0.4,
    "p": [
     -57.0,
@@ -5381,6 +6840,1059 @@
    "starts_off": false
   }
  ],
+ "lore": [
+  {
+   "id": "personal_journalist_notebook",
+   "kind": "lore_personal",
+   "p": [
+    7.4,
+    1.2,
+    39.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "The notebook of the Journalist's missing informant.\nOne page is circled over and over:\n\n\"H-7\"   \"they're still down there\"",
+   "title": "Informant's Notebook"
+  },
+  {
+   "id": "file_staff_directory",
+   "kind": "lore_file",
+   "p": [
+    5.0,
+    0.9,
+    -5.0
+   ],
+   "r": [
+    0.0,
+    -0.1736,
+    0.0,
+    0.9848
+   ],
+   "text": "BLACKWATER WEATHER STATION / SITE 12\nStaff directory, revised 1998.\n\nDr. H. Calloway, Director, Project IRONWOOD\nDr. Maria Reyes, Medical\n[NAME SCRATCHED OUT], Engineering, Growth Chamber design\nC. Brennan, Security, Level B\n\nAll staff: volunteers are not to be told the true purpose of Serum H-7.",
+   "title": "Site 12 Staff Directory"
+  },
+  {
+   "id": "personal_engineer_nameplate",
+   "kind": "lore_personal",
+   "p": [
+    4.0,
+    0.9,
+    -11.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "A brass nameplate, worn smooth: CHIEF ENGINEER, GROWTH CHAMBER.\nNext to it, a chipped coffee mug, still sitting where it was left decades ago.",
+   "title": "Desk Nameplate and Mug"
+  },
+  {
+   "id": "file_corkboard",
+   "kind": "lore_paper",
+   "p": [
+    -9.84,
+    1.6,
+    -9.0
+   ],
+   "r": [
+    0.0,
+    0.7071,
+    0.0,
+    0.7071
+   ],
+   "text": "A corkboard in the director's office, covered in newspaper clippings.\nEvery one of them is an article the Journalist wrote. Some are recent.\nRed string connects her photo to the words: CONTAINED? ASK HER SOURCE.\n\nSomeone has been watching her.",
+   "title": "Corkboard: Newspaper Clippings"
+  },
+  {
+   "id": "file_poster_stronger",
+   "kind": "lore_poster",
+   "p": [
+    -9.95,
+    -2.4,
+    -25.0
+   ],
+   "r": [
+    0.0,
+    0.7071,
+    0.0,
+    0.7071
+   ],
+   "text": "STRONGER SOLDIERS. SAFER NATION.\n\nA smiling soldier salutes under bright red letters.\nSomeone has scratched the soldier's eyes out.",
+   "title": "Poster: Stronger Soldiers"
+  },
+  {
+   "id": "personal_guard_roster",
+   "kind": "lore_personal",
+   "p": [
+    -9.75,
+    -4.0,
+    -24.2
+   ],
+   "r": [
+    0.0,
+    0.5,
+    0.0,
+    0.866
+   ],
+   "text": "Guard duty roster, Level B, the night of the sealing.\n22:00 - 06:00: BRENNAN, C.\n\nThe signature at the bottom is Cole's.",
+   "title": "Guard Duty Roster"
+  },
+  {
+   "id": "personal_son_volunteer_id",
+   "kind": "lore_personal",
+   "p": [
+    -13.0,
+    -8.4,
+    -61.3
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "VOLUNTEER IDENTIFICATION, PROJECT BASTION\nVolunteer No. 14\nName: DANIEL REYES\nStatus stamped in red: TRANSFERRED — PROJECT ECHO\n\nThe photo on the card shows a young man in uniform, smiling.\nOn the back, in faded ink: \"For Eli.\"\n\nDad kept this with him until the end. In 1999, they said it was a gas leak. But the experiments never stopped. He was taken deeper. Into Project ECHO.",
+   "title": "Volunteer 14 ID Card"
+  },
+  {
+   "id": "file_subject7_log",
+   "kind": "lore_file",
+   "p": [
+    -5.1,
+    -8.4,
+    -64.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "SUBJECT 7 - SERUM H-7 (\"GROWTH\")\nWeek 1: 6 ft 0 in. Good spirits. Asks about his mother.\nWeek 6: 6 ft 9 in. Joint pain. Bones still lengthening.\nWeek 14: 7 ft 11 in. Cannot lie flat. Light is painful to him.\nWeek 23: 9 ft 2 in. No longer fits in his cell.\nWeek 31: Moved to the maintenance tunnels. Stopped answering to his name.",
+   "title": "Medical Log: Subject 7"
+  },
+  {
+   "id": "personal_son_drawing",
+   "kind": "lore_paper",
+   "p": [
+    -4.53,
+    -7.8,
+    -66.1
+   ],
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ],
+   "text": "A child's crayon drawing taped inside a locker: two stick figures in uniforms, one in a lab coat, holding hands with a smaller stick figure between them.\nWritten at the bottom, in shaky child's handwriting: COME HOME SOON MOM AND DAD - LOVE ELI.",
+   "title": "Crayon Drawing"
+  },
+  {
+   "id": "file_containment_order",
+   "kind": "lore_file",
+   "p": [
+    -40.0,
+    -8.1,
+    -74.0
+   ],
+   "r": [
+    0.0,
+    0.0872,
+    0.0,
+    0.9962
+   ],
+   "text": "BY ORDER OF THE DIRECTOR - EMERGENCY CONTAINMENT, LEVEL B\nAll lower doors are to be sealed immediately, REGARDLESS OF PERSONNEL INSIDE.\nGuard responsible: C. BRENNAN.\n\nELEVATOR OVERRIDE: two officers must turn their launch keys at the same time.",
+   "title": "Level B Containment Order"
+  },
+  {
+   "id": "personal_engineer_blueprint",
+   "kind": "lore_paper",
+   "p": [
+    -36.5,
+    -7.2,
+    -76.95
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "A blueprint pinned to the wall: GROWTH CHAMBER, MK II. Serum delivery and restraint system.\nThe signature in the corner is the Engineer's.",
+   "title": "Growth Chamber Blueprint"
+  },
+  {
+   "id": "file_specimen_notes",
+   "kind": "lore_file",
+   "p": [
+    -77.5,
+    -8.1,
+    -62.5
+   ],
+   "r": [
+    0.0,
+    -0.1305,
+    0.0,
+    0.9914
+   ],
+   "text": "SPECIMEN LAB - PROGRAM ZERO\nTank 2: Volunteer 9. Rejected the serum. Kept for study.\nTank 4: Volunteer 11. Rejected the serum.\nTank 6: EMPTY. (Volunteer 14 - see Archive, cabinet 14.)\n\nThe elevator key is kept in the Archive. The Archive door code is shown on the lab monitor when the lab has power.\nDO NOT open the Archive while Subject 7 is loose. He remembers the way.",
+   "title": "Specimen Lab Notes"
+  },
+  {
+   "id": "personal_son_father_letter",
+   "kind": "lore_personal",
+   "p": [
+    -71.4,
+    -8.1,
+    -95.0
+   ],
+   "r": [
+    0.0,
+    -0.0872,
+    0.0,
+    0.9962
+   ],
+   "text": "To my boy,\nThey told us it was vitamins. They told us we were helping the country, that the Russians were doing worse. I believed them.\nThe big one in the tunnels... I knew him. We shared a bunk. He used to sing.\nIf they send me down to Level B, don't let them tell you I volunteered twice.\nI'm coming home. I promise.\n\n- Dad (Volunteer 14)\n\n[The letter was never sent. He never came home. In 1999, they sealed the facility with him inside. The official story was a gas leak. But Mom knew the truth — she tried to get them out, and Walter killed her for it.]",
+   "title": "Unsent Letter, Cabinet 14"
+  },
+  {
+   "id": "file_power_manual",
+   "kind": "lore_file",
+   "p": [
+    -17.4,
+    -8.1,
+    -38.0
+   ],
+   "r": [
+    0.0,
+    -0.1736,
+    0.0,
+    0.9848
+   ],
+   "text": "EMERGENCY POWER RESTART\n1. Pour the fuel into the generator tank (a spare can is on the stairwell landing). The generator starts by itself.\n2. Set the 3 main breakers to match the WIRING DIAGRAM on the wall beside them.\n3. The security shutter to the lower tunnels opens when power is back.",
+   "title": "Power Room: Restart Procedure"
+  },
+  {
+   "id": "file_darkroom_note",
+   "kind": "lore_paper",
+   "p": [
+    -23.95,
+    -7.6,
+    -32.5
+   ],
+   "r": [
+    0.0,
+    0.7071,
+    0.0,
+    0.7071
+   ],
+   "text": "DARKROOM - KEEP THE DOOR SHUT\nNo power, no safelight, no pictures.\nThe last roll from the pump room camera is still on the table. Somebody develop it. The pump room code was in that shot.",
+   "title": "Darkroom: Note on the Door"
+  },
+  {
+   "id": "file_flood_report",
+   "kind": "lore_file",
+   "p": [
+    -13.0,
+    -8.4,
+    -61.3
+   ],
+   "r": [
+    0.0,
+    -0.1736,
+    0.0,
+    0.9848
+   ],
+   "text": "TUNNEL E FLOODED AGAIN.\nThe pumps only run with main power ON.\nDrain procedure: open the 4 pump valves to the pattern on the chart.\nThe chart got moved into CELL 7 when they turned it into a store room. Nobody wants to go in there now.",
+   "title": "Maintenance: Flood Report"
+  },
+  {
+   "id": "personal_son_vent_note",
+   "kind": "lore_personal",
+   "p": [
+    -2.9,
+    -8.95,
+    -80.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "Tiny letters scratched into the metal, over and over:\nHE CAN'T FOLD THIS SMALL. YOU'RE SAFE IN HERE.\nKEEP CRAWLING. - 14",
+   "title": "Scratched Inside the Vent"
+  },
+  {
+   "id": "file_infirmary_log",
+   "kind": "lore_file",
+   "p": [
+    14.5,
+    0.9,
+    -2.6
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "INFIRMARY - PROGRAM ZERO VOLUNTEERS\nBed 1: joint pain, can't sleep. Says his bones are 'singing'.\nBed 2: nosebleeds stopped. Fever. Asking for his mother.\nBed 3: (empty - moved to Level B)\nThe gas masks are locked in the medicine cabinet: the Lab Wing corridor leaks again.\nCabinet code = the three bed tags, in order. Don't lose them this time.",
+   "title": "Infirmary Log"
+  },
+  {
+   "id": "file_weather_cover",
+   "kind": "lore_file",
+   "p": [
+    4.4,
+    0.9,
+    -5.0
+   ],
+   "r": [
+    0.0,
+    0.1305,
+    0.0,
+    0.9914
+   ],
+   "text": "TO ALL STAFF - CONFIDENTIAL\nIf anyone asks, this is the Blackwater Weather Station. We measure rain. We measure wind.\nWe do NOT talk about the people who come in on the night bus, and we do NOT talk about the lower levels.\nAnyone who forgets this will be transferred to Level B.\n- The Director",
+   "title": "Memo: The Weather Station Story"
+  },
+  {
+   "id": "personal_son_photo",
+   "kind": "lore_personal",
+   "p": [
+    -6.3,
+    0.9,
+    -3.0
+   ],
+   "r": [
+    0.0,
+    -0.2588,
+    0.0,
+    0.9659
+   ],
+   "text": "An old photo taken at the Blackwater Weather Station. A woman in a lab coat stands beside a man in uniform, arms around a little boy with bright eyes. The woman is smiling. The man looks tired.\nOn the back, in pencil: MARIA & DANIEL & ELI - BLACKWATER STATION - 1998",
+   "title": "Photo: Family at Deepwell"
+  },
+  {
+   "id": "file_security_log",
+   "kind": "lore_file",
+   "p": [
+    -5.5,
+    -8.4,
+    -37.5
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "CAMERA LOG - TUNNEL JUNCTION\n02:14 - Volunteer 14 seen walking toward the cell. Talking to the door.\n02:16 - Subject 7 answers him. (No audio. Both are smiling.)\n02:31 - Guard Brennan escorts V14 back to the dormitory.\n03:50 - Camera 4 knocked down from INSIDE the cell. Height of the hit: 11 ft.",
+   "title": "Security Camera Log"
+  },
+  {
+   "id": "file_bypass_scrawl",
+   "kind": "lore_file",
+   "p": [
+    -22.0,
+    -7.25,
+    -62.38
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "Third time this week the lights in the bypass went out with me in it.\n\nEvery time, the dripping stops. That's how you know. The water stops dripping because something tall is standing under the pipes and it's catching the drops.\n\nIf the dripping stops - get in the locker in the supply room and DON'T BREATHE.",
+   "title": "Written In Grease Pencil"
+  },
+  {
+   "id": "file_cavein_notice",
+   "kind": "lore_file",
+   "p": [
+    -22.6,
+    -8.9,
+    -58.2
+   ],
+   "r": [
+    0.0,
+    -0.2588,
+    0.0,
+    0.9659
+   ],
+   "text": "MAINTENANCE NOTICE - MAIN TUNNEL, SECTION 3\n\nThe ceiling in Section 3 came down at 0340. No injuries. Probably.\n\nUntil it is cleared, ALL traffic goes through the maintenance bypass. Keep to the bypass and keep the lights on. The tubes in there have been failing for weeks and nobody wants to change them.\n\nNOTE: The cave-in did not look like a cave-in. The supports were bent. From the inside.\n\n- D. KESSLER, FACILITIES",
+   "title": "Notice: Main Tunnel Cave-In"
+  },
+  {
+   "id": "file_armory_signout",
+   "kind": "lore_file",
+   "p": [
+    -27.4,
+    -8.25,
+    -61.1
+   ],
+   "r": [
+    0.0,
+    0.1305,
+    0.0,
+    0.9914
+   ],
+   "text": "SECURITY ARMORY - LEVEL B - SIGN-OUT\n\n02:10  M1911 x2, .45 x4 mags ... Pvt. Hale\n02:12  Shotgun, 12ga x1 box ... Pvt. Ortiz\n02:31  ALL REMAINING SIDEARMS ... Sgt. ??? (signature smeared)\n03:05  (no entry)\n03:06  (no entry)\n\nScrawled across the bottom in red pen:\nBULLETS SLOW IT DOWN. THEY DO NOT STOP IT. SHOOT AND MOVE.",
+   "title": "Armory Sign-Out Sheet"
+  },
+  {
+   "id": "file_observation_log",
+   "kind": "lore_file",
+   "p": [
+    -46.9,
+    -8.2,
+    -54.5
+   ],
+   "r": [
+    0.0,
+    -0.1305,
+    0.0,
+    0.9914
+   ],
+   "text": "OBSERVATION BOOTH 2 - SUBJECT 7 (H-7)\n\nWK 18: Subject stands in the corner facing the wall for 9 hrs. Does not sleep.\nWK 20: Subject has learned the booth is staffed. Turns to face the glass when the booth door opens. We now keep the door shut.\nWK 22: The booth door only stays open while someone stands on the plate outside. Two-man rule. Nobody goes in alone.\nWK 24: Vault code is on the booth monitor ONLY. Read it, call it out, get out.\nWK 25: Subject tapped on the glass. Four times. Then the code changed.",
+   "title": "Observation Log - Subject 7"
+  },
+  {
+   "id": "file_vault_manifest",
+   "kind": "lore_file",
+   "p": [
+    -62.4,
+    -8.4,
+    -38.3
+   ],
+   "r": [
+    0.0,
+    0.6428,
+    0.0,
+    0.766
+   ],
+   "text": "SPECIMEN VAULT - CONTENTS\n\nH-7 SERUM, BATCH 1-6 .......... DESTROYED\nH-7 SERUM, BATCH 7 ............ 3 VIALS (see Dr. Reyes)\nBONE SAMPLES, SUBJ. 7 ......... 41 jars. Still growing in the jar.\nPROGRAM ZERO - TRANSFER FILES .. MOVED TO LEVEL D\n\nA note paper-clipped to the page:\nThe samples grow even in formaldehyde. Whatever H-7 is, it isn't finished with him. It isn't finished with any of them.",
+   "title": "Specimen Vault Manifest"
+  },
+  {
+   "id": "personal_journalist_badge",
+   "kind": "lore_personal",
+   "p": [
+    -62.0,
+    -8.4,
+    -37.9
+   ],
+   "r": [
+    0.0,
+    -0.1736,
+    0.0,
+    0.9848
+   ],
+   "text": "A laminated press badge, cracked down the middle: DANIEL MARSH - THE BLACKWATER COURIER.\nHer informant. The man who stopped answering her calls.\nOn the back, in his handwriting:\nThey keep the proof in the vault. If I don't come out, the code is in the booth. Don't go in alone.",
+   "title": "Press Badge - D. Marsh"
+  },
+  {
+   "id": "file_comms_log",
+   "kind": "lore_file",
+   "p": [
+    -69.1,
+    -8.1,
+    -53.5
+   ],
+   "r": [
+    0.0,
+    0.1305,
+    0.0,
+    0.9914
+   ],
+   "text": "LEVEL B COMMUNICATIONS - DUTY LOG\n\nThe elevator override has to be AUTHORISED by the surface relay. No relay, no override. That was the whole point: nobody comes up unless the surface says so.\n\nThe relay listens on the emergency band. The band DRIFTS (cheap crystals). Somebody reads the live frequency off the antenna room chart and calls it out; somebody else tunes.\n\nLast entry, 03:12: Surface is not answering. Surface is LISTENING. I can hear them breathing on the line.",
+   "title": "Comms Room Duty Log"
+  },
+  {
+   "id": "personal_guard_last_call",
+   "kind": "lore_personal",
+   "p": [
+    -74.2,
+    -8.9,
+    -37.6
+   ],
+   "r": [
+    0.0,
+    -0.342,
+    0.0,
+    0.9397
+   ],
+   "text": "A carbon copy of a radio transcript, folded small and tucked behind the antenna chart.\n\nB-COMMS: Surface, this is Level B. Request elevator override. We have people down here.\nSURFACE: Negative, Level B. Containment order stands.\nB-COMMS: Who signed it? WHO SIGNED IT?\nSURFACE: ...Sergeant C. Brennan has the order.\n\nSomeone has circled the name, again and again, until the pen went through the paper.",
+   "title": "Transcript - Last Call to the Surface"
+  },
+  {
+   "id": "personal_engineer_boiler_plate",
+   "kind": "lore_personal",
+   "p": [
+    -41.7,
+    -8.9,
+    -93.4
+   ],
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ],
+   "text": "A brass maker's plate riveted to the second boiler:\nPRESSURE VESSEL B-2 - DESIGNED FOR PROJECT IRONWOOD\nCHIEF DESIGN ENGINEER: (the name has been filed off, but the Engineer knows whose it was)\n\nThe boilers didn't heat the building. They heated the growth chamber.",
+   "title": "Boiler Maker's Plate"
+  },
+  {
+   "id": "file_boiler_log",
+   "kind": "lore_file",
+   "p": [
+    -30.8,
+    -8.9,
+    -92.8
+   ],
+   "r": [
+    0.0,
+    0.2588,
+    0.0,
+    0.9659
+   ],
+   "text": "BOILER ROOM - PRESSURE LOG\n\nVENTING THE BOILERS NEEDS BOTH RELIEF VALVES OPEN AT THE SAME TIME: one here by the boilers, one in the gauge room. One valve on its own does nothing but scream.\n\nThe pressure cage stays locked while the boilers are hot. Spare supplies are in the cage.\n\nPersonal note: the boilers knock all night. Kessler says it's the pipes. The pipes don't knock in rhythm. Four knocks. Wait. Four knocks.",
+   "title": "Boiler Room Pressure Log"
+  },
+  {
+   "id": "file_morgue_ledger",
+   "kind": "lore_file",
+   "p": [
+    -57.5,
+    -8.1,
+    -83.0
+   ],
+   "r": [
+    0.0,
+    -0.1305,
+    0.0,
+    0.9914
+   ],
+   "text": "LEVEL B MORGUE - INTAKE\n\nDrawer 1 ... Volunteer 3 ... 'cardiac' ... (bones measured 2x normal density)\nDrawer 2 ... Volunteer 9 ... 'cardiac'\nDrawer 3 ... Volunteer 11 ... 'cardiac' ... (spine had grown THROUGH the skull)\nDrawer 4 ... EMPTY. Body was here at 22:00. Gone at 06:00. Drawer was opened from the INSIDE.\n\nNote to staff: cold room code is split across the toe tags, so nobody gets in alone. Collect all four.",
+   "title": "Morgue Intake Ledger"
+  },
+  {
+   "id": "personal_son_bracelet",
+   "kind": "lore_personal",
+   "p": [
+    -57.0,
+    -8.9,
+    -91.5
+   ],
+   "r": [
+    0.0,
+    -0.1736,
+    0.0,
+    0.9848
+   ],
+   "text": "A plastic intake bracelet, the kind they use at processing, but adult-sized:\nVOLUNTEER 14 — PROJECT BASTION — DO NOT AUTOPSY — TRANSFER TO LEVEL D\n\nDo not autopsy. Because they weren't dead.",
+   "title": "Intake Bracelet - Volunteer 14"
+  },
+  {
+   "id": "file_dorm_log",
+   "kind": "lore_file",
+   "p": [
+    -16.5,
+    -8.4,
+    -50.4
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "WEST DORM - LEVEL B\nEight bunks. Twelve men on rotation. Nobody has slept here in sixteen years.\n\nMAINTENANCE NOTE: The dorm runs on its own AUX breaker bank. Whenever the main grid is reset the aux bank trips. The new switch sequence is pinned up on the bunk-room wall. If the dorm is dark, the elevator consoles will NOT accept an override.\n\n- D. KESSLER, FACILITIES",
+   "title": "Billeting Log - West Dorm"
+  },
+  {
+   "id": "personal_dorm_scrawl",
+   "kind": "lore_file",
+   "p": [
+    -19.5,
+    -8.4,
+    -53.4
+   ],
+   "r": [
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "text": "IT WATCHES YOU SLEEP.\n\nIt doesn't come in the rooms. It stands in the doorway with its head against the frame and it WAITS. We stopped sleeping in shifts and started sleeping in the vent.\n\nIf you're reading this and the lights are out - the aux breakers are in the back room. Set them to the card and RUN.",
+   "title": "Scrawled On The Bunk Frame"
+  },
+  {
+   "id": "file_missing_seven",
+   "kind": "lore_paper",
+   "p": [
+    -3.85,
+    1.5,
+    0.23
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "text": "A sheriff's poster, stapled over older ones. Seven faces.\n\nMISSING NEAR THE BLACKWATER WEATHER STATION\n\nDaniel Marsh, 41 - reporter\nRuth Alvarez, 58 - hiker\nTomas Greer, 33 - surveyor\nKelly Ann Doss, 19 - student\nOwen Pratt, 27 - trucker\nMarcus Bell, 21 - student\nJenna Park, 20 - student\n\nLast seen: the access road, between August and October 2015.\nIf you have information, call the Sheriff's Office.\n\nSomeone has written across the bottom in marker: THEY WENT IN. NOBODY CAME OUT.",
+   "title": "MISSING - Have You Seen Them?"
+  },
+  {
+   "id": "personal_son_friends_camera",
+   "kind": "lore_personal",
+   "p": [
+    -9.65,
+    -3.95,
+    -25.7
+   ],
+   "r": [
+    0.0,
+    -0.9848,
+    0.0,
+    -0.1736
+   ],
+   "text": "A small video camera, the red light still blinking. Marcus's sticker is on the side.\n\nThe last clip:\nJENNA: Okay, okay, we're in. Eli is going to be SO mad we came without him.\nMARCUS: He'd never come. You know what happened to his parents in here.\nJENNA: That's why we're doing it. For him. ...Did you hear that?\nMARCUS: Hear what?\n(Something very tall walks past the end of the stairs. The clip ends.)",
+   "title": "Marcus and Jenna's Camera"
+  }
+ ],
+ "lore_book": [
+  {
+   "id": "env_height_chart",
+   "text": "A crude height chart painted on the tunnel wall, marks climbing week by week.\nThe numbers go: 6'0\" ... 7'11\" ... 9'2\" ... and then the marks continue past the ceiling.\n\nSomeone wrote beside the highest mark:\nHE DOESN'T FIT ANYMORE.",
+   "title": "Height Chart"
+  },
+  {
+   "id": "env_tally_marks",
+   "text": "Hundreds of tally marks scratched into the concrete wall of the stairwell.\nThey go on for floors. Someone was counting the days.\n\nNear the bottom, in a different hand:\nTHEY'RE STILL ALIVE IN THERE.",
+   "title": "Tally Marks"
+  },
+  {
+   "id": "file_armory_signout",
+   "text": "SECURITY ARMORY - LEVEL B - SIGN-OUT\n\n02:10  M1911 x2, .45 x4 mags ... Pvt. Hale\n02:12  Shotgun, 12ga x1 box ... Pvt. Ortiz\n02:31  ALL REMAINING SIDEARMS ... Sgt. ??? (signature smeared)\n03:05  (no entry)\n03:06  (no entry)\n\nScrawled across the bottom in red pen:\nBULLETS SLOW IT DOWN. THEY DO NOT STOP IT. SHOOT AND MOVE.",
+   "title": "Armory Sign-Out Sheet"
+  },
+  {
+   "id": "file_boiler_log",
+   "text": "BOILER ROOM - PRESSURE LOG\n\nVENTING THE BOILERS NEEDS BOTH RELIEF VALVES OPEN AT THE SAME TIME: one here by the boilers, one in the gauge room. One valve on its own does nothing but scream.\n\nThe pressure cage stays locked while the boilers are hot. Spare supplies are in the cage.\n\nPersonal note: the boilers knock all night. Kessler says it's the pipes. The pipes don't knock in rhythm. Four knocks. Wait. Four knocks.",
+   "title": "Boiler Room Pressure Log"
+  },
+  {
+   "id": "file_bypass_scrawl",
+   "text": "Third time this week the lights in the bypass went out with me in it.\n\nEvery time, the dripping stops. That's how you know. The water stops dripping because something tall is standing under the pipes and it's catching the drops.\n\nIf the dripping stops - get in the locker in the supply room and DON'T BREATHE.",
+   "title": "Written In Grease Pencil"
+  },
+  {
+   "id": "file_cavein_notice",
+   "text": "MAINTENANCE NOTICE - MAIN TUNNEL, SECTION 3\n\nThe ceiling in Section 3 came down at 0340. No injuries. Probably.\n\nUntil it is cleared, ALL traffic goes through the maintenance bypass. Keep to the bypass and keep the lights on. The tubes in there have been failing for weeks and nobody wants to change them.\n\nNOTE: The cave-in did not look like a cave-in. The supports were bent. From the inside.\n\n- D. KESSLER, FACILITIES",
+   "title": "Notice: Main Tunnel Cave-In"
+  },
+  {
+   "id": "file_comms_log",
+   "text": "LEVEL B COMMUNICATIONS - DUTY LOG\n\nThe elevator override has to be AUTHORISED by the surface relay. No relay, no override. That was the whole point: nobody comes up unless the surface says so.\n\nThe relay listens on the emergency band. The band DRIFTS (cheap crystals). Somebody reads the live frequency off the antenna room chart and calls it out; somebody else tunes.\n\nLast entry, 03:12: Surface is not answering. Surface is LISTENING. I can hear them breathing on the line.",
+   "title": "Comms Room Duty Log"
+  },
+  {
+   "id": "file_containment_order",
+   "text": "BY ORDER OF THE DIRECTOR - EMERGENCY CONTAINMENT, LEVEL B\nAll lower doors are to be sealed immediately, REGARDLESS OF PERSONNEL INSIDE.\nGuard responsible: C. BRENNAN.\n\nELEVATOR OVERRIDE: two officers must turn their launch keys at the same time.",
+   "title": "Level B Containment Order"
+  },
+  {
+   "id": "file_corkboard",
+   "text": "A corkboard in the director's office, covered in newspaper clippings.\nEvery one of them is an article the Journalist wrote. Some are recent.\nRed string connects her photo to the words: CONTAINED? ASK HER SOURCE.\n\nSomeone has been watching her.",
+   "title": "Corkboard: Newspaper Clippings"
+  },
+  {
+   "id": "file_darkroom_note",
+   "text": "DARKROOM - KEEP THE DOOR SHUT\nNo power, no safelight, no pictures.\nThe last roll from the pump room camera is still on the table. Somebody develop it. The pump room code was in that shot.",
+   "title": "Darkroom: Note on the Door"
+  },
+  {
+   "id": "file_director_memo",
+   "text": "FROM: THE DIRECTOR\nPhase One gave us Subject 7. He is strong, but he cannot be controlled, and he will not stop growing.\nPhase Two volunteers will be kept in the dormitory until we know what the serum does to the others.\nIf containment fails: seal the blast door, and get the staff out by the escape lift. ONLY the staff.",
+   "title": "Director's Memo: Phase Two"
+  },
+  {
+   "id": "file_dorm_log",
+   "text": "WEST DORM - LEVEL B\nEight bunks. Twelve men on rotation. Nobody has slept here in sixteen years.\n\nMAINTENANCE NOTE: The dorm runs on its own AUX breaker bank. Whenever the main grid is reset the aux bank trips. The new switch sequence is pinned up on the bunk-room wall. If the dorm is dark, the elevator consoles will NOT accept an override.\n\n- D. KESSLER, FACILITIES",
+   "title": "Billeting Log - West Dorm"
+  },
+  {
+   "id": "file_flood_report",
+   "text": "TUNNEL E FLOODED AGAIN.\nThe pumps only run with main power ON.\nDrain procedure: open the 4 pump valves to the pattern on the chart.\nThe chart got moved into CELL 7 when they turned it into a store room. Nobody wants to go in there now.",
+   "title": "Maintenance: Flood Report"
+  },
+  {
+   "id": "file_infirmary_log",
+   "text": "INFIRMARY - PROGRAM ZERO VOLUNTEERS\nBed 1: joint pain, can't sleep. Says his bones are 'singing'.\nBed 2: nosebleeds stopped. Fever. Asking for his mother.\nBed 3: (empty - moved to Level B)\nThe gas masks are locked in the medicine cabinet: the Lab Wing corridor leaks again.\nCabinet code = the three bed tags, in order. Don't lose them this time.",
+   "title": "Infirmary Log"
+  },
+  {
+   "id": "file_levelb_intake",
+   "text": "LEVEL B - INTAKE LOG, PROGRAM ZERO\nVolunteers moved down for 'Phase Two': 9, 11, 12, 14.\nNo. 14 asked twice for a letter to be posted to his son. Request denied.\nNo. 12 tried to climb the elevator cables. Recovered.\nStaff reminder: Level B residents are NOT to be told about Subject 7.",
+   "title": "Level B Intake Log"
+  },
+  {
+   "id": "file_missing_seven",
+   "text": "A sheriff's poster, stapled over older ones. Seven faces.\n\nMISSING NEAR THE BLACKWATER WEATHER STATION\n\nDaniel Marsh, 41 - reporter\nRuth Alvarez, 58 - hiker\nTomas Greer, 33 - surveyor\nKelly Ann Doss, 19 - student\nOwen Pratt, 27 - trucker\nMarcus Bell, 21 - student\nJenna Park, 20 - student\n\nLast seen: the access road, between August and October 2015.\nIf you have information, call the Sheriff's Office.\n\nSomeone has written across the bottom in marker: THEY WENT IN. NOBODY CAME OUT.",
+   "title": "MISSING - Have You Seen Them?"
+  },
+  {
+   "id": "file_morgue_ledger",
+   "text": "LEVEL B MORGUE - INTAKE\n\nDrawer 1 ... Volunteer 3 ... 'cardiac' ... (bones measured 2x normal density)\nDrawer 2 ... Volunteer 9 ... 'cardiac'\nDrawer 3 ... Volunteer 11 ... 'cardiac' ... (spine had grown THROUGH the skull)\nDrawer 4 ... EMPTY. Body was here at 22:00. Gone at 06:00. Drawer was opened from the INSIDE.\n\nNote to staff: cold room code is split across the toe tags, so nobody gets in alone. Collect all four.",
+   "title": "Morgue Intake Ledger"
+  },
+  {
+   "id": "file_observation_log",
+   "text": "OBSERVATION BOOTH 2 - SUBJECT 7 (H-7)\n\nWK 18: Subject stands in the corner facing the wall for 9 hrs. Does not sleep.\nWK 20: Subject has learned the booth is staffed. Turns to face the glass when the booth door opens. We now keep the door shut.\nWK 22: The booth door only stays open while someone stands on the plate outside. Two-man rule. Nobody goes in alone.\nWK 24: Vault code is on the booth monitor ONLY. Read it, call it out, get out.\nWK 25: Subject tapped on the glass. Four times. Then the code changed.",
+   "title": "Observation Log - Subject 7"
+  },
+  {
+   "id": "file_poster_stronger",
+   "text": "STRONGER SOLDIERS. SAFER NATION.\n\nA smiling soldier salutes under bright red letters.\nSomeone has scratched the soldier's eyes out.",
+   "title": "Poster: Stronger Soldiers"
+  },
+  {
+   "id": "file_power_manual",
+   "text": "EMERGENCY POWER RESTART\n1. Pour the fuel into the generator tank (a spare can is on the stairwell landing). The generator starts by itself.\n2. Set the 3 main breakers to match the WIRING DIAGRAM on the wall beside them.\n3. The security shutter to the lower tunnels opens when power is back.",
+   "title": "Power Room: Restart Procedure"
+  },
+  {
+   "id": "file_radio_log",
+   "text": "EMERGENCY BROADCAST - LEVEL B\nThe dormitory door code is broadcast on a loop on the emergency frequency, in case the staff lose their badges.\nThe frequency is posted on the chart in the signal booth. It DRIFTS. Read it out while someone tunes.\nIf you can hear this, you are already too far down.",
+   "title": "Radio Room Log"
+  },
+  {
+   "id": "file_security_log",
+   "text": "CAMERA LOG - TUNNEL JUNCTION\n02:14 - Volunteer 14 seen walking toward the cell. Talking to the door.\n02:16 - Subject 7 answers him. (No audio. Both are smiling.)\n02:31 - Guard Brennan escorts V14 back to the dormitory.\n03:50 - Camera 4 knocked down from INSIDE the cell. Height of the hit: 11 ft.",
+   "title": "Security Camera Log"
+  },
+  {
+   "id": "file_specimen_notes",
+   "text": "SPECIMEN LAB - PROGRAM ZERO\nTank 2: Volunteer 9. Rejected the serum. Kept for study.\nTank 4: Volunteer 11. Rejected the serum.\nTank 6: EMPTY. (Volunteer 14 - see Archive, cabinet 14.)\n\nThe elevator key is kept in the Archive. The Archive door code is shown on the lab monitor when the lab has power.\nDO NOT open the Archive while Subject 7 is loose. He remembers the way.",
+   "title": "Specimen Lab Notes"
+  },
+  {
+   "id": "file_staff_directory",
+   "text": "BLACKWATER WEATHER STATION / SITE 12\nStaff directory, revised 1998.\n\nDr. H. Calloway, Director, Project IRONWOOD\nDr. Maria Reyes, Medical\n[NAME SCRATCHED OUT], Engineering, Growth Chamber design\nC. Brennan, Security, Level B\n\nAll staff: volunteers are not to be told the true purpose of Serum H-7.",
+   "title": "Site 12 Staff Directory"
+  },
+  {
+   "id": "file_subject7_log",
+   "text": "SUBJECT 7 - SERUM H-7 (\"GROWTH\")\nWeek 1: 6 ft 0 in. Good spirits. Asks about his mother.\nWeek 6: 6 ft 9 in. Joint pain. Bones still lengthening.\nWeek 14: 7 ft 11 in. Cannot lie flat. Light is painful to him.\nWeek 23: 9 ft 2 in. No longer fits in his cell.\nWeek 31: Moved to the maintenance tunnels. Stopped answering to his name.",
+   "title": "Medical Log: Subject 7"
+  },
+  {
+   "id": "file_vault_manifest",
+   "text": "SPECIMEN VAULT - CONTENTS\n\nH-7 SERUM, BATCH 1-6 .......... DESTROYED\nH-7 SERUM, BATCH 7 ............ 3 VIALS (see Dr. Reyes)\nBONE SAMPLES, SUBJ. 7 ......... 41 jars. Still growing in the jar.\nPROGRAM ZERO - TRANSFER FILES .. MOVED TO LEVEL D\n\nA note paper-clipped to the page:\nThe samples grow even in formaldehyde. Whatever H-7 is, it isn't finished with him. It isn't finished with any of them.",
+   "title": "Specimen Vault Manifest"
+  },
+  {
+   "id": "file_weather_cover",
+   "text": "TO ALL STAFF - CONFIDENTIAL\nIf anyone asks, this is the Blackwater Weather Station. We measure rain. We measure wind.\nWe do NOT talk about the people who come in on the night bus, and we do NOT talk about the lower levels.\nAnyone who forgets this will be transferred to Level B.\n- The Director",
+   "title": "Memo: The Weather Station Story"
+  },
+  {
+   "id": "personal_dorm_scrawl",
+   "text": "IT WATCHES YOU SLEEP.\n\nIt doesn't come in the rooms. It stands in the doorway with its head against the frame and it WAITS. We stopped sleeping in shifts and started sleeping in the vent.\n\nIf you're reading this and the lights are out - the aux breakers are in the back room. Set them to the card and RUN.",
+   "title": "Scrawled On The Bunk Frame"
+  },
+  {
+   "id": "personal_engineer_blueprint",
+   "text": "A blueprint pinned to the wall: GROWTH CHAMBER, MK II. Serum delivery and restraint system.\nThe signature in the corner is the Engineer's.",
+   "title": "Growth Chamber Blueprint"
+  },
+  {
+   "id": "personal_engineer_boiler_plate",
+   "text": "A brass maker's plate riveted to the second boiler:\nPRESSURE VESSEL B-2 - DESIGNED FOR PROJECT IRONWOOD\nCHIEF DESIGN ENGINEER: (the name has been filed off, but the Engineer knows whose it was)\n\nThe boilers didn't heat the building. They heated the growth chamber.",
+   "title": "Boiler Maker's Plate"
+  },
+  {
+   "id": "personal_engineer_nameplate",
+   "text": "A brass nameplate, worn smooth: CHIEF ENGINEER, GROWTH CHAMBER.\nNext to it, a chipped coffee mug, still sitting where it was left decades ago.",
+   "title": "Desk Nameplate and Mug"
+  },
+  {
+   "id": "personal_guard_last_call",
+   "text": "A carbon copy of a radio transcript, folded small and tucked behind the antenna chart.\n\nB-COMMS: Surface, this is Level B. Request elevator override. We have people down here.\nSURFACE: Negative, Level B. Containment order stands.\nB-COMMS: Who signed it? WHO SIGNED IT?\nSURFACE: ...Sergeant C. Brennan has the order.\n\nSomeone has circled the name, again and again, until the pen went through the paper.",
+   "title": "Transcript - Last Call to the Surface"
+  },
+  {
+   "id": "personal_guard_logbook",
+   "text": "C. BRENNAN - GUARD LOG, LEVEL B\nNight 1: They put the volunteers in the dormitory. Kids, most of them.\nNight 9: The big one walks the halls at night. They call it Subject 7. I call it Tommy. It was Tommy.\nNight 12: The order came to seal the doors. I sealed them.\nI hid in a locker and listened to him look for me. He walked right past. He knows the lockers now.\nGod forgive me.",
+   "title": "Guard's Logbook (C. Brennan)"
+  },
+  {
+   "id": "personal_guard_roster",
+   "text": "Guard duty roster, Level B, the night of the sealing.\n22:00 - 06:00: BRENNAN, C.\n\nThe signature at the bottom is Cole's.",
+   "title": "Guard Duty Roster"
+  },
+  {
+   "id": "personal_journalist_badge",
+   "text": "A laminated press badge, cracked down the middle: DANIEL MARSH - THE BLACKWATER COURIER.\nHer informant. The man who stopped answering her calls.\nOn the back, in his handwriting:\nThey keep the proof in the vault. If I don't come out, the code is in the booth. Don't go in alone.",
+   "title": "Press Badge - D. Marsh"
+  },
+  {
+   "id": "personal_journalist_notebook",
+   "text": "The notebook of the Journalist's missing informant.\nOne page is circled over and over:\n\n\"H-7\"   \"they're still down there\"",
+   "title": "Informant's Notebook"
+  },
+  {
+   "id": "personal_son_bracelet",
+   "text": "A plastic intake bracelet, the kind they use at processing, but adult-sized:\nVOLUNTEER 14 — PROJECT BASTION — DO NOT AUTOPSY — TRANSFER TO LEVEL D\n\nDo not autopsy. Because they weren't dead.",
+   "title": "Intake Bracelet - Volunteer 14"
+  },
+  {
+   "id": "personal_son_dogtag",
+   "text": "A dog tag hanging from the frame of bunk 14. The name is scratched off, but the number isn't: 14.\nScratched into the wall above the bunk, in tiny letters:\nELI - I'M SORRY I'M LATE. I'M STILL COMING HOME.",
+   "title": "Dog Tag, Bunk 14"
+  },
+  {
+   "id": "personal_son_drawing",
+   "text": "A child's crayon drawing taped inside a locker: two stick figures in uniforms, one in a lab coat, holding hands with a smaller stick figure between them.\nWritten at the bottom, in shaky child's handwriting: COME HOME SOON MOM AND DAD - LOVE ELI.",
+   "title": "Crayon Drawing"
+  },
+  {
+   "id": "personal_son_father_letter",
+   "text": "To my boy,\nThey told us it was vitamins. They told us we were helping the country, that the Russians were doing worse. I believed them.\nThe big one in the tunnels... I knew him. We shared a bunk. He used to sing.\nIf they send me down to Level B, don't let them tell you I volunteered twice.\nI'm coming home. I promise.\n\n- Dad (Volunteer 14)\n\n[The letter was never sent. He never came home. In 1999, they sealed the facility with him inside. The official story was a gas leak. But Mom knew the truth — she tried to get them out, and Walter killed her for it.]",
+   "title": "Unsent Letter, Cabinet 14"
+  },
+  {
+   "id": "personal_son_friends_camera",
+   "text": "A small video camera, the red light still blinking. Marcus's sticker is on the side.\n\nThe last clip:\nJENNA: Okay, okay, we're in. Eli is going to be SO mad we came without him.\nMARCUS: He'd never come. You know what happened to his parents in here.\nJENNA: That's why we're doing it. For him. ...Did you hear that?\nMARCUS: Hear what?\n(Something very tall walks past the end of the stairs. The clip ends.)",
+   "title": "Marcus and Jenna's Camera"
+  },
+  {
+   "id": "personal_son_photo",
+   "text": "An old photo taken at the Blackwater Weather Station. A woman in a lab coat stands beside a man in uniform, arms around a little boy with bright eyes. The woman is smiling. The man looks tired.\nOn the back, in pencil: MARIA & DANIEL & ELI - BLACKWATER STATION - 1998",
+   "title": "Photo: Family at Deepwell"
+  },
+  {
+   "id": "personal_son_vent_note",
+   "text": "Tiny letters scratched into the metal, over and over:\nHE CAN'T FOLD THIS SMALL. YOU'RE SAFE IN HERE.\nKEEP CRAWLING. - 14",
+   "title": "Scratched Inside the Vent"
+  },
+  {
+   "id": "personal_son_volunteer_id",
+   "text": "VOLUNTEER IDENTIFICATION, PROJECT BASTION\nVolunteer No. 14\nName: DANIEL REYES\nStatus stamped in red: TRANSFERRED — PROJECT ECHO\n\nThe photo on the card shows a young man in uniform, smiling.\nOn the back, in faded ink: \"For Eli.\"\n\nDad kept this with him until the end. In 1999, they said it was a gas leak. But the experiments never stopped. He was taken deeper. Into Project ECHO.",
+   "title": "Volunteer 14 ID Card"
+  },
+  {
+   "id": "photo_drag_marks",
+   "text": "Long drag marks in the dirt, leading from the road to the station gate.\nThey're fresh. Something still moves around here.",
+   "title": "Photo: Fresh Drag Marks"
+  },
+  {
+   "id": "photo_long_man",
+   "text": "A blurred flash photo of something impossibly tall folding itself through the tunnel.\nProof. This is what H-7 did. This is what her informant died trying to show the world.",
+   "title": "Photo: Subject 7"
+  },
+  {
+   "id": "photo_scratch_marks",
+   "text": "A photo of deep scratch marks on the wall, more than two and a half meters off the floor.\nWhatever made them was very, very tall.",
+   "title": "Photo: Scratch Marks"
+  },
+  {
+   "id": "tape_final_recording",
+   "text": "DR. REYES: This is Dr. Maria Reyes, Medical. If anyone finds this...\nDR. REYES: The alarms started twenty minutes ago. Level B is sealing.\nDR. REYES: Subject 7 is out of his cell. He doesn't fit through the doors anymore, so he... folds.\nDR. REYES: The guard on duty has the order. He's closing the doors with people still inside.\nDR. REYES: God forgive us. It was never vitamins.\nDR. REYES: Danny went down to Level B to get the others out. He hasn't come back.\nDR. REYES: Someone locked Medical from the outside. I heard the key. Only engineering has those keys.\nDR. REYES: Eli, baby, if this ever reaches you... Mommy and Daddy love you. Don't ever come here.\n(Something heavy scrapes along the ceiling. The tape ends.)",
+   "title": "Reel Tape 2: Final Recording"
+  },
+  {
+   "id": "tape_kowalski_warning",
+   "text": "BRENNAN: This is Cole Brennan. If you're hearing this, you got further than most.\nBRENNAN: He hates light. A flash in the face makes him stop and scream. Use it.\nBRENNAN: He hears radios. He hears doors. He hears you RUN.\nBRENNAN: And if he sees you hide... he remembers where.\nBRENNAN: I'm sorry. I sealed the doors. I'm going down to find the ones I left behind.\n(Static. A long, low breath that isn't Cole's.)",
+   "title": "Reel Tape: Brennan's Warning"
+  },
+  {
+   "id": "tape_relay_test",
+   "text": "TECH: Relay test, Level B to surface. Testing, testing.\nSURFACE: Read you, Level B. Loud and clear.\nTECH: Copy. Frequency's drifting again. I'll call it out, you match it.\nSURFACE: Hang on. Level B, who else is on this line?\nTECH: Nobody. Just me.\nSURFACE: Then who's breathing?\n(Four slow taps on the microphone. The tape ends.)",
+   "title": "Reel Tape: Relay Test"
+  },
+  {
+   "id": "tape_vault_guard",
+   "text": "SGT. VOSS: Booth two, this is Voss. You reading the code?\nPVT. HALE: Reading it now. Three... wait. Something's on the glass.\nSGT. VOSS: Stay on the plate, Ortiz. Do NOT step off that plate.\nPVT. ORTIZ: I'm on it! I'm on it! Hale, get out of there!\nPVT. HALE: The door - the door's closing - ORTIZ!\n(A long scraping sound. The plate clicks. The tape runs on in silence.)",
+   "title": "Reel Tape: The Two-Man Rule"
+  },
+  {
+   "id": "tape_welcome",
+   "text": "DIRECTOR CALLOWAY: Good morning, volunteers, and welcome to Site 12.\nDIRECTOR CALLOWAY: What you do here will make this nation stronger than any other.\nDIRECTOR CALLOWAY: You will receive a simple course of vitamins. Nothing more.\nDIRECTOR CALLOWAY: Report any... changes to the medical staff at once.\nDIRECTOR CALLOWAY: Remember your volunteer number. You will need it at the lower doors.\n(The tape clicks. Someone breathes very close to the microphone.)",
+   "title": "Reel Tape 1: Welcome, Volunteers"
+  }
+ ],
+ "monster": {
+  "catch_cooldown": 6.0,
+  "catch_distance": 1.4,
+  "chase_speed": 4.2,
+  "investigate_speed": 2.6,
+  "p": [
+   -9.0,
+   -9.0,
+   -82.0
+  ],
+  "patrol": [
+   {
+    "p": [
+     -9.0,
+     -9.0,
+     -82.0
+    ]
+   },
+   {
+    "p": [
+     -9.0,
+     -9.0,
+     -72.0
+    ]
+   },
+   {
+    "p": [
+     -9.0,
+     -9.0,
+     -56.0
+    ]
+   },
+   {
+    "p": [
+     -5.5,
+     -9.0,
+     -65.0
+    ]
+   },
+   {
+    "p": [
+     -21.0,
+     -9.0,
+     -68.0
+    ]
+   },
+   {
+    "p": [
+     -38.0,
+     -9.0,
+     -68.0
+    ]
+   },
+   {
+    "p": [
+     -55.0,
+     -9.0,
+     -66.0
+    ]
+   },
+   {
+    "p": [
+     -72.0,
+     -9.0,
+     -66.0
+    ]
+   },
+   {
+    "p": [
+     -72.0,
+     -9.0,
+     -90.0
+    ]
+   },
+   {
+    "p": [
+     -18.0,
+     -9.0,
+     -52.0
+    ]
+   },
+   {
+    "p": [
+     -26.0,
+     -9.0,
+     -52.0
+    ]
+   },
+   {
+    "p": [
+     -44.0,
+     -9.0,
+     -54.0
+    ]
+   },
+   {
+    "p": [
+     -50.0,
+     -9.0,
+     -48.9
+    ]
+   },
+   {
+    "p": [
+     -53.1,
+     -9.0,
+     -44.0
+    ]
+   },
+   {
+    "p": [
+     -51.1,
+     -9.0,
+     -76.0
+    ]
+   },
+   {
+    "p": [
+     -55.0,
+     -9.0,
+     -84.0
+    ]
+   },
+   {
+    "p": [
+     -43.0,
+     -9.0,
+     -90.0
+    ]
+   },
+   {
+    "p": [
+     -37.0,
+     -9.0,
+     -84.9
+    ]
+   },
+   {
+    "p": [
+     -76.0,
+     -9.0,
+     -50.0
+    ]
+   },
+   {
+    "p": [
+     -67.75,
+     -9.0,
+     -49.0
+    ]
+   }
+  ],
+  "patrol_speed": 1.6,
+  "r": [
+   0.0,
+   -1.0,
+   0.0,
+   0.0
+  ]
+ },
  "moon": {
   "color": [
    0.55,
@@ -5447,6 +7959,328 @@
     0.0,
     0.0,
     1.0
+   ]
+  }
+ ],
+ "triggers": [
+  {
+   "chase": false,
+   "message": "It's cold down here. Something smells like rust and old blood.",
+   "p": [
+    -9.0,
+    -7.5,
+    -44.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    9.0,
+    3.0,
+    5.0
+   ]
+  },
+  {
+   "chase": true,
+   "message": "RUN!",
+   "p": [
+    -9.0,
+    -7.5,
+    -67.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.0,
+    3.0,
+    4.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "The elevator. The only way down.",
+   "p": [
+    -38.0,
+    -7.5,
+    -66.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    10.0,
+    3.0,
+    8.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "Rows and rows of files. Something is breathing between the shelves.",
+   "p": [
+    -72.0,
+    -7.5,
+    -84.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.0,
+    3.0,
+    2.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "Something moves between the trees behind the shed. It's gone when you look.",
+   "p": [
+    -10.0,
+    1.2,
+    12.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.59999990463257,
+    2.40000009536743,
+    2.59999990463257
+   ]
+  },
+  {
+   "chase": false,
+   "message": "Something is pounding on the other side of the vent wall... but it can't get in.",
+   "p": [
+    -9.0,
+    -8.4,
+    -88.9
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.0,
+    1.20000004768372,
+    1.20000004768372
+   ]
+  },
+  {
+   "chase": false,
+   "message": "It smells like old medicine. One of the curtains is moving... no wind in here.",
+   "p": [
+    14.0,
+    1.5,
+    -7.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    7.0,
+    3.0,
+    9.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "...was something looking in the window?",
+   "p": [
+    -6.0,
+    1.5,
+    -2.6
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    6.0,
+    3.0,
+    4.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "The lights die. Something is breathing in the dark...",
+   "p": [
+    -9.0,
+    -7.65,
+    -55.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.0,
+    2.70000004768372,
+    2.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "Heavy footsteps... on the roof?",
+   "p": [
+    -6.0,
+    1.5,
+    -11.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    7.0,
+    3.0,
+    8.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "The dripping stops.",
+   "p": [
+    -18.1,
+    -7.65,
+    -61.5
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.79999995231628,
+    2.70000004768372,
+    3.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "Something taps on the glass. Four times.",
+   "p": [
+    -48.0,
+    -7.65,
+    -53.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.59999990463257,
+    2.70000004768372,
+    3.59999990463257
+   ]
+  },
+  {
+   "chase": false,
+   "message": "The radio in the other room crackles... and someone whispers your names.",
+   "p": [
+    -76.5,
+    -7.65,
+    -41.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    6.0,
+    2.70000004768372,
+    5.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "Four knocks inside the boiler. Then four more.",
+   "p": [
+    -43.0,
+    -7.65,
+    -90.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    6.0,
+    2.70000004768372,
+    4.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "Somewhere behind you, a drawer slides open by itself.",
+   "p": [
+    -55.0,
+    -7.65,
+    -82.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    8.0,
+    2.70000004768372,
+    3.0
+   ]
+  },
+  {
+   "chase": false,
+   "message": "Slow footsteps cross the dorm... but you are the only one down here.",
+   "p": [
+    -18.0,
+    -7.65,
+    -52.0
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    9.0,
+    2.70000004768372,
+    8.0
    ]
   }
  ]
