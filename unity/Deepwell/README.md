@@ -7,7 +7,8 @@ It's moved over **one phase at a time**.
 | Phase | What works in Unity | Status |
 |---|---|---|
 | U1 | Chapter 1 built from the Godot level (all rooms, props, lights, signs, fog), walk / sprint / crouch / jump, flashlight, doors | done |
-| **U2** | **Better graphics** (glow, film look, shadows, quality settings), **online co-op** (Host / Join, up to 4), **items** (batteries, flares, medkits, keycards...), **story notes and tapes**, **the Long Man** (patrol, sight, hearing, chase, opens doors), **checkpoints**, **story messages**, **the 4 characters and their abilities**, sounds, settings, **sets itself up** | **← now** |
+| U2 | **Better graphics** (glow, film look, shadows, quality settings), **online co-op** (Host / Join, up to 4), **items** (batteries, flares, medkits, keycards...), **story notes and tapes**, **the Long Man** (patrol, sight, hearing, chase, opens doors), **checkpoints**, **story messages**, **the 4 characters and their abilities**, sounds, settings, **sets itself up** | done |
+| **U2.5** | **The Deepwell car home screen** (car on the forest road, choose your character inside the car), **the newspaper intro**, **the arrival cutscene** (everyone gets out, Eli and Cole take pistols from the trunk), **the chapter intro and the team's talk**, **pistols** (click to shoot, R to reload; a hit stuns the Long Man), **real textures instead of silver** | **← now** |
 | U3 | Puzzles (keypads, levers, fuses, generators...), locked doors that need keycards | next |
 | U4 | Downed / help up, hiding in lockers, the reveal cutscene | |
 | U5 | Chapter 2 | |
@@ -56,7 +57,9 @@ If there are red errors in the **Console** window, copy them to Claude.
 
 WASD move, mouse look, Shift sprint (uses stamina), Ctrl or C crouch, Space
 jump, F flashlight (uses battery), E use / pick up / read, 1 put in a
-battery, 2 throw a flare, Q your ability, Tab your bag, Esc pause.
+battery, 2 throw a flare, Q your ability, Tab your bag, left click shoot
+(if you have a pistol), R reload, Esc pause. In cutscenes: Space = next,
+hold Space = skip.
 
 | Character | Ability (Q) |
 |---|---|
@@ -82,6 +85,8 @@ you once).
 
 | File | Job |
 |---|---|
+| `SZMenuScene` | The car home screen: road, forest, car, the 4 characters in their seats, the drive to the station and the arrival cutscene |
+| `SZCutscene` | Camera cutscenes with captions (chapter intro, the team's talk, the Long Man's reveal) |
 | `SZGame` | Starts everything (no scene setup needed), the menus, the HUD, reading notes |
 | `SZWorld` | One chapter being played: doors, items, notes, triggers, checkpoints, the Long Man, other players, and keeping everyone in sync online |
 | `SZNet` | Online: Host / Join over UDP port 7777 (no extra packages) |

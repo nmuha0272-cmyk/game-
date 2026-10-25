@@ -30,6 +30,8 @@ namespace Deepwell
         readonly List<Vector3> _patrol = new List<Vector3>();
         int _target = -1;            // player id being chased
         Vector3 _lastSeen, _goal;
+        float _wakeAt;
+        int _wakeTarget;
         float _stateTime, _sinceSeen, _nextThink, _nextSend, _blockedFor;
         GameObject _model;
         AudioSource _breath;
@@ -66,6 +68,12 @@ namespace Deepwell
             _eyeGlow.range = 2.5f;
             _eyeGlow.intensity = 1.2f;
             _breath = SZAudio.Attach(gameObject, "monster_breath", 0.8f, 16f, loop: true);
+            // Something for bullets to hit (a trigger, so it doesn't block anyone).
+            var body = gameObject.AddComponent<CapsuleCollider>();
+            body.isTrigger = true;
+            body.radius = 0.45f;
+            body.height = 2.9f;
+            body.center = new Vector3(0f, 1.45f, 0f);
 
             if (!SZNet.IsAuthority) return;
             if (NavMesh.SamplePosition(transform.position, out var hit, 4f, NavMesh.AllAreas))
@@ -121,7 +129,14 @@ namespace Deepwell
         // The "RUN!" trigger: wake up and come for whoever set it off.
         public void Wake(int playerId)
         {
-            if (Mode != State.Asleep) return;
+            // Wait for the reveal cutscene ("SUBJECT 7") to finish first.
+            if (Mode != State.Asleep || _wakeAt > 0f) return;
+            _wakeAt = Time.time + 3.5f;
+            _wakeTarget = playerId;
+        }
+
+        void WakeNow(int playerId)
+        {
             SZAudio.PlayAt("monster_shriek", Eyes, 1f, 45f);
             StartChase(playerId);
             _sinceSeen = -6f;  // he knows where you are for a few seconds
@@ -133,6 +148,16 @@ namespace Deepwell
             SetState(State.Stunned);
             _stateTime = -seconds;
             SZAudio.PlayAt("monster_screech", Eyes, 1f, 30f);
+        }
+
+        // A loud noise (a gunshot): he comes to look, unless he's already busy.
+        public void HearNoise(Vector3 where, float range)
+        {
+            if (Mode == State.Asleep || Mode == State.Chase || Mode == State.Stunned) return;
+            if (Vector3.Distance(where, transform.position) > range) return;
+            _goal = where;
+            SetState(State.Investigate);
+            SZAudio.PlayAt("monster_click", Eyes, 0.8f, 20f);
         }
 
         // Clients: the host's latest word on where he is.
@@ -160,7 +185,11 @@ namespace Deepwell
             }
 
             _stateTime += Time.deltaTime;
-            if (Mode == State.Asleep) return;
+            if (Mode == State.Asleep)
+            {
+                if (_wakeAt > 0f && Time.time >= _wakeAt) WakeNow(_wakeTarget);
+                else return;
+            }
             if (Time.time >= _nextThink)
             {
                 _nextThink = Time.time + 0.2f;

@@ -39,6 +39,32 @@ namespace Deepwell
             fx.enabled = Quality > 0;
         }
 
+        // Shiny surfaces reflect the sky by default, and Unity's default sky is bright
+        // grey-blue, so everything looked silver. Reflect a near-black night instead.
+        static Cubemap _darkSky;
+
+        public static void DarkReflections(Color sky)
+        {
+            if (_darkSky == null)
+            {
+                _darkSky = new Cubemap(8, TextureFormat.RGBA32, false) { name = "DarkNight" };
+                var pixels = new Color[64];
+                for (int i = 0; i < pixels.Length; i++) pixels[i] = sky;
+                foreach (CubemapFace face in new[] { CubemapFace.PositiveX, CubemapFace.NegativeX, CubemapFace.PositiveY,
+                                                     CubemapFace.NegativeY, CubemapFace.PositiveZ, CubemapFace.NegativeZ })
+                    _darkSky.SetPixels(pixels, face);
+                _darkSky.Apply();
+            }
+            RenderSettings.defaultReflectionMode = UnityEngine.Rendering.DefaultReflectionMode.Custom;
+#if UNITY_2022_1_OR_NEWER
+            RenderSettings.customReflectionTexture = _darkSky;
+#else
+            RenderSettings.customReflection = _darkSky;
+#endif
+            RenderSettings.reflectionIntensity = 1f;
+            DynamicGI.UpdateEnvironment();
+        }
+
         // A plain lit material (works in the built-in renderer).
         public static Material Lit(Color color, float smoothness = 0.3f, Color? glow = null)
         {

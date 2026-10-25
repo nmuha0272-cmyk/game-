@@ -21,6 +21,8 @@ namespace Deepwell
         public CheckpointData[] checkpoints;
         public TriggerData[] triggers;
         public MonsterData monster;
+        public CutsceneData[] cutscenes;
+        public DialogueLine[] dialogue;
         public MoonData moon;
         public EnvironmentData environment;
 
@@ -125,5 +127,28 @@ namespace Deepwell
         public float[] p, r;
         public float patrol_speed, investigate_speed, chase_speed, catch_distance, catch_cooldown;
         public SpawnPoint[] patrol;
+    }
+
+    [Serializable]
+    public class CutsceneData
+    {
+        public string name;
+        public bool play_on_start;
+        public ShotData[] shots;
+    }
+
+    // The camera glides from "from" (looking at "from_look") to "to" (looking at "to_look").
+    [Serializable]
+    public class ShotData
+    {
+        public float[] from, from_look, to, to_look;
+        public float time;
+        public string text;
+    }
+
+    [Serializable]
+    public class DialogueLine
+    {
+        public string who, text;
     }
 }

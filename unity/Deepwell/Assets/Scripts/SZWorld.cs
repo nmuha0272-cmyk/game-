@@ -73,6 +73,10 @@ namespace Deepwell
             Local = SZPlayer.Spawn(spawn.position, spawn.rotation, character, playerName);
             Local.transform.SetParent(transform);
 
+            // The chapter intro (camera over the station with captions), then the team talks.
+            var intro = Data.cutscenes != null ? System.Array.Find(Data.cutscenes, c => c.play_on_start) : null;
+            SZCutscene.Play(intro?.shots, Data.dialogue, Local.Camera);
+
             var net = SZNet.Instance;
             if (net != null)
             {
@@ -208,6 +212,9 @@ namespace Deepwell
             {
                 SZGame.Instance.Say(t.message, 5f);
                 SZAudio.Play2D("stinger", 0.7f);
+                // "SUBJECT 7": the Long Man rises in his cell.
+                var reveal = t.chase && Data.cutscenes != null ? System.Array.Find(Data.cutscenes, c => c.name == "Reveal") : null;
+                if (reveal != null) SZCutscene.Play(reveal.shots, null, Local.Camera, () => SZGame.Instance.Say(t.message, 3f));
             }
             if (SZNet.IsAuthority)
             {
@@ -283,6 +290,43 @@ namespace Deepwell
         {
             SZFlare.Throw(from, velocity);
             SZNet.Instance?.SendAll(SZNet.Msg("FLARE", from.x, from.y, from.z, velocity.x, velocity.y, velocity.z));
+        }
+
+        // A pistol shot: everyone hears it; the host checks if it hit the Long Man.
+        public void Shoot(Vector3 from, Vector3 direction)
+        {
+            ShowShot(from);
+            if (SZNet.IsAuthority) CheckShotHit(from, direction);
+            if (SZNet.Online)
+                SZNet.Instance.SendAll(SZNet.Msg("SHOT", from.x, from.y, from.z, direction.x, direction.y, direction.z));
+        }
+
+        void ShowShot(Vector3 at)
+        {
+            SZAudio.PlayClipAt(SZAudio.Gunshot(), at, 1f, 60f);
+            var go = new GameObject("MuzzleFlash");
+            go.transform.position = at;
+            var light = go.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.range = 8f;
+            light.intensity = 5f;
+            light.color = new Color(1f, 0.8f, 0.5f);
+            Destroy(go, 0.06f);
+        }
+
+        void CheckShotHit(Vector3 from, Vector3 direction)
+        {
+            if (Monster == null) return;
+            Monster.HearNoise(from, 35f);
+            // The first wall (or door) in the way stops the bullet.
+            float wall = Physics.Raycast(from, direction, out var solid, 40f, ~0, QueryTriggerInteraction.Ignore) ? solid.distance : 40f;
+            foreach (var hit in Physics.RaycastAll(from, direction, wall, ~0, QueryTriggerInteraction.Collide))
+            {
+                if (hit.collider.GetComponentInParent<SZMonster>() != Monster) continue;
+                Monster.Stun(2.5f);
+                SZGame.Instance.Say("Hit! The Long Man staggers.", 2f);
+                return;
+            }
         }
 
         // Nora's flash: everyone sees it; the host checks if it stunned the Long Man.
@@ -461,6 +505,15 @@ namespace Deepwell
                     if (host)
                     {
                         CheckFlashStun(at, new Vector3(SZNet.F(m, 4), SZNet.F(m, 5), SZNet.F(m, 6)));
+                        SZNet.Instance.Broadcast(string.Join("|", m), from);
+                    }
+                    break;
+                case "SHOT":
+                    var shotFrom = new Vector3(SZNet.F(m, 1), SZNet.F(m, 2), SZNet.F(m, 3));
+                    ShowShot(shotFrom);
+                    if (host)
+                    {
+                        CheckShotHit(shotFrom, new Vector3(SZNet.F(m, 4), SZNet.F(m, 5), SZNet.F(m, 6)));
                         SZNet.Instance.Broadcast(string.Join("|", m), from);
                     }
                     break;

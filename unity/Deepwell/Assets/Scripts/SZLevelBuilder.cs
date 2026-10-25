@@ -97,7 +97,7 @@ namespace Deepwell
                 moon.shadows = LightShadows.Soft;
                 moon.shadowStrength = 0.85f;
             }
-            RenderSettings.reflectionIntensity = 0.35f;
+            SZGraphics.DarkReflections(new Color(0.02f, 0.025f, 0.035f));
         }
 
         static void BuildLights(SZLevelData data, Transform parent)

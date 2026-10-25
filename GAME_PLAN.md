@@ -147,7 +147,13 @@ buttons on top of it). `scripts/main.gd` opens it when the game starts.
    **PLAY AS ...**. Seats other players already took show **TAKEN**.
    - Eli = The Son, Cole = The Guard, Nora = The Journalist, Walter = The Engineer
 4. **The drive:** the camera moves behind the car, it drives up to the
-   station gate, stops, and fades to black (Enter or Esc skips it).
+   station gate and stops (Enter or Esc skips it).
+   - **Arrival cutscene:** everyone gets out of the car. Eli and Cole walk
+     round to the trunk, open it, and each take a **pistol** (Cole: "Take
+     this. Safety on until you need it." Eli: "Got it. Let's go find them.")
+     while Nora and Walter walk toward the gate. Then it fades to black.
+     Eli and Cole start Chapter 1 with a pistol. (Built in the Unity
+     version; the Godot version gets it next.)
 5. **Lobby:** everyone is listed with their character; the host presses
    **Start Game**, then the opening cutscene and Chapter 1 begin.
 

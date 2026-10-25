@@ -3,7 +3,9 @@ using UnityEngine;
 // You. Same controls and speeds as the Godot version:
 //   WASD move, mouse look, Shift sprint (uses stamina), Ctrl or C crouch,
 //   Space jump, F flashlight (uses battery), E use / pick up,
-//   1 battery, 2 throw a flare, Q your ability, Tab your bag.
+//   1 battery, 2 throw a flare, Q your ability, Tab your bag,
+//   left click shoot (if you have a pistol), R reload.
+// Eli and Cole start with the pistols they took from the car's trunk.
 namespace Deepwell
 {
     public interface ISZInteractable
@@ -48,7 +50,7 @@ namespace Deepwell
 
         public SZWorld.PlayerView View => new SZWorld.PlayerView
         {
-            id = SZNet.MyId, alive = Time.time > _safeUntil, position = transform.position, character = Character,
+            id = SZNet.MyId, alive = Time.time > _safeUntil && !SZCutscene.Playing, position = transform.position, character = Character,
             crouching = _crouching, flashlight = Flashlight.enabled, sprinting = _sprinting, moving = _moving,
         };
 
@@ -74,6 +76,11 @@ namespace Deepwell
             player.Character = character;
             player.PlayerName = string.IsNullOrEmpty(playerName) ? SZCharacters.Names[(int)character] : playerName;
             player._safeUntil = Time.time + 3f;
+            if (character == SZCharacter.Eli || character == SZCharacter.Cole)
+            {
+                player.Inventory.GiveGun(SZInventory.ClipSize);
+                player.Inventory.Reserve = 12;
+            }
             return player;
         }
 
@@ -113,7 +120,7 @@ namespace Deepwell
         void Update()
         {
             UpdateFlashlight();
-            if (SZGame.Paused || SZGame.Reading) return;
+            if (SZGame.Paused || SZGame.Reading || SZCutscene.Playing) return;
             Look();
             Move();
             if (SZInput.Down(SZKey.F))
@@ -131,6 +138,7 @@ namespace Deepwell
             FindTarget();
             if (SZInput.Down(SZKey.E)) Target?.Interact(this);
             Ability();
+            Gun();
         }
 
         // ---------------------------------------------------------------- moving
@@ -257,6 +265,62 @@ namespace Deepwell
             Inventory.Flares--;
             var from = Camera.transform.position + Camera.transform.forward * 0.5f;
             SZWorld.Instance.ThrowFlare(from, Camera.transform.forward * 9f + Vector3.up * 2f + _body.velocity * 0.5f);
+        }
+
+        // ---------------------------------------------------------------- the pistol
+
+        GameObject _gunModel;
+        float _nextShot, _recoil;
+
+        void Gun()
+        {
+            var inv = Inventory;
+            if (inv.HasGun && _gunModel == null) _gunModel = MakeGunModel();
+            if (!inv.HasGun) return;
+            _recoil = Mathf.MoveTowards(_recoil, 0f, Time.deltaTime * 6f);
+            _gunModel.transform.localPosition = new Vector3(0.22f, -0.2f, 0.42f - _recoil * 0.06f);
+            _gunModel.transform.localRotation = Quaternion.Euler(-_recoil * 12f, 0f, 0f);
+
+            if (SZInput.Down(SZKey.R) && inv.Clip < SZInventory.ClipSize && inv.Reserve > 0)
+            {
+                int take = Mathf.Min(SZInventory.ClipSize - inv.Clip, inv.Reserve);
+                inv.Clip += take;
+                inv.Reserve -= take;
+                SZAudio.Play2D("repair_click", 0.7f);
+                _nextShot = Time.time + 1.2f;  // reloading takes a moment
+            }
+            if (!SZInput.Click || Time.time < _nextShot) return;
+            _nextShot = Time.time + 0.3f;
+            if (inv.Clip <= 0)
+            {
+                SZAudio.Play2D("repair_click", 0.4f);
+                SZGame.Instance.Say(inv.Reserve > 0 ? "Empty. Press R to reload." : "No bullets left.", 1.5f);
+                return;
+            }
+            inv.Clip--;
+            _recoil = 1f;
+            _pitch -= 1.5f;  // the gun kicks up a little
+            SZWorld.Instance.Shoot(Camera.transform.position + Camera.transform.forward * 0.4f, Camera.transform.forward);
+        }
+
+        GameObject MakeGunModel()
+        {
+            var gun = new GameObject("Pistol");
+            gun.transform.SetParent(Camera.transform, false);
+            var black = SZGraphics.Lit(new Color(0.05f, 0.05f, 0.055f), 0.5f);
+            GunPart(gun, new Vector3(0f, 0f, 0f), new Vector3(0.035f, 0.045f, 0.19f), black);        // slide
+            GunPart(gun, new Vector3(0f, -0.06f, -0.06f), new Vector3(0.03f, 0.1f, 0.045f), black);  // grip
+            return gun;
+        }
+
+        static void GunPart(GameObject gun, Vector3 at, Vector3 size, Material mat)
+        {
+            var part = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            part.transform.SetParent(gun.transform, false);
+            part.transform.localPosition = at;
+            part.transform.localScale = size;
+            part.GetComponent<Renderer>().sharedMaterial = mat;
+            Object.Destroy(part.GetComponent<Collider>());
         }
 
         // ---------------------------------------------------------------- abilities (Q)

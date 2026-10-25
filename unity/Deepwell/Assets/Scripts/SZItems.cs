@@ -72,7 +72,10 @@ namespace Deepwell
     // What one player carries.
     public class SZInventory
     {
+        public const int ClipSize = 12;
         public int Batteries, Flares, Medkits;
+        public bool HasGun;
+        public int Clip, Reserve;   // bullets in the gun, and spare bullets
         public readonly List<ItemData> Bag = new List<ItemData>();
 
         public void Add(ItemData item)
@@ -82,8 +85,20 @@ namespace Deepwell
                 case "battery": Batteries++; break;
                 case "flare": Flares++; break;
                 case "medkit": Medkits++; break;
-                default: Bag.Add(item); break;
+                default:
+                    // Any gun works as a pistol for now; any ammo fits it.
+                    if (item.id.StartsWith("weapon_")) GiveGun(item.id == "weapon_tranq" ? 4 : ClipSize);
+                    else if (item.id.StartsWith("ammo_")) Reserve += 8;
+                    else Bag.Add(item);
+                    break;
             }
+        }
+
+        public void GiveGun(int bullets)
+        {
+            if (HasGun) Reserve += bullets;
+            else Clip = Mathf.Min(bullets, ClipSize);
+            HasGun = true;
         }
 
         public bool Has(string id) => Bag.Exists(i => i.id == id);

@@ -24,6 +24,7 @@ const SKIP_BRANCHES := ["Players", "Items", "ItemSpawnPoints", "Monsters", "Trig
 
 var data := {"lights": [], "doors": [], "labels": [], "spawns": [], "colliders": [],
 	"items": [], "lore": [], "lore_book": [], "checkpoints": [], "triggers": [], "monster": {},
+	"cutscenes": [], "dialogue": [],
 	"moon": {}, "environment": {}}
 var _export_root: Node3D
 var _mesh_count := 0
@@ -45,6 +46,10 @@ func _run() -> void:
 	root.add_child(_export_root)
 	_walk(level, level)
 	_add_lore_book()
+	# The team's talk when they arrive (scripts/chapters/opening_dialogue.gd).
+	var talk: Array = load("res://scripts/chapters/opening_dialogue.gd").get_script_constant_map().get("DIALOGUE", [])
+	for line in talk:
+		data.dialogue.append({"who": str(line["character"]), "text": str(line["text"])})
 
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
 	var doc := GLTFDocument.new()
@@ -103,6 +108,10 @@ func _walk(node: Node, level: Node) -> void:
 							"chase": t.get("monster") != null}))
 			elif child.name == "Monsters":
 				_add_monster(child)
+			elif child.name == "Cutscenes":
+				for c in child.get_children():
+					if c.get("shots") is Array:
+						_add_cutscene(c)
 			continue
 		# Interactive things (doors, puzzles, lore, items) are scenes of their own.
 		# Doors become data; the rest come in later phases.
@@ -159,6 +168,9 @@ func _materials_of(mi: MeshInstance3D) -> Array:
 
 
 func _add_mesh(mesh: Mesh, xform: Transform3D, mats: Array, label: String, solid: bool) -> void:
+	var fixed := _plain_materials(mesh, xform, mats)
+	mesh = fixed[0]
+	mats = fixed[1]
 	var mi := MeshInstance3D.new()
 	mi.mesh = mesh
 	mi.transform = xform
@@ -290,3 +302,142 @@ func _add_lore_book() -> void:
 			var entry := load("res://lore/" + file) as LoreEntry
 			if entry:
 				data.lore_book.append({"id": entry.id, "title": entry.title, "text": entry.text})
+
+
+# ---------------------------------------------------------------- materials Unity can read
+
+## glTF can't carry Godot's own shaders (the terrain and painted walls), so
+## those surfaces come out with no settings, which Unity shows as shiny
+## silver metal. Here they're rebuilt as plain textured materials: each
+## triangle gets the texture the shader would pick (ground, floor, wall,
+## ceiling) and UVs from its world position, so nothing stretches.
+var _plain_cache := {}
+
+
+func _plain_materials(mesh: Mesh, xform: Transform3D, mats: Array) -> Array:
+	var needs := false
+	for s in mesh.get_surface_count():
+		var m := _material_of(mesh, s, mats)
+		if m == null or m is ShaderMaterial:
+			needs = true
+	if not needs or not (mesh is ArrayMesh or mesh is PrimitiveMesh):
+		return [mesh, mats]
+	var out := ArrayMesh.new()
+	for s in mesh.get_surface_count():
+		var m := _material_of(mesh, s, mats)
+		var arrays := mesh.surface_get_arrays(s)
+		var kind := Mesh.PRIMITIVE_TRIANGLES if mesh is PrimitiveMesh else (mesh as ArrayMesh).surface_get_primitive_type(s)
+		if m is ShaderMaterial and kind == Mesh.PRIMITIVE_TRIANGLES:
+			_split_shader_surface(out, arrays, xform, m)
+		else:
+			out.add_surface_from_arrays(kind, arrays)
+			out.surface_set_material(out.get_surface_count() - 1, m if m else _plain("plain_grey", null, null, null, Color(0.5, 0.5, 0.5)))
+	return [out, []]
+
+
+func _material_of(mesh: Mesh, s: int, mats: Array) -> Material:
+	var m: Material = mats[s] if s < mats.size() else null
+	return m if m else mesh.surface_get_material(s)
+
+
+func _plain(key: String, albedo: Texture2D, normal: Texture2D, rough: Texture2D, tint := Color.WHITE) -> StandardMaterial3D:
+	if _plain_cache.has(key):
+		return _plain_cache[key]
+	var m := StandardMaterial3D.new()
+	m.resource_name = key
+	m.albedo_color = tint
+	m.albedo_texture = albedo
+	if normal:
+		m.normal_enabled = true
+		m.normal_texture = normal
+	if rough:
+		m.roughness_texture = rough
+		m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+	m.roughness = 1.0
+	m.metallic = 0.0
+	_plain_cache[key] = m
+	return m
+
+
+func _param(m: ShaderMaterial, name: String, fallback: Variant) -> Variant:
+	var v: Variant = m.get_shader_parameter(name)
+	return fallback if v == null else v
+
+
+func _split_shader_surface(out: ArrayMesh, arrays: Array, xform: Transform3D, m: ShaderMaterial) -> void:
+	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL] if arrays[Mesh.ARRAY_NORMAL] != null else PackedVector3Array()
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+	var count := indices.size() if indices.size() > 0 else verts.size()
+	var terrain := m.get_shader_parameter("ground_albedo") != null
+	var tools := {}  # bucket -> SurfaceTool
+	var scales := {}
+	var nbasis := xform.basis.inverse().transposed()
+	for t in range(0, count - 2, 3):
+		var ids := [indices[t], indices[t + 1], indices[t + 2]] if indices.size() > 0 else [t, t + 1, t + 2]
+		var world := [xform * verts[ids[0]], xform * verts[ids[1]], xform * verts[ids[2]]]
+		var n: Vector3
+		if normals.size() > 0:
+			n = (nbasis * (normals[ids[0]] + normals[ids[1]] + normals[ids[2]])).normalized()
+		else:
+			n = (world[2] - world[0]).cross(world[1] - world[0]).normalized()
+		var a := n.abs()
+		var up := a.y >= a.x and a.y >= a.z
+		var bucket := "plaster"
+		var scale := float(_param(m, "scale", 0.4))
+		if terrain:
+			var centre_y: float = (world[0].y + world[1].y + world[2].y) / 3.0
+			if up and n.y > 0.0:
+				bucket = "ground" if centre_y > float(_param(m, "surface_height", -0.5)) else "floor"
+			elif up:
+				bucket = "ceiling"
+			else:
+				bucket = "wall"
+			scale = float(_param(m, bucket + "_scale", 0.3))
+		if not tools.has(bucket):
+			var st := SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			tools[bucket] = st
+			scales[bucket] = scale
+		var st: SurfaceTool = tools[bucket]
+		for k in 3:
+			var w: Vector3 = world[k]
+			var uv: Vector2
+			if up:
+				uv = Vector2(w.x, w.z)
+			elif a.x > a.z:
+				uv = Vector2(w.z, w.y)
+			else:
+				uv = Vector2(w.x, w.y)
+			st.set_normal(normals[ids[k]] if normals.size() > 0 else xform.basis.inverse() * n)
+			st.set_uv(uv * scale)
+			st.add_vertex(verts[ids[k]])
+	var tint: Color = _param(m, "underground_tint", Color(0.85, 0.9, 0.85))
+	for bucket in tools:
+		var st: SurfaceTool = tools[bucket]
+		st.generate_tangents()
+		st.commit(out)
+		var mat: StandardMaterial3D
+		if terrain:
+			mat = _plain("terrain_" + bucket, _param(m, bucket + "_albedo", null), _param(m, bucket + "_normal", null),
+				_param(m, bucket + "_rough", null), Color.WHITE if bucket == "ground" else tint)
+		else:
+			mat = _plain("painted_wall" + ("" if m.resource_path.ends_with("painted_wall.tres") else "_" + str(absi(m.get_instance_id()))), _param(m, "albedo_tex", null), _param(m, "normal_tex", null),
+				_param(m, "rough_tex", null), _wall_paint(m))
+		out.surface_set_material(out.get_surface_count() - 1, mat)
+
+
+## The painted wall shader is two-tone; Unity gets the upper (main) paint color.
+func _wall_paint(m: ShaderMaterial) -> Color:
+	var c: Variant = _param(m, "upper_color", Color(0.48, 0.45, 0.36))
+	var col: Color = Color(c.x, c.y, c.z) if c is Vector3 else c
+	return Color(minf(col.r * 1.6, 1.0), minf(col.g * 1.6, 1.0), minf(col.b * 1.6, 1.0))
+
+
+## A camera move with captions: each shot glides from one spot to another.
+func _add_cutscene(node: Node) -> void:
+	var shots := []
+	for shot in node.get("shots"):
+		shots.append({"from": pos(shot["from"]), "from_look": pos(shot["from_look"]), "to": pos(shot["to"]),
+			"to_look": pos(shot["to_look"]), "time": float(shot["time"]), "text": str(shot["text"])})
+	data.cutscenes.append({"name": str(node.name), "play_on_start": bool(node.get("play_on_start")), "shots": shots})

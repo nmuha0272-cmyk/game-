@@ -17,7 +17,7 @@ namespace Deepwell
         // Also true on the frame a note closes, so the same E press doesn't open it again.
         public static bool Reading => Instance != null && (Instance._readTitle != null || Instance._closedFrame == Time.frameCount);
 
-        enum Mode { Menu, Characters, Join, Connecting, Arriving, Loading, Settings, Playing, Paused }
+        enum Mode { Menu, Characters, Join, Connecting, Story, Arriving, Loading, Settings, Playing, Paused }
         enum Plan { Solo, Host, Join }
 
         Mode _screen = Mode.Menu;
@@ -155,14 +155,94 @@ namespace Deepwell
             _menuScene.BackToMenu();
         }
 
-        // "PLAY AS ...": the car drives up to the station, then the chapter loads.
+        // "PLAY AS ...": the newspaper story, then the car drives up to the station
+        // (everyone gets out, Eli and Cole take the pistols from the trunk), then the chapter.
         void Confirm()
         {
             if (_menuScene.Selected < 0) return;
             _character = (SZCharacter)_menuScene.Selected;
             PlayerPrefs.SetString("sz_name", _playerName);
+            _screen = Mode.Story;
+            _storyPage = 0;
+            _storyTime = 0f;
+            _storySkip = 0f;
+        }
+
+        void Arrive()
+        {
             _screen = Mode.Arriving;
             _menuScene.StartArrival(() => StartCoroutine(StartChapter()));
+        }
+
+        // ---------------------------------------------------------------- the newspaper (from Godot's opening_cutscene)
+
+        int _storyPage;
+        float _storyTime, _storySkip;
+        static readonly float[] StoryPageTime = { 9f, 14f };
+
+        const string NewsHeader = "The Blackwater Courier          October 12, 2015";
+        const string NewsHeadline = "SEVENTH PERSON MISSING\nNEAR OLD WEATHER STATION";
+        const string NewsArticle =
+            "BLACKWATER COUNTY - Two college students have become the sixth and seventh people to vanish near the abandoned Blackwater Weather Station this year.\n\n" +
+            "Marcus Bell, 21, and Jenna Park, 20, told friends they were going to film \"the creepiest place in the state\" for their channel. Their car was found Saturday at the end of the access road, keys still in the ignition.\n\n" +
+            "They join five others missing since August, including reporter Daniel Marsh, who had been investigating the station's past.\n\n" +
+            "The weather station was closed in 1999 after what officials called a gas leak. Eleven staff members died that night, including a married couple, Dr. Maria Reyes and Sgt. Daniel Reyes.\n\n" +
+            "\"There is nothing out there but an empty building,\" a county spokesperson said. Search teams have not been allowed past the fence.\n\n" +
+            "Continued on page A4...";
+        const string NightText =
+            "Eli Reyes read the article three times.\n\n" +
+            "He was five years old in 1999, when his mom and dad drove to work at the weather station and never came home. \"A gas leak,\" they told him. Closed caskets.\n\n" +
+            "Now Marcus and Jenna, his two best friends, had gone out there. For him. To find out what really happened to his parents.\n\n" +
+            "And they had not come back.\n\n" +
+            "Cole Brennan, the soldier who took Eli in when his parents died and raised him like his own son, said no. Then he said he was coming too.\n\n" +
+            "Nora Vance, a reporter, had lost her source out there.\n\n" +
+            "Walter Kessler said he used to work at the station. He said he knew the way in.\n\n" +
+            "Seven people are missing. Four are going in after them.";
+
+        void UpdateStory()
+        {
+            _storyTime += Time.unscaledDeltaTime;
+            if (SZInput.Held(SZKey.Space)) _storySkip += Time.unscaledDeltaTime;
+            else _storySkip = 0f;
+            bool next = SZInput.Click || SZInput.Down(SZKey.Enter) || _storyTime > StoryPageTime[_storyPage];
+            if (_storySkip >= 1f) _storyPage = StoryPageTime.Length;
+            else if (next && _storyTime > 0.5f)
+            {
+                _storyPage++;
+                _storyTime = 0f;
+            }
+            if (_storyPage >= StoryPageTime.Length) Arrive();
+        }
+
+        void DrawStory()
+        {
+            float fade = Mathf.Clamp01(_storyTime / 1.2f);
+            Box(Full(), Color.black);
+            var oldColor = GUI.color;
+            GUI.color = new Color(1, 1, 1, fade);
+            if (_storyPage == 0)
+            {
+                float w = Mathf.Min(760f, Screen.width - 60f), h = Mathf.Min(Screen.height - 60f, 640f);
+                var r = new Rect(Screen.width / 2f - w / 2f, Screen.height / 2f - h / 2f, w, h);
+                Box(r, new Color(0.86f, 0.83f, 0.74f));
+                GUI.Label(new Rect(r.x + 36, r.y + 22, w - 72, 26), NewsHeader, new GUIStyle(_paperText) { fontSize = 16, fontStyle = FontStyle.Italic });
+                Box(new Rect(r.x + 36, r.y + 52, w - 72, 2), new Color(0.2f, 0.17f, 0.14f));
+                GUI.Label(new Rect(r.x + 36, r.y + 62, w - 72, 90), NewsHeadline, new GUIStyle(_paperTitle) { fontSize = 34, alignment = TextAnchor.UpperCenter });
+                Box(new Rect(r.x + 36, r.y + 150, w - 72, 2), new Color(0.2f, 0.17f, 0.14f));
+                GUI.Label(new Rect(r.x + 36, r.y + 164, w - 72, h - 180), NewsArticle, new GUIStyle(_paperText) { fontSize = 16 });
+            }
+            else
+            {
+                var title = new GUIStyle(_title) { fontSize = 30, alignment = TextAnchor.UpperCenter, fontStyle = FontStyle.Italic };
+                GUI.Label(new Rect(0, Screen.height * 0.08f, Screen.width, 44), "That night...", title);
+                var body = new GUIStyle(_small) { fontSize = 19, alignment = TextAnchor.UpperCenter };
+                body.normal.textColor = new Color(0.85f, 0.83f, 0.78f);
+                float w = Mathf.Min(820f, Screen.width - 80f);
+                GUI.Label(new Rect(Screen.width / 2f - w / 2f, Screen.height * 0.08f + 64, w, Screen.height * 0.8f), NightText, body);
+            }
+            GUI.color = oldColor;
+            GUI.Label(new Rect(0, Screen.height - 40, Screen.width - 24, 30),
+                _storySkip > 0f ? "Skipping..." : "Click = next     Hold [SPACE] to skip", new GUIStyle(_small) { alignment = TextAnchor.UpperRight });
         }
 
         IEnumerator StartChapter()
@@ -180,7 +260,7 @@ namespace Deepwell
                 _status = "The level didn't load. Check the Console for a red error.";
                 yield break;
             }
-            Say("CHAPTER 1  -  THE SURFACE", 4f);
+            // (The intro cutscene shows "CHAPTER 1 - THE SURFACE".)
             if (SZNet.IsHost) _hostHintUntil = Time.time + 25f;
             Resume();
         }
@@ -214,9 +294,10 @@ namespace Deepwell
                 }
                 return;
             }
-            if (_screen == Mode.Characters) CarKeys();
             if (_screen == Mode.Arriving && (SZInput.Down(SZKey.Enter) || SZInput.Down(SZKey.Escape)))
                 _menuScene.SkipArrival();
+            if (_screen == Mode.Characters) CarKeys();
+            else if (_screen == Mode.Story) UpdateStory();
             if (!SZInput.Down(SZKey.Escape)) return;
             if (_screen == Mode.Playing) Pause();
             else if (_screen == Mode.Paused) Resume();
@@ -318,6 +399,7 @@ namespace Deepwell
                 case Mode.Characters: DrawCharacters(); break;
                 case Mode.Join: DrawJoin(); break;
                 case Mode.Connecting: DrawShade(); Center("Connecting..."); break;
+                case Mode.Story: DrawStory(); break;
                 case Mode.Arriving: DrawArriving(); break;
                 case Mode.Loading: DrawBackdrop(); Center("Loading Chapter 1..."); break;
                 case Mode.Settings: Box(Full(), new Color(0, 0, 0, 0.75f)); DrawSettings(); break;
@@ -457,6 +539,7 @@ namespace Deepwell
             var caption = new GUIStyle(_small) { fontSize = 22 };
             caption.normal.textColor = new Color(0.85f, 0.83f, 0.76f, scene.ArrivalText);
             GUI.Label(new Rect(88, 72, 900, 70), "BLACKWATER WEATHER STATION\nOCTOBER 14, 2015   03:52 AM", caption);
+            DrawCaption(scene.Speaker, scene.Caption);
             GUI.Label(new Rect(88, Screen.height - 50, 600, 30), "Enter = skip", _small);
             if (scene.Fade > 0f) Box(Full(), new Color(0, 0, 0, scene.Fade));
             _prompt.normal.textColor = c;
@@ -528,6 +611,11 @@ namespace Deepwell
             if (_world == null || _world.Local == null) return;
             var p = _world.Local;
             float W = Screen.width, H = Screen.height;
+            if (SZCutscene.Playing)
+            {
+                DrawCutscene(SZCutscene.Current);
+                return;
+            }
 
             if (p.SenseUntil > Time.time) DrawSense(p);
 
@@ -565,6 +653,9 @@ namespace Deepwell
             // Bottom right: items and ability.
             var inv = p.Inventory;
             string items = "[1] Batteries " + inv.Batteries + "     [2] Flares " + inv.Flares + "     Medkits " + inv.Medkits;
+            if (inv.HasGun)
+                GUI.Label(new Rect(W - 520, y - 30, 500, 24), "PISTOL  " + inv.Clip + " / " + inv.Reserve + "    [Click] shoot  [R] reload",
+                    new GUIStyle(_small) { alignment = TextAnchor.UpperRight });
             GUI.Label(new Rect(W - 520, y - 4, 500, 24), items, new GUIStyle(_small) { alignment = TextAnchor.UpperRight });
             string ability = SZCharacters.Abilities[(int)p.Character].Split(':')[0];
             if (p.AbilityCooldown > 0f) ability += "  (" + Mathf.CeilToInt(p.AbilityCooldown) + "s)";
@@ -574,6 +665,32 @@ namespace Deepwell
                 Shadowed(new Rect(0, 16, W, 30), "You're hosting. Friends join with:  " + SZNet.LocalAddresses(), _prompt);
 
             if (SZInput.Held(SZKey.Tab) && _screen == Mode.Playing) DrawBag(inv);
+        }
+
+        // Black bars, the caption (with who's talking), and "hold Space to skip".
+        void DrawCutscene(SZCutscene c)
+        {
+            float bar = Screen.height * 0.11f * c.Bars;
+            Box(new Rect(0, 0, Screen.width, bar), Color.black);
+            Box(new Rect(0, Screen.height - bar, Screen.width, bar), Color.black);
+            DrawCaption(c.Speaker, c.Caption);
+            var hint = new GUIStyle(_small) { alignment = TextAnchor.UpperRight, fontSize = 14 };
+            GUI.Label(new Rect(0, Screen.height - 28, Screen.width - 20, 24),
+                c.SkipHold > 0f ? "Skipping..." : "[SPACE] next     hold [SPACE] skip", hint);
+        }
+
+        void DrawCaption(string speaker, string text)
+        {
+            if (string.IsNullOrEmpty(text)) return;
+            float y = Screen.height * 0.8f;
+            if (!string.IsNullOrEmpty(speaker))
+            {
+                var who = new GUIStyle(_prompt) { fontSize = 18 };
+                who.normal.textColor = new Color(0.91f, 0.69f, 0.29f);
+                Shadowed(new Rect(0, y - 26, Screen.width, 26), speaker, who);
+            }
+            var line = new GUIStyle(_prompt) { fontSize = 22, wordWrap = true };
+            Shadowed(new Rect(Screen.width * 0.15f, y, Screen.width * 0.7f, 70), text, line);
         }
 
         void DrawBag(SZInventory inv)
