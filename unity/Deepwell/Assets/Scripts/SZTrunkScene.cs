@@ -35,7 +35,8 @@ namespace Deepwell
             scene._lid = new GameObject("TrunkLid").transform;
             scene._lid.SetParent(go.transform, false);
             scene._lid.localPosition = new Vector3(0f, 1.1f, 1.6f);
-            Box(scene._lid, new Vector3(2f, 0.05f, 1f), new Vector3(0f, 0f, 0.5f), paint);
+            // (A downloaded car brings its own trunk, so no extra lid then.)
+            if (!SZAssets.Has("car")) Box(scene._lid, new Vector3(2f, 0.05f, 1f), new Vector3(0f, 0f, 0.5f), paint);
             var black = SZGraphics.Lit(new Color(0.05f, 0.05f, 0.055f), 0.5f);
             foreach (var x in new[] { 0.25f, -0.25f })
                 scene._trunkPistols.Add(Pistol(go.transform, new Vector3(x, 1.09f, 2.1f), black));

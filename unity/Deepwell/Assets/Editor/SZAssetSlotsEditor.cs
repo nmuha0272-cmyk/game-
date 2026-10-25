@@ -87,8 +87,9 @@ namespace Deepwell.EditorTools
             foreach (var info in SZAssetSlots.Info)
                 if (info.words.Any(w => text.Contains(" " + w + " ") || text.Contains(" " + w.Replace(" ", "") + " ")))
                 {
-                    // "car battery" must not land in "battery".
+                    // "car battery" must not land in "battery" or in "car".
                     if (info.id == "battery" && text.Contains(" car ")) continue;
+                    if (info.id == "car" && text.Contains(" battery ")) continue;
                     return info.id;
                 }
             return null;

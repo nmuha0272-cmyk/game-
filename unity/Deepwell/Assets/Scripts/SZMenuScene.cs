@@ -10,7 +10,10 @@ using Random = UnityEngine.Random;
 //             title and buttons on top).
 //   SELECT:   the camera moves into the back seat. Eli drives, Cole sits next
 //             to him, Nora and Walter are in the back. Pointing at a
-//             character's card moves the camera to them.
+//             character's card moves the camera to them; picking one shows
+//             their face in the rear-view mirror.
+//   TALK:     after PLAY AS, the team talks while Eli drives (with subtitles):
+//             "Uncle Cole, why is there a journalist and an old man in the car?"
 //   ARRIVING: the camera moves behind the car, it drives up to the gate of
 //             the Blackwater Weather Station, stops, and fades to black.
 //             (The trunk scene happens in the level, at the real station.)
@@ -19,7 +22,7 @@ namespace Deepwell
 {
     public class SZMenuScene : MonoBehaviour
     {
-        public enum State { Menu, Select, Arriving }
+        public enum State { Menu, Select, Talk, Arriving }
 
         public State Mode { get; private set; } = State.Menu;
         public int Hovered = -1;   // character the camera looks at (-1 = none)
@@ -27,6 +30,34 @@ namespace Deepwell
         public float Fade { get; private set; }       // 0..1 black at the end of the drive
         public float ArrivalText { get; private set; } // 0..1 the "BLACKWATER WEATHER STATION" caption
         public Camera Camera { get; private set; }
+        // The car conversation's subtitle (who is talking, and the line).
+        public string Speaker { get; private set; }
+        public string Caption { get; private set; }
+        public float SkipHold { get; private set; }
+        // Looking into the rear-view mirror right now (the menu hides its cards).
+        public bool MirrorShot => Mode == State.Select && Time.time < _mirrorShotUntil;
+
+        // What the team says on the way (after you pick your character).
+        static readonly string[,] Talk =
+        {
+            { "ELI", "So... Uncle Cole. Why is there a journalist and an old man in the car?" },
+            { "COLE", "Eli, they're here because—" },
+            { "NORA", "I can speak for myself, thanks. Nora Vance. My source went missing out here a month ago, and I'm going to find out why." },
+            { "WALTER", "Walter Kessler. I worked at that station, a long time ago. I know the way in." },
+            { "COLE", "They want the same thing we do, kid. We find Marcus and Jenna, and we get out." },
+            { "ELI", "...Okay. Okay." },
+        };
+        static readonly int[] TalkWho = { 0, 1, 2, 3, 1, 0 };
+        int _line = -1;
+        float _lineTime, _lineLength;
+        Action _onTalkDone;
+
+        // The rear-view mirror: a little camera at the mirror looking at whoever you picked.
+        Camera _mirrorCam;
+        RenderTexture _mirrorTexture;
+        float _mirrorShotUntil;
+        int _lastSelected = -1;
+        static readonly Vector3 MirrorPos = G(0f, 1.62f, -0.6f);
 
         const float DriveSpeed = 17f;
         const float StationStartZ = -75f, StationStopZ = -9f, RoadLength = 160f;
@@ -68,6 +99,7 @@ namespace Deepwell
             BuildStation();
             BuildCar();
             for (int i = 0; i < 4; i++) BuildCharacter(i);
+            BuildMirror();
 
             var cam = new GameObject("MenuCamera");
             cam.transform.SetParent(transform);
@@ -100,6 +132,52 @@ namespace Deepwell
         {
             Mode = State.Menu;
             Hovered = -1;
+        }
+
+        // After PLAY AS: the team talks while Eli drives, then the drive to the gate.
+        public void StartTalk(Action done)
+        {
+            Mode = State.Talk;
+            Hovered = -1;
+            _onTalkDone = done;
+            NextLine();
+        }
+
+        void NextLine()
+        {
+            _line++;
+            if (_line >= Talk.GetLength(0))
+            {
+                Speaker = Caption = null;
+                var done = _onTalkDone;
+                _onTalkDone = null;
+                done?.Invoke();
+                return;
+            }
+            Speaker = Talk[_line, 0];
+            Caption = Talk[_line, 1];
+            _lineTime = 0f;
+            _lineLength = Mathf.Clamp(Caption.Length / 15f, 1.6f, 7f);  // reading time
+        }
+
+        void UpdateTalk(float dt)
+        {
+            // Tap Space (or click) for the next line, hold Space to skip the talk.
+            if (SZInput.Held(SZKey.Space)) SkipHold += dt;
+            else
+            {
+                if (SkipHold > 0f && SkipHold < 0.35f) _lineTime = _lineLength;
+                SkipHold = 0f;
+            }
+            if (SZInput.Click) _lineTime = _lineLength;
+            if (SkipHold >= 1f)
+            {
+                SkipHold = 0f;
+                _line = Talk.GetLength(0) - 1;
+                _lineTime = _lineLength;
+            }
+            _lineTime += dt;
+            if (_lineTime >= _lineLength) NextLine();
         }
 
         public void StartArrival(Action onArrived)
@@ -138,6 +216,8 @@ namespace Deepwell
             float dt = Time.unscaledDeltaTime;
             _time += dt;
             if (Mode == State.Arriving) UpdateArrival(dt);
+            if (Mode == State.Talk) UpdateTalk(dt);
+            UpdateMirror();
 
             // Move the world toward the camera so the car looks like it's driving.
             foreach (var node in _scrollers)
@@ -173,12 +253,26 @@ namespace Deepwell
                 pos = ArriveCamPos;
                 look = ArriveCamTarget;
             }
+            else if (Mode == State.Talk && _line >= 0 && _line < TalkWho.Length)
+            {
+                // The camera goes to whoever is talking.
+                pos = SideCams[TalkWho[_line]];
+                look = SideLooks[TalkWho[_line]];
+                pos += new Vector3(Mathf.Sin(_time * 0.6f) * 0.012f, Mathf.Sin(_time * 0.9f) * 0.01f, 0f);
+            }
             else if (Mode == State.Select)
             {
                 pos = Hovered >= 0 ? SideCams[Hovered] : BackseatCamPos;
                 look = Hovered >= 0 ? SideLooks[Hovered] : BackseatCamTarget;
+                // Just picked someone: look into the rear-view mirror at them.
+                if (Time.time < _mirrorShotUntil)
+                {
+                    pos = MirrorPos + G(0.02f, -0.06f, 0.55f);
+                    look = MirrorPos + new Vector3(0f, 0.07f, 0f);  // the mirror sits low, below the info panel
+                }
                 pos += new Vector3(Mathf.Sin(_time * 0.6f) * 0.012f, Mathf.Sin(_time * 0.9f) * 0.01f, 0f);  // road bumps
             }
+            Camera.fieldOfView = Mathf.Lerp(Camera.fieldOfView, Mode == State.Select && Time.time < _mirrorShotUntil ? 28f : 55f, dt * 4f);
             float k = 1f - Mathf.Exp(-4f * dt);
             var t = Camera.transform;
             t.position = Vector3.Lerp(t.position, pos, k);
@@ -190,6 +284,57 @@ namespace Deepwell
                 var tag = _figures[i].Find("NameTag");
                 if (tag) tag.gameObject.SetActive(Mode == State.Select && (Hovered == i || Selected == i));
             }
+        }
+
+        // ---------------------------------------------------------------- rear-view mirror
+
+        void BuildMirror()
+        {
+            var mirror = new GameObject("RearViewMirror").transform;
+            mirror.SetParent(_car, false);
+            mirror.localPosition = MirrorPos;
+            Box(mirror, new Vector3(0.3f, 0.1f, 0.03f), Vector3.zero, Mat(new Color(0.04f, 0.04f, 0.04f)));
+            Box(mirror, new Vector3(0.02f, 0.12f, 0.02f), new Vector3(0f, 0.1f, 0f), Mat(new Color(0.04f, 0.04f, 0.04f)));
+            _mirrorTexture = new RenderTexture(384, 128, 16) { name = "MirrorView" };
+            var glass = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            Destroy(glass.GetComponent<Collider>());
+            glass.transform.SetParent(mirror, false);
+            glass.transform.localPosition = new Vector3(0f, 0f, 0.017f);
+            glass.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);  // facing the people in the car
+            glass.transform.localScale = new Vector3(0.27f, 0.08f, 1f);
+            var mat = new Material(Shader.Find("Unlit/Texture")) { mainTexture = _mirrorTexture };
+            mat.mainTextureScale = new Vector2(-1f, 1f);   // a mirror shows things the other way round
+            mat.mainTextureOffset = new Vector2(1f, 0f);
+            glass.GetComponent<Renderer>().sharedMaterial = mat;
+
+            var cam = new GameObject("MirrorCamera");
+            cam.transform.SetParent(mirror, false);
+            _mirrorCam = cam.AddComponent<Camera>();
+            _mirrorCam.targetTexture = _mirrorTexture;
+            _mirrorCam.fieldOfView = 30f;
+            _mirrorCam.nearClipPlane = 0.05f;
+            _mirrorCam.farClipPlane = 60f;
+            _mirrorCam.clearFlags = CameraClearFlags.SolidColor;
+            _mirrorCam.backgroundColor = new Color(0.01f, 0.012f, 0.02f);
+        }
+
+        void UpdateMirror()
+        {
+            if (_mirrorCam == null) return;
+            // Picking someone shows their face in the mirror for a moment.
+            if (Mode == State.Select && Selected != _lastSelected && Selected >= 0)
+                _mirrorShotUntil = Time.time + 2.5f;
+            _lastSelected = Selected;
+            int who = Selected >= 0 ? Selected : 0;
+            var face = _figures[who] != null ? _figures[who].position + Vector3.up * 1.5f : _car.position + Vector3.up * 1.4f;
+            var from = _mirrorCam.transform.position;
+            _mirrorCam.transform.rotation = Quaternion.Slerp(_mirrorCam.transform.rotation, Quaternion.LookRotation(face - from), Time.unscaledDeltaTime * 6f);
+            _mirrorCam.enabled = Mode == State.Select || Mode == State.Talk;
+        }
+
+        void OnDestroy()
+        {
+            if (_mirrorTexture != null) _mirrorTexture.Release();
         }
 
         void UpdateArrival(float dt)
@@ -454,27 +599,31 @@ namespace Deepwell
             var glass = Mat(new Color(0.35f, 0.42f, 0.5f, 0.2f), 0.95f);
             var seat = Mat(new Color(0.12f, 0.09f, 0.07f));
             var dash = Mat(new Color(0.05f, 0.05f, 0.05f), 0.2f, new Color(0.3f, 0.9f, 0.6f) * 0.06f);
+            // The outside of the car (a downloaded car from Asset Slots replaces it;
+            // the seats, dashboard and wheel stay so everyone still has a seat).
+            var shell = new GameObject("Shell").transform;
+            shell.SetParent(_car, false);
 
-            Box(_car, new Vector3(2f, 0.45f, 4.8f), G(0f, 0.55f, 0.2f), paint);
-            Box(_car, new Vector3(1.84f, 0.02f, 2.6f), G(0f, 0.79f, 0.4f), Mat(new Color(0.05f, 0.045f, 0.04f)));
-            Box(_car, new Vector3(2f, 0.35f, 1.5f), G(0f, 0.95f, -1.55f), paint);
-            Box(_car, new Vector3(2f, 0.35f, 1f), G(0f, 0.95f, 2.1f), paint);
-            Box(_car, new Vector3(0.08f, 0.38f, 2.4f), G(-0.96f, 0.95f, 0.4f), paint);
-            Box(_car, new Vector3(0.08f, 0.38f, 2.4f), G(0.96f, 0.95f, 0.4f), paint);
-            Box(_car, new Vector3(2.04f, 0.1f, 4.9f), G(0f, 0.3f, 0.2f), chrome);
-            Box(_car, new Vector3(1.86f, 0.06f, 2.1f), G(0f, 1.84f, 0.5f), paint);
-            Box(_car, new Vector3(1.8f, 0.02f, 2.04f), G(0f, 1.8f, 0.5f), Mat(new Color(0.13f, 0.12f, 0.11f)));
+            Box(shell, new Vector3(2f, 0.45f, 4.8f), G(0f, 0.55f, 0.2f), paint);
+            Box(shell, new Vector3(1.84f, 0.02f, 2.6f), G(0f, 0.79f, 0.4f), Mat(new Color(0.05f, 0.045f, 0.04f)));
+            Box(shell, new Vector3(2f, 0.35f, 1.5f), G(0f, 0.95f, -1.55f), paint);
+            Box(shell, new Vector3(2f, 0.35f, 1f), G(0f, 0.95f, 2.1f), paint);
+            Box(shell, new Vector3(0.08f, 0.38f, 2.4f), G(-0.96f, 0.95f, 0.4f), paint);
+            Box(shell, new Vector3(0.08f, 0.38f, 2.4f), G(0.96f, 0.95f, 0.4f), paint);
+            Box(shell, new Vector3(2.04f, 0.1f, 4.9f), G(0f, 0.3f, 0.2f), chrome);
+            Box(shell, new Vector3(1.86f, 0.06f, 2.1f), G(0f, 1.84f, 0.5f), paint);
+            Box(shell, new Vector3(1.8f, 0.02f, 2.04f), G(0f, 1.8f, 0.5f), Mat(new Color(0.13f, 0.12f, 0.11f)));
 
             foreach (var x in new[] { -0.93f, 0.93f })
             {
-                Box(_car, new Vector3(0.07f, 0.78f, 0.07f), G(x, 1.47f, -0.75f), trim, 28f);
-                Box(_car, new Vector3(0.07f, 0.72f, 0.07f), G(x, 1.48f, 0.55f), trim);
-                Box(_car, new Vector3(0.07f, 0.78f, 0.07f), G(x, 1.47f, 1.6f), trim, -25f);
+                Box(shell, new Vector3(0.07f, 0.78f, 0.07f), G(x, 1.47f, -0.75f), trim, 28f);
+                Box(shell, new Vector3(0.07f, 0.72f, 0.07f), G(x, 1.48f, 0.55f), trim);
+                Box(shell, new Vector3(0.07f, 0.78f, 0.07f), G(x, 1.47f, 1.6f), trim, -25f);
             }
-            Box(_car, new Vector3(1.8f, 0.8f, 0.02f), G(0f, 1.47f, -0.75f), glass, 28f);
-            Box(_car, new Vector3(1.8f, 0.78f, 0.02f), G(0f, 1.47f, 1.63f), glass, -25f);
+            Box(shell, new Vector3(1.8f, 0.8f, 0.02f), G(0f, 1.47f, -0.75f), glass, 28f);
+            Box(shell, new Vector3(1.8f, 0.78f, 0.02f), G(0f, 1.47f, 1.63f), glass, -25f);
             foreach (var x in new[] { -0.95f, 0.95f })
-                Box(_car, new Vector3(0.02f, 0.66f, 2.2f), G(x, 1.47f, 0.45f), glass);
+                Box(shell, new Vector3(0.02f, 0.66f, 2.2f), G(x, 1.47f, 0.45f), glass);
 
             Box(_car, new Vector3(1.8f, 0.22f, 0.4f), G(0f, 1.08f, -0.82f), dash);
             var wheel = Cylinder(_car, 0.17f, 0.03f, G(-0.38f, 1.18f, -0.55f), trim);
@@ -489,14 +638,14 @@ namespace Deepwell
 
             var tire = Mat(new Color(0.02f, 0.02f, 0.02f));
             foreach (var p in new[] { G(-0.95f, 0.38f, -1.4f), G(0.95f, 0.38f, -1.4f), G(-0.95f, 0.38f, 1.7f), G(0.95f, 0.38f, 1.7f) })
-                Cylinder(_car, 0.38f, 0.25f, p, tire).localRotation = Quaternion.Euler(0f, 0f, 90f);
+                Cylinder(shell, 0.38f, 0.25f, p, tire).localRotation = Quaternion.Euler(0f, 0f, 90f);
 
             var head = Mat(new Color(1f, 1f, 0.9f), 0.8f, new Color(1f, 0.95f, 0.8f) * 3f);
             var tail = Mat(new Color(0.5f, 0.02f, 0.02f), 0.7f, new Color(1f, 0.05f, 0.03f) * 2f);
             foreach (var x in new[] { -0.7f, 0.7f })
             {
-                Box(_car, new Vector3(0.32f, 0.14f, 0.04f), G(x, 0.9f, -2.31f), head);
-                Box(_car, new Vector3(0.3f, 0.1f, 0.04f), G(x, 0.92f, 2.61f), tail);
+                Box(shell, new Vector3(0.32f, 0.14f, 0.04f), G(x, 0.9f, -2.31f), head);
+                Box(shell, new Vector3(0.3f, 0.1f, 0.04f), G(x, 0.92f, 2.61f), tail);
                 var beam = new GameObject("Headlight");
                 beam.transform.SetParent(_car, false);
                 beam.transform.localPosition = G(x, 0.9f, -2.4f);
@@ -511,6 +660,11 @@ namespace Deepwell
             }
             PointLight(_car, G(0f, 1.45f, 0.35f), new Color(1f, 0.9f, 0.78f), 0.55f, 2.4f);
             PointLight(_car, G(0f, 1.25f, -0.6f), new Color(0.4f, 1f, 0.7f), 0.15f, 1.6f);
+            var spot = new GameObject("CarAsset").transform;
+            spot.SetParent(_car, false);
+            spot.localPosition = G(0f, 0f, 0.2f);
+            spot.localRotation = Quaternion.Euler(0f, 180f, 0f);  // our car's front is -Z
+            if (SZAssets.Spawn("car", spot, onGround: true, size: 4.9f) != null) shell.gameObject.SetActive(false);
         }
 
         void BuildCharacter(int i)

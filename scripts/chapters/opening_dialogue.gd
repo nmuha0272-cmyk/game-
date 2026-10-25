@@ -422,6 +422,8 @@ func _caption_line(index: int) -> void:
 	var id: int = SPEAKER_IDS.get(speaker_name, Characters.Id.NONE)
 	_caption_name.text = Characters.display_name(id).to_upper()
 	_caption_text.text = line.get("text", "")
+	_caption_name.visible = Settings.subtitles
+	_caption_text.visible = Settings.subtitles
 	if _caption_tween:
 		_caption_tween.kill()
 	for label: Label in [_caption_name, _caption_text]:

@@ -20,6 +20,8 @@ namespace Deepwell
         // each puzzle mover (a gate, a shutter), by puzzle piece number.
         public static readonly Dictionary<int, List<Light>> LightGroups = new Dictionary<int, List<Light>>();
         public static readonly Dictionary<int, List<Transform>> MoverParts = new Dictionary<int, List<Transform>>();
+        // Level objects a downloaded asset can replace: "DESK_3" -> its parts.
+        static readonly Dictionary<string, List<Transform>> SlotGroups = new Dictionary<string, List<Transform>>();
 
         static void AddMoverPart(int mover, Transform part)
         {
@@ -32,6 +34,7 @@ namespace Deepwell
         {
             LightGroups.Clear();
             MoverParts.Clear();
+            SlotGroups.Clear();
             var json = Resources.Load<TextAsset>($"Levels/{chapter}");
             if (json == null)
             {
@@ -78,7 +81,14 @@ namespace Deepwell
                 var m = System.Text.RegularExpressions.Regex.Match(t.name, @"MOVER_(\d+)_");
                 if (m.Success && (t.parent == null || !System.Text.RegularExpressions.Regex.IsMatch(t.parent.name, @"MOVER_\d+_")))
                     AddMoverPart(int.Parse(m.Groups[1].Value), t);
+                var slot = System.Text.RegularExpressions.Regex.Match(t.name, @"SLOT_([A-Z]+_\d+)_");
+                if (slot.Success && (t.parent == null || !t.parent.name.Contains("SLOT_")))
+                {
+                    if (!SlotGroups.TryGetValue(slot.Groups[1].Value, out var list)) SlotGroups[slot.Groups[1].Value] = list = new List<Transform>();
+                    list.Add(t);
+                }
             }
+            ReplaceWithAssets(parent);
             if (solid == 0) Debug.LogError("Deepwell: no solid level parts were found, so you would fall through the floor.");
         }
 
@@ -87,6 +97,33 @@ namespace Deepwell
             for (; t != null && t != root; t = t.parent)
                 if (t.name.StartsWith("COL_")) return true;
             return false;
+        }
+
+        // Desks, computers and the team's car: if a downloaded asset is in that
+        // slot (Deepwell > Asset Slots), it stands in their place. Their colliders
+        // stay, so you still bump into them the same way.
+        static void ReplaceWithAssets(Transform parent)
+        {
+            var done = new Dictionary<string, List<Bounds>>();
+            foreach (var pair in SlotGroups)
+            {
+                var id = pair.Key.Substring(0, pair.Key.LastIndexOf('_')).ToLowerInvariant();
+                if (!SZAssets.Has(id)) continue;
+                var renderers = new List<Renderer>();
+                foreach (var t in pair.Value) renderers.AddRange(t.GetComponentsInChildren<Renderer>());
+                if (renderers.Count == 0) continue;
+                var bounds = renderers[0].bounds;
+                foreach (var r in renderers) bounds.Encapsulate(r.bounds);
+                foreach (var r in renderers) r.enabled = false;
+                // A monitor and its screen are two parts: only one asset for both.
+                var grown = bounds;
+                grown.Expand(0.2f);
+                if (!done.TryGetValue(id, out var placed)) done[id] = placed = new List<Bounds>();
+                if (placed.Exists(b => b.Intersects(grown))) continue;
+                placed.Add(bounds);
+                var facing = Quaternion.Euler(0f, pair.Value[0].eulerAngles.y, 0f);
+                SZAssets.Replace(id, bounds, facing, parent);
+            }
         }
 
         static void BuildEnvironment(SZLevelData data, Transform parent)

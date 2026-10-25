@@ -194,10 +194,11 @@ func _on_game_started() -> void:
 	_close_home()
 	lobby.hide()
 	menu.hide()
-	# Play the opening cutscene before starting the game
+	# The story opens in the car now (the team talks while Eli drives, on the
+	# home screen), so the old newspaper intro is skipped: straight to the level.
 	if opening_cutscene:
-		opening_cutscene.show()
-		opening_cutscene.play_cutscene()
+		opening_cutscene.hide()
+	_on_opening_finished()
 
 
 ## Host only: the whole team went down. Reload the level; players appear at

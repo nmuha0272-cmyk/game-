@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 #endif
 
 // Keyboard and mouse, read the same way whichever input setting the project
@@ -16,48 +18,74 @@ namespace Deepwell
 
     public static class SZInput
     {
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-        static Key ToKey(SZKey k)
+        // ---------------------------------------------------------------- changing the keys
+
+        // The keys you can change in Settings > Controls, with their names.
+        public static readonly SZKey[] Changeable =
+        {
+            SZKey.W, SZKey.S, SZKey.A, SZKey.D, SZKey.Shift, SZKey.C, SZKey.Space, SZKey.E,
+            SZKey.F, SZKey.Q, SZKey.R, SZKey.G, SZKey.Tab,
+        };
+
+        public static string ActionName(SZKey k)
         {
             switch (k)
             {
-                case SZKey.W: return Key.W;
-                case SZKey.A: return Key.A;
-                case SZKey.S: return Key.S;
-                case SZKey.D: return Key.D;
-                case SZKey.E: return Key.E;
-                case SZKey.F: return Key.F;
-                case SZKey.Q: return Key.Q;
-                case SZKey.G: return Key.G;
-                case SZKey.C: return Key.C;
-                case SZKey.R: return Key.R;
-                case SZKey.Tab: return Key.Tab;
-                case SZKey.Space: return Key.Space;
-                case SZKey.Shift: return Key.LeftShift;
-                case SZKey.Ctrl: return Key.LeftCtrl;
-                case SZKey.Escape: return Key.Escape;
-                case SZKey.Enter: return Key.Enter;
-                case SZKey.One: return Key.Digit1;
-                case SZKey.Two: return Key.Digit2;
-                case SZKey.Three: return Key.Digit3;
-                case SZKey.Four: return Key.Digit4;
-                case SZKey.Up: return Key.UpArrow;
-                case SZKey.Down: return Key.DownArrow;
-                case SZKey.Left: return Key.LeftArrow;
-                default: return Key.RightArrow;
+                case SZKey.W: return "Move forward";
+                case SZKey.S: return "Move back";
+                case SZKey.A: return "Move left";
+                case SZKey.D: return "Move right";
+                case SZKey.Shift: return "Sprint";
+                case SZKey.C: return "Crouch";
+                case SZKey.Space: return "Jump";
+                case SZKey.E: return "Use / pick up";
+                case SZKey.F: return "Flashlight";
+                case SZKey.Q: return "Ability";
+                case SZKey.R: return "Reload";
+                case SZKey.G: return "Drop item";
+                case SZKey.Tab: return "Inventory";
+                default: return k.ToString();
             }
         }
 
-        public static bool Held(SZKey k) => Keyboard.current != null && Keyboard.current[ToKey(k)].isPressed;
-        public static bool Down(SZKey k) => Keyboard.current != null && Keyboard.current[ToKey(k)].wasPressedThisFrame;
-        public static bool Up(SZKey k) => Keyboard.current != null && Keyboard.current[ToKey(k)].wasReleasedThisFrame;
-        // The new system gives pixels; scale it to match the old system's mouse axes.
-        public static Vector2 MouseDelta => Mouse.current != null ? Mouse.current.delta.ReadValue() * 0.05f : Vector2.zero;
-        public static bool Click => Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
-        // Mouse position in pixels from the bottom-left corner.
-        public static Vector2 MousePosition => Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
-#else
-        static KeyCode ToKey(SZKey k)
+        static readonly Dictionary<SZKey, KeyCode> Custom = new Dictionary<SZKey, KeyCode>();
+        static bool _loaded;
+
+        static void LoadKeys()
+        {
+            if (_loaded) return;
+            _loaded = true;
+            foreach (var k in Changeable)
+            {
+                int code = PlayerPrefs.GetInt("sz_key_" + k, 0);
+                if (code != 0) Custom[k] = (KeyCode)code;
+            }
+        }
+
+        // The key used for an action right now (yours if you changed it).
+        public static KeyCode KeyFor(SZKey k)
+        {
+            LoadKeys();
+            return Custom.TryGetValue(k, out var code) ? code : DefaultKey(k);
+        }
+
+        public static void SetKey(SZKey k, KeyCode code)
+        {
+            LoadKeys();
+            Custom[k] = code;
+            PlayerPrefs.SetInt("sz_key_" + k, (int)code);
+            PlayerPrefs.Save();
+        }
+
+        public static void ResetKeys()
+        {
+            LoadKeys();
+            foreach (var k in Changeable) PlayerPrefs.DeleteKey("sz_key_" + k);
+            Custom.Clear();
+            PlayerPrefs.Save();
+        }
+
+        static KeyCode DefaultKey(SZKey k)
         {
             switch (k)
             {
@@ -87,6 +115,74 @@ namespace Deepwell
                 default: return KeyCode.RightArrow;
             }
         }
+
+        public static string KeyName(KeyCode code)
+        {
+            switch (code)
+            {
+                case KeyCode.LeftShift: return "Left Shift";
+                case KeyCode.RightShift: return "Right Shift";
+                case KeyCode.LeftControl: return "Left Ctrl";
+                case KeyCode.RightControl: return "Right Ctrl";
+                case KeyCode.Return: return "Enter";
+                case KeyCode.Mouse0: return "Left click";
+                case KeyCode.Mouse1: return "Right click";
+                case KeyCode.Mouse2: return "Middle click";
+                default:
+                    var name = code.ToString();
+                    return name.StartsWith("Alpha") ? name.Substring(5) : name;
+            }
+        }
+
+#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
+        // The new Input System names keys a little differently from KeyCode.
+        static Key ToKey(SZKey k)
+        {
+            var code = KeyFor(k);
+            switch (code)
+            {
+                case KeyCode.Return: return Key.Enter;
+                case KeyCode.LeftControl: return Key.LeftCtrl;
+                case KeyCode.RightControl: return Key.RightCtrl;
+                case KeyCode.LeftAlt: return Key.LeftAlt;
+                case KeyCode.UpArrow: return Key.UpArrow;
+                case KeyCode.DownArrow: return Key.DownArrow;
+                case KeyCode.LeftArrow: return Key.LeftArrow;
+                case KeyCode.RightArrow: return Key.RightArrow;
+            }
+            var name = code.ToString();
+            if (name.StartsWith("Alpha")) name = "Digit" + name.Substring(5);
+            if (name.StartsWith("Keypad")) name = "Numpad" + name.Substring(6);
+            return System.Enum.TryParse<Key>(name, out var key) ? key : Key.None;
+        }
+
+        static bool IsMouse(SZKey k, out ButtonControl button)
+        {
+            var code = KeyFor(k);
+            button = null;
+            if (Mouse.current == null) return code >= KeyCode.Mouse0 && code <= KeyCode.Mouse6;
+            if (code == KeyCode.Mouse0) button = Mouse.current.leftButton;
+            else if (code == KeyCode.Mouse1) button = Mouse.current.rightButton;
+            else if (code == KeyCode.Mouse2) button = Mouse.current.middleButton;
+            return code >= KeyCode.Mouse0 && code <= KeyCode.Mouse6;
+        }
+
+        static KeyControl Control(SZKey k)
+        {
+            var key = ToKey(k);
+            return Keyboard.current != null && key != Key.None ? Keyboard.current[key] : null;
+        }
+
+        public static bool Held(SZKey k) => IsMouse(k, out var b) ? b != null && b.isPressed : Control(k)?.isPressed ?? false;
+        public static bool Down(SZKey k) => IsMouse(k, out var b) ? b != null && b.wasPressedThisFrame : Control(k)?.wasPressedThisFrame ?? false;
+        public static bool Up(SZKey k) => IsMouse(k, out var b) ? b != null && b.wasReleasedThisFrame : Control(k)?.wasReleasedThisFrame ?? false;
+        // The new system gives pixels; scale it to match the old system's mouse axes.
+        public static Vector2 MouseDelta => Mouse.current != null ? Mouse.current.delta.ReadValue() * 0.05f : Vector2.zero;
+        public static bool Click => Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
+        // Mouse position in pixels from the bottom-left corner.
+        public static Vector2 MousePosition => Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
+#else
+        static KeyCode ToKey(SZKey k) => KeyFor(k);
 
         public static bool Held(SZKey k) => Input.GetKey(ToKey(k));
         public static bool Down(SZKey k) => Input.GetKeyDown(ToKey(k));

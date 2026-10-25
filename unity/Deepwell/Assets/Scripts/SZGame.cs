@@ -17,7 +17,7 @@ namespace Deepwell
         // Also true on the frame a note closes, so the same E press doesn't open it again.
         public static bool Reading => Instance != null && (Instance._readTitle != null || Instance._closedFrame == Time.frameCount);
 
-        enum Mode { Menu, Characters, Join, Connecting, Story, Arriving, Loading, Settings, Playing, Paused }
+        enum Mode { Menu, Characters, Join, Connecting, Talk, Arriving, Loading, Settings, Playing, Paused }
         enum Plan { Solo, Host, Join }
 
         Mode _screen = Mode.Menu;
@@ -56,6 +56,8 @@ namespace Deepwell
             SZPlayer.MouseSensitivity = PlayerPrefs.GetFloat("sz_mouse", 2f);
             SZPlayer.FlashlightBrightness = PlayerPrefs.GetFloat("sz_flashlight", 1f);
             AudioListener.volume = PlayerPrefs.GetFloat("sz_volume", 0.9f);
+            Subtitles = PlayerPrefs.GetInt("sz_subtitles", 1) == 1;
+            BigSubtitles = PlayerPrefs.GetInt("sz_big_subtitles", 0) == 1;
             _playerName = PlayerPrefs.GetString("sz_name", "");
             _address = PlayerPrefs.GetString("sz_address", "");
             var net = SZNet.Ensure();
@@ -155,17 +157,15 @@ namespace Deepwell
             _menuScene.BackToMenu();
         }
 
-        // "PLAY AS ...": the newspaper story, then the car drives up to the station
-        // (everyone gets out, Eli and Cole take the pistols from the trunk), then the chapter.
+        // "PLAY AS ...": the team talks in the car while Eli drives, then the car
+        // drives up to the station, then the chapter (and the trunk scene there).
         void Confirm()
         {
             if (_menuScene.Selected < 0) return;
             _character = (SZCharacter)_menuScene.Selected;
             PlayerPrefs.SetString("sz_name", _playerName);
-            _screen = Mode.Story;
-            _storyPage = 0;
-            _storyTime = 0f;
-            _storySkip = 0f;
+            _screen = Mode.Talk;
+            _menuScene.StartTalk(Arrive);
         }
 
         void Arrive()
@@ -174,76 +174,6 @@ namespace Deepwell
             _menuScene.StartArrival(() => StartCoroutine(StartChapter()));
         }
 
-        // ---------------------------------------------------------------- the newspaper (from Godot's opening_cutscene)
-
-        int _storyPage;
-        float _storyTime, _storySkip;
-        static readonly float[] StoryPageTime = { 9f, 14f };
-
-        const string NewsHeader = "The Blackwater Courier          October 12, 2015";
-        const string NewsHeadline = "SEVENTH PERSON MISSING\nNEAR OLD WEATHER STATION";
-        const string NewsArticle =
-            "BLACKWATER COUNTY - Two college students have become the sixth and seventh people to vanish near the abandoned Blackwater Weather Station this year.\n\n" +
-            "Marcus Bell, 21, and Jenna Park, 20, told friends they were going to film \"the creepiest place in the state\" for their channel. Their car was found Saturday at the end of the access road, keys still in the ignition.\n\n" +
-            "They join five others missing since August, including reporter Daniel Marsh, who had been investigating the station's past.\n\n" +
-            "The weather station was closed in 1999 after what officials called a gas leak. Eleven staff members died that night, including a married couple, Dr. Maria Reyes and Sgt. Daniel Reyes.\n\n" +
-            "\"There is nothing out there but an empty building,\" a county spokesperson said. Search teams have not been allowed past the fence.\n\n" +
-            "Continued on page A4...";
-        const string NightText =
-            "Eli Reyes read the article three times.\n\n" +
-            "He was five years old in 1999, when his mom and dad drove to work at the weather station and never came home. \"A gas leak,\" they told him. Closed caskets.\n\n" +
-            "Now Marcus and Jenna, his two best friends, had gone out there. For him. To find out what really happened to his parents.\n\n" +
-            "And they had not come back.\n\n" +
-            "Cole Brennan, the soldier who took Eli in when his parents died and raised him like his own son, said no. Then he said he was coming too.\n\n" +
-            "Nora Vance, a reporter, had lost her source out there.\n\n" +
-            "Walter Kessler said he used to work at the station. He said he knew the way in.\n\n" +
-            "Seven people are missing. Four are going in after them.";
-
-        void UpdateStory()
-        {
-            _storyTime += Time.unscaledDeltaTime;
-            if (SZInput.Held(SZKey.Space)) _storySkip += Time.unscaledDeltaTime;
-            else _storySkip = 0f;
-            bool next = SZInput.Click || SZInput.Down(SZKey.Enter) || _storyTime > StoryPageTime[_storyPage];
-            if (_storySkip >= 1f) _storyPage = StoryPageTime.Length;
-            else if (next && _storyTime > 0.5f)
-            {
-                _storyPage++;
-                _storyTime = 0f;
-            }
-            if (_storyPage >= StoryPageTime.Length) Arrive();
-        }
-
-        void DrawStory()
-        {
-            float fade = Mathf.Clamp01(_storyTime / 1.2f);
-            Box(Full(), Color.black);
-            var oldColor = GUI.color;
-            GUI.color = new Color(1, 1, 1, fade);
-            if (_storyPage == 0)
-            {
-                float w = Mathf.Min(760f, Screen.width - 60f), h = Mathf.Min(Screen.height - 60f, 640f);
-                var r = new Rect(Screen.width / 2f - w / 2f, Screen.height / 2f - h / 2f, w, h);
-                Box(r, new Color(0.86f, 0.83f, 0.74f));
-                GUI.Label(new Rect(r.x + 36, r.y + 22, w - 72, 26), NewsHeader, new GUIStyle(_paperText) { fontSize = 16, fontStyle = FontStyle.Italic });
-                Box(new Rect(r.x + 36, r.y + 52, w - 72, 2), new Color(0.2f, 0.17f, 0.14f));
-                GUI.Label(new Rect(r.x + 36, r.y + 62, w - 72, 90), NewsHeadline, new GUIStyle(_paperTitle) { fontSize = 34, alignment = TextAnchor.UpperCenter });
-                Box(new Rect(r.x + 36, r.y + 150, w - 72, 2), new Color(0.2f, 0.17f, 0.14f));
-                GUI.Label(new Rect(r.x + 36, r.y + 164, w - 72, h - 180), NewsArticle, new GUIStyle(_paperText) { fontSize = 16 });
-            }
-            else
-            {
-                var title = new GUIStyle(_title) { fontSize = 30, alignment = TextAnchor.UpperCenter, fontStyle = FontStyle.Italic };
-                GUI.Label(new Rect(0, Screen.height * 0.08f, Screen.width, 44), "That night...", title);
-                var body = new GUIStyle(_small) { fontSize = 19, alignment = TextAnchor.UpperCenter };
-                body.normal.textColor = new Color(0.85f, 0.83f, 0.78f);
-                float w = Mathf.Min(820f, Screen.width - 80f);
-                GUI.Label(new Rect(Screen.width / 2f - w / 2f, Screen.height * 0.08f + 64, w, Screen.height * 0.8f), NightText, body);
-            }
-            GUI.color = oldColor;
-            GUI.Label(new Rect(0, Screen.height - 40, Screen.width - 24, 30),
-                _storySkip > 0f ? "Skipping..." : "Click = next     Hold [SPACE] to skip", new GUIStyle(_small) { alignment = TextAnchor.UpperRight });
-        }
 
         IEnumerator StartChapter()
         {
@@ -309,11 +239,14 @@ namespace Deepwell
             if (_screen == Mode.Arriving && (SZInput.Down(SZKey.Enter) || SZInput.Down(SZKey.Escape)))
                 _menuScene.SkipArrival();
             if (_screen == Mode.Characters) CarKeys();
-            else if (_screen == Mode.Story) UpdateStory();
+
             if (!SZInput.Down(SZKey.Escape)) return;
             if (_screen == Mode.Playing) Pause();
             else if (_screen == Mode.Paused) Resume();
-            else if (_screen == Mode.Settings) CloseSettings();
+            else if (_screen == Mode.Settings && !_waitingFor.HasValue)
+            {
+                if (_controlsOpen) _controlsOpen = false; else CloseSettings();
+            }
             else if (_screen == Mode.Characters) LeaveCar();
             else if (_screen == Mode.Join) _screen = Mode.Menu;
         }
@@ -344,6 +277,9 @@ namespace Deepwell
 
         void CloseSettings()
         {
+            PlayerPrefs.SetInt("sz_subtitles", Subtitles ? 1 : 0);
+            PlayerPrefs.SetInt("sz_big_subtitles", BigSubtitles ? 1 : 0);
+            _controlsOpen = false;
             PlayerPrefs.SetFloat("sz_mouse", SZPlayer.MouseSensitivity);
             PlayerPrefs.SetFloat("sz_flashlight", SZPlayer.FlashlightBrightness);
             PlayerPrefs.SetFloat("sz_volume", AudioListener.volume);
@@ -411,10 +347,13 @@ namespace Deepwell
                 case Mode.Characters: DrawCharacters(); break;
                 case Mode.Join: DrawJoin(); break;
                 case Mode.Connecting: DrawShade(); Center("Connecting..."); break;
-                case Mode.Story: DrawStory(); break;
+                case Mode.Talk: DrawTalk(); break;
                 case Mode.Arriving: DrawArriving(); break;
                 case Mode.Loading: DrawBackdrop(); Center("Loading Chapter 1..."); break;
-                case Mode.Settings: Box(Full(), new Color(0, 0, 0, 0.75f)); DrawSettings(); break;
+                case Mode.Settings:
+                    Box(Full(), new Color(0, 0, 0, 0.75f));
+                    if (_controlsOpen) DrawControls(); else DrawSettings();
+                    break;
                 case Mode.Paused: DrawHud(); DrawPause(); break;
                 case Mode.Playing: DrawHud(); break;
             }
@@ -478,6 +417,7 @@ namespace Deepwell
         void DrawCharacters()
         {
             var scene = _menuScene;
+            if (scene.MirrorShot) return;  // looking at their face in the rear-view mirror
             float W = Screen.width, H = Screen.height;
             GUI.Label(new Rect(88, 56, 900, 50), "CHOOSE YOUR CHARACTER", new GUIStyle(_title) { fontSize = 34 });
             GUI.Label(new Rect(90, 104, 1000, 24), "POINT AT A NAME TO MEET THEM.  CLICK TO CHOOSE.  ARROW KEYS + ENTER ALSO WORK.", _small);
@@ -543,6 +483,20 @@ namespace Deepwell
                 GUI.Label(new Rect(300, H - 64, 700, 30), "Hosting. Friends join with:  " + SZNet.LocalAddresses(), _small);
         }
 
+        // The car conversation: black bars, who is talking, and the subtitle.
+        void DrawTalk()
+        {
+            var scene = _menuScene;
+            if (scene == null) return;
+            float bar = Screen.height * 0.1f;
+            Box(new Rect(0, 0, Screen.width, bar), Color.black);
+            Box(new Rect(0, Screen.height - bar, Screen.width, bar), Color.black);
+            DrawCaption(scene.Speaker, scene.Caption);
+            var hint = new GUIStyle(_small) { alignment = TextAnchor.UpperRight, fontSize = 14 };
+            GUI.Label(new Rect(0, Screen.height - 28, Screen.width - 20, 24),
+                scene.SkipHold > 0f ? "Skipping..." : "[SPACE] next     hold [SPACE] skip", hint);
+        }
+
         void DrawArriving()
         {
             var scene = _menuScene;
@@ -594,8 +548,64 @@ namespace Deepwell
             y += 50f;
             GUI.Label(new Rect(x, y, 260, 30), "Volume: " + Mathf.RoundToInt(AudioListener.volume * 100) + "%", _small);
             AudioListener.volume = GUI.HorizontalSlider(new Rect(x + 260, y + 8, 380, 20), AudioListener.volume, 0f, 1f);
+            y += 50f;
+            GUI.Label(new Rect(x, y, 260, 30), "Subtitles", _small);
+            if (GUI.Button(new Rect(x + 260, y - 8, 120, 44), Subtitles ? "> ON" : "ON", _button)) Subtitles = true;
+            if (GUI.Button(new Rect(x + 390, y - 8, 120, 44), Subtitles ? "OFF" : "> OFF", _button)) Subtitles = false;
+            y += 50f;
+            GUI.Label(new Rect(x, y, 260, 30), "Subtitle size", _small);
+            if (GUI.Button(new Rect(x + 260, y - 8, 120, 44), BigSubtitles ? "NORMAL" : "> NORMAL", _button)) BigSubtitles = false;
+            if (GUI.Button(new Rect(x + 390, y - 8, 120, 44), BigSubtitles ? "> LARGE" : "LARGE", _button)) BigSubtitles = true;
             y += 70f;
-            if (GUI.Button(new Rect(x, y, 380, 54), "BACK", _button)) CloseSettings();
+            if (GUI.Button(new Rect(x, y, 380, 54), "CONTROLS (CHANGE KEYS)", _button)) { _controlsOpen = true; _waitingFor = null; }
+            if (GUI.Button(new Rect(x, y + 64, 380, 54), "BACK", _button)) CloseSettings();
+        }
+
+        // ---------------------------------------------------------------- subtitles
+
+        public static bool Subtitles = true, BigSubtitles;
+
+        // ---------------------------------------------------------------- changing the keys
+
+        bool _controlsOpen;
+        SZKey? _waitingFor;
+
+        void DrawControls()
+        {
+            float x = 90f, y = Screen.height * 0.08f;
+            GUI.Label(new Rect(x, y, 900, 60), "CONTROLS", new GUIStyle(_title) { fontSize = 48 });
+            GUI.Label(new Rect(x, y + 62, 900, 26), "Click a key, then press the new key (or a mouse button). Esc = cancel.", _small);
+            y += 100f;
+            foreach (var k in SZInput.Changeable)
+            {
+                GUI.Label(new Rect(x, y + 8, 260, 30), SZInput.ActionName(k), _small);
+                string shown = _waitingFor == k ? "press a key..." : SZInput.KeyName(SZInput.KeyFor(k));
+                if (GUI.Button(new Rect(x + 270, y, 260, 40), shown, _button)) _waitingFor = k;
+                y += 44f;
+            }
+            GUI.Label(new Rect(x + 560, Screen.height * 0.08f + 100f, 420, 120),
+                "Always the same: arrow keys move, Ctrl crouches,\n1-4 pick an item, left click uses it, Esc pauses.", _small);
+            y += 12f;
+            if (GUI.Button(new Rect(x, y, 260, 50), "RESET TO DEFAULTS", _button)) SZInput.ResetKeys();
+            if (GUI.Button(new Rect(x + 270, y, 260, 50), "BACK", _button)) { _controlsOpen = false; _waitingFor = null; }
+
+            // The next key press (or mouse button) becomes the new key.
+            var e = Event.current;
+            if (_waitingFor.HasValue)
+            {
+                if (e.type == EventType.KeyDown && e.keyCode != KeyCode.None)
+                {
+                    if (e.keyCode != KeyCode.Escape) SZInput.SetKey(_waitingFor.Value, e.keyCode);
+                    _waitingFor = null;
+                    e.Use();
+                }
+                else if (e.type == EventType.MouseDown && e.button > 0)
+                {
+                    SZInput.SetKey(_waitingFor.Value, KeyCode.Mouse0 + e.button);
+                    _waitingFor = null;
+                    e.Use();
+                }
+            }
         }
 
         void DrawPause()
@@ -615,7 +625,7 @@ namespace Deepwell
             GUI.Label(new Rect(x, y + 270, 900, 120),
                 "WASD move   Mouse look   Shift sprint   Ctrl/C crouch   Space jump\n" +
                 "F flashlight   E use / pick up (hold E for some)   1-4 pick an item   Click use it   R reload\n" +
-                "G drop   Tab inventory   Q ability", _small);
+                "G drop   Tab inventory   Q ability   (change keys in Settings > Controls)", _small);
         }
 
         void DrawHud()
@@ -708,16 +718,16 @@ namespace Deepwell
 
         void DrawCaption(string speaker, string text)
         {
-            if (string.IsNullOrEmpty(text)) return;
-            float y = Screen.height * 0.8f;
+            if (string.IsNullOrEmpty(text) || !Subtitles) return;
+            float y = Screen.height * (BigSubtitles ? 0.76f : 0.8f);
             if (!string.IsNullOrEmpty(speaker))
             {
-                var who = new GUIStyle(_prompt) { fontSize = 18 };
+                var who = new GUIStyle(_prompt) { fontSize = BigSubtitles ? 24 : 18 };
                 who.normal.textColor = new Color(0.91f, 0.69f, 0.29f);
                 Shadowed(new Rect(0, y - 26, Screen.width, 26), speaker, who);
             }
-            var line = new GUIStyle(_prompt) { fontSize = 22, wordWrap = true };
-            Shadowed(new Rect(Screen.width * 0.15f, y, Screen.width * 0.7f, 70), text, line);
+            var line = new GUIStyle(_prompt) { fontSize = BigSubtitles ? 30 : 22, wordWrap = true };
+            Shadowed(new Rect(Screen.width * 0.12f, y, Screen.width * 0.76f, BigSubtitles ? 110 : 70), text, line);
         }
 
         // ---------------------------------------------------------------- inventory

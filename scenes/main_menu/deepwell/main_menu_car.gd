@@ -8,7 +8,11 @@ extends Node3D
 ##         the back. Hover over a name card (or a character) and the camera
 ##         moves to that character's side and shows what they can do.
 ##         Click to choose them. Arrow keys and Enter also work.
-## ARRIVING: once a character is confirmed, the camera moves behind the car
+## Picking a character shows their face in the rear-view mirror.
+## TALK:   after "PLAY AS ...", the team talks while Eli drives (subtitles at
+##         the bottom): "Uncle Cole, why is there a journalist and an old man
+##         in the car?" Tap Space for the next line, hold Space to skip.
+## ARRIVING: after the talk, the camera moves behind the car
 ##         and it drives up to the gate of the Blackwater Weather Station,
 ##         slows to a stop, and the screen fades to black before the lobby
 ##         (or next scene) loads. Press Enter or Esc to skip the drive.
@@ -112,7 +116,19 @@ const CHARACTERS := {
 	},
 }
 
-enum State { MENU, SELECT, ARRIVING }
+enum State { MENU, SELECT, TALK, ARRIVING }
+
+## What the team says on the way: [character id, line].
+const TALK := [
+	["eli", "So... Uncle Cole. Why is there a journalist and an old man in the car?"],
+	["cole", "Eli, they're here because—"],
+	["nora", "I can speak for myself, thanks. Nora Vance. My source went missing out here a month ago, and I'm going to find out why."],
+	["walter", "Walter Kessler. I worked at that station, a long time ago. I know the way in."],
+	["cole", "They want the same thing we do, kid. We find Marcus and Jenna, and we get out."],
+	["eli", "...Okay. Okay."],
+]
+## The rear-view mirror, above the dashboard (car space).
+const MIRROR_POS := Vector3(0.0, 1.62, -0.6)
 
 var state := State.MENU
 var hovered := ""
@@ -142,6 +158,19 @@ var _trees: Array[Node3D] = []
 var _fade: ColorRect
 var _arrival_label: Label
 var _arrived := false
+# The car talk.
+var _talk_line := -1
+var _talk_time := 0.0
+var _talk_length := 0.0
+var _talk_hold := 0.0
+var _talk_ui: Control
+var _talk_name: Label
+var _talk_text: Label
+# The rear-view mirror.
+var _mirror_cam: Camera3D
+var _mirror_view: SubViewport
+var _mirror_until := 0.0
+var _last_selected := ""
 
 const MENU_CAM_POS := Vector3(-4.2, 1.35, -6.0)
 const MENU_CAM_TARGET := Vector3(-1.4, 0.95, 0.4)
@@ -160,6 +189,7 @@ func _ready() -> void:
 	_build_car()
 	for id: String in CHARACTER_ORDER:
 		_build_character(id)
+	_build_mirror()
 	_build_camera()
 	_build_ui()
 	_set_state(State.MENU)
@@ -171,6 +201,9 @@ func _process(delta: float) -> void:
 	# Move the world toward the camera so the car looks like it's driving.
 	if state == State.ARRIVING:
 		_update_arrival(delta)
+	elif state == State.TALK:
+		_update_talk(delta)
+	_update_mirror(delta)
 
 	for node in _scrollers:
 		node.position.z += _speed * delta
@@ -210,6 +243,11 @@ func _process(delta: float) -> void:
 	if state == State.ARRIVING:
 		pos = ARRIVE_CAM_POS
 		look = ARRIVE_CAM_TARGET
+	elif state == State.TALK and _talk_line >= 0 and _talk_line < TALK.size():
+		# The camera goes to whoever is talking.
+		var who: String = TALK[_talk_line][0]
+		pos = CHARACTERS[who]["side_cam"] + Vector3(sin(_time * 0.6) * 0.012, sin(_time * 0.9) * 0.01, 0.0)
+		look = CHARACTERS[who]["side_look"]
 	elif state == State.SELECT:
 		if hovered != "":
 			pos = CHARACTERS[hovered]["side_cam"]
@@ -217,13 +255,27 @@ func _process(delta: float) -> void:
 		else:
 			pos = BACKSEAT_CAM_POS
 			look = BACKSEAT_CAM_TARGET
+		# Just picked someone: look into the rear-view mirror at them.
+		if _time < _mirror_until:
+			pos = MIRROR_POS + Vector3(0.02, -0.06, 0.55)
+			look = MIRROR_POS + Vector3(0.0, 0.07, 0.0)  # the mirror sits low, below the info panel
 		pos += Vector3(sin(_time * 0.6) * 0.012, sin(_time * 0.9) * 0.01, 0.0)  # road bumps
+	_camera.fov = lerpf(_camera.fov, 28.0 if state == State.SELECT and _time < _mirror_until else 55.0, minf(delta * 4.0, 1.0))
+	# The cards fade away while you look in the mirror, so they don't cover it.
+	if _select_ui:
+		_select_ui.modulate.a = move_toward(_select_ui.modulate.a, 0.0 if _time < _mirror_until else 1.0, delta * 4.0)
 	var target := Transform3D().looking_at(look - pos)
 	target.origin = pos
 	_camera.global_transform = _camera.global_transform.interpolate_with(target, 1.0 - exp(-4.0 * delta))
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if state == State.TALK:
+		# A tap on Space (or a click) moves on; holding Space skips (see _update_talk).
+		if (event is InputEventMouseButton and event.pressed) or event.is_action_released("ui_accept"):
+			if _talk_hold < 0.35:
+				_talk_time = _talk_length
+		return
 	if state == State.ARRIVING:
 		if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_cancel"):
 			_finish_arrival()  # skip the drive
@@ -335,7 +387,98 @@ func _confirm() -> void:
 		var game_state := get_node_or_null("/root/GameState")
 		if game_state and "chosen_character" in game_state:
 			game_state.chosen_character = selected
-	_start_arrival()
+	_start_talk()
+
+
+# ------------------------------------------------------------------ The car talk
+
+## After PLAY AS: the team talks while Eli drives, then the drive to the gate.
+func _start_talk() -> void:
+	state = State.TALK
+	hovered = ""
+	_select_ui.hide()
+	_refresh_highlights()
+	_talk_line = -1
+	_talk_ui.show()
+	_next_talk_line()
+
+
+func _next_talk_line() -> void:
+	_talk_line += 1
+	if _talk_line >= TALK.size():
+		_talk_ui.hide()
+		_start_arrival()
+		return
+	var who: String = TALK[_talk_line][0]
+	var text: String = TALK[_talk_line][1]
+	_talk_name.text = CHARACTERS[who]["name"].split(" ")[0]
+	_talk_text.text = text
+	var show_subtitles: bool = Settings.subtitles if "subtitles" in Settings else true
+	_talk_name.visible = show_subtitles
+	_talk_text.visible = show_subtitles
+	_talk_time = 0.0
+	_talk_length = clampf(text.length() / 15.0, 1.6, 7.0)  # reading time
+
+
+func _update_talk(delta: float) -> void:
+	if Input.is_action_pressed("ui_accept"):
+		_talk_hold += delta
+		if _talk_hold >= 1.0:  # held: skip the rest
+			_talk_hold = 0.0
+			_talk_line = TALK.size() - 1
+			_talk_time = _talk_length
+	else:
+		_talk_hold = 0.0
+	_talk_time += delta
+	if _talk_time >= _talk_length:
+		_next_talk_line()
+
+
+# ------------------------------------------------------------------ The rear-view mirror
+
+## A little camera at the mirror (in its own SubViewport) looking at whoever
+## you picked; the mirror shows that picture, flipped like a real mirror.
+func _build_mirror() -> void:
+	var mirror := Node3D.new()
+	mirror.position = MIRROR_POS
+	_car.add_child(mirror)
+	var black := _mat(Color(0.04, 0.04, 0.04))
+	_box(mirror, Vector3(0.3, 0.1, 0.03), Vector3.ZERO, black)
+	_box(mirror, Vector3(0.02, 0.12, 0.02), Vector3(0, 0.1, 0), black)
+	_mirror_view = SubViewport.new()
+	_mirror_view.size = Vector2i(384, 128)
+	_mirror_view.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+	add_child(_mirror_view)
+	_mirror_cam = Camera3D.new()
+	_mirror_cam.fov = 30.0
+	_mirror_cam.near = 0.05
+	_mirror_view.add_child(_mirror_cam)
+	var glass := MeshInstance3D.new()
+	var quad := QuadMesh.new()
+	quad.size = Vector2(0.27, 0.08)
+	glass.mesh = quad
+	glass.position = Vector3(0, 0, 0.017)  # the side facing the people in the car
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_texture = _mirror_view.get_texture()
+	mat.uv1_scale = Vector3(-1, 1, 1)  # a mirror shows things the other way round
+	glass.material_override = mat
+	mirror.add_child(glass)
+
+
+func _update_mirror(delta: float) -> void:
+	if _mirror_cam == null:
+		return
+	# Picking someone shows their face in the mirror for a moment.
+	if state == State.SELECT and selected != _last_selected and selected != "":
+		_mirror_until = _time + 2.5
+	_last_selected = selected
+	var who := selected if selected != "" else "eli"
+	var from: Vector3 = _car.to_global(MIRROR_POS)
+	var face: Vector3 = (_figures[who]["root"] as Node3D).global_position + Vector3.UP * 1.5
+	var target := Transform3D().looking_at(face - from)
+	target.origin = from
+	_mirror_cam.global_transform = _mirror_cam.global_transform.interpolate_with(target, minf(delta * 6.0, 1.0))
 
 
 # ------------------------------------------------------------------ Arrival
@@ -896,6 +1039,51 @@ func _build_ui() -> void:
 	_arrival_label.position = Vector2(88, 72)
 	_arrival_label.modulate.a = 0.0
 	layer.add_child(_arrival_label)
+
+	# The car talk: black bars, who is talking, and the subtitle.
+	_talk_ui = Control.new()
+	_talk_ui.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_talk_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_talk_ui.hide()
+	layer.add_child(_talk_ui)
+	for top in [true, false]:
+		var bar := ColorRect.new()
+		bar.color = Color.BLACK
+		bar.anchor_right = 1.0
+		bar.anchor_top = 0.0 if top else 0.88
+		bar.anchor_bottom = 0.1 if top else 1.0
+		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_talk_ui.add_child(bar)
+	_talk_name = Label.new()
+	_talk_name.anchor_left = 0.15
+	_talk_name.anchor_right = 0.85
+	_talk_name.anchor_top = 0.74
+	_talk_name.anchor_bottom = 0.78
+	_talk_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_talk_name.add_theme_font_size_override("font_size", 18)
+	_talk_name.add_theme_color_override("font_color", COLOR_HIGHLIGHT)
+	_talk_ui.add_child(_talk_name)
+	_talk_text = Label.new()
+	_talk_text.anchor_left = 0.12
+	_talk_text.anchor_right = 0.88
+	_talk_text.anchor_top = 0.78
+	_talk_text.anchor_bottom = 0.87
+	_talk_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_talk_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_talk_text.add_theme_font_size_override("font_size", 24)
+	_talk_text.add_theme_color_override("font_color", COLOR_TEXT)
+	_talk_text.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	_talk_text.add_theme_constant_override("outline_size", 8)
+	_talk_ui.add_child(_talk_text)
+	var hint := Label.new()
+	hint.text = "[SPACE] next     hold [SPACE] skip"
+	hint.anchor_left = 0.6
+	hint.anchor_right = 0.98
+	hint.anchor_top = 0.94
+	hint.anchor_bottom = 0.99
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	hint.add_theme_color_override("font_color", COLOR_DIM)
+	_talk_ui.add_child(hint)
 
 	_fade = ColorRect.new()
 	_fade.color = Color(0, 0, 0, 0)

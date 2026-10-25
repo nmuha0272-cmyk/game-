@@ -338,7 +338,7 @@ func _update_durability_bar() -> void:
 
 func show_subtitle_near(where: Vector3, hearing_range: float, speaker: String, text: String,
 		seconds: float) -> void:
-	if player.global_position.distance_to(where) > hearing_range:
+	if player.global_position.distance_to(where) > hearing_range or not Settings.subtitles:
 		return
 	subtitle_label.text = ("%s: \"%s\"" % [speaker, text]) if not speaker.is_empty() else text
 	_subtitle_left = seconds

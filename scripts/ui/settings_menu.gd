@@ -31,6 +31,12 @@ func _ready() -> void:
 			Settings.set_flashlight_brightness)
 	
 	# Camera perspective
+	var subtitles := CheckButton.new()
+	subtitles.text = "Subtitles (what people say)"
+	subtitles.button_pressed = Settings.subtitles
+	subtitles.toggled.connect(Settings.set_subtitles)
+	content.add_child(subtitles)
+
 	var cam_heading := Label.new()
 	cam_heading.text = "\nCamera"
 	content.add_child(cam_heading)

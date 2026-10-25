@@ -55,6 +55,10 @@ namespace Deepwell
             new SlotInfo("fuel_can", "Fuel can", 0.45f, "fuel can", "jerry can", "jerrycan", "gas can", "petrol can"),
             new SlotInfo("car_battery", "Car battery", 0.35f, "car battery"),
             new SlotInfo("note", "Notes and files", 0.3f, "note", "paper", "document", "letter", "folder", "clipboard"),
+            new SlotInfo("car", "The team's car (home screen and at the station)", 4.8f, "car", "sedan", "vehicle", "suv", "pickup truck", "station wagon"),
+            new SlotInfo("keypad", "Keypads", 0.26f, "keypad", "key pad", "code lock", "numpad", "pin pad"),
+            new SlotInfo("desk", "Desks", 1.6f, "desk", "office table", "work table", "writing table"),
+            new SlotInfo("computer", "Computers, monitors and the terminal", 0.5f, "computer", "monitor", "crt", "desktop pc", "pc", "terminal"),
             new SlotInfo("door", "Doors (2 m x 3 m)", 3.0f, "door"),
             new SlotInfo("long_man", "The Long Man (monster)", 2.9f, "long man", "longman", "slender", "creature", "monster"),
         };
@@ -146,6 +150,17 @@ namespace Deepwell
             var anchor = onGround ? new Vector3(bounds.center.x, bounds.min.y, bounds.center.z) : bounds.center;
             go.transform.position += parent.position - anchor;
             return go;
+        }
+
+        // Swap a downloaded asset in for a level object (a desk, a computer, the
+        // car): sitting where it stood, as big as it was. Null if the slot is empty.
+        public static GameObject Replace(string id, Bounds where, Quaternion facing, Transform parent)
+        {
+            if (!Has(id)) return null;
+            var anchor = new GameObject("Replaced " + id).transform;
+            anchor.SetParent(parent, false);
+            anchor.SetPositionAndRotation(new Vector3(where.center.x, where.min.y, where.center.z), facing);
+            return Spawn(id, anchor, onGround: true, size: Mathf.Max(where.size.x, where.size.y, where.size.z));
         }
 
         // Store assets often come with their own scripts, physics and cameras.

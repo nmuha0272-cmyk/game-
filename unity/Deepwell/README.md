@@ -55,9 +55,18 @@ the Console says what went where, for example
 | Battery, Flare, Medkit, Keycard, Fuse, Crowbar, Gas mask, Walkie, Reel tape, Ammo, Backpack, Pouch, Fuel can, Car battery | items on the floor | the item's name (medkit, first aid, keycard, gas mask, jerry can...) |
 | Notes | notes, files and posters | note, paper, document, letter, folder, clipboard |
 | Doors | every door | door |
+| Car | the team's car (home screen and at the station) | car, sedan, vehicle |
+| Keypads | every keypad | keypad, code lock, numpad |
+| Desks | every desk | desk, office table |
+| Computers | monitors, computers, the terminal | computer, monitor, crt, pc |
 | The Long Man | the monster | long man, slender, creature, monster |
 
 Until a slot is filled, the game shows its simple placeholder shape.
+
+**Watch out for HDRP / URP assets:** this project uses Unity's Built-in
+renderer. Assets made only for HDRP or URP (for example "HDRP Lab Car" or
+the "HDRP Terrain" sample) show up **pink**. Look for assets that say
+"Built-in" (or "Standard shader"), or ask Claude about converting one.
 
 **Change a slot yourself:** top menu **Deepwell > Asset Slots**. Drag any
 prefab or model onto a slot, use **Turn** if it faces the wrong way and
@@ -87,6 +96,10 @@ jump, F flashlight (uses battery), E use / pick up / read (hold E for fuse
 boxes, prying, repairing...), **1-4 pick what's in your hand**, **left click
 use it** (shoot, battery, flare), R reload, **G drop**, **Tab inventory**, Q your
 ability, Esc pause. In cutscenes: Space = next, hold Space = skip.
+
+**Change your keys:** Settings > **CONTROLS (CHANGE KEYS)**: click a key,
+then press the new one. Settings also has **Subtitles** on/off and a large
+size.
 
 **Inventory:** 4 quick slots (the bar at the bottom) and 2 storage slots; a
 pouch adds 2 and a backpack 4 (up to 10). In the Tab screen, click an item,

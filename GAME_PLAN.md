@@ -143,8 +143,18 @@ buttons on top of it). `scripts/main.gd` opens it when the game starts.
    for the host's IP and waits until it connects.)
 3. **Pick a character in the car:** Eli drives, Cole sits next to him, Nora
    and Walter are in the back. Hover a name card or a person: the camera
-   glides to them and shows their role, story and abilities. Click, then
-   **PLAY AS ...**. Seats other players already took show **TAKEN**.
+   glides to them and shows their role, story and abilities. Clicking one
+   shows their face in the **rear-view mirror**. Then **PLAY AS ...**.
+   Seats other players already took show **TAKEN**.
+   - **The car talk** (with subtitles; Space = next, hold Space = skip):
+     Eli: "So... Uncle Cole. Why is there a journalist and an old man in
+     the car?" Cole: "Eli, they're here because—" Nora cuts in: "I can
+     speak for myself, thanks. Nora Vance. My source went missing out here
+     a month ago, and I'm going to find out why." Walter: "Walter Kessler.
+     I worked at that station, a long time ago. I know the way in." Cole:
+     "They want the same thing we do, kid. We find Marcus and Jenna, and we
+     get out." Eli: "...Okay. Okay."
+   - The old newspaper intro was removed: the story opens in the car.
    - Eli = The Son, Cole = The Guard, Nora = The Journalist, Walter = The Engineer
 4. **The drive:** the camera moves behind the car, it drives up to the
    station gate and stops (Enter or Esc skips it).

@@ -75,18 +75,8 @@ func _run() -> void:
 	_log("starting game")
 	GameState.start_game()
 	await _timer(0.5)
-	check(main.opening_cutscene.visible, "newspaper intro appears after character select")
-
-	ok = await _until(func() -> bool: return main.opening_cutscene._current_phase >= 1, 5.0)
-	if not ok:
-		return finish("newspaper phase never started")
-	_log("newspaper phase 1 up - NOT skipping, letting it play")
-
-	# Wait for cutscene to finish naturally
-	ok = await _until(func() -> bool: return not main.opening_cutscene.visible, 30.0)
-	if not ok:
-		return finish("opening cutscene never finished")
-	_log("opening cutscene finished naturally")
+	# The old newspaper intro is gone (the story opens in the car now).
+	check(not main.opening_cutscene.visible, "no newspaper intro: straight into the level")
 	await _timer(0.5)
 
 	# --- Level loads ---

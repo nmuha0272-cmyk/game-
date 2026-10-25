@@ -628,8 +628,12 @@ namespace Deepwell
 
         protected override void Build()
         {
-            Part(PrimitiveType.Cube, Vector3.zero, new Vector3(0.18f, 0.26f, 0.05f), new Color(0.16f, 0.16f, 0.17f));
-            Part(PrimitiveType.Cube, new Vector3(0f, 0.08f, 0.03f), new Vector3(0.14f, 0.05f, 0.01f), new Color(0.05f, 0.12f, 0.06f));
+            // A downloaded keypad (Asset Slots), or a simple box.
+            if (SZAssets.Spawn("keypad", transform, onGround: false) == null)
+            {
+                Part(PrimitiveType.Cube, Vector3.zero, new Vector3(0.18f, 0.26f, 0.05f), new Color(0.16f, 0.16f, 0.17f));
+                Part(PrimitiveType.Cube, new Vector3(0f, 0.08f, 0.03f), new Vector3(0.14f, 0.05f, 0.01f), new Color(0.05f, 0.12f, 0.06f));
+            }
             _screen = Text(new Vector3(0f, 0.08f, 0.04f), 0.03f, new Color(0.4f, 1f, 0.5f));
             Clickable(new Vector3(0f, 0f, 0.03f), new Vector3(0.35f, 0.4f, 0.3f));
             Show();
@@ -960,8 +964,11 @@ namespace Deepwell
 
         protected override void Build()
         {
-            Part(PrimitiveType.Cube, new Vector3(0f, 0.2f, 0f), new Vector3(0.45f, 0.35f, 0.35f), new Color(0.75f, 0.72f, 0.62f));
-            Part(PrimitiveType.Cube, new Vector3(0f, 0.22f, 0.18f), new Vector3(0.34f, 0.24f, 0.01f), new Color(0.03f, 0.25f, 0.08f), 0.5f);
+            if (SZAssets.Spawn("computer", transform, onGround: true, size: 0.45f) == null)  // a downloaded computer, or boxes
+            {
+                Part(PrimitiveType.Cube, new Vector3(0f, 0.2f, 0f), new Vector3(0.45f, 0.35f, 0.35f), new Color(0.75f, 0.72f, 0.62f));
+                Part(PrimitiveType.Cube, new Vector3(0f, 0.22f, 0.18f), new Vector3(0.34f, 0.24f, 0.01f), new Color(0.03f, 0.25f, 0.08f), 0.5f);
+            }
             Clickable(new Vector3(0f, 0.2f, 0.1f), new Vector3(0.6f, 0.5f, 0.6f));
         }
 

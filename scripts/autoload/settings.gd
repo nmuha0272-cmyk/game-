@@ -28,6 +28,8 @@ var noise_gate_threshold := 0.01
 
 ## Camera perspective: 0 = First person, 1 = Third person
 var camera_perspective := 0
+## Subtitles for what people say (cutscenes, the car talk, voice lines).
+var subtitles := true
 
 ## The controls the player is allowed to change, and the name shown in the menu.
 const REMAP_ACTIONS := [
@@ -101,6 +103,12 @@ func set_mic_sensitivity(value: float) -> void:
 func set_noise_gate_threshold(value: float) -> void:
 	noise_gate_threshold = clampf(value, 0.0, 0.5)
 	VoiceChat.set_noise_gate(value)
+	_save()
+	changed.emit()
+
+
+func set_subtitles(value: bool) -> void:
+	subtitles = value
 	_save()
 	changed.emit()
 
@@ -181,6 +189,7 @@ func _load() -> void:
 	mic_sensitivity = config.get_value("settings", "mic_sensitivity", mic_sensitivity)
 	noise_gate_threshold = config.get_value("settings", "noise_gate_threshold", noise_gate_threshold)
 	camera_perspective = config.get_value("settings", "camera_perspective", camera_perspective)
+	subtitles = config.get_value("settings", "subtitles", subtitles)
 	_controls.clear()
 	for pair in REMAP_ACTIONS:
 		var action: String = pair[0]
@@ -203,6 +212,7 @@ func _save() -> void:
 	config.set_value("settings", "mic_sensitivity", mic_sensitivity)
 	config.set_value("settings", "noise_gate_threshold", noise_gate_threshold)
 	config.set_value("settings", "camera_perspective", camera_perspective)
+	config.set_value("settings", "subtitles", subtitles)
 	for action in _controls:
 		config.set_value("input", action, _controls[action])
 	config.save(SAVE_PATH)

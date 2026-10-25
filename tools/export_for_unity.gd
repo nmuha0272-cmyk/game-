@@ -33,6 +33,10 @@ var _level: Node
 var _pz_index := {}
 ## While walking a puzzle mover (a gate, a shutter...), its index (-1 = none).
 var _mover := -1
+## While walking something a downloaded asset can replace in Unity (a desk, a
+## computer, the team's car): "DESK_12" etc. Its meshes are named "SLOT_DESK_12_...".
+var _slot_tag := ""
+var _slot_count := 0
 
 
 func _initialize() -> void:
@@ -98,80 +102,92 @@ func color(c: Color) -> Array:
 
 func _walk(node: Node, level: Node) -> void:
 	for child in node.get_children():
-		if node == level and child.name in SKIP_BRANCHES:
-			if child.name == "SpawnPoints":
-				for s in child.get_children():
-					if s is Node3D:
-						data.spawns.append({"p": pos(s.global_position), "r": rot(s.global_basis)})
-			elif child.name == "ItemSpawnPoints":
-				for s in child.get_children():
-					if s.get("item_id") != null:
-						_add_item(s)
-			elif child.name == "Checkpoints":
-				for c in child.get_children():
-					if c is Area3D:
-						_add_checkpoint(c)
-			elif child.name == "Triggers":
-				for t in child.get_children():
-					if t is Area3D and t.get("message") != null and str(t.get("message")) != "":
-						data.triggers.append(_box_of(t).merged({"message": str(t.get("message")),
-							"chase": t.get("monster") != null}))
-			elif child.name == "Monsters":
-				_add_monster(child)
-			elif child.name == "Cutscenes":
-				for c in child.get_children():
-					if c.get("shots") is Array:
-						_add_cutscene(c)
-			continue
-		# Interactive things (doors, puzzles, lore, items) are scenes of their own.
-		# Doors become data; the rest come in later phases.
-		if child.scene_file_path != "":
-			if child.get("entry") is LoreEntry:
-				_add_lore(child)
-			elif child.scene_file_path == DOOR_SCENE:
-				var lock := child.get_node_or_null("Lock")
-				var lock_kind := ""
-				if lock:
-					lock_kind = "jammed" if int(lock.get("kind")) == 1 else "keycard_" + str(lock.get("keycard_color"))
-				data.doors.append({"name": str(child.name), "p": pos(child.global_position),
-					"r": rot(child.global_basis), "puzzle": bool(child.get("puzzle_controlled")),
-					"locked": lock != null, "lock": lock_kind, "id": _pz_index.get(child, -1)})
-			continue
-		# The team's car: Unity animates its trunk lid and the pistols itself.
-		if child.name == "TeamCar":
-			data.team_car = {"p": pos(child.global_position), "r": rot(child.global_basis)}
-		if child.name == "TrunkLid" or str(child.name).begins_with("TrunkPistol"):
-			continue
-		# Puzzle movers (the fence gate, shutters, flood water...): Unity moves
-		# everything inside them when their puzzle is solved.
-		if child is AnimatableBody3D and _pz_index.has(child):
-			var outer := _mover
-			_mover = _pz_index[child]
-			_walk(child, level)
-			_mover = outer
-			continue
-		if child is CSGShape3D:
-			if child.is_root_shape():
-				_add_csg(child)
-			continue  # its children are part of the same baked mesh
-		if child is MultiMeshInstance3D:
-			_add_multimesh(child)
-		elif child is MeshInstance3D and child.mesh and child.is_visible_in_tree():
-			_add_mesh(child.mesh, child.global_transform, _materials_of(child), str(child.name), false)
-		elif child is OmniLight3D or child is SpotLight3D:
-			_add_light(child)
-		elif child is Label3D and child.is_visible_in_tree():
-			_add_label(child)
-		elif child is DirectionalLight3D:
-			data.moon = {"r": rot(child.global_basis), "color": color(child.light_color), "energy": child.light_energy}
-		elif child is WorldEnvironment and child.environment:
-			var env: Environment = child.environment
-			data.environment = {"ambient": color(env.ambient_light_color), "ambient_energy": env.ambient_light_energy,
-				"fog": env.volumetric_fog_enabled or env.fog_enabled, "fog_density": env.volumetric_fog_density,
-				"fog_color": color(env.volumetric_fog_albedo)}
-		elif child is CollisionShape3D and child.shape and child.get_parent() is StaticBody3D:
-			_add_collider(child)
+		_walk_child(child, node, level)
+
+
+func _walk_child(child: Node, node: Node, level: Node) -> void:
+	if node == level and child.name in SKIP_BRANCHES:
+		if child.name == "SpawnPoints":
+			for s in child.get_children():
+				if s is Node3D:
+					data.spawns.append({"p": pos(s.global_position), "r": rot(s.global_basis)})
+		elif child.name == "ItemSpawnPoints":
+			for s in child.get_children():
+				if s.get("item_id") != null:
+					_add_item(s)
+		elif child.name == "Checkpoints":
+			for c in child.get_children():
+				if c is Area3D:
+					_add_checkpoint(c)
+		elif child.name == "Triggers":
+			for t in child.get_children():
+				if t is Area3D and t.get("message") != null and str(t.get("message")) != "":
+					data.triggers.append(_box_of(t).merged({"message": str(t.get("message")),
+						"chase": t.get("monster") != null}))
+		elif child.name == "Monsters":
+			_add_monster(child)
+		elif child.name == "Cutscenes":
+			for c in child.get_children():
+				if c.get("shots") is Array:
+					_add_cutscene(c)
+		return
+	# Interactive things (doors, puzzles, lore, items) are scenes of their own.
+	# Doors become data; the rest come in later phases.
+	if child.scene_file_path != "":
+		if child.get("entry") is LoreEntry:
+			_add_lore(child)
+		elif child.scene_file_path == DOOR_SCENE:
+			var lock := child.get_node_or_null("Lock")
+			var lock_kind := ""
+			if lock:
+				lock_kind = "jammed" if int(lock.get("kind")) == 1 else "keycard_" + str(lock.get("keycard_color"))
+			data.doors.append({"name": str(child.name), "p": pos(child.global_position),
+				"r": rot(child.global_basis), "puzzle": bool(child.get("puzzle_controlled")),
+				"locked": lock != null, "lock": lock_kind, "id": _pz_index.get(child, -1)})
+		return
+	# The team's car: Unity animates its trunk lid and the pistols itself.
+	if child.name == "TeamCar":
+		data.team_car = {"p": pos(child.global_position), "r": rot(child.global_basis)}
+	if child.name == "TrunkLid" or str(child.name).begins_with("TrunkPistol"):
+		return
+	# Puzzle movers (the fence gate, shutters, flood water...): Unity moves
+	# everything inside them when their puzzle is solved.
+	if child is AnimatableBody3D and _pz_index.has(child):
+		var outer := _mover
+		_mover = _pz_index[child]
 		_walk(child, level)
+		_mover = outer
+		return
+	# Desks, computers and the team's car: Unity can swap in a downloaded model.
+	var tag := _slot_tag_for(str(child.name))
+	if tag != "" and _slot_tag == "":
+		_slot_count += 1
+		_slot_tag = "%s_%d" % [tag, _slot_count]
+		_walk_child(child, node, level)
+		_slot_tag = ""
+		return
+	if child is CSGShape3D:
+		if child.is_root_shape():
+			_add_csg(child)
+		return  # its children are part of the same baked mesh
+	if child is MultiMeshInstance3D:
+		_add_multimesh(child)
+	elif child is MeshInstance3D and child.mesh and child.is_visible_in_tree():
+		_add_mesh(child.mesh, child.global_transform, _materials_of(child), str(child.name), false)
+	elif child is OmniLight3D or child is SpotLight3D:
+		_add_light(child)
+	elif child is Label3D and child.is_visible_in_tree():
+		_add_label(child)
+	elif child is DirectionalLight3D:
+		data.moon = {"r": rot(child.global_basis), "color": color(child.light_color), "energy": child.light_energy}
+	elif child is WorldEnvironment and child.environment:
+		var env: Environment = child.environment
+		data.environment = {"ambient": color(env.ambient_light_color), "ambient_energy": env.ambient_light_energy,
+			"fog": env.volumetric_fog_enabled or env.fog_enabled, "fog_density": env.volumetric_fog_density,
+			"fog_color": color(env.volumetric_fog_albedo)}
+	elif child is CollisionShape3D and child.shape and child.get_parent() is StaticBody3D:
+		_add_collider(child)
+	_walk(child, level)
 
 
 func _materials_of(mi: MeshInstance3D) -> Array:
@@ -195,7 +211,7 @@ func _add_mesh(mesh: Mesh, xform: Transform3D, mats: Array, label: String, solid
 	mi.transform = xform
 	_mesh_count += 1
 	mi.name = ("COL_" if solid else "") + ("MOVER_%d_" % _mover if _mover >= 0 else "") \
-		+ "%s_%d" % [label.validate_node_name(), _mesh_count]
+		+ ("SLOT_%s_" % _slot_tag if _slot_tag != "" else "") + "%s_%d" % [label.validate_node_name(), _mesh_count]
 	for s in min(mats.size(), mesh.get_surface_count()):
 		if mats[s]:
 			mi.set_surface_override_material(s, mats[s])
@@ -545,3 +561,15 @@ func _param_of(key: String, value: Variant) -> Dictionary:
 			if not refs.is_empty():
 				return {"k": key, "refs": refs}
 	return {}
+
+
+# ---------------------------------------------------------------- replaceable things
+
+func _slot_tag_for(node_name: String) -> String:
+	if node_name == "TeamCar":
+		return "CAR"
+	if node_name.contains("Desk") or node_name == "BreakTable":
+		return "DESK"
+	if node_name.contains("Monitor") or node_name.contains("Screen") or node_name.contains("Computer"):
+		return "COMPUTER"
+	return ""
