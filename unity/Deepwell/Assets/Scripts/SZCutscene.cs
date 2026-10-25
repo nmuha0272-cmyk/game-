@@ -18,6 +18,12 @@ namespace Deepwell
         public string Speaker { get; private set; }
         public float Bars { get; private set; }      // 0..1, the black bars
         public float SkipHold { get; private set; }  // 0..1 while Space is held
+        public bool ShowPhoto;                         // Eli's old photo, big on screen
+
+        // Optional: told about each line as it starts (index, line), and asked
+        // where the camera should be for it (null = back to your own eyes).
+        public Action<int, DialogueLine> OnLine;
+        public Func<int, DialogueLine, Pose?> LineShot;
 
         const float LineMin = 2.5f, LineMax = 7f;
 
@@ -39,24 +45,35 @@ namespace Deepwell
             c._playerCam = playerCam;
             c._done = done;
             Current = c;
-            if (c._shots.Length > 0)
+            // Start on the next frame, so whoever called Play can set OnLine / LineShot first.
+            return c;
+        }
+
+        void Start()
+        {
+            if (_shots.Length > 0)
             {
-                c._cam = new GameObject("CutsceneCamera").AddComponent<Camera>();
-                c._cam.transform.SetParent(go.transform);
-                c._cam.fieldOfView = 60f;
-                c._cam.nearClipPlane = 0.05f;
-                c._cam.farClipPlane = 400f;
-                c._cam.clearFlags = CameraClearFlags.SolidColor;
-                c._cam.backgroundColor = new Color(0.01f, 0.012f, 0.02f);
-                SZGraphics.SetupCamera(c._cam);
-                if (playerCam) playerCam.enabled = false;
-                c.NextShot();
+                _cam = MakeCamera(transform);
+                if (_playerCam) _playerCam.enabled = false;
+                NextShot();
             }
             else
             {
-                c.NextLine();
+                NextLine();
             }
-            return c;
+        }
+
+        static Camera MakeCamera(Transform parent)
+        {
+            var cam = new GameObject("CutsceneCamera").AddComponent<Camera>();
+            cam.transform.SetParent(parent);
+            cam.fieldOfView = 60f;
+            cam.nearClipPlane = 0.05f;
+            cam.farClipPlane = 400f;
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = new Color(0.01f, 0.012f, 0.02f);
+            SZGraphics.SetupCamera(cam);
+            return cam;
         }
 
         // Who says it, by the Godot character names.
@@ -122,8 +139,9 @@ namespace Deepwell
                 Caption = _shots[_shot].text;
                 return;
             }
-            // Shots done: back to your own eyes for the talking.
+            // Shots done: back to your own eyes for the talking (unless a line wants a camera).
             if (_cam) Destroy(_cam.gameObject);
+            _cam = null;
             if (_playerCam) _playerCam.enabled = true;
             NextLine();
         }
@@ -139,6 +157,20 @@ namespace Deepwell
             }
             Speaker = NameOf(_lines[_line].who);
             Caption = _lines[_line].text;
+            OnLine?.Invoke(_line, _lines[_line]);
+            var shot = LineShot?.Invoke(_line, _lines[_line]);
+            if (shot.HasValue)
+            {
+                if (_cam == null) _cam = MakeCamera(transform);
+                if (_playerCam) _playerCam.enabled = false;
+                _cam.transform.SetPositionAndRotation(shot.Value.position, shot.Value.rotation);
+            }
+            else if (_cam != null)
+            {
+                Destroy(_cam.gameObject);
+                _cam = null;
+                if (_playerCam) _playerCam.enabled = true;
+            }
             // Reading time: about 15 letters a second.
             _lineTime = Mathf.Clamp(Caption.Length / 15f, LineMin, LineMax);
         }

@@ -24,7 +24,7 @@ const SKIP_BRANCHES := ["Players", "Items", "ItemSpawnPoints", "Monsters", "Trig
 
 var data := {"lights": [], "doors": [], "labels": [], "spawns": [], "colliders": [],
 	"items": [], "lore": [], "lore_book": [], "checkpoints": [], "triggers": [], "monster": {},
-	"cutscenes": [], "dialogue": [],
+	"cutscenes": [], "dialogue": [], "team_car": {},
 	"moon": {}, "environment": {}}
 var _export_root: Node3D
 var _mesh_count := 0
@@ -49,7 +49,9 @@ func _run() -> void:
 	# The team's talk when they arrive (scripts/chapters/opening_dialogue.gd).
 	var talk: Array = load("res://scripts/chapters/opening_dialogue.gd").get_script_constant_map().get("DIALOGUE", [])
 	for line in talk:
-		data.dialogue.append({"who": str(line["character"]), "text": str(line["text"])})
+		data.dialogue.append({"who": str(line["character"]), "text": str(line["text"]),
+			"trunk": bool(line.get("trunk", false)), "pistols": bool(line.get("pistols", false)),
+			"photo": bool(line.get("photo", false))})
 
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
 	var doc := GLTFDocument.new()
@@ -122,6 +124,11 @@ func _walk(node: Node, level: Node) -> void:
 				data.doors.append({"name": str(child.name), "p": pos(child.global_position),
 					"r": rot(child.global_basis), "puzzle": bool(child.get("puzzle_controlled")),
 					"locked": child.get_node_or_null("Lock") != null})
+			continue
+		# The team's car: Unity animates its trunk lid and the pistols itself.
+		if child.name == "TeamCar":
+			data.team_car = {"p": pos(child.global_position), "r": rot(child.global_basis)}
+		if child.name == "TrunkLid" or str(child.name).begins_with("TrunkPistol"):
 			continue
 		# Puzzle movers (the fence gate, shutters, flood water...) are exported already
 		# open, like puzzle doors, until the puzzles come to Unity. Gates go all the way up.

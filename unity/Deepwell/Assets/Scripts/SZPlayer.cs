@@ -112,6 +112,11 @@ namespace Deepwell
             Flashlight.shadows = LightShadows.Soft;
             Flashlight.shadowBias = 0.02f;
             Flashlight.enabled = false;
+            // A downloaded flashlight model (Asset Slots), held where the light comes from.
+            var torchSpot = new GameObject("FlashlightModel").transform;
+            torchSpot.SetParent(torch.transform, false);
+            torchSpot.localPosition = new Vector3(0f, -0.02f, -0.08f);
+            SZAssets.Spawn("flashlight", torchSpot, onGround: false);
 
             _steps = SZAudio.Attach(gameObject, "footstep_placeholder", 0.35f, 15f);
             SZAudio.Attach(_head.gameObject, "ambient_drone", 0.25f, 1000f, loop: true).spatialBlend = 0f;
@@ -307,6 +312,7 @@ namespace Deepwell
         {
             var gun = new GameObject("Pistol");
             gun.transform.SetParent(Camera.transform, false);
+            if (SZAssets.Spawn("pistol", gun.transform, onGround: false) != null) return gun;  // a downloaded pistol
             var black = SZGraphics.Lit(new Color(0.05f, 0.05f, 0.055f), 0.5f);
             GunPart(gun, new Vector3(0f, 0f, 0f), new Vector3(0.035f, 0.045f, 0.19f), black);        // slide
             GunPart(gun, new Vector3(0f, -0.06f, -0.06f), new Vector3(0.03f, 0.1f, 0.045f), black);  // grip

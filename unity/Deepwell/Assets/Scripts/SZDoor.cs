@@ -50,6 +50,14 @@ namespace Deepwell
             Part(hinge.transform, "Window", new Vector3(-Width / 2f, 2.1f, 0f), new Vector3(0.6f, 0.4f, Thickness + 0.01f),
                 SZGraphics.Lit(new Color(0.05f, 0.06f, 0.06f), 0.9f), false);
 
+            // A downloaded door (Deepwell > Asset Slots) replaces the look; the panel stays solid.
+            var bottomMiddle = new GameObject("AssetSpot").transform;
+            bottomMiddle.SetParent(hinge.transform, false);
+            bottomMiddle.localPosition = new Vector3(-Width / 2f, 0f, 0f);
+            if (SZAssets.Spawn("door", bottomMiddle, onGround: true) != null)
+                foreach (var r in hinge.GetComponentsInChildren<MeshRenderer>())
+                    if (!r.transform.IsChildOf(bottomMiddle)) r.enabled = false;
+
             door._sound = SZAudio.Attach(hinge, "door_creak", 0.7f, 14f);
             door._closed = hinge.transform.localRotation;
             if (d.puzzle || d.locked) door.SetOpen(true, instant: true);

@@ -34,6 +34,9 @@ namespace Deepwell
             look.transform.localPosition = new Vector3(0f, size.y * (d.id == "battery" || d.id == "flare" ? 1f : 0.5f), 0f);
             if (d.id == "flare") look.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
             look.GetComponent<Renderer>().sharedMaterial = SZGraphics.Lit(color, 0.45f, color * 0.25f);
+            // A downloaded asset in this item's slot replaces the placeholder shape.
+            if (SZAssets.Spawn(SZAssets.SlotForItem(d.id), go.transform, onGround: true) != null)
+                look.GetComponent<Renderer>().enabled = false;
             // A bigger invisible box so it's easy to aim at.
             var box = look.GetComponent<Collider>();
             Destroy(box);

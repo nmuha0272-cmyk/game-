@@ -58,7 +58,8 @@ namespace Deepwell
 
         void Build()
         {
-            _model = SZCharacters.LoadModel("long_man", transform, 2.9f) ?? StandIn();
+            // A downloaded monster (Asset Slots) first, then the Godot model, then a simple figure.
+            _model = SZAssets.Spawn("long_man", transform, onGround: true) ?? SZCharacters.LoadModel("long_man", transform, 2.9f) ?? StandIn();
             var eyes = new GameObject("EyeGlow");
             eyes.transform.SetParent(transform, false);
             eyes.transform.localPosition = new Vector3(0f, 2.6f, 0.3f);

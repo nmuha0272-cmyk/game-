@@ -23,6 +23,7 @@ namespace Deepwell
         public MonsterData monster;
         public CutsceneData[] cutscenes;
         public DialogueLine[] dialogue;
+        public SpawnData team_car;
         public MoonData moon;
         public EnvironmentData environment;
 
@@ -150,5 +151,6 @@ namespace Deepwell
     public class DialogueLine
     {
         public string who, text;
+        public bool trunk, pistols, photo;  // the trunk scene at the team's car
     }
 }

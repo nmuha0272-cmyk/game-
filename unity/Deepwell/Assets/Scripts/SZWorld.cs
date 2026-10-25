@@ -26,6 +26,7 @@ namespace Deepwell
         readonly List<SZFlicker> _brokenLights = new List<SZFlicker>();
         readonly Dictionary<int, SZRemotePlayer> _remotes = new Dictionary<int, SZRemotePlayer>();
         float _nextState, _nextSummary;
+        SZTrunkScene _trunk;
         bool _gotSummary;
 
         public struct PlayerView
@@ -73,9 +74,15 @@ namespace Deepwell
             Local = SZPlayer.Spawn(spawn.position, spawn.rotation, character, playerName);
             Local.transform.SetParent(transform);
 
-            // The chapter intro (camera over the station with captions), then the team talks.
+            // The chapter intro (camera over the station with captions), then Eli and
+            // Cole at the trunk of the team's car, then the whole team talks.
             var intro = Data.cutscenes != null ? System.Array.Find(Data.cutscenes, c => c.play_on_start) : null;
-            SZCutscene.Play(intro?.shots, Data.dialogue, Local.Camera);
+            var opening = SZCutscene.Play(intro?.shots, Data.dialogue, Local.Camera, () => _trunk?.End());
+            if (Data.team_car != null && Data.team_car.p != null && Data.team_car.p.Length == 3)
+            {
+                _trunk = SZTrunkScene.Create(Data.team_car, transform);
+                _trunk.Attach(opening);
+            }
 
             var net = SZNet.Instance;
             if (net != null)

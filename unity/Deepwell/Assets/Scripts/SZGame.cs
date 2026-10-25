@@ -539,7 +539,6 @@ namespace Deepwell
             var caption = new GUIStyle(_small) { fontSize = 22 };
             caption.normal.textColor = new Color(0.85f, 0.83f, 0.76f, scene.ArrivalText);
             GUI.Label(new Rect(88, 72, 900, 70), "BLACKWATER WEATHER STATION\nOCTOBER 14, 2015   03:52 AM", caption);
-            DrawCaption(scene.Speaker, scene.Caption);
             GUI.Label(new Rect(88, Screen.height - 50, 600, 30), "Enter = skip", _small);
             if (scene.Fade > 0f) Box(Full(), new Color(0, 0, 0, scene.Fade));
             _prompt.normal.textColor = c;
@@ -673,10 +672,26 @@ namespace Deepwell
             float bar = Screen.height * 0.11f * c.Bars;
             Box(new Rect(0, 0, Screen.width, bar), Color.black);
             Box(new Rect(0, Screen.height - bar, Screen.width, bar), Color.black);
+            if (c.ShowPhoto) DrawPhoto();
             DrawCaption(c.Speaker, c.Caption);
             var hint = new GUIStyle(_small) { alignment = TextAnchor.UpperRight, fontSize = 14 };
             GUI.Label(new Rect(0, Screen.height - 28, Screen.width - 20, 24),
                 c.SkipHold > 0f ? "Skipping..." : "[SPACE] next     hold [SPACE] skip", hint);
+        }
+
+        // Eli's old photo of him with his mom and dad (Resources/Textures/eli_family_photo.png).
+        Texture2D _photo;
+
+        void DrawPhoto()
+        {
+            if (_photo == null) _photo = Resources.Load<Texture2D>("Textures/eli_family_photo");
+            if (_photo == null) return;
+            float h = Screen.height * 0.6f, w = h * _photo.width / Mathf.Max(_photo.height, 1);
+            var r = new Rect(Screen.width / 2f - w / 2f, Screen.height * 0.42f - h / 2f, w, h);
+            var m = GUI.matrix;
+            GUIUtility.RotateAroundPivot(-3f, r.center);
+            GUI.DrawTexture(r, _photo, ScaleMode.ScaleToFit);
+            GUI.matrix = m;
         }
 
         void DrawCaption(string speaker, string text)

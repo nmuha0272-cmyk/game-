@@ -38,6 +38,8 @@ namespace Deepwell
             var col = look.GetComponent<BoxCollider>();
             col.isTrigger = true;
             col.size = new Vector3(1f + 0.25f / size.x, 1f + 0.25f / size.y, 1f + 0.25f / size.z);
+            if (d.kind != "tape_machine" && SZAssets.Spawn("note", go.transform, onGround: d.kind != "lore_poster") != null)
+                look.GetComponent<Renderer>().enabled = false;  // keep its box so you can still aim at it
             return lore;
         }
 

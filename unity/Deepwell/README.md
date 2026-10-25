@@ -8,7 +8,7 @@ It's moved over **one phase at a time**.
 |---|---|---|
 | U1 | Chapter 1 built from the Godot level (all rooms, props, lights, signs, fog), walk / sprint / crouch / jump, flashlight, doors | done |
 | U2 | **Better graphics** (glow, film look, shadows, quality settings), **online co-op** (Host / Join, up to 4), **items** (batteries, flares, medkits, keycards...), **story notes and tapes**, **the Long Man** (patrol, sight, hearing, chase, opens doors), **checkpoints**, **story messages**, **the 4 characters and their abilities**, sounds, settings, **sets itself up** | done |
-| **U2.5** | **The Deepwell car home screen** (car on the forest road, choose your character inside the car), **the newspaper intro**, **the arrival cutscene** (everyone gets out, Eli and Cole take pistols from the trunk), **the chapter intro and the team's talk**, **pistols** (click to shoot, R to reload; a hit stuns the Long Man), **real textures instead of silver** | **← now** |
+| **U2.5** | **The Deepwell car home screen** (car on the forest road, choose your character inside the car), **the newspaper intro**, **the chapter intro**, **the trunk scene** at the team's car by the station (Eli and Cole take the pistols, talk about the missing people, Eli shows the old photo of his mom and dad), **the team's talk**, **pistols** (click to shoot, R to reload; a hit stuns the Long Man), **real textures instead of silver** | **← now** |
 | U3 | Puzzles (keypads, levers, fuses, generators...), locked doors that need keycards | next |
 | U4 | Downed / help up, hiding in lockers, the reveal cutscene | |
 | U5 | Chapter 2 | |
@@ -37,6 +37,32 @@ You don't need to change any settings (the old "Active Input Handling" step
 is gone: the game works with either input setting).
 
 If there are red errors in the **Console** window, copy them to Claude.
+
+## Adding assets (Unity Asset Store and others)
+
+Download or import an asset the normal way (Window > Package Manager > My
+Assets > Download > Import). The game **puts it in the right place by
+itself**: it looks at each new model's name and fills the matching slot, and
+the Console says what went where, for example
+`PISTOL <- Assets/LowPolyGuns/Prefabs/Glock17.prefab`.
+
+| Slot | Used for | Names it looks for |
+|---|---|---|
+| Pistol | Eli's and Cole's pistol in your hand, in the trunk, pistols on the floor | pistol, handgun, glock, beretta, 1911, colt, 9mm |
+| Revolver / Shotgun / SMG / Rifle | guns on the floor | revolver, shotgun, mp5, uzi, rifle, ak47, m4 |
+| Flashlight | the flashlight in your hand | flashlight |
+| Battery, Flare, Medkit, Keycard, Fuse, Crowbar, Gas mask, Walkie, Reel tape, Ammo, Backpack, Pouch, Fuel can, Car battery | items on the floor | the item's name (medkit, first aid, keycard, gas mask, jerry can...) |
+| Notes | notes, files and posters | note, paper, document, letter, folder, clipboard |
+| Doors | every door | door |
+| The Long Man | the monster | long man, slender, creature, monster |
+
+Until a slot is filled, the game shows its simple placeholder shape.
+
+**Change a slot yourself:** top menu **Deepwell > Asset Slots**. Drag any
+prefab or model onto a slot, use **Turn** if it faces the wrong way and
+**Size** if it's too big or small, or **Clear** to go back to the
+placeholder. **Find assets in my project now** checks everything you already
+have.
 
 ## Playing online with friends
 
@@ -87,6 +113,8 @@ you once).
 |---|---|
 | `SZMenuScene` | The car home screen: road, forest, car, the 4 characters in their seats, the drive to the station and the arrival cutscene |
 | `SZCutscene` | Camera cutscenes with captions (chapter intro, the team's talk, the Long Man's reveal) |
+| `SZTrunkScene` | The trunk scene at the team's car: the lid, the pistols, Eli's photo, the camera |
+| `SZAssetSlots` / `Editor/SZAssetSlotsEditor` | Asset slots: downloaded models replace the placeholders (filled by name automatically) |
 | `SZGame` | Starts everything (no scene setup needed), the menus, the HUD, reading notes |
 | `SZWorld` | One chapter being played: doors, items, notes, triggers, checkpoints, the Long Man, other players, and keeping everyone in sync online |
 | `SZNet` | Online: Host / Join over UDP port 7777 (no extra packages) |

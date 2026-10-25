@@ -12,9 +12,8 @@ using Random = UnityEngine.Random;
 //             to him, Nora and Walter are in the back. Pointing at a
 //             character's card moves the camera to them.
 //   ARRIVING: the camera moves behind the car, it drives up to the gate of
-//             the Blackwater Weather Station and stops. Everyone gets out,
-//             Eli and Cole go to the trunk and each take a pistol, then it
-//             fades to black.
+//             the Blackwater Weather Station, stops, and fades to black.
+//             (The trunk scene happens in the level, at the real station.)
 // Godot positions are copied with X flipped (Unity is left-handed).
 namespace Deepwell
 {
@@ -28,8 +27,6 @@ namespace Deepwell
         public float Fade { get; private set; }       // 0..1 black at the end of the drive
         public float ArrivalText { get; private set; } // 0..1 the "BLACKWATER WEATHER STATION" caption
         public Camera Camera { get; private set; }
-        public string Speaker { get; private set; }  // the arrival cutscene's caption
-        public string Caption { get; private set; }
 
         const float DriveSpeed = 17f;
         const float StationStartZ = -75f, StationStopZ = -9f, RoadLength = 160f;
@@ -51,16 +48,6 @@ namespace Deepwell
         readonly List<Transform> _scrollers = new List<Transform>();
         readonly List<Transform> _trees = new List<Transform>();
         readonly Transform[] _figures = new Transform[4];
-        readonly GameObject[] _models = new GameObject[4];
-        readonly float[] _sitDrop = new float[4];   // how far a model is sunk to look seated
-        Transform _trunkLid;
-        bool _outOfCar, _pistolsTaken, _trunkSound;
-        Vector3 _arriveCamPos = ArriveCamPos, _arriveCamLook = ArriveCamTarget;
-
-        // The arrival cutscene (Godot coordinates, flipped): where everyone stands.
-        static readonly Vector3[] OutSpots = { G(-1.5f, 0f, -0.1f), G(1.5f, 0f, -0.1f), G(-1.5f, 0f, 1.1f), G(1.5f, 0f, 1.1f) };
-        static readonly Vector3[] EndSpots = { G(-0.5f, 0f, 3.35f), G(0.5f, 0f, 3.35f), G(-1.3f, 0f, -4.2f), G(1.3f, 0f, -4.2f) };
-        static readonly Vector3[] Corners = { G(-1.5f, 0f, 3.35f), G(1.5f, 0f, 3.35f), G(-1.4f, 0f, -2f), G(1.4f, 0f, -2f) };
         float _time, _speed = DriveSpeed, _stoppedAt = -1f;
         Action _onArrived;
         bool _arrivedCalled;
@@ -132,6 +119,8 @@ namespace Deepwell
             _speed = 0f;
         }
 
+        const float FadeAt = 2f;  // seconds after the car stops
+
         // The character under the mouse in the 3D car (or -1).
         public int CharacterAt(Vector2 screenPoint)
         {
@@ -167,7 +156,7 @@ namespace Deepwell
             float shake = _speed / DriveSpeed;
             _car.localPosition = new Vector3(0f, (Mathf.Sin(_time * 9f) * 0.008f + Mathf.Sin(_time * 2.3f) * 0.012f) * shake, 0f);
             _car.localRotation = Quaternion.Euler(Mathf.Sin(_time * 3.1f) * 0.17f * shake, 0f, -Mathf.Sin(_time * 1.7f) * 0.34f * shake);
-            for (int i = 0; i < 4 && !_outOfCar; i++)
+            for (int i = 0; i < 4; i++)
             {
                 var f = _figures[i];
                 var p = f.localPosition;
@@ -181,8 +170,8 @@ namespace Deepwell
             var look = MenuCamTarget;
             if (Mode == State.Arriving)
             {
-                pos = _arriveCamPos;
-                look = _arriveCamLook;
+                pos = ArriveCamPos;
+                look = ArriveCamTarget;
             }
             else if (Mode == State.Select)
             {
@@ -222,70 +211,7 @@ namespace Deepwell
                 tree.gameObject.SetActive(tree.localPosition.z > sp.z + 3f || Mathf.Abs(tree.localPosition.x) > 40f);
 
             ArrivalText = Mathf.MoveTowards(ArrivalText, _stoppedAt < 0f ? 1f : 0f, dt * 0.5f);
-            if (_stoppedAt >= 0f) GetOutOfTheCar(Time.time - _stoppedAt, dt);
-        }
-
-        // ---------------------------------------------------------------- the arrival cutscene
-
-        const float OutAt = 0.8f, WalkAt = 2.8f, TrunkAt = 4.9f, PistolAt = 5.7f, FadeAt = 10f;
-
-        void GetOutOfTheCar(float t, float dt)
-        {
-            // 1. Everyone climbs out (camera at the front corner).
-            if (t >= OutAt)
-            {
-                _outOfCar = true;
-                _arriveCamPos = G(-4.6f, 2.0f, -3.6f);
-                _arriveCamLook = G(0f, 1.0f, 0.6f);
-            }
-            for (int i = 0; i < 4 && _outOfCar; i++)
-            {
-                float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((t - OutAt - i * 0.2f) / 1.4f));
-                if (t < WalkAt) MoveFigure(i, Vector3.Lerp(Seats[i], OutSpots[i], k), dt, k > 0f && k < 1f);
-                if (_models[i]) _models[i].transform.localPosition = BaseOffset(i) + Vector3.down * _sitDrop[i] * (1f - k);
-            }
-
-            // 2. Eli and Cole walk round to the trunk; Nora and Walter go toward the gate.
-            if (t >= WalkAt)
-            {
-                _arriveCamPos = G(2.4f, 2.1f, 7.4f);
-                _arriveCamLook = G(0f, 1.0f, 2.4f);
-                for (int i = 0; i < 4; i++)
-                {
-                    float k = Mathf.Clamp01((t - WalkAt) / (TrunkAt - WalkAt - 0.2f));
-                    var where = k < 0.5f ? Vector3.Lerp(OutSpots[i], Corners[i], k * 2f) : Vector3.Lerp(Corners[i], EndSpots[i], (k - 0.5f) * 2f);
-                    MoveFigure(i, where, dt, k < 1f);
-                }
-            }
-
-            // 3. The trunk opens.
-            if (t >= TrunkAt)
-            {
-                if (!_trunkSound)
-                {
-                    _trunkSound = true;
-                    SZAudio.PlayAt("metal_creak", _trunkLid.position, 0.8f, 20f);
-                }
-                float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((t - TrunkAt) / 0.8f));
-                _trunkLid.localRotation = Quaternion.Euler(-75f * k, 0f, 0f);
-                _arriveCamPos = G(1.6f, 2.0f, 6.2f);
-                _arriveCamLook = G(0f, 1.0f, 2.6f);
-            }
-
-            // 4. They each take a pistol.
-            if (t >= PistolAt && !_pistolsTaken)
-            {
-                _pistolsTaken = true;
-                GivePistol(0);
-                GivePistol(1);
-                SZAudio.PlayAt("repair_click", _trunkLid.position, 1f, 15f);
-            }
-            if (t >= PistolAt && t < PistolAt + 2.2f) { Speaker = "COLE"; Caption = "Take this. Safety on until you need it."; }
-            else if (t >= PistolAt + 2.2f && t < PistolAt + 4.3f) { Speaker = "ELI"; Caption = "Got it. Let's go find them."; }
-            else { Speaker = null; Caption = null; }
-
-            // 5. Fade to black, then the chapter.
-            if (t >= FadeAt)
+            if (_stoppedAt >= 0f && Time.time - _stoppedAt >= FadeAt)
             {
                 Fade = Mathf.MoveTowards(Fade, 1f, dt / 1.5f);
                 if (Fade >= 1f && !_arrivedCalled)
@@ -294,33 +220,6 @@ namespace Deepwell
                     _onArrived?.Invoke();
                 }
             }
-        }
-
-        readonly Vector3[] _baseOffsets = new Vector3[4];
-        Vector3 BaseOffset(int i) => _baseOffsets[i];
-
-        // Moves a person (in the car's space), turning them the way they walk.
-        void MoveFigure(int i, Vector3 where, float dt, bool walking)
-        {
-            var f = _figures[i];
-            var step = where - f.localPosition;
-            step.y = 0f;
-            f.localPosition = where;
-            // The body inside faces the root's -Z, so turn the root to face away from the walk.
-            var face = walking && step.sqrMagnitude > 0.00001f ? Quaternion.LookRotation(-step.normalized) : Quaternion.identity;
-            f.localRotation = Quaternion.Slerp(f.localRotation, face, dt * 8f);
-            if (_models[i]) SZCharacters.PlayAnimation(_models[i], walking ? "walk" : "idle");
-        }
-
-        void GivePistol(int i)
-        {
-            var holder = _figures[i].Find("Holder");
-            var gun = new GameObject("Pistol");
-            gun.transform.SetParent(holder, false);
-            gun.transform.localPosition = new Vector3(i == 0 ? 0.24f : -0.24f, 1.0f, 0.32f);
-            var black = Mat(new Color(0.05f, 0.05f, 0.055f), 0.5f);
-            Box(gun.transform, new Vector3(0.035f, 0.045f, 0.19f), Vector3.zero, black);
-            Box(gun.transform, new Vector3(0.03f, 0.1f, 0.045f), new Vector3(0f, -0.06f, -0.06f), black);
         }
 
         // ---------------------------------------------------------------- building
@@ -559,12 +458,7 @@ namespace Deepwell
             Box(_car, new Vector3(2f, 0.45f, 4.8f), G(0f, 0.55f, 0.2f), paint);
             Box(_car, new Vector3(1.84f, 0.02f, 2.6f), G(0f, 0.79f, 0.4f), Mat(new Color(0.05f, 0.045f, 0.04f)));
             Box(_car, new Vector3(2f, 0.35f, 1.5f), G(0f, 0.95f, -1.55f), paint);
-            Box(_car, new Vector3(2f, 0.3f, 1f), G(0f, 0.925f, 2.1f), paint);
-            // The trunk lid, hinged at its front edge so it can swing up.
-            _trunkLid = new GameObject("TrunkLid").transform;
-            _trunkLid.SetParent(_car, false);
-            _trunkLid.localPosition = G(0f, 1.1f, 1.6f);
-            Box(_trunkLid, new Vector3(2f, 0.05f, 1f), new Vector3(0f, 0f, 0.5f), paint);
+            Box(_car, new Vector3(2f, 0.35f, 1f), G(0f, 0.95f, 2.1f), paint);
             Box(_car, new Vector3(0.08f, 0.38f, 2.4f), G(-0.96f, 0.95f, 0.4f), paint);
             Box(_car, new Vector3(0.08f, 0.38f, 2.4f), G(0.96f, 0.95f, 0.4f), paint);
             Box(_car, new Vector3(2.04f, 0.1f, 4.9f), G(0f, 0.3f, 0.2f), chrome);
@@ -629,20 +523,9 @@ namespace Deepwell
             holder.SetParent(root, false);
             holder.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
-            var model = SZCharacters.LoadModel(SZCharacters.ModelFile((SZCharacter)i), holder, SZCharacters.Height((SZCharacter)i));
-            if (model != null)
-            {
-                // The models are standing, so sink them until their head is where a sitting
-                // person's head would be (the car body and road hide the legs).
-                _baseOffsets[i] = model.transform.localPosition;
-                _sitDrop[i] = SZCharacters.Height((SZCharacter)i) - 1.66f * Sizes[i];
-                model.transform.localPosition += Vector3.down * _sitDrop[i];
-                _models[i] = model;
-            }
-            else
-            {
-                StandIn(holder, i);
-            }
+            // The simple sitting figure: the team's models are T-pose statues
+            // (no skeleton yet), so they can't sit in a car. They appear in the game.
+            StandIn(holder, i);
 
             // Clickable area around the whole figure.
             var hit = new GameObject("Click");
