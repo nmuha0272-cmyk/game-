@@ -95,12 +95,18 @@ have.
 WASD move, mouse look, Shift sprint (uses stamina), Ctrl or C crouch, Space
 jump, F flashlight (uses battery), E use / pick up / read (hold E for fuse
 boxes, prying, repairing...), **1-4 pick what's in your hand**, **left click
-use it** (shoot, battery, flare), R reload, **G drop**, **Tab inventory**, Q your
+use it** (shoot, battery, flare), R reload, **G drop**, **Tab inventory**, **F5 save, F9 load**, Q your
 ability, Esc pause. In cutscenes: Space = next, hold Space = skip.
 
 **Change your keys:** Settings > **CONTROLS (CHANGE KEYS)**: click a key,
 then press the new one. Settings also has **Subtitles** on/off and a large
 size.
+
+**Saving:** F5 = quick save, F9 = quick load (or SAVE GAME / LOAD LAST SAVE in
+the pause menu). The game also saves by itself at every checkpoint. On the
+menu, CONTINUE goes straight back to your save (CONTINUE + HOST lets friends
+join it). Online only the host saves and loads; everyone goes back together,
+each with their own inventory.
 
 **Inventory (like Resident Evil 4):** Tab opens a case made of squares. Every
 item takes up space by its size (a pistol 2x2, a shotgun 5x2, a battery 1x1),

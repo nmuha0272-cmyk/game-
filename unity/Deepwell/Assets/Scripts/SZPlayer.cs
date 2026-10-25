@@ -558,6 +558,17 @@ namespace Deepwell
             _verticalSpeed = 0f;
         }
 
+        // Loading a save: stand where you were.
+        public void LoadState(Vector3 position, float yaw, float battery)
+        {
+            _body.enabled = false;
+            transform.SetPositionAndRotation(position + Vector3.up * 0.05f, Quaternion.Euler(0f, yaw, 0f));
+            _body.enabled = true;
+            _verticalSpeed = 0f;
+            Battery = Mathf.Clamp01(battery);
+            _safeUntil = Time.time + 3f;
+        }
+
         // ---------------------------------------------------------------- network
 
         // "S|id|x|y|z|yaw|pitch|flags|character|name"

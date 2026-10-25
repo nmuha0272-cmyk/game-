@@ -13,7 +13,7 @@ namespace Deepwell
     public enum SZKey
     {
         W, A, S, D, E, F, Q, G, C, R, Tab, Space, Shift, Ctrl, Escape, Enter,
-        One, Two, Three, Four, Up, Down, Left, Right,
+        One, Two, Three, Four, Up, Down, Left, Right, QuickSave, QuickLoad,
     }
 
     public static class SZInput
@@ -24,7 +24,7 @@ namespace Deepwell
         public static readonly SZKey[] Changeable =
         {
             SZKey.W, SZKey.S, SZKey.A, SZKey.D, SZKey.Shift, SZKey.C, SZKey.Space, SZKey.E,
-            SZKey.F, SZKey.Q, SZKey.R, SZKey.G, SZKey.Tab,
+            SZKey.F, SZKey.Q, SZKey.R, SZKey.G, SZKey.Tab, SZKey.QuickSave, SZKey.QuickLoad,
         };
 
         public static string ActionName(SZKey k)
@@ -44,6 +44,8 @@ namespace Deepwell
                 case SZKey.R: return "Reload";
                 case SZKey.G: return "Drop item";
                 case SZKey.Tab: return "Inventory";
+                case SZKey.QuickSave: return "Quick save";
+                case SZKey.QuickLoad: return "Quick load";
                 default: return k.ToString();
             }
         }
@@ -112,6 +114,8 @@ namespace Deepwell
                 case SZKey.Up: return KeyCode.UpArrow;
                 case SZKey.Down: return KeyCode.DownArrow;
                 case SZKey.Left: return KeyCode.LeftArrow;
+                case SZKey.QuickSave: return KeyCode.F5;
+                case SZKey.QuickLoad: return KeyCode.F9;
                 default: return KeyCode.RightArrow;
             }
         }

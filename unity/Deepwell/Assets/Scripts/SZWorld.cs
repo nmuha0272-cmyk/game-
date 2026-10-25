@@ -22,6 +22,8 @@ namespace Deepwell
         readonly HashSet<string> _heard = new HashSet<string>();  // story entries the team has read or heard
         public SZPlayer Local { get; private set; }
         public int TeamCheckpoint { get; private set; }  // 0 = the start
+        public string Chapter { get; private set; }
+        public string SaveToken;   // which save this game came from (or was last saved as)
 
         // Items on the floor by number: the level's own (0, 1, 2...) and dropped ones (big numbers).
         readonly Dictionary<int, SZPickup> _items = new Dictionary<int, SZPickup>();
@@ -44,17 +46,19 @@ namespace Deepwell
             public SZCharacter character;
         }
 
-        public static SZWorld Create(string chapter, SZCharacter character, string playerName)
+        // load: start from a save (no intro). skipIntro: a friend's game reloading with the host.
+        public static SZWorld Create(string chapter, SZCharacter character, string playerName, SZSaveData load = null, bool skipIntro = false)
         {
             var go = new GameObject("Chapter");
             var world = go.AddComponent<SZWorld>();
             Instance = world;
-            world.Build(chapter, character, playerName);
+            world.Build(chapter, character, playerName, load, skipIntro || load != null);
             return world;
         }
 
-        void Build(string chapter, SZCharacter character, string playerName)
+        void Build(string chapter, SZCharacter character, string playerName, SZSaveData load, bool skipIntro)
         {
+            Chapter = chapter;
             Data = SZLevelBuilder.Build(chapter, transform);
             if (Data == null) return;
             Physics.SyncTransforms();  // make sure the new floors are solid before anyone stands on them
@@ -86,13 +90,20 @@ namespace Deepwell
 
             // The chapter intro (camera over the station with captions), then Eli and
             // Cole at the trunk of the team's car, then the whole team talks.
-            var intro = Data.cutscenes != null ? System.Array.Find(Data.cutscenes, c => c.play_on_start) : null;
-            var opening = SZCutscene.Play(intro?.shots, Data.dialogue, Local.Camera, () => _trunk?.End());
+            // (Not when loading a save: that's already happened.)
             if (Data.team_car != null && Data.team_car.p != null && Data.team_car.p.Length == 3)
-            {
                 _trunk = SZTrunkScene.Create(Data.team_car, transform);
-                _trunk.Attach(opening);
+            if (skipIntro)
+            {
+                _trunk?.AlreadyOpen();
             }
+            else
+            {
+                var intro = Data.cutscenes != null ? System.Array.Find(Data.cutscenes, c => c.play_on_start) : null;
+                var opening = SZCutscene.Play(intro?.shots, Data.dialogue, Local.Camera, () => _trunk?.End());
+                _trunk?.Attach(opening);
+            }
+            if (load != null) LoadSave(load);
 
             var net = SZNet.Instance;
             if (net != null)
@@ -262,7 +273,10 @@ namespace Deepwell
         {
             if (order <= TeamCheckpoint) return;
             TeamCheckpoint = order;
-            if (show) SZGame.Instance.Say("Checkpoint reached", 2.5f);
+            if (!show) return;
+            // The host (or you, playing solo) saves the game by itself at every checkpoint.
+            bool saved = SZNet.IsAuthority && SZSave.SaveGame(this);
+            SZGame.Instance.Say(saved ? "Checkpoint reached - game saved" : "Checkpoint reached", 2.5f);
         }
 
         static bool Inside(Vector3 point, float[] p, float[] r, float[] size)
@@ -312,6 +326,8 @@ namespace Deepwell
         void SpawnDropped(int index, string id, string lore, Vector3 at)
         {
             if (_gone.Contains(index) || _items.ContainsKey(index)) return;
+            int mine = 100000 + SZNet.MyId * 10000;  // (so my next drop never reuses a loaded one's number)
+            if (index >= mine && index < mine + 10000) _dropCount = Mathf.Max(_dropCount, index - mine + 1);
             // Name, hint and color from the level's copy of the same item.
             var known = Data.items != null ? System.Array.Find(Data.items, d => d.id == id) : null;
             var item = new ItemData
@@ -524,8 +540,9 @@ namespace Deepwell
             if (SZNet.IsHost) SZNet.Instance.Broadcast(SZNet.Msg("LEFT", id));
         }
 
-        // Host -> everyone, once a second: "WORLD|doors|items|triggers|lights|checkpoint".
-        string Summary()
+        // Host -> everyone, once a second: "WORLD|doors|items|triggers|lights|checkpoint|
+        // puzzles|unlocked|heard|lockers|save token|dropped items".
+        string Summary(bool forSave = false)
         {
             var doors = new StringBuilder();
             foreach (var d in Doors) doors.Append(d.IsOpen ? '1' : '0');
@@ -538,9 +555,33 @@ namespace Deepwell
             var unlocked = new StringBuilder();
             foreach (var d in Doors) unlocked.Append(d.Unlocked ? '1' : '0');
             var hiding = new StringBuilder();
-            foreach (var l in Lockers) hiding.Append(l.Occupant).Append(',');
+            if (!forSave) foreach (var l in Lockers) hiding.Append(l.Occupant).Append(',');  // (a save starts with nobody hiding)
+            var drops = new StringBuilder();
+            foreach (var pair in _items)
+            {
+                if (pair.Key < _levelItems || pair.Value == null) continue;
+                var d = pair.Value.Data;
+                var at = pair.Value.transform.position;
+                if (drops.Length > 0) drops.Append(';');
+                drops.Append(pair.Key).Append('^').Append(d.id).Append('^').Append((d.lore ?? "").Replace('^', ' ').Replace(';', ' '))
+                     .Append('^').Append(SZNet.Msg(at.x)).Append('^').Append(SZNet.Msg(at.y)).Append('^').Append(SZNet.Msg(at.z));
+            }
             return SZNet.Msg("WORLD", doors, items, triggers, lights, TeamCheckpoint,
-                Puzzles != null ? Puzzles.Summary() : "", unlocked, string.Join(",", _heard), hiding);
+                Puzzles != null ? Puzzles.Summary() : "", unlocked, string.Join(",", _heard), hiding, SaveToken ?? "", drops);
+        }
+
+        public string SaveSummary() => Summary(true);
+
+        // Starting from a save: put the chapter back the way it was, then you.
+        void LoadSave(SZSaveData save)
+        {
+            SaveToken = save.token;
+            ApplySummary(save.world.Split('|'));
+            SZSave.Apply(save.me, Local);
+            // If the Long Man was already awake, he still is.
+            if (SZNet.IsAuthority && Monster && Data.triggers != null)
+                for (int i = 0; i < _triggerFired.Length; i++)
+                    if (_triggerFired[i] && Data.triggers[i].chase) { Monster.Wake(SZNet.MyId); break; }
         }
 
         void ApplySummary(string[] m)
@@ -561,11 +602,21 @@ namespace Deepwell
             var hiding = SZNet.T(m, 9).Split(',');
             for (int i = 0; i < hiding.Length && i < Lockers.Count; i++)
                 if (int.TryParse(hiding[i], out var who)) Lockers[i].SetOccupant(who);
+            SaveToken = SZNet.T(m, 10);
+            foreach (var drop in SZNet.T(m, 11).Split(';'))
+            {
+                var f = drop.Split('^');
+                if (f.Length < 6 || !int.TryParse(f[0], out var index)) continue;
+                SpawnDropped(index, f[1], f[2].Length > 0 ? f[2] : null,
+                    new Vector3(SZNet.F(f, 3), SZNet.F(f, 4), SZNet.F(f, 5)));
+            }
             if (!_gotSummary)
             {
                 // Joined late: start where the team is.
                 _gotSummary = true;
                 if (TeamCheckpoint > 0) Local.Respawn();
+                // Coming back to a saved game: your own place and inventory from that save.
+                if (!SZNet.IsAuthority) SZSave.Apply(SZSave.LoadMine(SaveToken), Local);
             }
         }
 
@@ -609,6 +660,12 @@ namespace Deepwell
                     break;
                 case "END":
                     if (!host) EndChapter();
+                    break;
+                case "SAVE":
+                    if (!host) SZSave.SaveMine(SZNet.T(m, 1), Local);
+                    break;
+                case "LOAD":
+                    if (!host) SZGame.Instance.ReloadWithHost();
                     break;
                 case "SAY":
                     if (!host) SZGame.Instance.Say(SZNet.T(m, 1), 4f);

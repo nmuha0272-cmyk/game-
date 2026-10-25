@@ -169,6 +169,15 @@ namespace Deepwell
             return new Pose(pos, Quaternion.LookRotation(look - pos));
         }
 
+        // Loading a save: the trunk scene already happened (lid up, pistols taken).
+        public void AlreadyOpen()
+        {
+            _opening = true;
+            _lidOpen = 1f;
+            _lid.localRotation = Quaternion.Euler(-75f, 0f, 0f);
+            foreach (var g in _trunkPistols) g.SetActive(false);
+        }
+
         // Back to the whole team: the real bodies come back. (The trunk stays open.)
         public void End()
         {

@@ -338,6 +338,23 @@ namespace Deepwell
             return got;
         }
 
+        // Loading a save: empty the case, then Put everything back where it was.
+        public void Restore(int rows, int selected)
+        {
+            Items.Clear();
+            for (int i = 0; i < Hotkeys.Length; i++) Hotkeys[i] = null;
+            Rows = Mathf.Clamp(rows, StartRows, MaxRows);
+            Selected = Mathf.Clamp(selected, 0, Hotkeys.Length - 1);
+        }
+
+        public void Put(ItemData data, int count, int clip, int x, int y, bool turned, int hotkey)
+        {
+            var item = new SZItem { data = data, count = Mathf.Max(1, count), clip = clip, x = x, y = y, turned = turned };
+            if (!Fits(x, y, item.W, item.H) && !FindSpot(item)) return;
+            Items.Add(item);
+            if (hotkey >= 0 && hotkey < Hotkeys.Length) Hotkeys[hotkey] = item;
+        }
+
         // Eli and Cole start with the pistol from the trunk, and a box of bullets.
         public void GiveStartingPistol()
         {

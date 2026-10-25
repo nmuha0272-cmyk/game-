@@ -175,15 +175,27 @@ namespace Deepwell
         }
 
 
-        IEnumerator StartChapter()
+        // save: start from a saved game. skipIntro: a friend reloading with the host.
+        IEnumerator StartChapter(SZSaveData save = null, bool skipIntro = false)
         {
             _screen = Mode.Loading;
+            _readTitle = null;
+            _panel = null;
+            _invOpen = false;
+            _invPicked = null;
+            if (_world) Destroy(_world.gameObject);  // (loading during a game: the old one goes first)
+            _world = null;
             yield return null;  // draw "Loading..." first; building takes a few seconds
             yield return null;
             if (_sceneCamera != null) _sceneCamera.gameObject.SetActive(false);
             if (_menuScene != null) Destroy(_menuScene.gameObject);
             _menuScene = null;
-            _world = SZWorld.Create("chapter1", _character, _playerName);
+            if (save != null)
+            {
+                _character = save.character;
+                if (!string.IsNullOrEmpty(save.name)) _playerName = save.name;
+            }
+            _world = SZWorld.Create(save != null ? save.chapter : "chapter1", _character, _playerName, save, skipIntro);
             if (_world.Local == null)
             {
                 ShowMenu();
@@ -193,6 +205,55 @@ namespace Deepwell
             // (The intro cutscene shows "CHAPTER 1 - THE SURFACE".)
             if (SZNet.IsHost) _hostHintUntil = Time.time + 25f;
             Resume();
+            if (save != null) Say("Game loaded", 2.5f);
+        }
+
+        // ---------------------------------------------------------------- saving
+
+        // The menu's CONTINUE: straight into the saved game (solo, or hosting so friends can join).
+        void Continue(bool host)
+        {
+            var save = SZSave.LoadGame();
+            if (save == null)
+            {
+                _status = "The save couldn't be read. Start a new game.";
+                return;
+            }
+            _plan = host ? Plan.Host : Plan.Solo;
+            _status = "";
+            if (host && !SZNet.Instance.Host(out var error))
+            {
+                _status = error;
+                return;
+            }
+            StartCoroutine(StartChapter(save));
+        }
+
+        // F5 (or SAVE GAME in the pause menu).
+        void QuickSave()
+        {
+            if (_world == null || _world.Local == null) return;
+            if (SZNet.IsClient) { Say("Only the host can save the game.", 2.5f); return; }
+            if (SZCutscene.Playing) { Say("You can't save during a cutscene.", 2f); return; }
+            Say(SZSave.SaveGame(_world) ? "Game saved" : "The game couldn't be saved.", 2.5f);
+            SZAudio.Play2D("ping", 0.4f);
+        }
+
+        // F9 (or LOAD LAST SAVE): everyone goes back to the save together.
+        void QuickLoad()
+        {
+            if (SZNet.IsClient) { Say("Only the host can load the game.", 2.5f); return; }
+            var save = SZSave.LoadGame();
+            if (save == null) { Say("There's no save yet. Press F5 to save.", 2.5f); return; }
+            if (SZNet.IsHost) SZNet.Instance.Broadcast(SZNet.Msg("LOAD"));
+            StartCoroutine(StartChapter(save));
+        }
+
+        // A friend's computer: the host loaded a save. Rebuild, then the host's
+        // summary puts the chapter (and your own saved place) back.
+        public void ReloadWithHost()
+        {
+            StartCoroutine(StartChapter(null, true));
         }
 
         void Resume()
@@ -239,6 +300,8 @@ namespace Deepwell
             if (_screen == Mode.Arriving && (SZInput.Down(SZKey.Enter) || SZInput.Down(SZKey.Escape)))
                 _menuScene.SkipArrival();
             if (_screen == Mode.Characters) CarKeys();
+            if (_screen == Mode.Playing && SZInput.Down(SZKey.QuickSave)) QuickSave();
+            if (_screen == Mode.Playing && !SZCutscene.Playing && SZInput.Down(SZKey.QuickLoad)) { QuickLoad(); return; }
 
             if (!SZInput.Down(SZKey.Escape)) return;
             if (_screen == Mode.Playing) Pause();
@@ -404,7 +467,13 @@ namespace Deepwell
             GUI.Label(new Rect(x + 4, y - 26, 600, 24), "U.S. GOVERNMENT PROPERTY  //  CLASSIFIED", _sub);
             Title(x, y);
             y += 170f;
-            if (GUI.Button(new Rect(x, y, 380, 54), "PLAY SOLO", _button)) Go(Plan.Solo);
+            if (SZSave.Exists)
+            {
+                if (GUI.Button(new Rect(x, y, 380, 54), "CONTINUE", _button)) Continue(false);
+                if (GUI.Button(new Rect(x + 390, y, 260, 54), "CONTINUE + HOST", _button)) Continue(true);
+                y += 64f;
+            }
+            if (GUI.Button(new Rect(x, y, 380, 54), SZSave.Exists ? "NEW GAME (SOLO)" : "PLAY SOLO", _button)) Go(Plan.Solo);
             if (GUI.Button(new Rect(x, y + 64, 380, 54), "HOST GAME", _button)) Go(Plan.Host);
             if (GUI.Button(new Rect(x, y + 128, 380, 54), "JOIN GAME", _button)) Go(Plan.Join);
             if (GUI.Button(new Rect(x, y + 192, 380, 54), "SETTINGS", _button)) { _settingsBack = Mode.Menu; _screen = Mode.Settings; }
@@ -576,16 +645,21 @@ namespace Deepwell
             GUI.Label(new Rect(x, y, 900, 60), "CONTROLS", new GUIStyle(_title) { fontSize = 48 });
             GUI.Label(new Rect(x, y + 62, 900, 26), "Click a key, then press the new key (or a mouse button). Esc = cancel.", _small);
             y += 100f;
-            foreach (var k in SZInput.Changeable)
+            // Two columns, so every key fits on the screen.
+            float top = y, bottom = y;
+            for (int i = 0; i < SZInput.Changeable.Length; i++)
             {
-                GUI.Label(new Rect(x, y + 8, 260, 30), SZInput.ActionName(k), _small);
+                var k = SZInput.Changeable[i];
+                float cx = x + (i < 8 ? 0f : 560f), cy = top + (i % 8) * 44f;
+                GUI.Label(new Rect(cx, cy + 8, 260, 30), SZInput.ActionName(k), _small);
                 string shown = _waitingFor == k ? "press a key..." : SZInput.KeyName(SZInput.KeyFor(k));
-                if (GUI.Button(new Rect(x + 270, y, 260, 40), shown, _button)) _waitingFor = k;
-                y += 44f;
+                if (GUI.Button(new Rect(cx + 270, cy, 260, 40), shown, _button)) _waitingFor = k;
+                bottom = Mathf.Max(bottom, cy + 44f);
             }
-            GUI.Label(new Rect(x + 560, Screen.height * 0.08f + 100f, 420, 120),
-                "Always the same: arrow keys move, Ctrl crouches,\n1-4 pick an item, left click uses it, Esc pauses.", _small);
-            y += 12f;
+            y = bottom;
+            GUI.Label(new Rect(x, y + 4, 900, 50),
+                "Always the same: arrow keys move, Ctrl crouches, 1-4 pick an item, left click uses it, Esc pauses.", _small);
+            y += 50f;
             if (GUI.Button(new Rect(x, y, 260, 50), "RESET TO DEFAULTS", _button)) SZInput.ResetKeys();
             if (GUI.Button(new Rect(x + 270, y, 260, 50), "BACK", _button)) { _controlsOpen = false; _waitingFor = null; }
 
@@ -619,13 +693,18 @@ namespace Deepwell
                     : "Online game (the game keeps going while you're paused)", _sub);
             y += 140f;
             if (GUI.Button(new Rect(x, y, 380, 54), "RESUME", _button)) Resume();
+            if (!SZNet.IsClient)
+            {
+                if (GUI.Button(new Rect(x + 390, y, 260, 54), "SAVE GAME", _button)) { Resume(); QuickSave(); }
+                if (GUI.Button(new Rect(x + 390, y + 64, 260, 54), "LOAD LAST SAVE", _button) && SZSave.Exists) { Resume(); QuickLoad(); }
+            }
             if (GUI.Button(new Rect(x, y + 64, 380, 54), "SETTINGS", _button)) { _settingsBack = Mode.Paused; _screen = Mode.Settings; }
             if (GUI.Button(new Rect(x, y + 128, 380, 54), SZNet.Online ? "LEAVE GAME" : "BACK TO MENU", _button)) ShowMenu();
             if (GUI.Button(new Rect(x, y + 192, 380, 54), "QUIT", _button)) Application.Quit();
             GUI.Label(new Rect(x, y + 270, 900, 120),
                 "WASD move   Mouse look   Shift sprint   Ctrl/C crouch   Space jump\n" +
                 "F flashlight   E use / pick up (hold E for some)   1-4 pick an item   Click use it   R reload\n" +
-                "G drop   Tab inventory   Q ability   (change keys in Settings > Controls)", _small);
+                "G drop   Tab inventory   Q ability   F5 quick save   F9 quick load\n(change keys in Settings > Controls)", _small);
         }
 
         void DrawHud()
