@@ -103,6 +103,7 @@ namespace Deepwell
                 {
                     var m = mats[i];
                     if (m == null || !NeedsFix(m)) continue;
+                    if (m.shader != null && m.shader.name.Contains("Terrain")) continue;  // (ground: the editor fix handles it)
                     if (!made.TryGetValue(m, out var fixedMat)) made[m] = fixedMat = ToStandard(m, standard);
                     mats[i] = fixedMat;
                     changed = true;

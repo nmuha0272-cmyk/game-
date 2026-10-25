@@ -69,6 +69,13 @@ namespace Deepwell.EditorTools
                     e.FindPropertyRelative("second").floatValue);
             }
 
+            // Ground (terrain) materials need the built-in terrain shader instead.
+            var terrain = Shader.Find("Nature/Terrain/Standard");
+            if (terrain != null && mat.shader != null && mat.shader.name.Contains("Terrain"))
+            {
+                mat.shader = terrain;
+                return;
+            }
             mat.shader = standard;
             mat.color = Pick(colors, Color.white, "_BaseColor", "_Color");
             var main = Pick(textures, null, "_BaseColorMap", "_BaseMap", "_MainTex", "_Albedo", "_AlbedoMap");
