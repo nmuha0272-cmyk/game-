@@ -3,8 +3,8 @@ using UnityEngine;
 // You. Same controls and speeds as the Godot version:
 //   WASD move, mouse look, Shift sprint (uses stamina), Ctrl or C crouch,
 //   Space jump, F flashlight (uses battery), E use / pick up,
-//   1 battery, 2 throw a flare, Q your ability, Tab your bag,
-//   left click shoot (if you have a pistol), R reload.
+//   1-4 pick what's in your hand, left click use it (shoot, battery,
+//   flare...), R reload, G drop it, Tab inventory, Q your ability.
 // Eli and Cole start with the pistols they took from the car's trunk.
 namespace Deepwell
 {
@@ -12,6 +12,14 @@ namespace Deepwell
     {
         string Prompt { get; }
         void Interact(SZPlayer by);
+    }
+
+    // Something you hold E on for a while (a fuse box, a jammed door...).
+    // HoldTime 0 = it's an instant press (Interact is called instead).
+    public interface ISZHoldable
+    {
+        float HoldTime(SZPlayer by);
+        void HoldDone(SZPlayer by);
     }
 
     [RequireComponent(typeof(CharacterController))]
@@ -42,6 +50,7 @@ namespace Deepwell
         public float AbilityCooldown { get; private set; }   // seconds left
         public float SenseUntil { get; private set; }         // Eli's sense is on until this time
         public float AbilityProgress { get; private set; }    // Walter's repair, 0..1
+        public float HoldProgress { get; private set; }       // holding E on something, 0..1
         public string AbilityPrompt { get; private set; }
 
         public bool Crouching => _crouching;
@@ -61,7 +70,7 @@ namespace Deepwell
         AudioSource _steps;
 
         const float StandHeight = 1.8f;
-        const float CrouchHeight = 1.15f;
+        const float CrouchHeight = 0.95f;  // low enough to crawl under the half-lifted fence gate
 
         public static SZPlayer Spawn(Vector3 position, Quaternion rotation, SZCharacter character, string playerName)
         {
@@ -78,8 +87,7 @@ namespace Deepwell
             player._safeUntil = Time.time + 3f;
             if (character == SZCharacter.Eli || character == SZCharacter.Cole)
             {
-                player.Inventory.GiveGun(SZInventory.ClipSize);
-                player.Inventory.Reserve = 12;
+                player.Inventory.GiveStartingPistol();
             }
             return player;
         }
@@ -125,7 +133,7 @@ namespace Deepwell
         void Update()
         {
             UpdateFlashlight();
-            if (SZGame.Paused || SZGame.Reading || SZCutscene.Playing) return;
+            if (SZGame.Paused || SZGame.Reading || SZCutscene.Playing || SZGame.InventoryOpen || SZGame.PanelOpen) return;
             Look();
             Move();
             if (SZInput.Down(SZKey.F))
@@ -134,16 +142,17 @@ namespace Deepwell
                 else SZGame.Instance.Say("The flashlight is dead. Find a battery.", 2f);
                 SZAudio.Play2D("repair_click", 0.3f);
             }
-            if (SZInput.Down(SZKey.One)) UseBattery();
-            if (SZInput.Down(SZKey.Two)) ThrowFlare();
-            if (SZInput.Down(SZKey.Three))
-                SZGame.Instance.Say(Inventory.Medkits > 0
-                    ? "Medkits are used by themselves: if the Long Man catches you, you get away."
-                    : "You don't have a medkit.", 3f);
+            // 1-4: what's in your hand.
+            if (SZInput.Down(SZKey.One)) Inventory.Selected = 0;
+            if (SZInput.Down(SZKey.Two)) Inventory.Selected = 1;
+            if (SZInput.Down(SZKey.Three)) Inventory.Selected = 2;
+            if (SZInput.Down(SZKey.Four)) Inventory.Selected = 3;
+            if (SZInput.Down(SZKey.G)) DropHeld();
             FindTarget();
-            if (SZInput.Down(SZKey.E)) Target?.Interact(this);
+            HoldOrPress();
             Ability();
             Gun();
+            if (SZInput.Click && !Inventory.Held.Empty && !Inventory.Held.IsGun) UseItem(Inventory.Held);
         }
 
         // ---------------------------------------------------------------- moving
@@ -191,7 +200,7 @@ namespace Deepwell
 
             // Footsteps and a little head bob.
             float flat = new Vector2(_body.velocity.x, _body.velocity.z).magnitude;
-            float stand = _crouching ? 1.0f : 1.6f;
+            float stand = _crouching ? 0.8f : 1.6f;
             if (_body.isGrounded && flat > 0.5f)
             {
                 _bob += flat * Time.deltaTime * 2.2f;
@@ -238,7 +247,7 @@ namespace Deepwell
                 if (Battery <= 0f)
                 {
                     Flashlight.enabled = false;
-                    SZGame.Instance.Say("The flashlight died. Press 1 to put in a battery.", 3f);
+                    SZGame.Instance.Say("The flashlight died. Put a battery in your hand and click.", 3f);
                 }
             }
             float power = 3.4f * FlashlightBrightness;
@@ -247,29 +256,82 @@ namespace Deepwell
             Flashlight.intensity = power;
         }
 
-        void UseBattery()
+        // Using an item (left click with it in your hand, or USE on the inventory screen).
+        public void UseItem(SZSlot slot)
         {
-            if (Inventory.Batteries <= 0)
+            if (slot.Empty) return;
+            switch (slot.item.id)
             {
-                SZGame.Instance.Say("No batteries.", 1.5f);
-                return;
+                case "battery":
+                    Battery = 1f;
+                    if (--slot.count <= 0) slot.Clear();
+                    SZAudio.Play2D("repair_click", 0.6f);
+                    SZGame.Instance.Say("Flashlight recharged.", 1.5f);
+                    break;
+                case "flare":
+                    if (--slot.count <= 0) slot.Clear();
+                    var from = Camera.transform.position + Camera.transform.forward * 0.5f;
+                    SZWorld.Instance.ThrowFlare(from, Camera.transform.forward * 9f + Vector3.up * 2f + _body.velocity * 0.5f);
+                    break;
+                case "medkit":
+                    SZGame.Instance.Say("Keep it: if the Long Man catches you, a medkit gets you free.", 2.5f);
+                    break;
+                default:
+                    if (slot.IsGun) Inventory.Selected = System.Array.IndexOf(Inventory.Quick, slot) >= 0 ? System.Array.IndexOf(Inventory.Quick, slot) : Inventory.Selected;
+                    else SZGame.Instance.Say(string.IsNullOrEmpty(slot.item.hint) ? "Use it on something with E." : slot.item.hint, 2.5f);
+                    break;
             }
-            Inventory.Batteries--;
-            Battery = 1f;
-            SZAudio.Play2D("repair_click", 0.6f);
-            SZGame.Instance.Say("Flashlight recharged.", 1.5f);
         }
 
-        void ThrowFlare()
+        // G: put down what's in your hand.
+        public void DropHeld() => Drop(Inventory.Held);
+
+        public void Drop(SZSlot slot)
         {
-            if (Inventory.Flares <= 0)
+            if (slot.Empty) return;
+            var item = slot.item;
+            if (--slot.count <= 0) slot.Clear();
+            var at = transform.position + transform.forward * 0.8f + Vector3.up * 0.05f;
+            SZWorld.Instance.DropItem(item, at);
+        }
+
+        // ---------------------------------------------------------------- E: press, or hold for a while
+
+        ISZInteractable _holding;
+        float _holdTime;
+
+        // Some things take a moment (putting in a fuse, prying a door): hold E.
+        // The progress shows on screen; looking away or letting go cancels.
+        void HoldOrPress()
+        {
+            var timed = Target as ISZHoldable;
+            if (_holding != null && (!SZInput.Held(SZKey.E) || _holding != Target))
             {
-                SZGame.Instance.Say("No flares.", 1.5f);
-                return;
+                _holding = null;
+                HoldProgress = 0f;
             }
-            Inventory.Flares--;
-            var from = Camera.transform.position + Camera.transform.forward * 0.5f;
-            SZWorld.Instance.ThrowFlare(from, Camera.transform.forward * 9f + Vector3.up * 2f + _body.velocity * 0.5f);
+            if (SZInput.Down(SZKey.E) && Target != null)
+            {
+                float need = timed != null ? timed.HoldTime(this) : 0f;
+                if (need <= 0f) Target.Interact(this);
+                else
+                {
+                    _holding = Target;
+                    _holdTime = 0f;
+                }
+            }
+            if (_holding != null && timed != null)
+            {
+                float need = timed.HoldTime(this);
+                _holdTime += Time.deltaTime;
+                HoldProgress = need > 0f ? Mathf.Clamp01(_holdTime / need) : 1f;
+                if (_holdTime >= need)
+                {
+                    _holding = null;
+                    HoldProgress = 0f;
+                    timed.HoldDone(this);
+                }
+            }
         }
 
         // ---------------------------------------------------------------- the pistol
@@ -279,30 +341,31 @@ namespace Deepwell
 
         void Gun()
         {
-            var inv = Inventory;
-            if (inv.HasGun && _gunModel == null) _gunModel = MakeGunModel();
-            if (!inv.HasGun) return;
+            var gun = Inventory.Held;
+            if (_gunModel == null && gun.IsGun) _gunModel = MakeGunModel();
+            if (_gunModel != null) _gunModel.SetActive(gun.IsGun);  // only while it's in your hand
+            if (!gun.IsGun) return;
             _recoil = Mathf.MoveTowards(_recoil, 0f, Time.deltaTime * 6f);
             _gunModel.transform.localPosition = new Vector3(0.22f, -0.2f, 0.42f - _recoil * 0.06f);
             _gunModel.transform.localRotation = Quaternion.Euler(-_recoil * 12f, 0f, 0f);
 
-            if (SZInput.Down(SZKey.R) && inv.Clip < SZInventory.ClipSize && inv.Reserve > 0)
+            if (SZInput.Down(SZKey.R) && gun.clip < SZInventory.ClipSize && gun.reserve > 0)
             {
-                int take = Mathf.Min(SZInventory.ClipSize - inv.Clip, inv.Reserve);
-                inv.Clip += take;
-                inv.Reserve -= take;
+                int take = Mathf.Min(SZInventory.ClipSize - gun.clip, gun.reserve);
+                gun.clip += take;
+                gun.reserve -= take;
                 SZAudio.Play2D("repair_click", 0.7f);
                 _nextShot = Time.time + 1.2f;  // reloading takes a moment
             }
             if (!SZInput.Click || Time.time < _nextShot) return;
             _nextShot = Time.time + 0.3f;
-            if (inv.Clip <= 0)
+            if (gun.clip <= 0)
             {
                 SZAudio.Play2D("repair_click", 0.4f);
-                SZGame.Instance.Say(inv.Reserve > 0 ? "Empty. Press R to reload." : "No bullets left.", 1.5f);
+                SZGame.Instance.Say(gun.reserve > 0 ? "Empty. Press R to reload." : "No bullets left.", 1.5f);
                 return;
             }
-            inv.Clip--;
+            gun.clip--;
             _recoil = 1f;
             _pitch -= 1.5f;  // the gun kicks up a little
             SZWorld.Instance.Shoot(Camera.transform.position + Camera.transform.forward * 0.4f, Camera.transform.forward);
@@ -417,9 +480,8 @@ namespace Deepwell
             SZPostEffect.Flash = 0.6f;
             SZAudio.Play2D("neck_crack", 0.9f);
             _safeUntil = Time.time + 4f;  // he leaves you alone for a moment
-            if (Inventory.Medkits > 0)
+            if (Inventory.Take("medkit") != null)
             {
-                Inventory.Medkits--;
                 SZGame.Instance.Say("The Long Man grabbed you... you fought free and patched yourself up. RUN!", 4f);
                 return;
             }

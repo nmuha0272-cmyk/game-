@@ -686,7 +686,10 @@ Tasks:
   by IP, port 7777), items and inventory, readable notes and tapes, the Long
   Man (patrol, sight, hearing, chase, opens doors, Nora's flash stuns him),
   checkpoints, the 4 characters and their abilities, the Godot sounds, and
-  it sets itself up when opened. Next: puzzles (U3).
+  it sets itself up when opened. Phase U3: all of Chapter 1's puzzles (the
+  exporter writes every puzzle piece and its wiring), keycard and jammed
+  doors, a Godot-style inventory (4 quick slots + storage), the elevator
+  ending, the trunk scene and asset slots for downloaded models.
   `scripts/export/unity_export.gd` writes the items list.
 - **Roblox version** (`roblox/`): made by the `tools/roblox_*.py` scripts.
 - **Animations:** `assets/animations/` holds the animation libraries

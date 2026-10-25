@@ -294,6 +294,18 @@ namespace Deepwell
                 }
                 return;
             }
+            if (_screen == Mode.Playing && _panel != null)
+            {
+                if (SZInput.Down(SZKey.Escape)) ClosePanel();
+                return;
+            }
+            if (_screen == Mode.Playing && !SZCutscene.Playing && SZInput.Down(SZKey.Tab)) ToggleInventory();
+            if (_invOpen && (_screen != Mode.Playing || SZInput.Down(SZKey.Escape)))
+            {
+                if (_screen == Mode.Playing) ToggleInventory();
+                else _invOpen = false;
+                return;
+            }
             if (_screen == Mode.Arriving && (SZInput.Down(SZKey.Enter) || SZInput.Down(SZKey.Escape)))
                 _menuScene.SkipArrival();
             if (_screen == Mode.Characters) CarKeys();
@@ -602,7 +614,8 @@ namespace Deepwell
             if (GUI.Button(new Rect(x, y + 192, 380, 54), "QUIT", _button)) Application.Quit();
             GUI.Label(new Rect(x, y + 270, 900, 120),
                 "WASD move   Mouse look   Shift sprint   Ctrl/C crouch   Space jump\n" +
-                "F flashlight   E use / pick up   1 battery   2 flare   Q ability   Tab bag", _small);
+                "F flashlight   E use / pick up (hold E for some)   1-4 pick an item   Click use it   R reload\n" +
+                "G drop   Tab inventory   Q ability", _small);
         }
 
         void DrawHud()
@@ -628,10 +641,11 @@ namespace Deepwell
             Box(new Rect(W / 2f - 2, H / 2f - 2, 4, 4), new Color(1, 1, 1, 0.6f));
             if (p.Target != null) Shadowed(new Rect(0, H * 0.58f, W, 36), p.Target.Prompt, _prompt);
             if (p.AbilityPrompt != null) Shadowed(new Rect(0, H * 0.58f + 34, W, 36), p.AbilityPrompt, _prompt);
-            if (p.AbilityProgress > 0f)
+            float progress = Mathf.Max(p.AbilityProgress, p.HoldProgress);
+            if (progress > 0f)
             {
                 Box(new Rect(W / 2f - 100, H * 0.58f + 74, 200, 8), new Color(0, 0, 0, 0.6f));
-                Box(new Rect(W / 2f - 100, H * 0.58f + 74, 200 * p.AbilityProgress, 8), new Color(0.9f, 0.7f, 0.2f));
+                Box(new Rect(W / 2f - 100, H * 0.58f + 74, 200 * progress, 8), new Color(0.9f, 0.7f, 0.2f));
             }
 
             if (Time.time < _sayUntil && !string.IsNullOrEmpty(_say))
@@ -649,13 +663,9 @@ namespace Deepwell
             GUI.Label(new Rect(x, y + 22, 140, 24), "STAMINA", _small);
             if (p.Stamina < 0.999f) Bar(new Rect(x + 150, y + 30, 160, 10), p.Stamina, new Color(0.6f, 0.75f, 0.9f));
 
-            // Bottom right: items and ability.
+            // Bottom middle: the 4 quick slots (1-4). Bottom right: ability.
             var inv = p.Inventory;
-            string items = "[1] Batteries " + inv.Batteries + "     [2] Flares " + inv.Flares + "     Medkits " + inv.Medkits;
-            if (inv.HasGun)
-                GUI.Label(new Rect(W - 520, y - 30, 500, 24), "PISTOL  " + inv.Clip + " / " + inv.Reserve + "    [Click] shoot  [R] reload",
-                    new GUIStyle(_small) { alignment = TextAnchor.UpperRight });
-            GUI.Label(new Rect(W - 520, y - 4, 500, 24), items, new GUIStyle(_small) { alignment = TextAnchor.UpperRight });
+            DrawHotbar(inv);
             string ability = SZCharacters.Abilities[(int)p.Character].Split(':')[0];
             if (p.AbilityCooldown > 0f) ability += "  (" + Mathf.CeilToInt(p.AbilityCooldown) + "s)";
             GUI.Label(new Rect(W - 520, y + 22, 500, 24), ability, new GUIStyle(_sub) { alignment = TextAnchor.UpperRight });
@@ -663,7 +673,9 @@ namespace Deepwell
             if (SZNet.IsHost && Time.time < _hostHintUntil)
                 Shadowed(new Rect(0, 16, W, 30), "You're hosting. Friends join with:  " + SZNet.LocalAddresses(), _prompt);
 
-            if (SZInput.Held(SZKey.Tab) && _screen == Mode.Playing) DrawBag(inv);
+            if (_invOpen && _screen == Mode.Playing) DrawInventory(p);
+            if (_endingAt > 0f) DrawEnding();
+            if (_panel != null && _screen == Mode.Playing) _panel.Draw(this);
         }
 
         // Black bars, the caption (with who's talking), and "hold Space to skip".
@@ -708,16 +720,208 @@ namespace Deepwell
             Shadowed(new Rect(Screen.width * 0.15f, y, Screen.width * 0.7f, 70), text, line);
         }
 
-        void DrawBag(SZInventory inv)
+        // ---------------------------------------------------------------- inventory
+
+        // Tab opens it: click a slot to pick it up, click another to move/swap,
+        // then USE or DROP. Tab or Esc closes it.
+        bool _invOpen;
+        SZSlot _invPicked;
+        public static bool InventoryOpen => Instance != null && Instance._invOpen;
+
+        void ToggleInventory()
         {
-            float w = 420f, h = 60f + 26f * Mathf.Max(inv.Bag.Count, 1);
-            var r = new Rect(Screen.width / 2f - w / 2f, Screen.height * 0.2f, w, h);
-            Box(r, new Color(0.03f, 0.03f, 0.04f, 0.92f));
-            GUI.Label(new Rect(r.x + 16, r.y + 10, w, 30), "YOUR BAG", _sub);
-            if (inv.Bag.Count == 0) GUI.Label(new Rect(r.x + 16, r.y + 40, w, 26), "(empty)", _small);
-            for (int i = 0; i < inv.Bag.Count; i++)
-                GUI.Label(new Rect(r.x + 16, r.y + 40 + i * 26, w - 32, 26), "- " + inv.Bag[i].name, _small);
+            _invOpen = !_invOpen;
+            _invPicked = null;
+            Cursor.lockState = _invOpen ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = _invOpen;
         }
+
+        static readonly Color SlotColor = new Color(0.05f, 0.05f, 0.06f, 0.9f);
+        static readonly Color SlotHeld = new Color(0.45f, 0.35f, 0.12f, 0.95f);
+
+        void DrawHotbar(SZInventory inv)
+        {
+            float size = 64f, gap = 8f;
+            float x0 = Screen.width / 2f - (size * 4 + gap * 3) / 2f, y = Screen.height - size - 18f;
+            for (int i = 0; i < SZInventory.QuickSlots; i++)
+            {
+                var r = new Rect(x0 + i * (size + gap), y, size, size);
+                DrawSlot(r, inv.Quick[i], i == inv.Selected, (i + 1).ToString());
+            }
+            var held = inv.Held;
+            if (!held.Empty)
+            {
+                string line = held.item.name + (held.IsGun ? "   " + held.clip + " / " + held.reserve + "   [Click] shoot  [R] reload" : "   [Click] use   [G] drop");
+                Shadowed(new Rect(0, y - 26, Screen.width, 24), line, new GUIStyle(_small) { alignment = TextAnchor.MiddleCenter });
+            }
+        }
+
+        void DrawSlot(Rect r, SZSlot slot, bool highlight, string label)
+        {
+            Box(r, highlight ? SlotHeld : SlotColor);
+            Box(new Rect(r.x, r.yMax - 2, r.width, 2), highlight ? new Color(0.95f, 0.75f, 0.3f) : new Color(0.25f, 0.25f, 0.25f));
+            if (label != null) GUI.Label(new Rect(r.x + 4, r.y + 2, 20, 18), label, new GUIStyle(_small) { fontSize = 12 });
+            if (slot.Empty) return;
+            // A colored square for the item, its short name, and how many.
+            var c = SZLevelData.C(slot.item.color);
+            Box(new Rect(r.center.x - 10, r.y + 14, 20, 14), c);
+            var name = new GUIStyle(_small) { fontSize = 11, alignment = TextAnchor.LowerCenter, wordWrap = true };
+            GUI.Label(new Rect(r.x + 2, r.y + 26, r.width - 4, r.height - 28), slot.item.name, name);
+            if (slot.count > 1)
+                GUI.Label(new Rect(r.xMax - 26, r.y + 2, 24, 18), "x" + slot.count, new GUIStyle(_small) { fontSize = 12, alignment = TextAnchor.UpperRight });
+            if (slot.IsGun)
+                GUI.Label(new Rect(r.xMax - 40, r.y + 2, 38, 18), slot.clip.ToString(), new GUIStyle(_small) { fontSize = 12, alignment = TextAnchor.UpperRight });
+        }
+
+        void DrawInventory(SZPlayer p)
+        {
+            var inv = p.Inventory;
+            Box(Full(), new Color(0, 0, 0, 0.55f));
+            float size = 76f, gap = 10f;
+            float w = Mathf.Max(5 * (size + gap) + 40f, 520f), h = 470f;
+            var panel = new Rect(Screen.width / 2f - w / 2f - 160f, Screen.height / 2f - h / 2f, w, h);
+            Box(panel, new Color(0.03f, 0.035f, 0.04f, 0.95f));
+            GUI.Label(new Rect(panel.x + 20, panel.y + 14, 400, 40), "INVENTORY", new GUIStyle(_title) { fontSize = 30 });
+            GUI.Label(new Rect(panel.x + 20, panel.y + 60, 400, 22), "QUICK SLOTS  (keys 1-4 = in your hand)", _sub);
+            float x0 = panel.x + 20, y0 = panel.y + 86;
+            for (int i = 0; i < SZInventory.QuickSlots; i++)
+                SlotButton(new Rect(x0 + i * (size + gap), y0, size, size), inv.Quick[i], inv, i == inv.Selected, (i + 1).ToString());
+            GUI.Label(new Rect(panel.x + 20, y0 + size + 18, 500, 22),
+                "STORAGE  (" + inv.Storage.Count + " of " + SZInventory.MaxStorage + " slots: a pouch adds 2, a backpack 4)", _sub);
+            float y1 = y0 + size + 44;
+            for (int i = 0; i < SZInventory.MaxStorage; i++)
+            {
+                var r = new Rect(x0 + (i % 5) * (size + gap), y1 + (i / 5) * (size + gap), size, size);
+                if (i < inv.Storage.Count) SlotButton(r, inv.Storage[i], inv, false, null);
+                else Box(r, new Color(0.02f, 0.02f, 0.02f, 0.6f));  // locked until you find a pack
+            }
+            GUI.Label(new Rect(panel.x + 20, panel.yMax - 30, w - 40, 22),
+                "Click an item, then click another slot to move it.   Tab = close", new GUIStyle(_small) { fontSize = 13 });
+
+            // The picked item: what it is, and what you can do with it.
+            var info = new Rect(panel.xMax + 14, panel.y, 300, h);
+            Box(info, new Color(0.03f, 0.035f, 0.04f, 0.95f));
+            if (_invPicked == null || _invPicked.Empty)
+            {
+                GUI.Label(new Rect(info.x + 16, info.y + 20, 270, 60), "Click an item to see it.", _small);
+                return;
+            }
+            var it = _invPicked.item;
+            GUI.Label(new Rect(info.x + 16, info.y + 16, 270, 34), it.name.ToUpper(), new GUIStyle(_title) { fontSize = 22, wordWrap = true });
+            string details = it.hint;
+            if (_invPicked.IsGun) details = "Bullets: " + _invPicked.clip + " in it, " + _invPicked.reserve + " spare.\n" + details;
+            if (_invPicked.count > 1) details = "You have " + _invPicked.count + ".\n" + details;
+            GUI.Label(new Rect(info.x + 16, info.y + 60, 270, 200), details, new GUIStyle(_small) { wordWrap = true });
+            if (GUI.Button(new Rect(info.x + 16, info.yMax - 130, 268, 50), "USE", _button))
+            {
+                p.UseItem(_invPicked);
+                if (_invPicked.Empty) _invPicked = null;
+            }
+            if (GUI.Button(new Rect(info.x + 16, info.yMax - 70, 268, 50), "DROP", _button))
+            {
+                p.Drop(_invPicked);
+                if (_invPicked.Empty) _invPicked = null;
+            }
+        }
+
+        void SlotButton(Rect r, SZSlot slot, SZInventory inv, bool held, string label)
+        {
+            DrawSlot(r, slot, held || slot == _invPicked, label);
+            if (!GUI.Button(r, GUIContent.none, GUIStyle.none)) return;
+            if (_invPicked == null)
+            {
+                if (!slot.Empty) _invPicked = slot;
+            }
+            else if (_invPicked == slot)
+            {
+                _invPicked = null;
+            }
+            else
+            {
+                inv.Swap(_invPicked, slot);  // move (or swap) into the clicked slot
+                _invPicked = null;
+                SZAudio.Play2D("repair_click", 0.3f);
+            }
+        }
+
+        // ---------------------------------------------------------------- puzzle screens (keypad, terminal)
+
+        // A puzzle that shows its own screen (SZPuzzles: the keypad buttons,
+        // the terminal's grid). The mouse is free while it's open.
+        public interface IPanel
+        {
+            void Draw(SZGame game);
+        }
+
+        IPanel _panel;
+        public static bool PanelOpen => Instance != null && Instance._panel != null;
+
+        public void OpenPanel(IPanel panel)
+        {
+            _panel = panel;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
+        public void ClosePanel()
+        {
+            _panel = null;
+            if (_screen == Mode.Playing)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        }
+
+        // ---------------------------------------------------------------- the end of the chapter
+
+        float _endingAt = -1f;
+
+        public void ShowEnding()
+        {
+            if (_endingAt > 0f) return;
+            _endingAt = Time.time;
+            _invOpen = false;
+            _panel = null;
+            StartCoroutine(Ending());
+        }
+
+        IEnumerator Ending()
+        {
+            Say("The elevator shudders and starts down...", 3f);
+            yield return new WaitForSeconds(3.5f);
+            SZAudio.Play2D("cable_snap", 1f);
+            SZPostEffect.Flash = 0.5f;
+            Say("SNAP!", 1.5f);
+            yield return new WaitForSeconds(1.5f);
+            Paused = true;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
+        void DrawEnding()
+        {
+            float k = Mathf.Clamp01((Time.time - _endingAt - 4.5f) / 1.5f);
+            if (k <= 0f) return;
+            Box(Full(), new Color(0, 0, 0, k));
+            var c = GUI.color;
+            GUI.color = new Color(1, 1, 1, k);
+            GUI.Label(new Rect(0, Screen.height * 0.3f, Screen.width, 90), "END OF CHAPTER 1", new GUIStyle(_title) { fontSize = 60, alignment = TextAnchor.MiddleCenter });
+            GUI.Label(new Rect(0, Screen.height * 0.3f + 90, Screen.width, 40), "THE SURFACE", new GUIStyle(_sub) { fontSize = 22, alignment = TextAnchor.MiddleCenter });
+            GUI.Label(new Rect(0, Screen.height * 0.3f + 140, Screen.width, 40), "Chapter 2 comes to the Unity version next.", new GUIStyle(_small) { alignment = TextAnchor.MiddleCenter });
+            if (k >= 1f && GUI.Button(new Rect(Screen.width / 2f - 190, Screen.height * 0.3f + 200, 380, 54), "BACK TO MENU", _button))
+            {
+                _endingAt = -1f;
+                ShowMenu();
+            }
+            GUI.color = c;
+        }
+
+        // Styles the puzzle screens can use.
+        public GUIStyle ButtonStyle => _button;
+        public GUIStyle TitleStyle => _title;
+        public GUIStyle SmallStyle => _small;
+        public void Fill(Rect r, Color c) => Box(r, c);
 
         void DrawPaper()
         {

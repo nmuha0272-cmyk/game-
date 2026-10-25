@@ -17,11 +17,15 @@ namespace Deepwell
         public SZLevelData Data { get; private set; }
         public readonly List<SZDoor> Doors = new List<SZDoor>();
         public SZMonster Monster { get; private set; }
+        public SZPuzzles Puzzles { get; private set; }
+        readonly HashSet<string> _heard = new HashSet<string>();  // story entries the team has read or heard
         public SZPlayer Local { get; private set; }
         public int TeamCheckpoint { get; private set; }  // 0 = the start
 
-        readonly List<SZPickup> _items = new List<SZPickup>();
-        bool[] _itemGone = new bool[0];
+        // Items on the floor by number: the level's own (0, 1, 2...) and dropped ones (big numbers).
+        readonly Dictionary<int, SZPickup> _items = new Dictionary<int, SZPickup>();
+        readonly HashSet<int> _gone = new HashSet<int>();
+        int _levelItems, _dropCount;
         bool[] _triggerFired = new bool[0];
         readonly List<SZFlicker> _brokenLights = new List<SZFlicker>();
         readonly Dictionary<int, SZRemotePlayer> _remotes = new Dictionary<int, SZRemotePlayer>();
@@ -59,12 +63,13 @@ namespace Deepwell
 
             root = Group("Items");
             var items = Data.items ?? new ItemData[0];
-            _itemGone = new bool[items.Length];
-            for (int i = 0; i < items.Length; i++) _items.Add(SZPickup.Create(items[i], i, root));
+            _levelItems = items.Length;
+            for (int i = 0; i < items.Length; i++) _items[i] = SZPickup.Create(items[i], i, root);
 
             root = Group("Lore");
             foreach (var l in Data.lore ?? new LoreData[0]) SZLore.Create(l, root);
 
+            Puzzles = SZPuzzles.Create(Data, transform);
             _triggerFired = new bool[Data.triggers != null ? Data.triggers.Length : 0];
             foreach (var flicker in GetComponentsInChildren<SZFlicker>()) _brokenLights.Add(flicker);
             if (Data.monster != null && Data.monster.p != null && Data.monster.p.Length == 3)
@@ -266,25 +271,74 @@ namespace Deepwell
 
         public void RequestPickup(SZPickup pickup, SZPlayer by)
         {
-            if (_itemGone[pickup.Index]) return;
-            by.Inventory.Add(pickup.Data);
+            if (_gone.Contains(pickup.Index)) return;
+            if (!by.Inventory.Add(pickup.Data))
+            {
+                SZGame.Instance.Say("Your inventory is full. Drop something (G) or find a pouch or backpack.", 2.5f);
+                return;
+            }
             SZGame.Instance.Say("Picked up: " + pickup.Data.name + (string.IsNullOrEmpty(pickup.Data.hint) ? "" : "\n" + pickup.Data.hint), 3f);
             SZAudio.Play2D("ping", 0.5f);
-            if (!string.IsNullOrEmpty(pickup.Data.lore) && Data.lore_book != null)
-            {
-                // A reel tape: play what's on it.
-                var entry = System.Array.Find(Data.lore_book, e => e.id == pickup.Data.lore);
-                if (entry != null) SZGame.Instance.Read(entry.title, entry.text);
-            }
             RemoveItem(pickup.Index);
             SZNet.Instance?.SendAll(SZNet.Msg("GONE", pickup.Index));
         }
 
         void RemoveItem(int i)
         {
-            if (i < 0 || i >= _itemGone.Length || _itemGone[i]) return;
-            _itemGone[i] = true;
-            if (_items[i]) Destroy(_items[i].gameObject);
+            if (!_gone.Add(i)) return;
+            if (_items.TryGetValue(i, out var pickup) && pickup) Destroy(pickup.gameObject);
+            _items.Remove(i);
+        }
+
+        // Something put down with G (or from the inventory screen): it appears for everyone.
+        public void DropItem(ItemData item, Vector3 at)
+        {
+            int index = 100000 + SZNet.MyId * 10000 + _dropCount++;
+            SpawnDropped(index, item.id, item.lore, at);
+            SZNet.Instance?.SendAll(SZNet.Msg("DROP", index, item.id, item.lore ?? "", at.x, at.y, at.z));
+        }
+
+        void SpawnDropped(int index, string id, string lore, Vector3 at)
+        {
+            if (_gone.Contains(index) || _items.ContainsKey(index)) return;
+            // Name, hint and color from the level's copy of the same item.
+            var known = Data.items != null ? System.Array.Find(Data.items, d => d.id == id) : null;
+            var item = new ItemData
+            {
+                id = id, lore = lore, name = known?.name ?? id, hint = known?.hint ?? "",
+                color = known?.color ?? new[] { 0.6f, 0.6f, 0.6f, 1f }, p = new[] { at.x, at.y, at.z },
+            };
+            if (Physics.Raycast(at + Vector3.up * 0.5f, Vector3.down, out var floor, 3f, ~0, QueryTriggerInteraction.Ignore))
+                item.p = new[] { floor.point.x, floor.point.y, floor.point.z };
+            _items[index] = SZPickup.Create(item, index, transform);
+        }
+
+        // The reel tape lore entry for a tape machine (or null).
+        public LoreData LoreEntry(string id) =>
+            Data.lore_book != null && !string.IsNullOrEmpty(id) ? System.Array.Find(Data.lore_book, e => e.id == id) : null;
+
+        // A keycard or a crowbar opened a locked door: it stays unlocked for everyone.
+        public void UnlockDoor(SZDoor door)
+        {
+            door.Unlocked = true;
+            SZNet.Instance?.SendAll(SZNet.Msg("UNLOCK", door.Index));
+        }
+
+        // The team read a note or heard a tape (some puzzles need that).
+        public void HearLore(string id)
+        {
+            if (string.IsNullOrEmpty(id) || !_heard.Add(id)) return;
+            SZNet.Instance?.SendAll(SZNet.Msg("HEARD", id));
+        }
+
+        public bool HasHeard(string id) => !string.IsNullOrEmpty(id) && _heard.Contains(id);
+
+        // The end of Chapter 1: the elevator goes down... and the cable snaps.
+        public void EndChapter()
+        {
+            if (SZNet.IsHost) SZNet.Instance.Broadcast("END");
+            SZAudio.Play2D("elevator_hum", 0.8f);
+            SZGame.Instance.ShowEnding();
         }
 
         public void HoldDoor(SZDoor door)
@@ -432,12 +486,15 @@ namespace Deepwell
             var doors = new StringBuilder();
             foreach (var d in Doors) doors.Append(d.IsOpen ? '1' : '0');
             var items = new StringBuilder();
-            foreach (var g in _itemGone) items.Append(g ? '1' : '0');
+            for (int i = 0; i < _levelItems; i++) items.Append(_gone.Contains(i) ? '1' : '0');
             var triggers = new StringBuilder();
             foreach (var t in _triggerFired) triggers.Append(t ? '1' : '0');
             var lights = new StringBuilder();
             foreach (var l in _brokenLights) lights.Append(l != null && l.Repaired ? '1' : '0');
-            return SZNet.Msg("WORLD", doors, items, triggers, lights, TeamCheckpoint);
+            var unlocked = new StringBuilder();
+            foreach (var d in Doors) unlocked.Append(d.Unlocked ? '1' : '0');
+            return SZNet.Msg("WORLD", doors, items, triggers, lights, TeamCheckpoint,
+                Puzzles != null ? Puzzles.Summary() : "", unlocked, string.Join(",", _heard));
         }
 
         void ApplySummary(string[] m)
@@ -451,6 +508,10 @@ namespace Deepwell
             var lights = SZNet.T(m, 4);
             for (int i = 0; i < lights.Length; i++) if (lights[i] == '1') FixLight(i);
             ReachCheckpoint(SZNet.I(m, 5), false);
+            Puzzles?.ApplySummary(SZNet.T(m, 6));
+            var unlocked = SZNet.T(m, 7);
+            for (int i = 0; i < unlocked.Length && i < Doors.Count; i++) if (unlocked[i] == '1') Doors[i].Unlocked = true;
+            foreach (var id in SZNet.T(m, 8).Split(',')) if (id.Length > 0) _heard.Add(id);
             if (!_gotSummary)
             {
                 // Joined late: start where the team is.
@@ -484,6 +545,29 @@ namespace Deepwell
                 case "DOOR":
                     int door = SZNet.I(m, 1);
                     if (door >= 0 && door < Doors.Count) Doors[door].SetOpen(SZNet.I(m, 2) == 1);
+                    if (host) SZNet.Instance.Broadcast(string.Join("|", m), from);
+                    break;
+                case "PZA":
+                case "PZS":
+                    Puzzles?.OnMessage(from, m);
+                    break;
+                case "END":
+                    if (!host) EndChapter();
+                    break;
+                case "SAY":
+                    if (!host) SZGame.Instance.Say(SZNet.T(m, 1), 4f);
+                    break;
+                case "UNLOCK":
+                    int locked = SZNet.I(m, 1);
+                    if (locked >= 0 && locked < Doors.Count) Doors[locked].Unlocked = true;
+                    if (host) SZNet.Instance.Broadcast(string.Join("|", m), from);
+                    break;
+                case "HEARD":
+                    _heard.Add(SZNet.T(m, 1));
+                    if (host) SZNet.Instance.Broadcast(string.Join("|", m), from);
+                    break;
+                case "DROP":
+                    SpawnDropped(SZNet.I(m, 1), SZNet.T(m, 2), SZNet.T(m, 3), new Vector3(SZNet.F(m, 4), SZNet.F(m, 5), SZNet.F(m, 6)));
                     if (host) SZNet.Instance.Broadcast(string.Join("|", m), from);
                     break;
                 case "GONE":

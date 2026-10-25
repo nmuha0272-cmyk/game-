@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // How the game looks: quality presets (shadows, anti-aliasing, how many
@@ -65,6 +66,27 @@ namespace Deepwell
             DynamicGI.UpdateEnvironment();
         }
 
+        // Imported models (the level, the characters) often say "metal" in their
+        // files; Unity draws that as shiny chrome ("silver"). This turns it down
+        // on the copies the game uses (the model files stay exactly as they are).
+        public static void NotSoShiny(GameObject root, float maxMetal = 0.1f)
+        {
+            var done = new HashSet<Material>();
+            foreach (var r in root.GetComponentsInChildren<Renderer>(true))
+            {
+                var mats = r.materials;  // copies, only for this game
+                foreach (var m in mats)
+                {
+                    if (m == null || !done.Add(m)) continue;
+                    foreach (var prop in new[] { "_Metallic", "metallicFactor" })
+                        if (m.HasProperty(prop)) m.SetFloat(prop, Mathf.Min(m.GetFloat(prop), maxMetal));
+                    if (m.HasProperty("_Glossiness")) m.SetFloat("_Glossiness", Mathf.Min(m.GetFloat("_Glossiness"), 0.5f));
+                    if (m.HasProperty("_GlossMapScale")) m.SetFloat("_GlossMapScale", Mathf.Min(m.GetFloat("_GlossMapScale"), 0.5f));
+                }
+                r.materials = mats;
+            }
+        }
+
         // A plain lit material (works in the built-in renderer).
         public static Material Lit(Color color, float smoothness = 0.3f, Color? glow = null)
         {
@@ -91,8 +113,8 @@ namespace Deepwell
         public float vignette = 0.75f;
         public float grain = 0.06f;
         public float fringe = 0.004f;
-        public float saturation = 0.78f;
-        public Color tint = new Color(0.92f, 0.97f, 1.0f);
+        public float saturation = 0.92f;
+        public Color tint = new Color(0.98f, 0.98f, 1.0f);
 
         // 0..1, fade by themselves.
         public static float Flash, Damage;

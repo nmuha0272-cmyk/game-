@@ -24,10 +24,15 @@ const SKIP_BRANCHES := ["Players", "Items", "ItemSpawnPoints", "Monsters", "Trig
 
 var data := {"lights": [], "doors": [], "labels": [], "spawns": [], "colliders": [],
 	"items": [], "lore": [], "lore_book": [], "checkpoints": [], "triggers": [], "monster": {},
-	"cutscenes": [], "dialogue": [], "team_car": {},
+	"cutscenes": [], "dialogue": [], "team_car": {}, "puzzles": [],
 	"moon": {}, "environment": {}}
 var _export_root: Node3D
 var _mesh_count := 0
+var _level: Node
+## Puzzle pieces: node -> index in data.puzzles.
+var _pz_index := {}
+## While walking a puzzle mover (a gate, a shutter...), its index (-1 = none).
+var _mover := -1
 
 
 func _initialize() -> void:
@@ -44,6 +49,8 @@ func _run() -> void:
 	_export_root = Node3D.new()
 	_export_root.name = "Chapter1Level"
 	root.add_child(_export_root)
+	_level = level
+	_collect_puzzles(level)
 	_walk(level, level)
 	_add_lore_book()
 	# The team's talk when they arrive (scripts/chapters/opening_dialogue.gd).
@@ -65,6 +72,7 @@ func _run() -> void:
 	print("unity export: glb %s, %d meshes, %d lights, %d doors, %d labels, %d spawns, %d colliders" % [
 		"ok" if err == OK else "FAILED (%d)" % err, _mesh_count, data.lights.size(), data.doors.size(),
 		data.labels.size(), data.spawns.size(), data.colliders.size()])
+	print("unity export: %d puzzle pieces" % data.puzzles.size())
 	print("unity export: %d items, %d lore, %d checkpoints, %d triggers, monster %s (%d patrol points)" % [
 		data.items.size(), data.lore.size(), data.checkpoints.size(), data.triggers.size(),
 		"yes" if data.monster.has("p") else "no", data.monster.get("patrol", []).size()])
@@ -121,23 +129,27 @@ func _walk(node: Node, level: Node) -> void:
 			if child.get("entry") is LoreEntry:
 				_add_lore(child)
 			elif child.scene_file_path == DOOR_SCENE:
+				var lock := child.get_node_or_null("Lock")
+				var lock_kind := ""
+				if lock:
+					lock_kind = "jammed" if int(lock.get("kind")) == 1 else "keycard_" + str(lock.get("keycard_color"))
 				data.doors.append({"name": str(child.name), "p": pos(child.global_position),
 					"r": rot(child.global_basis), "puzzle": bool(child.get("puzzle_controlled")),
-					"locked": child.get_node_or_null("Lock") != null})
+					"locked": lock != null, "lock": lock_kind, "id": _pz_index.get(child, -1)})
 			continue
 		# The team's car: Unity animates its trunk lid and the pistols itself.
 		if child.name == "TeamCar":
 			data.team_car = {"p": pos(child.global_position), "r": rot(child.global_basis)}
 		if child.name == "TrunkLid" or str(child.name).begins_with("TrunkPistol"):
 			continue
-		# Puzzle movers (the fence gate, shutters, flood water...) are exported already
-		# open, like puzzle doors, until the puzzles come to Unity. Gates go all the way up.
-		if child is AnimatableBody3D and child.get("open_offset") is Vector3:
-			var offset: Vector3 = child.get("open_offset")
-			if offset.y > 0.0:
-				offset.y = maxf(offset.y, 2.7)
-			child.sync_to_physics = false  # otherwise the physics engine keeps it where it was
-			child.position += offset
+		# Puzzle movers (the fence gate, shutters, flood water...): Unity moves
+		# everything inside them when their puzzle is solved.
+		if child is AnimatableBody3D and _pz_index.has(child):
+			var outer := _mover
+			_mover = _pz_index[child]
+			_walk(child, level)
+			_mover = outer
+			continue
 		if child is CSGShape3D:
 			if child.is_root_shape():
 				_add_csg(child)
@@ -182,7 +194,8 @@ func _add_mesh(mesh: Mesh, xform: Transform3D, mats: Array, label: String, solid
 	mi.mesh = mesh
 	mi.transform = xform
 	_mesh_count += 1
-	mi.name = ("COL_" if solid else "") + "%s_%d" % [label.validate_node_name(), _mesh_count]
+	mi.name = ("COL_" if solid else "") + ("MOVER_%d_" % _mover if _mover >= 0 else "") \
+		+ "%s_%d" % [label.validate_node_name(), _mesh_count]
 	for s in min(mats.size(), mesh.get_surface_count()):
 		if mats[s]:
 			mi.set_surface_override_material(s, mats[s])
@@ -218,7 +231,8 @@ func _add_light(light: Light3D) -> void:
 		"pulse": light.get_script() != null and str(light.get_script().resource_path).ends_with("pulsing_light.gd"),
 		# lights inside a puzzle's light group start dark until the puzzle is solved
 		"starts_off": light.get_parent() != null and light.get_parent().get_parent() != null \
-			and light.get_parent().get_parent().name == "Puzzles"}
+			and light.get_parent().get_parent().name == "Puzzles",
+		"group": _pz_index.get(light.get_parent(), -1)}
 	if light is OmniLight3D:
 		entry["range"] = light.omni_range
 	else:
@@ -228,14 +242,26 @@ func _add_light(light: Light3D) -> void:
 
 
 func _add_label(label: Label3D) -> void:
-	data.labels.append({"p": pos(label.global_position), "r": rot(label.global_basis),
+	var entry := {"p": pos(label.global_position), "r": rot(label.global_basis),
 		"text": label.text, "size": label.pixel_size * label.font_size,
-		"color": color(label.modulate), "billboard": label.billboard != BaseMaterial3D.BILLBOARD_DISABLED})
+		"color": color(label.modulate), "billboard": label.billboard != BaseMaterial3D.BILLBOARD_DISABLED,
+		"source": -1, "hidden_until": -1, "digit": -1}
+	# A code display (scripts/puzzles/code_display.gd): shows a keypad's code,
+	# a breaker pattern or a radio frequency, once `hidden_until` is solved.
+	if _kind(label) == "code_display":
+		var source = label.get("source")
+		var hidden = label.get("hidden_until")
+		entry["source"] = _pz_index.get(source, -1) if source else -1
+		entry["hidden_until"] = _pz_index.get(hidden, -1) if hidden else -1
+		entry["template"] = str(label.get("template"))
+		entry["hidden_text"] = str(label.get("hidden_text"))
+		entry["digit"] = int(label.get("digit"))
+	data.labels.append(entry)
 
 
 func _add_collider(cs: CollisionShape3D) -> void:
 	var shape := cs.shape
-	var entry := {"p": pos(cs.global_position), "r": rot(cs.global_basis)}
+	var entry := {"p": pos(cs.global_position), "r": rot(cs.global_basis), "mover": _mover}
 	if shape is BoxShape3D:
 		entry["box"] = [shape.size.x, shape.size.y, shape.size.z]
 	elif shape is CylinderShape3D:
@@ -448,3 +474,74 @@ func _add_cutscene(node: Node) -> void:
 		shots.append({"from": pos(shot["from"]), "from_look": pos(shot["from_look"]), "to": pos(shot["to"]),
 			"to_look": pos(shot["to_look"]), "time": float(shot["time"]), "text": str(shot["text"])})
 	data.cutscenes.append({"name": str(node.name), "play_on_start": bool(node.get("play_on_start")), "shots": shots})
+
+
+# ---------------------------------------------------------------- puzzles
+
+## Every puzzle piece in the level (levers, keypads, fuse boxes, gates, the
+## things they open...), with its settings and which pieces it's wired to,
+## so Unity can rebuild the same puzzles. A piece is anything with an
+## active_changed signal or a puzzle_set method, plus breaker switches,
+## radio buttons and airlocks.
+const PUZZLE_EXTRAS := ["breaker_switch", "tune_button", "airlock", "signal_light"]
+
+
+func _kind(n: Node) -> String:
+	var script: Script = n.get_script()
+	return script.resource_path.get_file().get_basename() if script else ""
+
+
+func _collect_puzzles(level: Node) -> void:
+	var found := []
+	for n in level.find_children("*", "", true, false):
+		var kind := _kind(n)
+		if kind == "" or kind == "code_display":
+			continue
+		if n.has_signal("active_changed") or n.has_method("puzzle_set") or kind in PUZZLE_EXTRAS:
+			found.append(n)
+	for n in found:
+		_pz_index[n] = _pz_index.size()
+	for n in found:
+		var entry := {"id": str(level.get_path_to(n)), "kind": _kind(n), "name": str(n.name),
+			"parent": _pz_index.get(n.get_parent(), -1), "params": []}
+		if n is Node3D:
+			entry["p"] = pos(n.global_position)
+			entry["r"] = rot(n.global_basis)
+		if n is Area3D:
+			entry.merge(_box_of(n))
+		if n.has_method("get_display_code"):
+			entry["has_code"] = true
+		for prop in n.get_property_list():
+			if not (prop.usage & PROPERTY_USAGE_SCRIPT_VARIABLE) or not (prop.usage & PROPERTY_USAGE_STORAGE):
+				continue
+			var param := _param_of(str(prop.name), n.get(prop.name))
+			if not param.is_empty():
+				entry.params.append(param)
+		data.puzzles.append(entry)
+
+
+## One setting as {"k": name, ...}: s = text, n = number, b = yes/no,
+## refs = the puzzle pieces it points at, v = a vector or color.
+func _param_of(key: String, value: Variant) -> Dictionary:
+	match typeof(value):
+		TYPE_STRING, TYPE_STRING_NAME:
+			return {"k": key, "s": str(value)}
+		TYPE_INT, TYPE_FLOAT:
+			return {"k": key, "n": float(value)}
+		TYPE_BOOL:
+			return {"k": key, "b": value}
+		TYPE_VECTOR3:
+			return {"k": key, "v": [value.x, value.y, value.z]}
+		TYPE_COLOR:
+			return {"k": key, "v": [value.r, value.g, value.b, value.a]}
+		TYPE_OBJECT:
+			if value is Node:
+				return {"k": key, "refs": [_pz_index.get(value, -1)], "s": str(value.name)}
+		TYPE_ARRAY:
+			var refs := []
+			for item in value:
+				if item is Node:
+					refs.append(_pz_index.get(item, -1))
+			if not refs.is_empty():
+				return {"k": key, "refs": refs}
+	return {}

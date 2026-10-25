@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Items lying around the level (batteries, flares, medkits, keycards...),
-// and what you're carrying. Press E to pick things up.
-//   1 = Battery: recharge your flashlight.
-//   2 = Flare: throw a red flare that lights up the dark for a while.
-//   3 = Medkit: you have one? If the Long Man catches you, you get away
-//       (the medkit is used up) instead of going back to the checkpoint.
-// Everything else (keycards, fuses, tapes, weapons...) goes in your bag
-// (Tab). Keycards and fuses are needed when the puzzles come to Unity.
+// and what you're carrying. Press E to pick things up. Keys 1-4 pick what's
+// in your hand; left click uses it:
+//   Battery: recharge your flashlight.   Flare: throw it (red light).
+//   Pistol: shoot (R reloads).            Medkit: if the Long Man catches
+//   you while you carry one, you get away instead (it's used up).
+// Keycards, fuses, the crowbar and tapes are used on things with E.
 namespace Deepwell
 {
     public class SZPickup : MonoBehaviour, ISZInteractable
@@ -72,39 +71,177 @@ namespace Deepwell
         }
     }
 
-    // What one player carries.
+    // One inventory slot: an item (or nothing), how many (batteries, flares,
+    // medkits and ammo stack), and for a gun the bullets in it and spare.
+    public class SZSlot
+    {
+        public ItemData item;
+        public int count;
+        public int clip, reserve;
+        public bool Empty => item == null;
+        public bool IsGun => item != null && item.id.StartsWith("weapon_");
+
+        public void Clear()
+        {
+            item = null;
+            count = clip = reserve = 0;
+        }
+
+        public void CopyFrom(SZSlot other)
+        {
+            item = other.item;
+            count = other.count;
+            clip = other.clip;
+            reserve = other.reserve;
+        }
+    }
+
+    // What one player carries, like the Godot version (scripts/items/inventory.gd):
+    // 4 quick slots (keys 1-4 pick what's in your hand) and storage slots
+    // (2 to start; a pouch adds 2, a backpack adds 4, up to 10).
+    // Tab opens the inventory screen to move things around, use or drop them.
     public class SZInventory
     {
-        public const int ClipSize = 12;
-        public int Batteries, Flares, Medkits;
-        public bool HasGun;
-        public int Clip, Reserve;   // bullets in the gun, and spare bullets
-        public readonly List<ItemData> Bag = new List<ItemData>();
+        public const int QuickSlots = 4, StartStorage = 2, MaxStorage = 10, StackMax = 5, ClipSize = 12;
 
-        public void Add(ItemData item)
+        public readonly SZSlot[] Quick = new SZSlot[QuickSlots];
+        public readonly List<SZSlot> Storage = new List<SZSlot>();
+        public int Selected;  // which quick slot is in your hand
+        public SZSlot Held => Quick[Selected];
+
+        public SZInventory()
         {
-            switch (item.id)
+            for (int i = 0; i < QuickSlots; i++) Quick[i] = new SZSlot();
+            for (int i = 0; i < StartStorage; i++) Storage.Add(new SZSlot());
+        }
+
+        public IEnumerable<SZSlot> All()
+        {
+            foreach (var s in Quick) yield return s;
+            foreach (var s in Storage) yield return s;
+        }
+
+        public static bool Stacks(string id) => id == "battery" || id == "flare" || id == "medkit" || id.StartsWith("ammo_");
+
+        // Picks something up. Returns false (and keeps nothing) if there's no room.
+        public bool Add(ItemData item)
+        {
+            // Packs are worn straight away: more storage.
+            if (item.id == "pouch" || item.id == "backpack")
             {
-                case "battery": Batteries++; break;
-                case "flare": Flares++; break;
-                case "medkit": Medkits++; break;
-                default:
-                    // Any gun works as a pistol for now; any ammo fits it.
-                    if (item.id.StartsWith("weapon_")) GiveGun(item.id == "weapon_tranq" ? 4 : ClipSize);
-                    else if (item.id.StartsWith("ammo_")) Reserve += 8;
-                    else Bag.Add(item);
-                    break;
+                int extra = item.id == "pouch" ? 2 : 4;
+                if (Storage.Count >= MaxStorage) return false;
+                for (int i = 0; i < extra && Storage.Count < MaxStorage; i++) Storage.Add(new SZSlot());
+                return true;
             }
+            // Ammo goes straight into a gun you already have.
+            if (item.id.StartsWith("ammo_"))
+            {
+                var gun = FindGun();
+                if (gun != null)
+                {
+                    gun.reserve += 8;
+                    return true;
+                }
+            }
+            if (Stacks(item.id))
+                foreach (var s in All())
+                    if (!s.Empty && s.item.id == item.id && s.count < StackMax)
+                    {
+                        s.count++;
+                        return true;
+                    }
+            var free = FreeSlot();
+            if (free == null) return false;
+            free.item = item;
+            free.count = 1;
+            if (free.IsGun)
+            {
+                free.clip = item.id == "weapon_tranq" ? 4 : ClipSize;
+                // Ammo you were already carrying loads into it.
+                foreach (var s in All())
+                    if (!s.Empty && s.item.id.StartsWith("ammo_"))
+                    {
+                        free.reserve += 8 * s.count;
+                        s.Clear();
+                    }
+            }
+            return true;
         }
 
-        public void GiveGun(int bullets)
+        // A quick slot first (so it's ready in your hand), then storage.
+        public SZSlot FreeSlot()
         {
-            if (HasGun) Reserve += bullets;
-            else Clip = Mathf.Min(bullets, ClipSize);
-            HasGun = true;
+            foreach (var s in Quick) if (s.Empty) return s;
+            foreach (var s in Storage) if (s.Empty) return s;
+            return null;
         }
 
-        public bool Has(string id) => Bag.Exists(i => i.id == id);
+        public int Count(string id)
+        {
+            int n = 0;
+            foreach (var s in All()) if (!s.Empty && s.item.id == id) n += s.count;
+            return n;
+        }
+
+        public bool Has(string id) => Count(id) > 0;
+
+        // A keycard opens its color's doors and every weaker one (green < yellow < red).
+        public bool HasKeycard(string color)
+        {
+            int need = color == "red" ? 3 : color == "yellow" ? 2 : 1;
+            foreach (var s in All())
+            {
+                if (s.Empty || !s.item.id.StartsWith("keycard_")) continue;
+                var c = s.item.id.Substring(8);
+                int have = c == "red" ? 3 : c == "yellow" ? 2 : 1;
+                if (have >= need) return true;
+            }
+            return false;
+        }
+
+        // Uses up one of something. Returns the item, or null if you had none.
+        public ItemData Take(string id)
+        {
+            foreach (var s in All())
+                if (!s.Empty && s.item.id == id)
+                {
+                    var item = s.item;
+                    if (--s.count <= 0) s.Clear();
+                    return item;
+                }
+            return null;
+        }
+
+        // The first reel tape (optionally a particular recording).
+        public ItemData FindTape(string lore)
+        {
+            foreach (var s in All())
+                if (!s.Empty && s.item.id == "reel_tape" && (string.IsNullOrEmpty(lore) || s.item.lore == lore)) return s.item;
+            return null;
+        }
+
+        public SZSlot FindGun()
+        {
+            foreach (var s in All()) if (s.IsGun) return s;
+            return null;
+        }
+
+        public void Swap(SZSlot a, SZSlot b)
+        {
+            var temp = new SZSlot();
+            temp.CopyFrom(a);
+            a.CopyFrom(b);
+            b.CopyFrom(temp);
+        }
+
+        // Eli and Cole start with the pistol from the trunk.
+        public void GiveStartingPistol()
+        {
+            Add(new ItemData { id = "weapon_pistol", name = "9mm Pistol", hint = "Left click to shoot, R to reload.", color = new[] { 0.28f, 0.28f, 0.3f, 1f } });
+            var gun = FindGun();
+            if (gun != null) gun.reserve = 12;
+        }
     }
 
     // A thrown flare: red light, a hiss, burns out after a while.

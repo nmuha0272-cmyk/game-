@@ -333,7 +333,7 @@ namespace Deepwell
             foreach (var door in SZWorld.Instance.Doors)
             {
                 if (door.IsOpen || Vector3.Distance(door.Middle, here) > 2.2f) continue;
-                if (door.IsHeld)
+                if (door.IsHeld || door.LockedShut)
                 {
                     blocked = true;
                     SZAudio.PlayAt("door_pound", door.Middle, 1f, 25f);

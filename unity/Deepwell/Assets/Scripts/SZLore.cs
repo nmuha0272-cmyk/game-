@@ -47,6 +47,7 @@ namespace Deepwell
         {
             if (Data.kind == "tape_machine") SZAudio.PlayAt("radio_static", transform.position, 0.6f, 10f);
             SZGame.Instance.Read(Data.title, Data.text);
+            SZWorld.Instance.HearLore(Data.id);
         }
     }
 }

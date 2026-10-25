@@ -62,6 +62,7 @@ namespace Deepwell
             if (prefab == null) return null;
             var model = Object.Instantiate(prefab, parent);
             model.name = "Model";
+            SZGraphics.NotSoShiny(model);  // the model files say "metal"; that looked like chrome
             model.transform.localPosition = Vector3.zero;
             model.transform.localRotation = Quaternion.identity;
             var renderers = model.GetComponentsInChildren<Renderer>();

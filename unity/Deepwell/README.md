@@ -8,14 +8,15 @@ It's moved over **one phase at a time**.
 |---|---|---|
 | U1 | Chapter 1 built from the Godot level (all rooms, props, lights, signs, fog), walk / sprint / crouch / jump, flashlight, doors | done |
 | U2 | **Better graphics** (glow, film look, shadows, quality settings), **online co-op** (Host / Join, up to 4), **items** (batteries, flares, medkits, keycards...), **story notes and tapes**, **the Long Man** (patrol, sight, hearing, chase, opens doors), **checkpoints**, **story messages**, **the 4 characters and their abilities**, sounds, settings, **sets itself up** | done |
-| **U2.5** | **The Deepwell car home screen** (car on the forest road, choose your character inside the car), **the newspaper intro**, **the chapter intro**, **the trunk scene** at the team's car by the station (Eli and Cole take the pistols, talk about the missing people, Eli shows the old photo of his mom and dad), **the team's talk**, **pistols** (click to shoot, R to reload; a hit stuns the Long Man), **real textures instead of silver** | **← now** |
-| U3 | Puzzles (keypads, levers, fuses, generators...), locked doors that need keycards | next |
+| U2.5 | **The Deepwell car home screen** (car on the forest road, choose your character inside the car), **the newspaper intro**, **the chapter intro**, **the trunk scene** at the team's car by the station (Eli and Cole take the pistols, talk about the missing people, Eli shows the old photo of his mom and dad), **the team's talk**, **pistols** (click to shoot, R to reload; a hit stuns the Long Man), **real textures instead of silver** | done |
+| **U3** | **All of Chapter 1's puzzles** (levers, buttons, things you hold, fuse boxes, card readers, keypads, breaker panels, the radio, the terminal, the darkroom, the generator, tape machines, the pressure plate, the airlock, the Morse lamp), **locked doors** (keycards, a jammed door and the crowbar), **the inventory** (4 quick slots + storage, Tab screen, drop), **the chapter ending** in the elevator, **less shiny models** | **← now** |
 | U4 | Downed / help up, hiding in lockers, the reveal cutscene | |
 | U5 | Chapter 2 | |
 | U6 | The Deepwell car menu, animations | |
 
-Until U3, **puzzle doors and locked doors start open**, so you can walk the
-whole chapter.
+Puzzle doors stay shut until their puzzle is solved, like in Godot. Codes
+for keypads, the breaker pattern and the radio frequency are written on signs
+and screens around the level once you unlock them.
 
 ## What you need (one time)
 
@@ -82,10 +83,14 @@ have.
 ## Controls
 
 WASD move, mouse look, Shift sprint (uses stamina), Ctrl or C crouch, Space
-jump, F flashlight (uses battery), E use / pick up / read, 1 put in a
-battery, 2 throw a flare, Q your ability, Tab your bag, left click shoot
-(if you have a pistol), R reload, Esc pause. In cutscenes: Space = next,
-hold Space = skip.
+jump, F flashlight (uses battery), E use / pick up / read (hold E for fuse
+boxes, prying, repairing...), **1-4 pick what's in your hand**, **left click
+use it** (shoot, battery, flare), R reload, **G drop**, **Tab inventory**, Q your
+ability, Esc pause. In cutscenes: Space = next, hold Space = skip.
+
+**Inventory:** 4 quick slots (the bar at the bottom) and 2 storage slots; a
+pouch adds 2 and a backpack 4 (up to 10). In the Tab screen, click an item,
+then click another slot to move it, or press USE / DROP.
 
 | Character | Ability (Q) |
 |---|---|
@@ -123,7 +128,8 @@ you once).
 | `SZPlayer` | You: moving, stamina, flashlight battery, items, abilities, getting caught |
 | `SZRemotePlayer` | Another player in an online game |
 | `SZMonster` | The Long Man's brain (patrol, see, hear, chase, doors, stun) |
-| `SZItems` | Items on the floor, your inventory, thrown flares |
+| `SZItems` | Items on the floor, the inventory (quick slots + storage), thrown flares |
+| `SZPuzzles` | Every Chapter 1 puzzle piece, the gates that wire them, code signs |
 | `SZLore` | Notes, files, posters you can read |
 | `SZDoor` | A door that swings open and shut |
 | `SZCharacters` | The 4 characters and loading their models |

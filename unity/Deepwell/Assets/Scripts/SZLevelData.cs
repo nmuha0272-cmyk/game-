@@ -24,6 +24,7 @@ namespace Deepwell
         public CutsceneData[] cutscenes;
         public DialogueLine[] dialogue;
         public SpawnData team_car;
+        public PuzzleData[] puzzles;
         public MoonData moon;
         public EnvironmentData environment;
 
@@ -38,6 +39,7 @@ namespace Deepwell
         public float[] p, r, color;
         public float energy, range, angle, flicker;
         public bool shadow, spot, pulse, starts_off;
+        public int group = -1;  // a puzzle's light group: dark until it's solved
     }
 
     [Serializable]
@@ -46,6 +48,8 @@ namespace Deepwell
         public string name;
         public float[] p, r;
         public bool puzzle, locked;
+        public string @lock;       // "keycard_green" / "keycard_yellow" / "keycard_red" / "jammed" / ""
+        public int id = -1;        // its puzzle piece (doors a puzzle opens)
     }
 
     [Serializable]
@@ -55,6 +59,9 @@ namespace Deepwell
         public string text;
         public float size;
         public bool billboard;
+        // A code display: shows a puzzle's code once hidden_until is solved.
+        public int source = -1, hidden_until = -1, digit = -1;
+        public string template, hidden_text;
     }
 
     [Serializable]
@@ -67,6 +74,7 @@ namespace Deepwell
     public class ColliderData
     {
         public float[] p, r, box, cylinder;
+        public int mover = -1;  // moves with this puzzle mover (a gate, a shutter)
     }
 
     [Serializable]
@@ -152,5 +160,37 @@ namespace Deepwell
     {
         public string who, text;
         public bool trunk, pistols, photo;  // the trunk scene at the team's car
+    }
+
+    // One puzzle piece from the Godot level: a lever, keypad, fuse box, gate
+    // (the logic that wires pieces together), door, light group, mover...
+    [Serializable]
+    public class PuzzleData
+    {
+        public string id, kind, name;
+        public int parent = -1;
+        public float[] p, r, size;
+        public bool has_code;
+        public ParamData[] @params;
+
+        public ParamData Get(string key) => @params == null ? null : Array.Find(@params, x => x.k == key);
+        public string S(string key, string fallback = "") { var x = Get(key); return x != null && !string.IsNullOrEmpty(x.s) ? x.s : fallback; }
+        public float N(string key, float fallback = 0f) { var x = Get(key); return x != null ? x.n : fallback; }
+        public bool B(string key) => Get(key)?.b ?? false;
+        public int[] Refs(string key) => Get(key)?.refs ?? new int[0];
+        public bool Has3D => p != null && p.Length == 3;
+        public int Ref(string key) { var r = Refs(key); return r.Length > 0 ? r[0] : -1; }
+        public float[] V(string key) => Get(key)?.v;
+    }
+
+    // One setting: s = text, n = number, b = yes/no, refs = pieces it points at, v = vector/color.
+    [Serializable]
+    public class ParamData
+    {
+        public string k, s;
+        public float n;
+        public bool b;
+        public int[] refs;
+        public float[] v;
     }
 }

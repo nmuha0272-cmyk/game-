@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // Builds Chapter 1 when the game starts: the level model (all the walls,
@@ -15,8 +16,22 @@ namespace Deepwell
         // Only this many lights cast shadows (shadowed point lights are expensive).
         const int MaxShadowLights = 12;
 
+        // For the puzzles: the lights of each puzzle light group, and the parts of
+        // each puzzle mover (a gate, a shutter), by puzzle piece number.
+        public static readonly Dictionary<int, List<Light>> LightGroups = new Dictionary<int, List<Light>>();
+        public static readonly Dictionary<int, List<Transform>> MoverParts = new Dictionary<int, List<Transform>>();
+
+        static void AddMoverPart(int mover, Transform part)
+        {
+            if (mover < 0) return;
+            if (!MoverParts.TryGetValue(mover, out var list)) MoverParts[mover] = list = new List<Transform>();
+            list.Add(part);
+        }
+
         public static SZLevelData Build(string chapter, Transform parent)
         {
+            LightGroups.Clear();
+            MoverParts.Clear();
             var json = Resources.Load<TextAsset>($"Levels/{chapter}");
             if (json == null)
             {
@@ -44,6 +59,7 @@ namespace Deepwell
             }
             var level = Object.Instantiate(prefab, parent);
             level.name = "LevelGeometry";
+            SZGraphics.NotSoShiny(level, 0.35f);  // real metal (pipes, fences) keeps a little shine
             int solid = 0;
             foreach (var filter in level.GetComponentsInChildren<MeshFilter>())
             {
@@ -55,6 +71,13 @@ namespace Deepwell
                     collider.sharedMesh = filter.sharedMesh;
                     solid++;
                 }
+            }
+            // Parts of puzzle movers are named "...MOVER_<n>_...": they move when that puzzle is solved.
+            foreach (Transform t in level.GetComponentsInChildren<Transform>())
+            {
+                var m = System.Text.RegularExpressions.Regex.Match(t.name, @"MOVER_(\d+)_");
+                if (m.Success && (t.parent == null || !System.Text.RegularExpressions.Regex.IsMatch(t.parent.name, @"MOVER_\d+_")))
+                    AddMoverPart(int.Parse(m.Groups[1].Value), t);
             }
             if (solid == 0) Debug.LogError("Deepwell: no solid level parts were found, so you would fall through the floor.");
         }
@@ -126,8 +149,13 @@ namespace Deepwell
                 light.renderMode = LightRenderMode.Auto;
                 if (l.flicker >= 0f) go.AddComponent<SZFlicker>().brokenness = l.flicker;
                 if (l.pulse) go.AddComponent<SZPulse>();
-                // Puzzle lights (a room's power) stay dark until puzzles exist (phase U3).
-                if (l.starts_off) light.enabled = false;
+                // A puzzle's lights (a room's power) stay dark until it's solved.
+                if (l.group >= 0)
+                {
+                    light.enabled = false;
+                    if (!LightGroups.TryGetValue(l.group, out var group)) LightGroups[l.group] = group = new List<Light>();
+                    group.Add(light);
+                }
             }
         }
 
@@ -154,6 +182,7 @@ namespace Deepwell
                 text.color = SZLevelData.C(l.color);
                 go.GetComponent<MeshRenderer>().sharedMaterial = font.material;
                 if (l.billboard) go.AddComponent<SZBillboard>();
+                if (l.source >= 0) go.AddComponent<SZCodeLabel>().Data = l;  // shows a puzzle's code
             }
         }
 
@@ -166,6 +195,7 @@ namespace Deepwell
             {
                 var go = new GameObject("Collider");
                 go.transform.SetParent(root);
+                AddMoverPart(c.mover, go.transform);
                 go.transform.SetPositionAndRotation(SZLevelData.V(c.p), SZLevelData.Q(c.r));
                 if (c.box != null && c.box.Length == 3)
                 {
