@@ -195,11 +195,21 @@ namespace Deepwell
                 _character = save.character;
                 if (!string.IsNullOrEmpty(save.name)) _playerName = save.name;
             }
-            _world = SZWorld.Create(save != null ? save.chapter : "chapter1", _character, _playerName, save, skipIntro);
-            if (_world.Local == null)
+            string problem = null;
+            try
+            {
+                _world = SZWorld.Create(save != null ? save.chapter : "chapter1", _character, _playerName, save, skipIntro);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+                problem = e.GetType().Name + ": " + e.Message;
+            }
+            if (problem != null || _world == null || _world.Local == null)
             {
                 ShowMenu();
-                _status = "The level didn't load. Check the Console for a red error.";
+                _status = "THE LEVEL DIDN'T LOAD.  " + (problem ?? "Levels/chapter1 is missing from Assets/Resources.") +
+                          "\n(Send a picture of this, or of the red lines in Window > General > Console.)";
                 yield break;
             }
             // (The intro cutscene shows "CHAPTER 1 - THE SURFACE".)
@@ -479,7 +489,7 @@ namespace Deepwell
             if (GUI.Button(new Rect(x, y + 192, 380, 54), "SETTINGS", _button)) { _settingsBack = Mode.Menu; _screen = Mode.Settings; }
             if (GUI.Button(new Rect(x, y + 256, 380, 54), "QUIT", _button)) Application.Quit();
             if (!string.IsNullOrEmpty(_status))
-                GUI.Label(new Rect(x, y + 330, 700, 60), _status, _sub);
+                GUI.Label(new Rect(x, y + 330, Screen.width - x - 40, 120), _status, new GUIStyle(_sub) { wordWrap = true });
         }
 
         // Inside the car: cards at the bottom, the person you're looking at on the right.

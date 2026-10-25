@@ -126,6 +126,21 @@ namespace Deepwell
         // onGround: its bottom sits at the parent; otherwise it's centered.
         public static GameObject Spawn(string id, Transform parent, bool onGround, float size = -1f)
         {
+            // A downloaded asset that breaks (missing scripts, made for another
+            // renderer...) never stops the game: it's skipped, and the stand-in is used.
+            try
+            {
+                return SpawnAsset(id, parent, onGround, size);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("Deepwell: the asset in the " + id.ToUpper() + " slot didn't work, so the stand-in is used instead. (" + e.Message + ")");
+                return null;
+            }
+        }
+
+        static GameObject SpawnAsset(string id, Transform parent, bool onGround, float size)
+        {
             var slot = Slots != null ? Slots.Find(id) : null;
             if (slot == null || slot.prefab == null) return null;
             var info = Array.Find(SZAssetSlots.Info, i => i.id == id);
