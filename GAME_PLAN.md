@@ -672,7 +672,10 @@ Tasks:
   `Content/Data/chapter1.json`, and `scripts/export/unreal_export.gd` writes
   the items and weapons list (`items.json`). Not compiled yet: build errors go
   to Claude to fix.
-- **Unity export:** `scripts/export/unity_export.gd` writes `exports/unity/items.json`.
+- **Unity version** (`unity/Deepwell/`): being ported phase by phase like the
+  Unreal one; see its README. Phase U1: Chapter 1 from the Godot level
+  (`tools/export_for_unity.gd` writes the level model and data), walking,
+  flashlight, doors. `scripts/export/unity_export.gd` writes the items list.
 - **Roblox version** (`roblox/`): made by the `tools/roblox_*.py` scripts.
 - **Animations:** `assets/animations/` holds the animation libraries
   (player, monsters, cutscenes, props). The player, the Long Man, the Wired,

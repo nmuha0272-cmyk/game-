@@ -1,0 +1,77 @@
+using System;
+using UnityEngine;
+
+// The data side of a chapter, read from Resources/Levels/chapter1.json.
+// It's written by the Godot project (tools/export_for_unity.gd), already in
+// Unity's coordinates: positions are [x, y, z], rotations are quaternions
+// [x, y, z, w], colors are [r, g, b, a].
+namespace Deepwell
+{
+    [Serializable]
+    public class SZLevelData
+    {
+        public LightData[] lights;
+        public DoorData[] doors;
+        public LabelData[] labels;
+        public SpawnData[] spawns;
+        public ColliderData[] colliders;
+        public MoonData moon;
+        public EnvironmentData environment;
+
+        public static Vector3 V(float[] a) => a != null && a.Length >= 3 ? new Vector3(a[0], a[1], a[2]) : Vector3.zero;
+        public static Quaternion Q(float[] a) => a != null && a.Length >= 4 ? new Quaternion(a[0], a[1], a[2], a[3]) : Quaternion.identity;
+        public static Color C(float[] a) => a != null && a.Length >= 3 ? new Color(a[0], a[1], a[2], a.Length >= 4 ? a[3] : 1f) : Color.white;
+    }
+
+    [Serializable]
+    public class LightData
+    {
+        public float[] p, r, color;
+        public float energy, range, angle, flicker;
+        public bool shadow, spot, pulse, starts_off;
+    }
+
+    [Serializable]
+    public class DoorData
+    {
+        public string name;
+        public float[] p, r;
+        public bool puzzle, locked;
+    }
+
+    [Serializable]
+    public class LabelData
+    {
+        public float[] p, r, color;
+        public string text;
+        public float size;
+        public bool billboard;
+    }
+
+    [Serializable]
+    public class SpawnData
+    {
+        public float[] p, r;
+    }
+
+    [Serializable]
+    public class ColliderData
+    {
+        public float[] p, r, box, cylinder;
+    }
+
+    [Serializable]
+    public class MoonData
+    {
+        public float[] r, color;
+        public float energy;
+    }
+
+    [Serializable]
+    public class EnvironmentData
+    {
+        public float[] ambient, fog_color;
+        public float ambient_energy, fog_density;
+        public bool fog;
+    }
+}
