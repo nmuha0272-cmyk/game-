@@ -18,7 +18,7 @@ func _ready() -> void:
 		return
 	GameState.server_set_flashlight_drain(flashlight_drain_at_start \
 			or GameState.checkpoint_order >= drain_from_checkpoint)
-	if GameState.checkpoint_order == 0:
+	if GameState.checkpoint_order == 0 and not GameState.from_save:
 		await get_tree().create_timer(1.5).timeout
 		_show_title.rpc()
 	

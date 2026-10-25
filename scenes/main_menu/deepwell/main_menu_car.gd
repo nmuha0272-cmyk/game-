@@ -394,6 +394,12 @@ func _confirm() -> void:
 
 ## After PLAY AS: the team talks while Eli drives, then the drive to the gate.
 func _start_talk() -> void:
+	# CONTINUE: the talk already happened in the saved game, so straight to the station.
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state and game_state.get("continue_on_start"):
+		_select_ui.hide()
+		_start_arrival()
+		return
 	state = State.TALK
 	hovered = ""
 	_select_ui.hide()

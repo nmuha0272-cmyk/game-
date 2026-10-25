@@ -66,6 +66,9 @@ func reset() -> void:
 	level_progress = {}
 	journal = []
 	menu_open = false
+	from_save = false
+	continue_on_start = false
+	pending_positions = {}
 	players_changed.emit()
 
 
@@ -213,7 +216,8 @@ func server_reach_checkpoint(checkpoint: Checkpoint) -> void:
 			checkpoint_inventories[player.name.to_int()] = {
 				"quick": inv.quick_slots.duplicate(true),
 				"storage": inv.storage_slots.duplicate(true)}
-	_announce.rpc("Checkpoint reached.")
+	# The game saves by itself at every checkpoint.
+	_announce.rpc("Checkpoint reached - game saved." if server_save_game() else "Checkpoint reached.")
 
 
 ## Host only: remember that a door/lock/puzzle in the level is done (or not
@@ -331,6 +335,7 @@ func server_next_chapter(path: String) -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _next_chapter(path: String) -> void:
+	from_save = false
 	checkpoint_name = ""
 	checkpoint_order = 0
 	checkpoint_inventories = {}
@@ -362,3 +367,96 @@ func _set_voice_mode(mode: String, pulse_interval: float, pulse: bool) -> void:
 		get_tree().call_group("player_hud", "show_message", "Voice mode: %s" % mode.capitalize())
 	else:
 		get_tree().call_group("player_hud", "show_message", "Voice mode: Normal")
+
+
+# --- Saving ---------------------------------------------------------------
+
+## F5 quick save, F9 quick load, and a save by itself at every checkpoint.
+## Only the host saves. Gear and places are kept by character (network IDs
+## change from game to game), so pick the same characters to get your stuff back.
+const SAVE_PATH := "user://savegame.cfg"
+
+## Host: load this level from the save (main.gd does it).
+signal load_requested(level_path: String)
+
+## The level being played (main.gd keeps this up to date).
+var current_level := ""
+## This level came from a save, so the intro doesn't play again.
+var from_save := false
+## CONTINUE was pressed on the home screen: load the save when the game starts.
+var continue_on_start := false
+## Host only, while loading: network ID -> where that player was standing.
+var pending_positions := {}
+
+
+func has_save() -> bool:
+	return FileAccess.file_exists(SAVE_PATH)
+
+
+## Host only: write everything to the save file. Returns true if it worked.
+func server_save_game() -> bool:
+	if not multiplayer.is_server() or current_level.is_empty():
+		return false
+	var save := ConfigFile.new()
+	save.set_value("game", "level", current_level)
+	save.set_value("game", "checkpoint_name", checkpoint_name)
+	save.set_value("game", "checkpoint_order", checkpoint_order)
+	save.set_value("game", "level_progress", level_progress)
+	save.set_value("game", "journal", journal)
+	save.set_value("game", "time", Time.get_datetime_string_from_system(false, true))
+	if checkpoint_inventories.has("eli_cole_bond_level"):
+		save.set_value("game", "bond", checkpoint_inventories["eli_cole_bond_level"])
+	for player: Player in get_tree().get_nodes_in_group("players"):
+		var inv = player.get_node_or_null("Inventory")
+		if inv == null:
+			continue
+		var section := "character_%d" % get_character(player.name.to_int())
+		save.set_value(section, "quick", inv.quick_slots.duplicate(true))
+		save.set_value(section, "storage", inv.storage_slots.duplicate(true))
+		save.set_value(section, "position", player.global_position)
+	return save.save(SAVE_PATH) == OK
+
+
+## Host only: go back to the save. Returns false if there isn't one.
+func server_load_game() -> bool:
+	if not multiplayer.is_server():
+		return false
+	var save := ConfigFile.new()
+	if save.load(SAVE_PATH) != OK:
+		return false
+	var level: String = save.get_value("game", "level", "")
+	if level.is_empty() or not ResourceLoader.exists(level):
+		return false
+	checkpoint_name = save.get_value("game", "checkpoint_name", "")
+	checkpoint_order = save.get_value("game", "checkpoint_order", 0)
+	level_progress = save.get_value("game", "level_progress", {}).duplicate(true)
+	journal = save.get_value("game", "journal", []).duplicate()
+	checkpoint_inventories = {}
+	if save.has_section_key("game", "bond"):
+		checkpoint_inventories["eli_cole_bond_level"] = save.get_value("game", "bond")
+	pending_positions = {}
+	for id: int in players:
+		var section := "character_%d" % get_character(id)
+		if not save.has_section(section):
+			continue
+		checkpoint_inventories[id] = {
+			"quick": save.get_value(section, "quick", [{}, {}, {}, {}]),
+			"storage": save.get_value(section, "storage", [{}, {}])}
+		pending_positions[id] = save.get_value(section, "position", null)
+	from_save = true
+	_receive_journal.rpc(journal)
+	_show_wipe.rpc("Loading...")
+	load_requested.emit(level)
+	return true
+
+
+@rpc("authority", "reliable")
+func _receive_journal(new_journal: Array) -> void:
+	journal = new_journal
+	journal_changed.emit()
+
+
+## Host only: a short message on everyone's screen.
+func server_announce(text: String) -> void:
+	if multiplayer.is_server():
+		_announce.rpc(text)

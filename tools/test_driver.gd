@@ -261,6 +261,30 @@ func _run() -> void:
 	check(inv.storage_count() == 10, "no more storage slots past the cap")  # Inventory.MAX_STORAGE
 	check(inv.find_item("pouch")[1] == spare_idx, "extra pouch kept when it can't be worn")
 
+	# --- Quick save (F5) and quick load (F9) ---
+	var saved_at: Vector3 = p.global_position
+	GameState.level_progress["SaveTestMarker"] = true
+	_press("quick_save")
+	await _timer(0.3)
+	check(GameState.has_save(), "F5 writes a save file")
+	# Change things, then load: they should come back the way they were.
+	p.global_position = saved_at + Vector3(4, 0, 4)
+	inv.server_set_slots([{}, {}, {}, {}], [{}, {}])
+	GameState.level_progress.erase("SaveTestMarker")
+	_press("quick_load")
+	ok = await _until(func() -> bool:
+		var now := get_tree().get_nodes_in_group("players")
+		return now.size() == 1 and now[0] != p and is_instance_valid(now[0]) \
+				and now[0].global_position.distance_to(saved_at) < 1.0, 15.0)
+	check(ok, "F9 reloads the level and puts you where you saved")
+	await _timer(1.0)
+	var p2: Node = get_tree().get_nodes_in_group("players")[0]
+	check(p2.get_node("Inventory").storage_count() == 10, "your inventory comes back from the save (%d storage)" % p2.get_node("Inventory").storage_count())
+	check(GameState.level_progress.has("SaveTestMarker"), "the team's progress comes back from the save")
+	var od2: Node = main.level_root.get_child(main.level_root.get_child_count() - 1).get_node_or_null("OpeningDialogue")
+	check(od2 != null and not od2.get("played") and not GameState.menu_open, "the intro doesn't play again after loading")
+	DirAccess.remove_absolute(GameState.SAVE_PATH)  # (don't leave a test save behind)
+
 	finish()
 
 

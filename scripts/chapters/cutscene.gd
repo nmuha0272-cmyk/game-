@@ -23,7 +23,7 @@ const SKIP_HOLD_TIME := 1.0
 
 
 func _ready() -> void:
-	if play_on_start and multiplayer.is_server() and GameState.checkpoint_order == 0:
+	if play_on_start and multiplayer.is_server() and GameState.checkpoint_order == 0 and not GameState.from_save:
 		# Wait until every player has loaded the level and spawned (up to
 		# 8 seconds), or the others would miss it.
 		var waited := 0.0

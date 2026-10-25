@@ -50,6 +50,9 @@ func _ready() -> void:
 	GameState.restart_requested.connect(_restart_level)
 	GameState.chapter_completed.connect(_on_chapter_completed)
 	GameState.next_chapter_requested.connect(_on_next_chapter)
+	GameState.load_requested.connect(_load_saved_level)
+	$Menus/PauseMenu.save_requested.connect(_quick_save)
+	$Menus/PauseMenu.load_requested.connect(_quick_load)
 	
 	# Connect cutscene finished signal
 	if opening_cutscene:
@@ -59,7 +62,13 @@ func _ready() -> void:
 func _on_opening_finished() -> void:
 	# After cutscene, load the actual game level
 	if multiplayer.is_server():
+		# CONTINUE on the home screen: start from the save instead.
+		if GameState.continue_on_start:
+			GameState.continue_on_start = false
+			if GameState.server_load_game():
+				return
 		_current_level = STORY_START
+		GameState.current_level = STORY_START
 		level_root.add_child(load(STORY_START).instantiate())
 
 
@@ -77,6 +86,7 @@ func _open_home(message := "") -> void:
 	add_child(home)
 	var ui: Control = home.get_menu_ui()
 	ui.host_requested.connect(_on_home_host)
+	ui.continue_requested.connect(_on_home_continue)
 	ui.join_requested.connect(_on_home_join)
 	ui.settings_requested.connect(settings_menu.open)
 	home.character_confirmed.connect(_on_home_character)
@@ -108,6 +118,13 @@ func _on_home_host(_port: int) -> void:
 	GameState.start_hosting()
 	get_window().title = "Subject Zero (Host)"
 	home.enter_select()
+
+
+## CONTINUE: host (alone, or friends can join), pick characters, then the save loads.
+func _on_home_continue() -> void:
+	_on_home_host(0)
+	if NetworkManager.is_online():
+		GameState.continue_on_start = true
 
 
 func _on_home_join(ip: String, port: int) -> void:
@@ -233,9 +250,62 @@ func _on_next_chapter(path: String) -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	_current_level = path
+	GameState.current_level = path
 	level_root.add_child(load(path).instantiate())
 	await get_tree().create_timer(1.0).timeout
 	_fade_in_everyone.rpc()
+
+
+# ---------------------------------------------------------------- saving
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not GameState.game_in_progress or GameState.menu_open or level_root.get_child_count() == 0:
+		return
+	if event.is_action_pressed("quick_save"):
+		_quick_save()
+	elif event.is_action_pressed("quick_load"):
+		_quick_load()
+
+
+func _message(text: String) -> void:
+	get_tree().call_group("player_hud", "show_message", text)
+
+
+## F5 (or Save Game in the pause menu). Only the host saves.
+func _quick_save() -> void:
+	if not multiplayer.is_server():
+		_message("Only the host can save the game.")
+	elif GameState.server_save_game():
+		GameState.server_announce("Game saved.")
+	else:
+		_message("The game couldn't be saved.")
+
+
+## F9 (or Load Last Save): everyone goes back to the save together.
+func _quick_load() -> void:
+	if not multiplayer.is_server():
+		_message("Only the host can load the game.")
+	elif not GameState.has_save():
+		_message("There's no save yet. Press F5 to save.")
+	elif not GameState.server_load_game():
+		_message("The save couldn't be loaded.")
+
+
+## Host: load the saved level, put back what the team did, and put everyone
+## where they were standing (with the gear they had: see player_spawner.gd).
+func _load_saved_level(path: String) -> void:
+	if not multiplayer.is_server():
+		return
+	await get_tree().create_timer(0.6).timeout  # (let "Loading..." fade in)
+	_current_level = path
+	GameState.current_level = path
+	await _restart_level()
+	for player: Player in get_tree().get_nodes_in_group("players"):
+		var at: Variant = GameState.pending_positions.get(player.name.to_int())
+		if at is Vector3:
+			player.downed._teleport.rpc_id(player.get_multiplayer_authority(), at)
+	GameState.pending_positions = {}
+	GameState.server_announce("Game loaded.")
 
 
 ## The chapter ended: everyone goes back to the lobby (Chapter 2 comes later).

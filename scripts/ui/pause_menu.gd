@@ -3,19 +3,28 @@ extends MenuBase
 ## online co-op, so nothing can really pause.
 
 signal leave_requested
+signal save_requested
+signal load_requested
 
 @export var settings_menu: MenuBase
 @export var journal_menu: MenuBase
 
 
 func _ready() -> void:
-	var box := make_panel(Vector2(360, 300))
+	var box := make_panel(Vector2(360, 400))
 	make_title(box, "PAUSED")
 	make_button(box, "Resume", close)
 	make_button(box, "Journal", func() -> void:
 		close()
 		journal_menu.open()
 		journal_menu._refresh())
+	# Only the host saves and loads (everyone goes back together).
+	_save_button = make_button(box, "Save Game  (F5)", func() -> void:
+		close()
+		save_requested.emit())
+	_load_button = make_button(box, "Load Last Save  (F9)", func() -> void:
+		close()
+		load_requested.emit())
 	make_button(box, "Settings", func() -> void:
 		hide()
 		settings_menu.open())
@@ -30,6 +39,8 @@ func _ready() -> void:
 
 
 var _reopen_after_settings := false
+var _save_button: Button
+var _load_button: Button
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -43,5 +54,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func open() -> void:
+	_save_button.visible = multiplayer.is_server()
+	_load_button.visible = multiplayer.is_server() and GameState.has_save()
 	super()
 	_reopen_after_settings = true

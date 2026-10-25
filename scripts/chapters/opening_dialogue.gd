@@ -96,7 +96,7 @@ var SPEAKER_IDS := {
 
 
 func _ready() -> void:
-	if not auto_play or GameState.checkpoint_order != 0 or not multiplayer.is_server():
+	if not auto_play or GameState.checkpoint_order != 0 or GameState.from_save or not multiplayer.is_server():
 		return
 	await _wait_for_intro()
 	_trigger_dialogue.rpc()

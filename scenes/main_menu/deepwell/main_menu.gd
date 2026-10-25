@@ -9,6 +9,8 @@ extends Control
 ##   automatically. The menu works fine without them.
 
 signal host_requested(port: int)
+## CONTINUE (only shown when there's a save): play on from the save.
+signal continue_requested
 signal join_requested(ip: String, port: int)
 ## Only used when `embedded`: the game's own Settings menu should open.
 signal settings_requested
@@ -132,6 +134,16 @@ func _unhandled_input(event: InputEvent) -> void:
 # ---------------------------------------------------------------- Setup
 
 func _connect_signals() -> void:
+	var game_state := get_node_or_null("/root/GameState")
+	if embedded and game_state and game_state.has_save():
+		var continue_button := host_button.duplicate() as Button
+		continue_button.name = "ContinueButton"
+		continue_button.text = "CONTINUE"
+		main_buttons.add_child(continue_button)
+		main_buttons.move_child(continue_button, 0)
+		continue_button.pressed.connect(func() -> void:
+			_set_status("LOADING YOUR SAVE...", COLOR_HIGHLIGHT)
+			continue_requested.emit())
 	for button: Button in main_buttons.get_children():
 		_style_menu_button(button)
 	for button: Button in [connect_button, join_back_button, settings_back_button, credits_back_button, webrtc_back_button, webrtc_generate_button, webrtc_join_code_button, webrtc_copy_code_button]:
