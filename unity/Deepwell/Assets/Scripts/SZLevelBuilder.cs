@@ -44,14 +44,26 @@ namespace Deepwell
             }
             var level = Object.Instantiate(prefab, parent);
             level.name = "LevelGeometry";
+            int solid = 0;
             foreach (var filter in level.GetComponentsInChildren<MeshFilter>())
             {
-                if (filter.gameObject.name.StartsWith("COL_") && filter.sharedMesh != null)
+                // A model with several materials (like the ground and rock) is split into
+                // child pieces, so check the piece's parents for the "COL_" name too.
+                if (filter.sharedMesh != null && IsSolid(filter.transform, level.transform))
                 {
                     var collider = filter.gameObject.AddComponent<MeshCollider>();
                     collider.sharedMesh = filter.sharedMesh;
+                    solid++;
                 }
             }
+            if (solid == 0) Debug.LogError("Deepwell: no solid level parts were found, so you would fall through the floor.");
+        }
+
+        static bool IsSolid(Transform t, Transform root)
+        {
+            for (; t != null && t != root; t = t.parent)
+                if (t.name.StartsWith("COL_")) return true;
+            return false;
         }
 
         static void BuildEnvironment(SZLevelData data, Transform parent)

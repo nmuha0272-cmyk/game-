@@ -195,7 +195,8 @@ namespace Deepwell
             var target = new Vector3(0f, stand + bob, 0f);
             _head.localPosition = Vector3.Lerp(_head.localPosition, target, Time.deltaTime * 12f);
 
-            if (transform.position.y < -60f) Respawn();  // fell out of the world
+            // Fell out of the world (the lowest floor is at -9 m): put them back.
+            if (transform.position.y < -25f) Respawn();
         }
 
         bool CanStandUp()

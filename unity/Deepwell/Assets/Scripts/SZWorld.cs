@@ -50,6 +50,7 @@ namespace Deepwell
         {
             Data = SZLevelBuilder.Build(chapter, transform);
             if (Data == null) return;
+            Physics.SyncTransforms();  // make sure the new floors are solid before anyone stands on them
             BakeNavigation();
 
             var root = Group("Doors");
