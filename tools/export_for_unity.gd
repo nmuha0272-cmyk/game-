@@ -114,6 +114,14 @@ func _walk(node: Node, level: Node) -> void:
 					"r": rot(child.global_basis), "puzzle": bool(child.get("puzzle_controlled")),
 					"locked": child.get_node_or_null("Lock") != null})
 			continue
+		# Puzzle movers (the fence gate, shutters, flood water...) are exported already
+		# open, like puzzle doors, until the puzzles come to Unity. Gates go all the way up.
+		if child is AnimatableBody3D and child.get("open_offset") is Vector3:
+			var offset: Vector3 = child.get("open_offset")
+			if offset.y > 0.0:
+				offset.y = maxf(offset.y, 2.7)
+			child.sync_to_physics = false  # otherwise the physics engine keeps it where it was
+			child.position += offset
 		if child is CSGShape3D:
 			if child.is_root_shape():
 				_add_csg(child)

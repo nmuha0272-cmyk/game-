@@ -3,8 +3,10 @@ using UnityEngine;
 
 // Starts everything. You don't need to set up a scene: press Play in any
 // scene (even an empty one) and this builds the menu, then the chapter.
-//   Menu: PLAY SOLO, HOST ONLINE, JOIN ONLINE, SETTINGS, QUIT.
-//   Then pick your character (Eli, Cole, Nora or Walter).
+//   Home screen (SZMenuScene): the car on the forest road, with PLAY SOLO,
+//   HOST GAME, JOIN GAME, SETTINGS, QUIT.
+//   Then the camera moves into the car to pick your character (Eli, Cole,
+//   Nora or Walter), and the car drives up to the station.
 //   In the game: Esc pauses, Tab shows your bag.
 namespace Deepwell
 {
@@ -15,7 +17,7 @@ namespace Deepwell
         // Also true on the frame a note closes, so the same E press doesn't open it again.
         public static bool Reading => Instance != null && (Instance._readTitle != null || Instance._closedFrame == Time.frameCount);
 
-        enum Mode { Menu, Characters, Join, Connecting, Loading, Settings, Playing, Paused }
+        enum Mode { Menu, Characters, Join, Connecting, Arriving, Loading, Settings, Playing, Paused }
         enum Plan { Solo, Host, Join }
 
         Mode _screen = Mode.Menu;
@@ -26,6 +28,7 @@ namespace Deepwell
         string _address = "";
         string _status = "";
         SZWorld _world;
+        SZMenuScene _menuScene;
 
         string _say;
         float _sayUntil;
@@ -34,6 +37,7 @@ namespace Deepwell
         int _openedFrame = -1, _closedFrame = -1;
         Camera _sceneCamera;
         float _hostHintUntil;
+        float _unhoverAt = -1f;
 
         GUIStyle _title, _sub, _button, _small, _prompt, _say2, _card, _cardTitle, _paperTitle, _paperText, _field;
         Texture2D _white;
@@ -55,7 +59,7 @@ namespace Deepwell
             _playerName = PlayerPrefs.GetString("sz_name", "");
             _address = PlayerPrefs.GetString("sz_address", "");
             var net = SZNet.Ensure();
-            net.Joined += _ => StartCoroutine(StartChapter());
+            net.Joined += _ => EnterCar();
             net.Failed += reason =>
             {
                 ShowMenu();
@@ -104,28 +108,30 @@ namespace Deepwell
             Paused = true;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            if (_sceneCamera != null) _sceneCamera.gameObject.SetActive(true);
+            if (_sceneCamera != null) _sceneCamera.gameObject.SetActive(false);
+            if (_menuScene == null) _menuScene = SZMenuScene.Create();
+            _menuScene.BackToMenu();
         }
 
-        void Go()
+        // A menu button: Solo and Host go straight into the car; Join asks for the IP first.
+        void Go(Plan plan)
         {
-            PlayerPrefs.SetString("sz_name", _playerName);
+            _plan = plan;
             _status = "";
-            if (_plan == Plan.Solo)
+            if (plan == Plan.Solo)
             {
-                StartCoroutine(StartChapter());
+                EnterCar();
             }
-            else if (_plan == Plan.Host)
+            else if (plan == Plan.Host)
             {
                 if (SZNet.Instance.Host(out var error))
                 {
                     _hostHintUntil = Time.time + 25f;
-                    StartCoroutine(StartChapter());
+                    EnterCar();
                 }
                 else
                 {
                     _status = error;
-                    _screen = Mode.Menu;
                 }
             }
             else
@@ -134,12 +140,39 @@ namespace Deepwell
             }
         }
 
+        // The camera moves into the back seat to pick a character.
+        void EnterCar()
+        {
+            _screen = Mode.Characters;
+            _menuScene.EnterSelect();
+            _menuScene.Selected = (int)_character;
+        }
+
+        void LeaveCar()
+        {
+            SZNet.Instance.Stop();
+            _screen = Mode.Menu;
+            _menuScene.BackToMenu();
+        }
+
+        // "PLAY AS ...": the car drives up to the station, then the chapter loads.
+        void Confirm()
+        {
+            if (_menuScene.Selected < 0) return;
+            _character = (SZCharacter)_menuScene.Selected;
+            PlayerPrefs.SetString("sz_name", _playerName);
+            _screen = Mode.Arriving;
+            _menuScene.StartArrival(() => StartCoroutine(StartChapter()));
+        }
+
         IEnumerator StartChapter()
         {
             _screen = Mode.Loading;
             yield return null;  // draw "Loading..." first; building takes a few seconds
             yield return null;
             if (_sceneCamera != null) _sceneCamera.gameObject.SetActive(false);
+            if (_menuScene != null) Destroy(_menuScene.gameObject);
+            _menuScene = null;
             _world = SZWorld.Create("chapter1", _character, _playerName);
             if (_world.Local == null)
             {
@@ -148,6 +181,7 @@ namespace Deepwell
                 yield break;
             }
             Say("CHAPTER 1  -  THE SURFACE", 4f);
+            if (SZNet.IsHost) _hostHintUntil = Time.time + 25f;
             Resume();
         }
 
@@ -180,11 +214,39 @@ namespace Deepwell
                 }
                 return;
             }
+            if (_screen == Mode.Characters) CarKeys();
+            if (_screen == Mode.Arriving && (SZInput.Down(SZKey.Enter) || SZInput.Down(SZKey.Escape)))
+                _menuScene.SkipArrival();
             if (!SZInput.Down(SZKey.Escape)) return;
             if (_screen == Mode.Playing) Pause();
             else if (_screen == Mode.Paused) Resume();
             else if (_screen == Mode.Settings) CloseSettings();
-            else if (_screen == Mode.Characters || _screen == Mode.Join) _screen = Mode.Menu;
+            else if (_screen == Mode.Characters) LeaveCar();
+            else if (_screen == Mode.Join) _screen = Mode.Menu;
+        }
+
+        // Choosing in the car: click a person, or arrow keys + Enter (like Godot).
+        void CarKeys()
+        {
+            bool typing = GUIUtility.keyboardControl != 0;  // typing a name: arrows and Enter belong to the text box
+            int step = typing ? 0 : SZInput.Down(SZKey.Right) ? 1 : SZInput.Down(SZKey.Left) ? -1 : 0;
+            if (step != 0)
+            {
+                int current = _menuScene.Hovered >= 0 ? _menuScene.Hovered : Mathf.Max(_menuScene.Selected, 0);
+                int next = (current + step + 4) % 4;
+                _menuScene.Hovered = next;
+                _menuScene.Selected = next;
+            }
+            if (SZInput.Click)
+            {
+                int who = _menuScene.CharacterAt(SZInput.MousePosition);
+                if (who >= 0)
+                {
+                    _menuScene.Selected = who;
+                    _menuScene.Hovered = who;
+                }
+            }
+            if (SZInput.Down(SZKey.Enter) && !typing) Confirm();
         }
 
         void CloseSettings()
@@ -255,9 +317,10 @@ namespace Deepwell
                 case Mode.Menu: DrawMenu(); break;
                 case Mode.Characters: DrawCharacters(); break;
                 case Mode.Join: DrawJoin(); break;
-                case Mode.Connecting: DrawBackdrop(); Center("Connecting..."); break;
+                case Mode.Connecting: DrawShade(); Center("Connecting..."); break;
+                case Mode.Arriving: DrawArriving(); break;
                 case Mode.Loading: DrawBackdrop(); Center("Loading Chapter 1..."); break;
-                case Mode.Settings: if (_world == null) DrawBackdrop(); else Box(Full(), new Color(0, 0, 0, 0.75f)); DrawSettings(); break;
+                case Mode.Settings: Box(Full(), new Color(0, 0, 0, 0.75f)); DrawSettings(); break;
                 case Mode.Paused: DrawHud(); DrawPause(); break;
                 case Mode.Playing: DrawHud(); break;
             }
@@ -288,55 +351,123 @@ namespace Deepwell
             GUI.Label(new Rect(x + 6, y + 96, 900, 30), "LEVEL B  -  SEALED BY ORDER  -  1999", _sub);
         }
 
+        // Dark on the left so the menu text is easy to read over the car scene (like Godot).
+        void DrawShade()
+        {
+            for (int i = 0; i < 16; i++)
+                Box(new Rect(i * Screen.width * 0.04f, 0, Screen.width * 0.04f, Screen.height), new Color(0, 0, 0, 0.85f * (1f - i / 16f)));
+        }
+
         void DrawMenu()
         {
-            DrawBackdrop();
-            float x = 90f, y = Screen.height * 0.18f;
+            DrawShade();
+            // The security camera look from the Godot menu.
+            GUI.Label(new Rect(24, 16, 600, 24), "CAM 03  //  BLACKWATER STATION  //  EXTERIOR", _small);
+            var rec = new GUIStyle(_small) { alignment = TextAnchor.UpperRight };
+            rec.normal.textColor = Time.time % 1.2f < 0.7f ? new Color(0.85f, 0.2f, 0.15f) : new Color(0.4f, 0.4f, 0.38f);
+            GUI.Label(new Rect(Screen.width - 424, 16, 400, 24), "\u25CF REC   10-14-2015   03:47:12", rec);
+
+            float x = 88f, y = Screen.height * 0.2f;
+            GUI.Label(new Rect(x + 4, y - 26, 600, 24), "U.S. GOVERNMENT PROPERTY  //  CLASSIFIED", _sub);
             Title(x, y);
             y += 170f;
-            if (GUI.Button(new Rect(x, y, 380, 54), "PLAY SOLO", _button)) { _plan = Plan.Solo; _screen = Mode.Characters; }
-            if (GUI.Button(new Rect(x, y + 64, 380, 54), "HOST ONLINE GAME", _button)) { _plan = Plan.Host; _screen = Mode.Characters; }
-            if (GUI.Button(new Rect(x, y + 128, 380, 54), "JOIN ONLINE GAME", _button)) { _plan = Plan.Join; _screen = Mode.Characters; }
+            if (GUI.Button(new Rect(x, y, 380, 54), "PLAY SOLO", _button)) Go(Plan.Solo);
+            if (GUI.Button(new Rect(x, y + 64, 380, 54), "HOST GAME", _button)) Go(Plan.Host);
+            if (GUI.Button(new Rect(x, y + 128, 380, 54), "JOIN GAME", _button)) Go(Plan.Join);
             if (GUI.Button(new Rect(x, y + 192, 380, 54), "SETTINGS", _button)) { _settingsBack = Mode.Menu; _screen = Mode.Settings; }
             if (GUI.Button(new Rect(x, y + 256, 380, 54), "QUIT", _button)) Application.Quit();
             if (!string.IsNullOrEmpty(_status))
                 GUI.Label(new Rect(x, y + 330, 700, 60), _status, _sub);
-            GUI.Label(new Rect(x, Screen.height - 50, Screen.width - 2 * x, 30),
-                "Unity version: Chapter 1 with items, notes, the Long Man, abilities and online co-op (up to 4). Puzzles come next.", _small);
         }
 
+        // Inside the car: cards at the bottom, the person you're looking at on the right.
         void DrawCharacters()
         {
-            DrawBackdrop();
-            float x = 90f, y = Screen.height * 0.1f;
-            GUI.Label(new Rect(x, y, 900, 60), "WHO ARE YOU?", new GUIStyle(_title) { fontSize = 48 });
-            GUI.Label(new Rect(x, y + 70, 200, 30), "Your name:", _small);
-            _playerName = GUI.TextField(new Rect(x + 110, y + 62, 300, 44), _playerName, 16, _field);
-            float w = Mathf.Min(300f, (Screen.width - 2 * x - 3 * 20f) / 4f), h = 260f;
+            var scene = _menuScene;
+            float W = Screen.width, H = Screen.height;
+            GUI.Label(new Rect(88, 56, 900, 50), "CHOOSE YOUR CHARACTER", new GUIStyle(_title) { fontSize = 34 });
+            GUI.Label(new Rect(90, 104, 1000, 24), "POINT AT A NAME TO MEET THEM.  CLICK TO CHOOSE.  ARROW KEYS + ENTER ALSO WORK.", _small);
+            GUI.Label(new Rect(90, 138, 120, 30), "YOUR NAME", _small);
+            _playerName = GUI.TextField(new Rect(200, 132, 260, 36), _playerName, 16, new GUIStyle(_field) { fontSize = 18 });
+
+            // Info panel (who you're looking at, or who you picked).
+            int show = scene.Hovered >= 0 ? scene.Hovered : scene.Selected;
+            if (show >= 0)
+            {
+                var panel = new Rect(W - 520, H * 0.5f - 210, 480, 330);
+                Box(panel, new Color(0.03f, 0.035f, 0.035f, 0.88f));
+                float py = panel.y + 18;
+                GUI.Label(new Rect(panel.x + 22, py, 440, 44), SZCharacters.Names[show].ToUpper(), new GUIStyle(_title) { fontSize = 34 });
+                var role = new GUIStyle(_sub);
+                role.normal.textColor = new Color(0.91f, 0.69f, 0.29f);
+                GUI.Label(new Rect(panel.x + 22, py + 46, 440, 24), SZCharacters.Roles[show].ToUpper(), role);
+                var body = new GUIStyle(_small) { fontSize = 16 };
+                GUI.Label(new Rect(panel.x + 22, py + 78, 440, 80), SZCharacters.About[show], body);
+                GUI.Label(new Rect(panel.x + 22, py + 160, 440, 70), SZCharacters.Abilities[show], body);
+                var quote = new GUIStyle(body);
+                quote.normal.textColor = new Color(0.48f, 0.47f, 0.42f);
+                GUI.Label(new Rect(panel.x + 22, py + 240, 440, 50), SZCharacters.Quotes[show], quote);
+            }
+
+            // The four name cards.
+            float cw = Mathf.Min(250f, (W - 180f) / 4f - 12f), ch = 84f;
+            float cx = W / 2f - (cw * 4 + 36f) / 2f, cy = H - ch - 96f;
+            int hoveredCard = -1;
             for (int i = 0; i < 4; i++)
             {
-                var r = new Rect(x + i * (w + 20f), y + 140, w, h);
-                var c = (SZCharacter)i;
-                if (GUI.Button(r, SZCharacters.Abilities[i], _card))
-                {
-                    _character = c;
-                    Go();
-                }
-                Box(new Rect(r.x, r.y, r.width, 5), SZCharacters.Colors[i]);
-                _cardTitle.normal.textColor = SZCharacters.Colors[i];
-                GUI.Label(new Rect(r.x + 14, r.y + 10, r.width, 30), SZCharacters.Names[i], _cardTitle);
-                GUI.Label(new Rect(r.x + 14, r.y + 34, r.width, 20), SZCharacters.Roles[i].ToUpper(), _sub);
+                var r = new Rect(cx + i * (cw + 12f), cy, cw, ch);
+                if (r.Contains(Event.current.mousePosition)) hoveredCard = i;
+                bool picked = scene.Selected == i;
+                Box(r, picked ? new Color(0.12f, 0.11f, 0.08f, 0.95f) : new Color(0.03f, 0.035f, 0.035f, 0.88f));
+                if (picked || hoveredCard == i) Box(new Rect(r.x, r.yMax - 3, r.width, 3), new Color(0.91f, 0.69f, 0.29f));
+                _cardTitle.normal.textColor = picked ? new Color(0.91f, 0.69f, 0.29f) : new Color(0.85f, 0.83f, 0.76f);
+                GUI.Label(new Rect(r.x + 16, r.y + 14, r.width, 30), SZCharacters.Names[i].Split(' ')[0].ToUpper(), _cardTitle);
+                GUI.Label(new Rect(r.x + 16, r.y + 46, r.width, 24), SZCharacters.Roles[i].ToUpper(), _small);
+                if (GUI.Button(r, GUIContent.none, GUIStyle.none)) scene.Selected = i;
             }
-            GUI.Label(new Rect(x, y + 140 + h + 20, 900, 30), "Click a character to start.   Esc = back", _small);
+            // Pointing at a card moves the camera to that person (wait a moment before moving back).
+            if (Event.current.type == EventType.Repaint)
+            {
+                if (hoveredCard >= 0)
+                {
+                    scene.Hovered = hoveredCard;
+                    _unhoverAt = -1f;
+                }
+                else if (scene.Hovered >= 0 && _unhoverAt < 0f) _unhoverAt = Time.unscaledTime + 0.35f;
+                if (_unhoverAt > 0f && Time.unscaledTime > _unhoverAt && hoveredCard < 0)
+                {
+                    scene.Hovered = -1;
+                    _unhoverAt = -1f;
+                }
+            }
+
+            if (GUI.Button(new Rect(88, H - 78, 200, 50), "BACK", _button)) LeaveCar();
+            if (scene.Selected >= 0 &&
+                GUI.Button(new Rect(W - 408, H - 78, 320, 50), "PLAY AS " + SZCharacters.Names[scene.Selected].Split(' ')[0].ToUpper(), _button))
+                Confirm();
+            if (SZNet.IsHost)
+                GUI.Label(new Rect(300, H - 64, 700, 30), "Hosting. Friends join with:  " + SZNet.LocalAddresses(), _small);
+        }
+
+        void DrawArriving()
+        {
+            var scene = _menuScene;
+            if (scene == null) return;
+            var c = _prompt.normal.textColor;
+            var caption = new GUIStyle(_small) { fontSize = 22 };
+            caption.normal.textColor = new Color(0.85f, 0.83f, 0.76f, scene.ArrivalText);
+            GUI.Label(new Rect(88, 72, 900, 70), "BLACKWATER WEATHER STATION\nOCTOBER 14, 2015   03:52 AM", caption);
+            GUI.Label(new Rect(88, Screen.height - 50, 600, 30), "Enter = skip", _small);
+            if (scene.Fade > 0f) Box(Full(), new Color(0, 0, 0, scene.Fade));
+            _prompt.normal.textColor = c;
         }
 
         void DrawJoin()
         {
-            DrawBackdrop();
-            float x = 90f, y = Screen.height * 0.2f;
-            GUI.Label(new Rect(x, y, 900, 60), "JOIN A FRIEND", new GUIStyle(_title) { fontSize = 48 });
-            GUI.Label(new Rect(x, y + 80, 900, 50),
-                "Type the IP address your friend sees on their screen after they press HOST.", _small);
+            DrawShade();
+            float x = 88f, y = Screen.height * 0.2f;
+            GUI.Label(new Rect(x, y, 900, 60), "JOIN GAME", new GUIStyle(_title) { fontSize = 48 });
+            GUI.Label(new Rect(x, y + 80, 900, 50), "HOST IP ADDRESS  (your friend sees it on their screen after they press HOST GAME)", _small);
             _address = GUI.TextField(new Rect(x, y + 130, 380, 48), _address, 64, _field);
             if (GUI.Button(new Rect(x, y + 195, 380, 54), "CONNECT", _button) && _address.Trim().Length > 0)
             {

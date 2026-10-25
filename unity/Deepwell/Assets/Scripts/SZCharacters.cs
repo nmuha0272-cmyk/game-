@@ -12,7 +12,22 @@ namespace Deepwell
     public static class SZCharacters
     {
         public static readonly string[] Names = { "Eli Reyes", "Cole Brennan", "Nora Vance", "Walter Kessler" };
-        public static readonly string[] Roles = { "The Son", "The Guard", "The Journalist", "The Engineer" };
+        public static readonly string[] Roles = { "The Son  //  Tracker", "The Guard  //  Protector", "The Journalist  //  Stunner", "The Engineer  //  Fixer" };
+        // From the Godot home screen (main_menu_car.gd).
+        public static readonly string[] About =
+        {
+            "21. College student and Army Reserve soldier. Both his parents died here in 1999. Now his two best friends are missing in there.",
+            "36. Former soldier. Raised Eli after his parents died, like a father. Knows this place better than he admits.",
+            "35. Investigative journalist. Her source vanished trying to expose Deepwell. She wants the proof.",
+            "60. Worked at Deepwell before it was sealed. Nervous, quiet, and hiding something.",
+        };
+        public static readonly string[] Quotes =
+        {
+            "\"Dad always said: slow is smooth, smooth is fast.\"",
+            "\"Eyes up, kid. Stay behind me.\"",
+            "\"If it's real, I'm getting it on film.\"",
+            "\"I can fix it. Just keep them away from me.\"",
+        };
         public static readonly string[] Abilities =
         {
             "SENSE (Q): see the Long Man and your friends through walls for a few seconds.",
@@ -33,6 +48,9 @@ namespace Deepwell
         public static float NoiseMultiplier(SZCharacter c) => c == SZCharacter.Cole ? 1.5f : 1f;
         // How tall each person is (meters), same as Godot.
         static readonly float[] Heights = { 1.78f, 1.9f, 1.68f, 1.75f };
+
+        public static string ModelFile(SZCharacter c) => Models[(int)c];
+        public static float Height(SZCharacter c) => Heights[(int)c];
 
         public static GameObject MakeBody(SZCharacter c, Transform parent) =>
             LoadModel(Models[(int)c], parent, Heights[(int)c]) ?? StandIn(parent, Colors[(int)c]);

@@ -54,6 +54,8 @@ namespace Deepwell
         // The new system gives pixels; scale it to match the old system's mouse axes.
         public static Vector2 MouseDelta => Mouse.current != null ? Mouse.current.delta.ReadValue() * 0.05f : Vector2.zero;
         public static bool Click => Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
+        // Mouse position in pixels from the bottom-left corner.
+        public static Vector2 MousePosition => Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
 #else
         static KeyCode ToKey(SZKey k)
         {
@@ -91,6 +93,7 @@ namespace Deepwell
         public static bool Up(SZKey k) => Input.GetKeyUp(ToKey(k));
         public static Vector2 MouseDelta => new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
         public static bool Click => Input.GetMouseButtonDown(0);
+        public static Vector2 MousePosition => Input.mousePosition;
 #endif
 
         // WASD or the arrow keys, as a direction (x = right, y = forward).

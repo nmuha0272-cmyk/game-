@@ -44,7 +44,7 @@ namespace Deepwell
         UdpClient _udp;
         IPEndPoint _hostEndPoint;
         int _myId;
-        float _joinStarted, _lastHello, _lastHeardHost;
+        float _joinStarted, _lastHello, _lastHeardHost, _lastPing;
 
         class Peer
         {
@@ -211,6 +211,14 @@ namespace Deepwell
                     _lastHello = now;
                     SendToHost("HELLO");
                 }
+            }
+
+            // Keep the connection alive while people are still in the menu (no game messages yet).
+            if ((_mode == Mode.Host || _mode == Mode.Client) && now - _lastPing > 1f)
+            {
+                _lastPing = now;
+                if (_mode == Mode.Host) Broadcast("PING");
+                else SendToHost("PING");
             }
 
             int guard = 0;
