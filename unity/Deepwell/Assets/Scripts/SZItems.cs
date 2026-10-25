@@ -25,41 +25,15 @@ namespace Deepwell
             pickup.Index = index;
             pickup.Data = d;
 
-            var color = SZLevelData.C(d.color);
-            var look = GameObject.CreatePrimitive(Shape(d.id, out var size));
-            look.name = "Look";
-            look.transform.SetParent(go.transform, false);
-            look.transform.localScale = size;
-            look.transform.localPosition = new Vector3(0f, size.y * (d.id == "battery" || d.id == "flare" ? 1f : 0.5f), 0f);
-            if (d.id == "flare") look.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
-            look.GetComponent<Renderer>().sharedMaterial = SZGraphics.Lit(color, 0.45f, color * 0.25f);
-            // A downloaded asset in this item's slot replaces the placeholder shape.
-            if (SZAssets.Spawn(SZAssets.SlotForItem(d.id), go.transform, onGround: true) != null)
-                look.GetComponent<Renderer>().enabled = false;
+            // A downloaded asset in this item's slot, or the simple stand-in shape.
+            if (SZAssets.Spawn(SZAssets.SlotForItem(d.id), go.transform, onGround: true) == null)
+                SZItemLooks.Build(d, go.transform);
             // A bigger invisible box so it's easy to aim at.
-            var box = look.GetComponent<Collider>();
-            Destroy(box);
             var hit = go.AddComponent<BoxCollider>();
             hit.center = new Vector3(0f, 0.15f, 0f);
             hit.size = new Vector3(0.45f, 0.35f, 0.45f);
             hit.isTrigger = true;  // you can aim at it, but you don't trip over it
             return pickup;
-        }
-
-        static PrimitiveType Shape(string id, out Vector3 size)
-        {
-            switch (id)
-            {
-                case "battery": size = new Vector3(0.05f, 0.045f, 0.05f); return PrimitiveType.Cylinder;
-                case "flare": size = new Vector3(0.035f, 0.13f, 0.035f); return PrimitiveType.Cylinder;
-                case "medkit": size = new Vector3(0.3f, 0.12f, 0.2f); return PrimitiveType.Cube;
-                case "reel_tape": size = new Vector3(0.18f, 0.02f, 0.18f); return PrimitiveType.Cylinder;
-                default:
-                    if (id.StartsWith("keycard")) { size = new Vector3(0.09f, 0.005f, 0.055f); return PrimitiveType.Cube; }
-                    if (id.StartsWith("weapon")) { size = new Vector3(0.35f, 0.08f, 0.1f); return PrimitiveType.Cube; }
-                    size = new Vector3(0.18f, 0.12f, 0.14f);
-                    return PrimitiveType.Cube;
-            }
         }
 
         public void Interact(SZPlayer by) => SZWorld.Instance.RequestPickup(this, by);
@@ -71,116 +45,239 @@ namespace Deepwell
         }
     }
 
-    // One inventory slot: an item (or nothing), how many (batteries, flares,
-    // medkits and ammo stack), and for a gun the bullets in it and spare.
-    public class SZSlot
+    // One thing in the case: what it is, how many (ammo, batteries and flares
+    // stack), bullets loaded (guns), and where it sits in the grid.
+    public class SZItem
     {
-        public ItemData item;
-        public int count;
-        public int clip, reserve;
-        public bool Empty => item == null;
-        public bool IsGun => item != null && item.id.StartsWith("weapon_");
+        public ItemData data;
+        public int count = 1;
+        public int clip;
+        public int x, y;
+        public bool turned;   // rotated a quarter turn (a long gun standing up)
 
-        public void Clear()
-        {
-            item = null;
-            count = clip = reserve = 0;
-        }
-
-        public void CopyFrom(SZSlot other)
-        {
-            item = other.item;
-            count = other.count;
-            clip = other.clip;
-            reserve = other.reserve;
-        }
+        public string Id => data.id;
+        public bool IsGun => data.id.StartsWith("weapon_");
+        public int W => turned ? SZInventory.SizeOf(Id).y : SZInventory.SizeOf(Id).x;
+        public int H => turned ? SZInventory.SizeOf(Id).x : SZInventory.SizeOf(Id).y;
     }
 
-    // What one player carries, like the Godot version (scripts/items/inventory.gd):
-    // 4 quick slots (keys 1-4 pick what's in your hand) and storage slots
-    // (2 to start; a pouch adds 2, a backpack adds 4, up to 10).
-    // Tab opens the inventory screen to move things around, use or drop them.
+    // The attaché case, like Resident Evil 4: a grid where every item takes
+    // up space by its size (a rifle is long, a box of bullets is small). Ammo
+    // is its own item and reloading takes bullets from it. Keys 1-4 hold
+    // whatever you put on them (in the case, point at an item and press 1-4).
+    // A pouch adds a row, a backpack adds two.
     public class SZInventory
     {
-        public const int QuickSlots = 4, StartStorage = 2, MaxStorage = 10, StackMax = 5, ClipSize = 12;
+        public const int Cols = 9, StartRows = 5, MaxRows = 8;
 
-        public readonly SZSlot[] Quick = new SZSlot[QuickSlots];
-        public readonly List<SZSlot> Storage = new List<SZSlot>();
-        public int Selected;  // which quick slot is in your hand
-        public SZSlot Held => Quick[Selected];
+        public int Rows { get; private set; } = StartRows;
+        public readonly List<SZItem> Items = new List<SZItem>();
+        public readonly SZItem[] Hotkeys = new SZItem[4];
+        public int Selected;  // which hotkey is in your hand (0-3)
 
-        public SZInventory()
+        // What's in your hand (null if that hotkey is empty or the item is gone).
+        public SZItem Held
         {
-            for (int i = 0; i < QuickSlots; i++) Quick[i] = new SZSlot();
-            for (int i = 0; i < StartStorage; i++) Storage.Add(new SZSlot());
+            get
+            {
+                var it = Hotkeys[Selected];
+                return it != null && Items.Contains(it) ? it : null;
+            }
         }
 
-        public IEnumerable<SZSlot> All()
+        // ---------------------------------------------------------------- item facts
+
+        // How many grid cells an item takes (columns x rows).
+        public static Vector2Int SizeOf(string id)
         {
-            foreach (var s in Quick) yield return s;
-            foreach (var s in Storage) yield return s;
+            switch (id)
+            {
+                case "weapon_pistol": case "weapon_flare_gun": return new Vector2Int(2, 2);
+                case "weapon_revolver": case "weapon_suppressed_9mm": case "weapon_smg": case "weapon_tranq": return new Vector2Int(3, 2);
+                case "weapon_shotgun": return new Vector2Int(5, 2);
+                case "weapon_rifle": return new Vector2Int(6, 2);
+                case "flare": case "medkit": case "walkie": return new Vector2Int(1, 2);
+                case "crowbar": return new Vector2Int(1, 3);
+                case "gas_mask": case "car_battery": return new Vector2Int(2, 2);
+                case "fuel_can": return new Vector2Int(2, 3);
+                default: return new Vector2Int(1, 1);
+            }
         }
 
-        public static bool Stacks(string id) => id == "battery" || id == "flare" || id == "medkit" || id.StartsWith("ammo_");
-
-        // Picks something up. Returns false (and keeps nothing) if there's no room.
-        public bool Add(ItemData item)
+        public static int StackMax(string id)
         {
-            // Packs are worn straight away: more storage.
-            if (item.id == "pouch" || item.id == "backpack")
+            switch (id)
             {
-                int extra = item.id == "pouch" ? 2 : 4;
-                if (Storage.Count >= MaxStorage) return false;
-                for (int i = 0; i < extra && Storage.Count < MaxStorage; i++) Storage.Add(new SZSlot());
-                return true;
+                case "battery": return 10;
+                case "flare": return 5;
+                case "medkit": return 3;
+                case "ammo_9mm": return 50;
+                case "ammo_38": return 30;
+                case "ammo_12ga": case "ammo_308": return 20;
+                case "ammo_dart": case "ammo_flare_shell": return 10;
+                default: return 1;
             }
-            // Ammo goes straight into a gun you already have.
-            if (item.id.StartsWith("ammo_"))
+        }
+
+        // How much one pickup gives (a box of bullets has several).
+        public static int PickupAmount(string id)
+        {
+            switch (id)
             {
-                var gun = FindGun();
-                if (gun != null)
-                {
-                    gun.reserve += 8;
-                    return true;
-                }
+                case "ammo_9mm": return 15;
+                case "ammo_38": return 6;
+                case "ammo_12ga": return 6;
+                case "ammo_308": return 5;
+                case "ammo_dart": return 3;
+                case "ammo_flare_shell": return 2;
+                default: return 1;
             }
-            if (Stacks(item.id))
-                foreach (var s in All())
-                    if (!s.Empty && s.item.id == item.id && s.count < StackMax)
-                    {
-                        s.count++;
-                        return true;
-                    }
-            var free = FreeSlot();
-            if (free == null) return false;
-            free.item = item;
-            free.count = 1;
-            if (free.IsGun)
+        }
+
+        public static int ClipSize(string gun)
+        {
+            switch (gun)
             {
-                free.clip = item.id == "weapon_tranq" ? 4 : ClipSize;
-                // Ammo you were already carrying loads into it.
-                foreach (var s in All())
-                    if (!s.Empty && s.item.id.StartsWith("ammo_"))
-                    {
-                        free.reserve += 8 * s.count;
-                        s.Clear();
-                    }
+                case "weapon_revolver": return 6;
+                case "weapon_shotgun": return 6;
+                case "weapon_smg": return 30;
+                case "weapon_rifle": return 5;
+                case "weapon_tranq": case "weapon_flare_gun": return 1;
+                default: return 15;
+            }
+        }
+
+        public static string AmmoFor(string gun)
+        {
+            switch (gun)
+            {
+                case "weapon_revolver": return "ammo_38";
+                case "weapon_shotgun": return "ammo_12ga";
+                case "weapon_rifle": return "ammo_308";
+                case "weapon_tranq": return "ammo_dart";
+                case "weapon_flare_gun": return "ammo_flare_shell";
+                default: return "ammo_9mm";
+            }
+        }
+
+        // ---------------------------------------------------------------- the grid
+
+        public SZItem At(int cx, int cy)
+        {
+            foreach (var it in Items)
+                if (cx >= it.x && cx < it.x + it.W && cy >= it.y && cy < it.y + it.H) return it;
+            return null;
+        }
+
+        // Would an item of this size fit with its corner at (x, y)? (ignore = the item being moved)
+        public bool Fits(int x, int y, int w, int h, SZItem ignore = null)
+        {
+            if (x < 0 || y < 0 || x + w > Cols || y + h > Rows) return false;
+            foreach (var it in Items)
+            {
+                if (it == ignore) continue;
+                if (x < it.x + it.W && x + w > it.x && y < it.y + it.H && y + h > it.y) return false;
             }
             return true;
         }
 
-        // A quick slot first (so it's ready in your hand), then storage.
-        public SZSlot FreeSlot()
+        // The first free spot, trying it lying down and standing up.
+        bool FindSpot(SZItem item)
         {
-            foreach (var s in Quick) if (s.Empty) return s;
-            foreach (var s in Storage) if (s.Empty) return s;
-            return null;
+            foreach (var turned in new[] { false, true })
+            {
+                item.turned = turned;
+                for (int y = 0; y < Rows; y++)
+                    for (int x = 0; x < Cols; x++)
+                        if (Fits(x, y, item.W, item.H, item))
+                        {
+                            item.x = x;
+                            item.y = y;
+                            return true;
+                        }
+            }
+            item.turned = false;
+            return false;
+        }
+
+        public bool MoveTo(SZItem item, int x, int y, bool turned)
+        {
+            bool was = item.turned;
+            item.turned = turned;
+            if (!Fits(x, y, item.W, item.H, item))
+            {
+                item.turned = was;
+                return false;
+            }
+            item.x = x;
+            item.y = y;
+            return true;
+        }
+
+        // ---------------------------------------------------------------- adding and using
+
+        // Picks something up. Returns false (and keeps nothing) if there's no room.
+        public bool Add(ItemData data)
+        {
+            // Packs are worn straight away: a bigger case.
+            if (data.id == "pouch" || data.id == "backpack")
+            {
+                if (Rows >= MaxRows) return false;
+                Rows = Mathf.Min(MaxRows, Rows + (data.id == "pouch" ? 1 : 2));
+                return true;
+            }
+            int amount = PickupAmount(data.id);
+            int max = StackMax(data.id);
+            // Top up stacks you already have.
+            foreach (var it in Items)
+            {
+                if (amount <= 0) break;
+                if (it.Id != data.id || it.count >= max) continue;
+                int put = Mathf.Min(amount, max - it.count);
+                it.count += put;
+                amount -= put;
+            }
+            while (amount > 0)
+            {
+                var item = new SZItem { data = data, count = Mathf.Min(amount, max) };
+                if (item.IsGun) item.clip = ClipSize(data.id);
+                if (!FindSpot(item)) return amount < PickupAmount(data.id);  // part of it fit
+                Items.Add(item);
+                amount -= item.count;
+                AutoHotkey(item);
+            }
+            return true;
+        }
+
+        // New guns, batteries and flares go on an empty number key by themselves.
+        void AutoHotkey(SZItem item)
+        {
+            foreach (var h in Hotkeys) if (h != null && h.Id == item.Id && Items.Contains(h)) return;
+            if (!item.IsGun && item.Id != "battery" && item.Id != "flare" && item.Id != "medkit") return;
+            for (int i = 0; i < Hotkeys.Length; i++)
+                if (Hotkeys[i] == null || !Items.Contains(Hotkeys[i]))
+                {
+                    Hotkeys[i] = item;
+                    return;
+                }
+        }
+
+        public void SetHotkey(int key, SZItem item)
+        {
+            for (int i = 0; i < Hotkeys.Length; i++) if (Hotkeys[i] == item) Hotkeys[i] = null;
+            Hotkeys[key] = item;
+        }
+
+        public void Remove(SZItem item)
+        {
+            Items.Remove(item);
+            for (int i = 0; i < Hotkeys.Length; i++) if (Hotkeys[i] == item) Hotkeys[i] = null;
         }
 
         public int Count(string id)
         {
             int n = 0;
-            foreach (var s in All()) if (!s.Empty && s.item.id == id) n += s.count;
+            foreach (var it in Items) if (it.Id == id) n += it.count;
             return n;
         }
 
@@ -190,57 +287,123 @@ namespace Deepwell
         public bool HasKeycard(string color)
         {
             int need = color == "red" ? 3 : color == "yellow" ? 2 : 1;
-            foreach (var s in All())
+            foreach (var it in Items)
             {
-                if (s.Empty || !s.item.id.StartsWith("keycard_")) continue;
-                var c = s.item.id.Substring(8);
-                int have = c == "red" ? 3 : c == "yellow" ? 2 : 1;
-                if (have >= need) return true;
+                if (!it.Id.StartsWith("keycard_")) continue;
+                var c = it.Id.Substring(8);
+                if ((c == "red" ? 3 : c == "yellow" ? 2 : 1) >= need) return true;
             }
             return false;
         }
 
-        // Uses up one of something. Returns the item, or null if you had none.
+        // Uses up one of something. Returns what it was, or null if you had none.
         public ItemData Take(string id)
         {
-            foreach (var s in All())
-                if (!s.Empty && s.item.id == id)
-                {
-                    var item = s.item;
-                    if (--s.count <= 0) s.Clear();
-                    return item;
-                }
-            return null;
+            var it = Items.Find(x => x.Id == id);
+            if (it == null) return null;
+            Take(id, 1);
+            return it.data;
         }
 
-        // The first reel tape (optionally a particular recording).
+        // Uses up to `amount`; returns how many it could.
+        public int Take(string id, int amount)
+        {
+            int got = 0;
+            for (int i = Items.Count - 1; i >= 0 && got < amount; i--)
+            {
+                var it = Items[i];
+                if (it.Id != id) continue;
+                int take = Mathf.Min(it.count, amount - got);
+                it.count -= take;
+                got += take;
+                if (it.count <= 0) Remove(it);
+            }
+            return got;
+        }
+
         public ItemData FindTape(string lore)
         {
-            foreach (var s in All())
-                if (!s.Empty && s.item.id == "reel_tape" && (string.IsNullOrEmpty(lore) || s.item.lore == lore)) return s.item;
+            foreach (var it in Items)
+                if (it.Id == "reel_tape" && (string.IsNullOrEmpty(lore) || it.data.lore == lore)) return it.data;
             return null;
         }
 
-        public SZSlot FindGun()
+        // Reload a gun from your ammo. Returns how many bullets went in.
+        public int Reload(SZItem gun)
         {
-            foreach (var s in All()) if (s.IsGun) return s;
-            return null;
+            int need = ClipSize(gun.Id) - gun.clip;
+            if (need <= 0) return 0;
+            int got = Take(AmmoFor(gun.Id), need);
+            gun.clip += got;
+            return got;
         }
 
-        public void Swap(SZSlot a, SZSlot b)
-        {
-            var temp = new SZSlot();
-            temp.CopyFrom(a);
-            a.CopyFrom(b);
-            b.CopyFrom(temp);
-        }
-
-        // Eli and Cole start with the pistol from the trunk.
+        // Eli and Cole start with the pistol from the trunk, and a box of bullets.
         public void GiveStartingPistol()
         {
-            Add(new ItemData { id = "weapon_pistol", name = "9mm Pistol", hint = "Left click to shoot, R to reload.", color = new[] { 0.28f, 0.28f, 0.3f, 1f } });
-            var gun = FindGun();
-            if (gun != null) gun.reserve = 12;
+            Add(new ItemData { id = "weapon_pistol", name = "9mm Pistol", hint = "Left click to shoot, R to reload. Uses 9mm ammo.", color = new[] { 0.28f, 0.28f, 0.3f, 1f } });
+            Add(new ItemData { id = "ammo_9mm", name = "9mm Ammo", hint = "Bullets for the pistol.", color = new[] { 0.7f, 0.55f, 0.2f, 1f } });
+            Selected = 0;
+        }
+    }
+
+    // Simple stand-in shapes for items (on the floor and in the case's pictures)
+    // until a downloaded model is in that item's slot.
+    public static class SZItemLooks
+    {
+        public static GameObject Build(ItemData d, Transform parent)
+        {
+            var root = new GameObject("Look");
+            root.transform.SetParent(parent, false);
+            var c = SZLevelData.C(d.color);
+            var metal = SZGraphics.Lit(c, 0.45f);
+            var dark = SZGraphics.Lit(new Color(0.08f, 0.08f, 0.09f), 0.5f);
+            string id = d.id;
+            if (id.StartsWith("weapon_"))
+            {
+                bool longGun = id == "weapon_shotgun" || id == "weapon_rifle";
+                if (longGun)
+                {
+                    Part(root, PrimitiveType.Cube, new Vector3(0f, 0.05f, 0.35f), new Vector3(0.04f, 0.04f, 0.6f), dark);   // barrel
+                    Part(root, PrimitiveType.Cube, new Vector3(0f, 0.04f, -0.05f), new Vector3(0.06f, 0.07f, 0.3f), dark);  // body
+                    Part(root, PrimitiveType.Cube, new Vector3(0f, 0.02f, -0.35f), new Vector3(0.05f, 0.1f, 0.3f), SZGraphics.Lit(new Color(0.35f, 0.22f, 0.12f), 0.3f));  // stock
+                }
+                else
+                {
+                    bool smg = id == "weapon_smg";
+                    Part(root, PrimitiveType.Cube, new Vector3(0f, 0.05f, 0.03f), new Vector3(0.035f, 0.045f, smg ? 0.32f : 0.19f), dark);  // slide
+                    Part(root, PrimitiveType.Cube, new Vector3(0f, -0.01f, -0.05f), new Vector3(0.03f, 0.1f, 0.045f), dark);              // grip
+                    if (id == "weapon_revolver") Part(root, PrimitiveType.Cylinder, new Vector3(0f, 0.05f, 0f), new Vector3(0.05f, 0.025f, 0.05f), metal, 90f);
+                    if (smg) Part(root, PrimitiveType.Cube, new Vector3(0f, -0.02f, 0.07f), new Vector3(0.025f, 0.12f, 0.035f), dark);  // magazine
+                }
+                return root;
+            }
+            var size = SZInventory.SizeOf(id);
+            switch (id)
+            {
+                case "battery": Part(root, PrimitiveType.Cylinder, new Vector3(0f, 0.045f, 0f), new Vector3(0.05f, 0.045f, 0.05f), metal); break;
+                case "flare": Part(root, PrimitiveType.Cylinder, new Vector3(0f, 0.03f, 0f), new Vector3(0.035f, 0.13f, 0.035f), metal, 90f); break;
+                case "medkit": Part(root, PrimitiveType.Cube, new Vector3(0f, 0.06f, 0f), new Vector3(0.2f, 0.12f, 0.3f), metal); break;
+                case "reel_tape": Part(root, PrimitiveType.Cylinder, new Vector3(0f, 0.01f, 0f), new Vector3(0.18f, 0.01f, 0.18f), metal); break;
+                case "crowbar": Part(root, PrimitiveType.Cube, new Vector3(0f, 0.02f, 0f), new Vector3(0.03f, 0.03f, 0.7f), metal); break;
+                default:
+                    if (id.StartsWith("keycard")) Part(root, PrimitiveType.Cube, new Vector3(0f, 0.003f, 0f), new Vector3(0.09f, 0.005f, 0.055f), metal);
+                    else if (id.StartsWith("ammo_")) Part(root, PrimitiveType.Cube, new Vector3(0f, 0.04f, 0f), new Vector3(0.12f, 0.08f, 0.08f), metal);
+                    else Part(root, PrimitiveType.Cube, new Vector3(0f, 0.06f * size.y, 0f), new Vector3(0.12f * size.x, 0.12f * size.y, 0.12f), metal);
+                    break;
+            }
+            return root;
+        }
+
+        static void Part(GameObject root, PrimitiveType type, Vector3 at, Vector3 size, Material mat, float tiltX = 0f)
+        {
+            var p = GameObject.CreatePrimitive(type);
+            p.transform.SetParent(root.transform, false);
+            p.transform.localPosition = at;
+            p.transform.localScale = size;
+            p.transform.localRotation = Quaternion.Euler(tiltX, 0f, 0f);
+            p.GetComponent<Renderer>().sharedMaterial = mat;
+            Object.Destroy(p.GetComponent<Collider>());
         }
     }
 

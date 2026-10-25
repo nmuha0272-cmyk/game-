@@ -163,7 +163,7 @@ namespace Deepwell
             HoldOrPress();
             Ability();
             Gun();
-            if (SZInput.Click && !Inventory.Held.Empty && !Inventory.Held.IsGun) UseItem(Inventory.Held);
+            if (SZInput.Click && Inventory.Held != null && !Inventory.Held.IsGun) UseItem(Inventory.Held);
         }
 
         // ---------------------------------------------------------------- moving
@@ -268,19 +268,19 @@ namespace Deepwell
         }
 
         // Using an item (left click with it in your hand, or USE on the inventory screen).
-        public void UseItem(SZSlot slot)
+        public void UseItem(SZItem item)
         {
-            if (slot.Empty) return;
-            switch (slot.item.id)
+            if (item == null) return;
+            switch (item.Id)
             {
                 case "battery":
                     Battery = 1f;
-                    if (--slot.count <= 0) slot.Clear();
+                    Inventory.Take("battery", 1);
                     SZAudio.Play2D("repair_click", 0.6f);
                     SZGame.Instance.Say("Flashlight recharged.", 1.5f);
                     break;
                 case "flare":
-                    if (--slot.count <= 0) slot.Clear();
+                    Inventory.Take("flare", 1);
                     var from = Camera.transform.position + Camera.transform.forward * 0.5f;
                     SZWorld.Instance.ThrowFlare(from, Camera.transform.forward * 9f + Vector3.up * 2f + _body.velocity * 0.5f);
                     break;
@@ -288,8 +288,18 @@ namespace Deepwell
                     SZGame.Instance.Say("Keep it: if the Long Man catches you, a medkit gets you free.", 2.5f);
                     break;
                 default:
-                    if (slot.IsGun) Inventory.Selected = System.Array.IndexOf(Inventory.Quick, slot) >= 0 ? System.Array.IndexOf(Inventory.Quick, slot) : Inventory.Selected;
-                    else SZGame.Instance.Say(string.IsNullOrEmpty(slot.item.hint) ? "Use it on something with E." : slot.item.hint, 2.5f);
+                    if (item.IsGun)
+                    {
+                        // Using a gun from the case puts it in your hand.
+                        int key = System.Array.IndexOf(Inventory.Hotkeys, item);
+                        if (key < 0)
+                        {
+                            key = Inventory.Selected;
+                            Inventory.SetHotkey(key, item);
+                        }
+                        Inventory.Selected = key;
+                    }
+                    else SZGame.Instance.Say(string.IsNullOrEmpty(item.data.hint) ? "Use it on something with E." : item.data.hint, 2.5f);
                     break;
             }
         }
@@ -297,13 +307,20 @@ namespace Deepwell
         // G: put down what's in your hand.
         public void DropHeld() => Drop(Inventory.Held);
 
-        public void Drop(SZSlot slot)
+        // Drops the whole item (a box of bullets drops with what's left in it... as one pickup).
+        public void Drop(SZItem item)
         {
-            if (slot.Empty) return;
-            var item = slot.item;
-            if (--slot.count <= 0) slot.Clear();
+            if (item == null) return;
             var at = transform.position + transform.forward * 0.8f + Vector3.up * 0.05f;
-            SZWorld.Instance.DropItem(item, at);
+            if (SZInventory.StackMax(item.Id) > 1 && !item.Id.StartsWith("ammo_"))
+            {
+                // Batteries, flares, medkits: one at a time.
+                Inventory.Take(item.Id, 1);
+                SZWorld.Instance.DropItem(item.data, at);
+                return;
+            }
+            Inventory.Remove(item);
+            SZWorld.Instance.DropItem(item.data, at);
         }
 
         // ---------------------------------------------------------------- E: press, or hold for a while
@@ -353,27 +370,32 @@ namespace Deepwell
         void Gun()
         {
             var gun = Inventory.Held;
-            if (_gunModel == null && gun.IsGun) _gunModel = MakeGunModel();
-            if (_gunModel != null) _gunModel.SetActive(gun.IsGun);  // only while it's in your hand
-            if (!gun.IsGun) return;
+            bool holding = gun != null && gun.IsGun;
+            if (_gunModel == null && holding) _gunModel = MakeGunModel();
+            if (_gunModel != null) _gunModel.SetActive(holding);  // only while it's in your hand
+            if (!holding) return;
             _recoil = Mathf.MoveTowards(_recoil, 0f, Time.deltaTime * 6f);
             _gunModel.transform.localPosition = new Vector3(0.22f, -0.2f, 0.42f - _recoil * 0.06f);
             _gunModel.transform.localRotation = Quaternion.Euler(-_recoil * 12f, 0f, 0f);
 
-            if (SZInput.Down(SZKey.R) && gun.clip < SZInventory.ClipSize && gun.reserve > 0)
+            if (SZInput.Down(SZKey.R) && gun.clip < SZInventory.ClipSize(gun.Id))
             {
-                int take = Mathf.Min(SZInventory.ClipSize - gun.clip, gun.reserve);
-                gun.clip += take;
-                gun.reserve -= take;
-                SZAudio.Play2D("repair_click", 0.7f);
-                _nextShot = Time.time + 1.2f;  // reloading takes a moment
+                if (Inventory.Reload(gun) > 0)
+                {
+                    SZAudio.Play2D("repair_click", 0.7f);
+                    _nextShot = Time.time + 1.2f;  // reloading takes a moment
+                }
+                else SZGame.Instance.Say("No " + SZInventory.AmmoFor(gun.Id).Substring(5) + " ammo.", 1.5f);
             }
-            if (!SZInput.Click || Time.time < _nextShot) return;
-            _nextShot = Time.time + 0.3f;
+            // The SMG fires while you hold the button; the others one shot per click.
+            bool automatic = gun.Id == "weapon_smg";
+            bool pull = automatic ? SZInput.ClickHeld : SZInput.Click;
+            if (!pull || Time.time < _nextShot) return;
+            _nextShot = Time.time + (automatic ? 0.09f : gun.Id == "weapon_rifle" || gun.Id == "weapon_shotgun" ? 0.9f : 0.3f);
             if (gun.clip <= 0)
             {
                 SZAudio.Play2D("repair_click", 0.4f);
-                SZGame.Instance.Say(gun.reserve > 0 ? "Empty. Press R to reload." : "No bullets left.", 1.5f);
+                SZGame.Instance.Say(Inventory.Has(SZInventory.AmmoFor(gun.Id)) ? "Empty. Press R to reload." : "No bullets left.", 1.5f);
                 return;
             }
             gun.clip--;

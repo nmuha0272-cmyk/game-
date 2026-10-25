@@ -9,7 +9,7 @@ It's moved over **one phase at a time**.
 | U1 | Chapter 1 built from the Godot level (all rooms, props, lights, signs, fog), walk / sprint / crouch / jump, flashlight, doors | done |
 | U2 | **Better graphics** (glow, film look, shadows, quality settings), **online co-op** (Host / Join, up to 4), **items** (batteries, flares, medkits, keycards...), **story notes and tapes**, **the Long Man** (patrol, sight, hearing, chase, opens doors), **checkpoints**, **story messages**, **the 4 characters and their abilities**, sounds, settings, **sets itself up** | done |
 | U2.5 | **The Deepwell car home screen** (car on the forest road, choose your character inside the car), **the newspaper intro**, **the chapter intro**, **the trunk scene** at the team's car by the station (Eli and Cole take the pistols, talk about the missing people, Eli shows the old photo of his mom and dad), **the team's talk**, **pistols** (click to shoot, R to reload; a hit stuns the Long Man), **real textures instead of silver** | done |
-| **U3** | **All of Chapter 1's puzzles** (levers, buttons, things you hold, fuse boxes, card readers, keypads, breaker panels, the radio, the terminal, the darkroom, the generator, tape machines, the pressure plate, the airlock, the Morse lamp), **locked doors** (keycards, a jammed door and the crowbar), **the inventory** (4 quick slots + storage, Tab screen, drop), **the chapter ending** in the elevator, **less shiny models** | **← now** |
+| **U3** | **All of Chapter 1's puzzles** (levers, buttons, things you hold, fuse boxes, card readers, keypads, breaker panels, the radio, the terminal, the darkroom, the generator, tape machines, the pressure plate, the airlock, the Morse lamp), **locked doors** (keycards, a jammed door and the crowbar), **the inventory** (a Resident Evil 4 style case: items take up space by size, with pictures and counts), **the chapter ending** in the elevator, **less shiny models** | **← now** |
 | U4 | Downed / help up, hiding in lockers, the reveal cutscene | |
 | U5 | Chapter 2 | |
 | U6 | The Deepwell car menu, animations | |
@@ -102,9 +102,13 @@ ability, Esc pause. In cutscenes: Space = next, hold Space = skip.
 then press the new one. Settings also has **Subtitles** on/off and a large
 size.
 
-**Inventory:** 4 quick slots (the bar at the bottom) and 2 storage slots; a
-pouch adds 2 and a backpack 4 (up to 10). In the Tab screen, click an item,
-then click another slot to move it, or press USE / DROP.
+**Inventory (like Resident Evil 4):** Tab opens a case made of squares. Every
+item takes up space by its size (a pistol 2x2, a shotgun 5x2, a battery 1x1),
+shows a picture, and the number in the corner is how many you have (or the
+bullets in a gun, red when empty). Click an item to pick it up, R turns it,
+click to put it down, right click cancels. Point at an item and press 1-4 to
+put it on a number key (the 4 boxes at the bottom of the screen). A pouch adds
+1 row, a backpack 2 rows. USE / DROP are on the right.
 
 | Character | Ability (Q) |
 |---|---|

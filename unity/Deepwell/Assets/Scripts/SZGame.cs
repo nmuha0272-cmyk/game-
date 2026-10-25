@@ -749,128 +749,233 @@ namespace Deepwell
             Shadowed(new Rect(0, H - 60, W, 30), "Hiding. Stay quiet...", _prompt);
         }
 
-        // ---------------------------------------------------------------- inventory
+        // ---------------------------------------------------------------- inventory (the case)
 
-        // Tab opens it: click a slot to pick it up, click another to move/swap,
-        // then USE or DROP. Tab or Esc closes it.
+        // Tab opens the case, like Resident Evil 4: every item takes up space by
+        // its size. Click an item to pick it up, move it (R turns it), click to put
+        // it down. Point at an item and press 1-4 to put it on that number key.
         bool _invOpen;
-        SZSlot _invPicked;
+        SZItem _invPicked, _invHover;
+        bool _pickedTurned;
+        int _pickedFromX, _pickedFromY;
+        bool _pickedFromTurned;
         public static bool InventoryOpen => Instance != null && Instance._invOpen;
+
+        static readonly Color CaseBack = new Color(0.06f, 0.06f, 0.065f, 0.97f);
+        static readonly Color CellColor = new Color(0.13f, 0.13f, 0.14f, 1f);
+        static readonly Color CellLine = new Color(0.26f, 0.26f, 0.27f, 1f);
+        static readonly Color ItemBack = new Color(0.2f, 0.2f, 0.21f, 1f);
+        static readonly Color CountGreen = new Color(0.55f, 0.95f, 0.6f);
+        static readonly Color CountRed = new Color(0.95f, 0.25f, 0.2f);
 
         void ToggleInventory()
         {
+            if (_invOpen) CancelMove();
             _invOpen = !_invOpen;
-            _invPicked = null;
             Cursor.lockState = _invOpen ? CursorLockMode.None : CursorLockMode.Locked;
             Cursor.visible = _invOpen;
         }
 
-        static readonly Color SlotColor = new Color(0.05f, 0.05f, 0.06f, 0.9f);
-        static readonly Color SlotHeld = new Color(0.45f, 0.35f, 0.12f, 0.95f);
+        void CancelMove()
+        {
+            if (_invPicked == null) return;
+            _world?.Local?.Inventory.MoveTo(_invPicked, _pickedFromX, _pickedFromY, _pickedFromTurned);
+            _invPicked = null;
+        }
 
+        // The 4 number keys at the bottom of the screen.
         void DrawHotbar(SZInventory inv)
         {
-            float size = 64f, gap = 8f;
+            float size = 72f, gap = 8f;
             float x0 = Screen.width / 2f - (size * 4 + gap * 3) / 2f, y = Screen.height - size - 18f;
-            for (int i = 0; i < SZInventory.QuickSlots; i++)
+            for (int i = 0; i < 4; i++)
             {
                 var r = new Rect(x0 + i * (size + gap), y, size, size);
-                DrawSlot(r, inv.Quick[i], i == inv.Selected, (i + 1).ToString());
+                var it = inv.Hotkeys[i];
+                if (it != null && !inv.Items.Contains(it)) it = null;
+                Box(r, i == inv.Selected ? new Color(0.3f, 0.26f, 0.15f, 0.95f) : new Color(0.06f, 0.06f, 0.07f, 0.85f));
+                Box(new Rect(r.x, r.yMax - 2, r.width, 2), i == inv.Selected ? new Color(0.95f, 0.75f, 0.3f) : CellLine);
+                GUI.Label(new Rect(r.x + 4, r.y + 2, 20, 18), (i + 1).ToString(), new GUIStyle(_small) { fontSize = 12 });
+                if (it == null) continue;
+                var icon = SZIcons.Get(it.data);
+                if (icon) GUI.DrawTexture(new Rect(r.x + 6, r.y + 10, r.width - 12, r.height - 22), icon, ScaleMode.ScaleToFit);
+                DrawCount(r, it, inv, 13);
             }
             var held = inv.Held;
-            if (!held.Empty)
+            if (held != null)
             {
-                string line = held.item.name + (held.IsGun ? "   " + held.clip + " / " + held.reserve + "   [Click] shoot  [R] reload" : "   [Click] use   [G] drop");
+                string line = held.data.name + (held.IsGun ? "   " + held.clip + " / " + inv.Count(SZInventory.AmmoFor(held.Id)) + "   [Click] shoot  [R] reload" : "   [Click] use   [G] drop");
                 Shadowed(new Rect(0, y - 26, Screen.width, 24), line, new GUIStyle(_small) { alignment = TextAnchor.MiddleCenter });
             }
         }
 
-        void DrawSlot(Rect r, SZSlot slot, bool highlight, string label)
+        // The number in the corner: how many (green), or bullets in a gun (red when empty).
+        void DrawCount(Rect r, SZItem it, SZInventory inv, int fontSize)
         {
-            Box(r, highlight ? SlotHeld : SlotColor);
-            Box(new Rect(r.x, r.yMax - 2, r.width, 2), highlight ? new Color(0.95f, 0.75f, 0.3f) : new Color(0.25f, 0.25f, 0.25f));
-            if (label != null) GUI.Label(new Rect(r.x + 4, r.y + 2, 20, 18), label, new GUIStyle(_small) { fontSize = 12 });
-            if (slot.Empty) return;
-            // A colored square for the item, its short name, and how many.
-            var c = SZLevelData.C(slot.item.color);
-            Box(new Rect(r.center.x - 10, r.y + 14, 20, 14), c);
-            var name = new GUIStyle(_small) { fontSize = 11, alignment = TextAnchor.LowerCenter, wordWrap = true };
-            GUI.Label(new Rect(r.x + 2, r.y + 26, r.width - 4, r.height - 28), slot.item.name, name);
-            if (slot.count > 1)
-                GUI.Label(new Rect(r.xMax - 26, r.y + 2, 24, 18), "x" + slot.count, new GUIStyle(_small) { fontSize = 12, alignment = TextAnchor.UpperRight });
-            if (slot.IsGun)
-                GUI.Label(new Rect(r.xMax - 40, r.y + 2, 38, 18), slot.clip.ToString(), new GUIStyle(_small) { fontSize = 12, alignment = TextAnchor.UpperRight });
+            string text = null;
+            var color = CountGreen;
+            if (it.IsGun)
+            {
+                text = it.clip.ToString();
+                if (it.clip == 0) color = CountRed;
+            }
+            else if (SZInventory.StackMax(it.Id) > 1) text = it.count.ToString();
+            if (text == null) return;
+            var style = new GUIStyle(_small) { fontSize = fontSize, fontStyle = FontStyle.Bold, alignment = TextAnchor.LowerRight };
+            style.normal.textColor = color;
+            Shadowed(new Rect(r.x, r.y, r.width - 5, r.height - 3), text, style);
         }
 
         void DrawInventory(SZPlayer p)
         {
             var inv = p.Inventory;
-            Box(Full(), new Color(0, 0, 0, 0.55f));
-            float size = 76f, gap = 10f;
-            float w = Mathf.Max(5 * (size + gap) + 40f, 520f), h = 470f;
-            var panel = new Rect(Screen.width / 2f - w / 2f - 160f, Screen.height / 2f - h / 2f, w, h);
-            Box(panel, new Color(0.03f, 0.035f, 0.04f, 0.95f));
-            GUI.Label(new Rect(panel.x + 20, panel.y + 14, 400, 40), "INVENTORY", new GUIStyle(_title) { fontSize = 30 });
-            GUI.Label(new Rect(panel.x + 20, panel.y + 60, 400, 22), "QUICK SLOTS  (keys 1-4 = in your hand)", _sub);
-            float x0 = panel.x + 20, y0 = panel.y + 86;
-            for (int i = 0; i < SZInventory.QuickSlots; i++)
-                SlotButton(new Rect(x0 + i * (size + gap), y0, size, size), inv.Quick[i], inv, i == inv.Selected, (i + 1).ToString());
-            GUI.Label(new Rect(panel.x + 20, y0 + size + 18, 500, 22),
-                "STORAGE  (" + inv.Storage.Count + " of " + SZInventory.MaxStorage + " slots: a pouch adds 2, a backpack 4)", _sub);
-            float y1 = y0 + size + 44;
-            for (int i = 0; i < SZInventory.MaxStorage; i++)
-            {
-                var r = new Rect(x0 + (i % 5) * (size + gap), y1 + (i / 5) * (size + gap), size, size);
-                if (i < inv.Storage.Count) SlotButton(r, inv.Storage[i], inv, false, null);
-                else Box(r, new Color(0.02f, 0.02f, 0.02f, 0.6f));  // locked until you find a pack
-            }
-            GUI.Label(new Rect(panel.x + 20, panel.yMax - 30, w - 40, 22),
-                "Click an item, then click another slot to move it.   Tab = close", new GUIStyle(_small) { fontSize = 13 });
+            var e = Event.current;
+            Box(Full(), new Color(0, 0, 0, 0.65f));
+            float cell = Mathf.Min(64f, (Screen.height * 0.7f) / SZInventory.MaxRows, (Screen.width - 420f) / SZInventory.Cols);
+            float gw = cell * SZInventory.Cols;
+            float gx = Mathf.Max(30f, Screen.width / 2f - (gw + 340f) / 2f), gy = Screen.height / 2f - (cell * SZInventory.MaxRows) / 2f + 20f;
+            Box(new Rect(gx - 14, gy - 54, gw + 28, cell * SZInventory.MaxRows + 90), CaseBack);
+            GUI.Label(new Rect(gx, gy - 48, 400, 40), "INVENTORY", new GUIStyle(_title) { fontSize = 28 });
 
-            // The picked item: what it is, and what you can do with it.
-            var info = new Rect(panel.xMax + 14, panel.y, 300, h);
-            Box(info, new Color(0.03f, 0.035f, 0.04f, 0.95f));
-            if (_invPicked == null || _invPicked.Empty)
-            {
-                GUI.Label(new Rect(info.x + 16, info.y + 20, 270, 60), "Click an item to see it.", _small);
-                return;
-            }
-            var it = _invPicked.item;
-            GUI.Label(new Rect(info.x + 16, info.y + 16, 270, 34), it.name.ToUpper(), new GUIStyle(_title) { fontSize = 22, wordWrap = true });
-            string details = it.hint;
-            if (_invPicked.IsGun) details = "Bullets: " + _invPicked.clip + " in it, " + _invPicked.reserve + " spare.\n" + details;
-            if (_invPicked.count > 1) details = "You have " + _invPicked.count + ".\n" + details;
-            GUI.Label(new Rect(info.x + 16, info.y + 60, 270, 200), details, new GUIStyle(_small) { wordWrap = true });
-            if (GUI.Button(new Rect(info.x + 16, info.yMax - 130, 268, 50), "USE", _button))
-            {
-                p.UseItem(_invPicked);
-                if (_invPicked.Empty) _invPicked = null;
-            }
-            if (GUI.Button(new Rect(info.x + 16, info.yMax - 70, 268, 50), "DROP", _button))
-            {
-                p.Drop(_invPicked);
-                if (_invPicked.Empty) _invPicked = null;
-            }
-        }
+            // The grid (rows you haven't unlocked yet are dark).
+            for (int y = 0; y < SZInventory.MaxRows; y++)
+                for (int x = 0; x < SZInventory.Cols; x++)
+                {
+                    var r = new Rect(gx + x * cell, gy + y * cell, cell, cell);
+                    Box(r, CellLine);
+                    Box(new Rect(r.x + 1, r.y + 1, r.width - 2, r.height - 2), y < inv.Rows ? CellColor : new Color(0.03f, 0.03f, 0.03f));
+                }
+            if (inv.Rows < SZInventory.MaxRows)
+                GUI.Label(new Rect(gx, gy + inv.Rows * cell + 4, gw, 24), "(a pouch or backpack makes the case bigger)", new GUIStyle(_small) { fontSize = 13 });
 
-        void SlotButton(Rect r, SZSlot slot, SZInventory inv, bool held, string label)
-        {
-            DrawSlot(r, slot, held || slot == _invPicked, label);
-            if (!GUI.Button(r, GUIContent.none, GUIStyle.none)) return;
-            if (_invPicked == null)
+            // Which cell the mouse is over.
+            int mx = Mathf.FloorToInt((e.mousePosition.x - gx) / cell), my = Mathf.FloorToInt((e.mousePosition.y - gy) / cell);
+            bool inGrid = mx >= 0 && my >= 0 && mx < SZInventory.Cols && my < inv.Rows;
+            if (e.type == EventType.Repaint || e.type == EventType.MouseMove) _invHover = inGrid ? inv.At(mx, my) : null;
+
+            // The items.
+            foreach (var it in inv.Items)
             {
-                if (!slot.Empty) _invPicked = slot;
+                if (it == _invPicked) continue;
+                var r = new Rect(gx + it.x * cell + 2, gy + it.y * cell + 2, it.W * cell - 4, it.H * cell - 4);
+                DrawItem(r, it, inv, it == _invHover);
             }
-            else if (_invPicked == slot)
+
+            // The item you're moving follows the mouse (green = fits, red = doesn't).
+            if (_invPicked != null)
             {
-                _invPicked = null;
+                int w = _pickedTurned ? SZInventory.SizeOf(_invPicked.Id).y : SZInventory.SizeOf(_invPicked.Id).x;
+                int h = _pickedTurned ? SZInventory.SizeOf(_invPicked.Id).x : SZInventory.SizeOf(_invPicked.Id).y;
+                int px = mx - (w - 1) / 2, py = my - (h - 1) / 2;
+                bool fits = inv.Fits(px, py, w, h, _invPicked);
+                var r = new Rect(gx + px * cell + 2, gy + py * cell + 2, w * cell - 4, h * cell - 4);
+                Box(r, fits ? new Color(0.2f, 0.6f, 0.25f, 0.45f) : new Color(0.7f, 0.15f, 0.1f, 0.45f));
+                bool was = _invPicked.turned;
+                _invPicked.turned = _pickedTurned;
+                DrawItem(r, _invPicked, inv, true);
+                _invPicked.turned = was;
+                if (e.type == EventType.MouseDown && e.button == 0)
+                {
+                    if (fits && inv.MoveTo(_invPicked, px, py, _pickedTurned))
+                    {
+                        _invPicked = null;
+                        SZAudio.Play2D("repair_click", 0.3f);
+                    }
+                    e.Use();
+                }
+                else if (e.type == EventType.MouseDown && e.button == 1)
+                {
+                    CancelMove();
+                    e.Use();
+                }
+                else if (e.type == EventType.KeyDown && e.keyCode == KeyCode.R)
+                {
+                    _pickedTurned = !_pickedTurned;
+                    e.Use();
+                }
+            }
+            else if (e.type == EventType.MouseDown && e.button == 0 && _invHover != null)
+            {
+                // Pick it up to move it.
+                _invPicked = _invHover;
+                _pickedFromX = _invPicked.x;
+                _pickedFromY = _invPicked.y;
+                _pickedFromTurned = _invPicked.turned;
+                _pickedTurned = _invPicked.turned;
+                e.Use();
+            }
+
+            // 1-4 while pointing at an item: put it on that number key.
+            if (e.type == EventType.KeyDown && _invHover != null && e.keyCode >= KeyCode.Alpha1 && e.keyCode <= KeyCode.Alpha4)
+            {
+                inv.SetHotkey(e.keyCode - KeyCode.Alpha1, _invHover);
+                SZAudio.Play2D("repair_click", 0.3f);
+                e.Use();
+            }
+
+            // The item you're pointing at (or moving): what it is, and what you can do.
+            var info = new Rect(gx + gw + 30, gy - 54, 300, cell * SZInventory.MaxRows + 90);
+            Box(info, CaseBack);
+            var shown = _invPicked ?? _invHover ?? _invLast;
+            if (shown != null && !inv.Items.Contains(shown)) shown = null;
+            if (_invHover != null) _invLast = _invHover;
+            if (shown == null)
+            {
+                GUI.Label(new Rect(info.x + 16, info.y + 20, 270, 80), "Point at an item to see it.", _small);
             }
             else
             {
-                inv.Swap(_invPicked, slot);  // move (or swap) into the clicked slot
-                _invPicked = null;
-                SZAudio.Play2D("repair_click", 0.3f);
+                GUI.Label(new Rect(info.x + 16, info.y + 16, 270, 60), shown.data.name.ToUpper(), new GUIStyle(_title) { fontSize = 22, wordWrap = true });
+                var icon = SZIcons.Get(shown.data);
+                if (icon) GUI.DrawTexture(new Rect(info.x + 16, info.y + 76, 268, 120), icon, ScaleMode.ScaleToFit);
+                string details = shown.data.hint;
+                if (shown.IsGun) details = "Loaded: " + shown.clip + " / " + SZInventory.ClipSize(shown.Id) + "   Ammo: " + inv.Count(SZInventory.AmmoFor(shown.Id)) + "\n" + details;
+                else if (SZInventory.StackMax(shown.Id) > 1) details = "You have " + shown.count + ".\n" + details;
+                GUI.Label(new Rect(info.x + 16, info.y + 206, 270, 150), details, new GUIStyle(_small) { wordWrap = true });
+                if (_invPicked == null)
+                {
+                    if (GUI.Button(new Rect(info.x + 16, info.yMax - 130, 268, 50), "USE", _button)) p.UseItem(shown);
+                    if (GUI.Button(new Rect(info.x + 16, info.yMax - 70, 268, 50), "DROP", _button)) { p.Drop(shown); _invLast = null; }
+                }
             }
+            GUI.Label(new Rect(gx, gy + SZInventory.MaxRows * cell + 8, gw + 320, 24),
+                _invPicked != null ? "Click to put it down   R = turn it   Right click = cancel"
+                                   : "Click an item to move it   1-4 = put it on a number key   Tab = close",
+                new GUIStyle(_small) { fontSize = 13 });
+        }
+
+        SZItem _invLast;
+
+        void DrawItem(Rect r, SZItem it, SZInventory inv, bool highlight)
+        {
+            Box(r, highlight ? new Color(0.3f, 0.3f, 0.32f, 1f) : ItemBack);
+            var icon = SZIcons.Get(it.data);
+            if (icon)
+            {
+                // A long gun standing up: turn its picture too.
+                if (it.turned)
+                {
+                    var m = GUI.matrix;
+                    GUIUtility.RotateAroundPivot(90f, r.center);
+                    var turned = new Rect(r.center.x - r.height / 2f, r.center.y - r.width / 2f, r.height, r.width);
+                    GUI.DrawTexture(new Rect(turned.x + 4, turned.y + 4, turned.width - 8, turned.height - 8), icon, ScaleMode.ScaleToFit);
+                    GUI.matrix = m;
+                }
+                else GUI.DrawTexture(new Rect(r.x + 4, r.y + 4, r.width - 8, r.height - 8), icon, ScaleMode.ScaleToFit);
+            }
+            else
+            {
+                GUI.Label(r, it.data.name, new GUIStyle(_small) { fontSize = 11, alignment = TextAnchor.MiddleCenter, wordWrap = true });
+            }
+            int key = System.Array.IndexOf(inv.Hotkeys, it);
+            if (key >= 0)
+            {
+                Box(new Rect(r.x + 3, r.y + 3, 16, 16), new Color(0.85f, 0.85f, 0.85f, 0.9f));
+                var badge = new GUIStyle(_small) { fontSize = 11, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+                badge.normal.textColor = Color.black;
+                GUI.Label(new Rect(r.x + 3, r.y + 3, 16, 16), (key + 1).ToString(), badge);
+            }
+            DrawCount(r, it, inv, 15);
         }
 
         // ---------------------------------------------------------------- puzzle screens (keypad, terminal)
