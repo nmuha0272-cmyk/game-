@@ -13,9 +13,9 @@ extends Node3D
 ##         slows to a stop, and the screen fades to black before the lobby
 ##         (or next scene) loads. Press Enter or Esc to skip the drive.
 ##
-## Characters are simple stand-in shapes until real models exist. To use a real
-## model, save it as res://assets/models/characters/<id>.glb (eli, cole, nora,
-## walter) and it will be placed in that seat automatically.
+## The seats show simple sitting figures. The team's real models (MODEL_FILES)
+## sit there instead once they have a skeleton; for now they are T-pose
+## statues, which can't sit, so they appear in the game instead.
 
 signal character_confirmed(character_id: String)
 ## Only when `embedded`: the arrival drive finished and the screen is black.
@@ -30,6 +30,10 @@ var embedded := false
 const MENU_UI := preload("res://scenes/main_menu/deepwell/main_menu.tscn")
 const LOBBY_SCENE := "res://scenes/lobby/lobby.tscn"
 const MODEL_PATH := "res://assets/models/characters/%s.glb"
+## The team's real models (file names kept as they are) and how tall each
+## person is, same as scripts/player/character_model.gd.
+const MODEL_FILES := {"eli": ["eli", 1.78], "cole": ["frank", 1.9], "nora": ["journalist", 1.68], "walter": ["engineer", 1.75]}
+const RIGGED_MODEL_HEIGHT := 0.98
 
 const COLOR_TEXT := Color("d9d3c1")
 const COLOR_DIM := Color("7b786c")
@@ -185,6 +189,20 @@ func _process(delta: float) -> void:
 	for id: String in _figures:
 		var root: Node3D = _figures[id]["root"]
 		root.position.y = sin(_time * 1.6 + root.position.x * 3.0) * 0.006
+
+	# Rigged models sit: thighs forward, knees bent, Eli's hands on the wheel.
+	for id: String in _figures:
+		var rig := _figures[id]["rig"] as HumanRig
+		if rig == null:
+			continue
+		rig.set_pose(0.0, 0.0, 0.0, 0.0, sin(_time * 1.6))
+		for leg in ["LeftUpLeg", "RightUpLeg"]:
+			rig._turn(leg, HumanRig.SIDE, -85.0)
+		for knee in ["LeftLeg", "RightLeg"]:
+			rig._turn(knee, HumanRig.SIDE, 85.0)
+		if id == "eli":
+			for arm in ["LeftArm", "RightArm"]:
+				rig._turn(arm, HumanRig.SIDE, -55.0)
 
 	# Glide the camera toward where it should be right now.
 	var pos := MENU_CAM_POS + Vector3(sin(_time * 0.21) * 0.35, sin(_time * 0.33) * 0.08, 0.0)
@@ -732,11 +750,23 @@ func _build_character(id: String) -> void:
 	_car.add_child(root)
 	var materials: Array = []
 
-	var model_path := MODEL_PATH % id
+	var model_path := MODEL_PATH % MODEL_FILES[id][0]
+	var rig: HumanRig = null
 	if ResourceLoader.exists(model_path):
 		var model: Node3D = load(model_path).instantiate()
+		model.set_script(HumanRig)  # the game's posing: sitting, arms down
+		rig = model as HumanRig
 		holder.add_child(model)
-	else:
+		if rig._sk == null:
+			rig._ready()  # find the skeleton (the script was added after loading)
+		if rig._sk == null:
+			model.queue_free()  # no skeleton: a T-pose statue can't sit in the car
+			rig = null
+		else:
+			var height: float = MODEL_FILES[id][1]
+			model.scale = Vector3.ONE * height / RIGGED_MODEL_HEIGHT
+			model.rotation.y = PI  # the models face +Z; people in the car face -Z
+	if rig == null:
 		var s: float = c["size"]
 		var body_mat := _mat(c["color"], 0.85)
 		var skin_mat := _mat(Color(0.62, 0.48, 0.38), 0.7)
@@ -816,7 +846,7 @@ func _build_character(id: String) -> void:
 	label.visible = false
 	root.add_child(label)
 
-	_figures[id] = {"root": root, "materials": materials, "label": label}
+	_figures[id] = {"root": root, "materials": materials, "label": label, "rig": rig}
 
 
 func _build_camera() -> void:

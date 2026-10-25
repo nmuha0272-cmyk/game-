@@ -42,6 +42,11 @@ func _add_player(id: int) -> void:
 	if checkpoint:
 		data.position = checkpoint.get_spawn_position(players.get_child_count())
 	var player := spawn(data)
+	# Eli and Cole took a pistol each from the car's trunk (the arrival cutscene).
+	if not GameState.checkpoint_inventories.has(id) and data.character in [Characters.Id.SON, Characters.Id.GUARD]:
+		get_tree().create_timer(0.5).timeout.connect(func() -> void:
+			if is_instance_valid(player):
+				player.inventory.server_add(Items.create("weapon_pistol")))
 	# Give back the gear they had at the checkpoint (once everyone has the player).
 	if GameState.checkpoint_inventories.has(id):
 		var saved: Dictionary = GameState.checkpoint_inventories[id].duplicate(true)
@@ -67,7 +72,8 @@ func _create_player(data: Dictionary) -> Node:
 	player.character = data.character
 	player.position = data.position
 	player.rotation.y = data.yaw
-	# Nobody starts with a weapon: guns are found in the world (armories, etc.).
+	# Eli and Cole start with the pistols from the trunk (see _add_player);
+	# every other gun is found in the world (armories, etc.).
 	return player
 
 

@@ -232,6 +232,49 @@ mi("Windshield",E,(-8.18,1.55,39),mesh("BoxMesh",size=v3(0.04,0.6,1.6)),BLACK,sh
 light("CarDomeLight","Lights",(-9.3,1.75,39),color=(1,0.8,0.5),energy=0.15,rng=2.0,flicker=0.5,fixture=None)
 inst("lpersonal","InformantNotebook","Lore",(-7.4,1.2,39),0,entry=ER(LORE("personal_journalist_notebook")))
 item("battery",(-6,0.2,41))
+# The team's own car (they drove here in it; the same car as the home screen).
+# Parked on the road next to where everyone starts. At the start, Eli and Cole
+# take the pistols out of its trunk (scripts/chapters/opening_dialogue.gd
+# opens the TrunkLid). Built along its own Z (front at -Z, trunk at +Z),
+# turned so the trunk points down the road (+X).
+TC_PAINT=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.34,0.1,0.08), roughness="0.4", metallic="0.3"))
+TC_TRIM=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.06,0.06,0.06), roughness="0.6"))
+TC_CHROME=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.5,0.5,0.5), roughness="0.25", metallic="0.9"))
+TC_GLASS=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.35,0.42,0.5,0.25), transparency="1", roughness="0.05"))
+TC_SEAT=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.12,0.09,0.07), roughness="0.9"))
+TC_HEAD=SR(sc.sub("StandardMaterial3D", albedo_color=col(1,1,0.9), emission_enabled="true", emission=col(1,0.95,0.8), emission_energy_multiplier="3.0"))
+TC_TAIL=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.5,0.02,0.02), emission_enabled="true", emission=col(1,0.05,0.03), emission_energy_multiplier="2.0"))
+TC="Exterior/TeamCar"
+sc.node("TeamCar","StaticBody3D","Exterior",transform=xform((8.4,0,43.6),90))
+sc.node("CollisionShape3D","CollisionShape3D",TC,transform=xform((0,0.95,0.2)),shape=SR(sc.sub("BoxShape3D",size=v3(2.0,1.3,4.8))))
+def tbox(name,size,pos,mat,parent=TC,pitch=0):
+    mi(name,parent,pos,mesh("BoxMesh",size=v3(*size)),mat,pitch=pitch)
+tbox("Body",(2.0,0.45,4.8),(0,0.55,0.2),TC_PAINT)
+tbox("Hood",(2.0,0.35,1.5),(0,0.95,-1.55),TC_PAINT)
+tbox("Trunk",(2.0,0.3,1.0),(0,0.925,2.1),TC_PAINT)
+tbox("DoorL",(0.08,0.38,2.4),(-0.96,0.95,0.4),TC_PAINT); tbox("DoorR",(0.08,0.38,2.4),(0.96,0.95,0.4),TC_PAINT)
+tbox("Bumper",(2.04,0.1,4.9),(0,0.3,0.2),TC_CHROME)
+tbox("Roof",(1.86,0.06,2.1),(0,1.84,0.5),TC_PAINT)
+for k,x in enumerate([-0.93,0.93]):
+    tbox(f"PillarA{k}",(0.07,0.78,0.07),(x,1.47,-0.75),TC_TRIM,pitch=28)
+    tbox(f"PillarB{k}",(0.07,0.72,0.07),(x,1.48,0.55),TC_TRIM)
+    tbox(f"PillarC{k}",(0.07,0.78,0.07),(x,1.47,1.6),TC_TRIM,pitch=-25)
+    tbox(f"Side{k}",(0.02,0.66,2.2),(x*1.02,1.47,0.45),TC_GLASS)
+tbox("Windshield",(1.8,0.8,0.02),(0,1.47,-0.75),TC_GLASS,pitch=28)
+tbox("RearWindow",(1.8,0.78,0.02),(0,1.47,1.63),TC_GLASS,pitch=-25)
+tbox("SeatsFront",(1.4,0.6,0.55),(0,1.0,0.2),TC_SEAT); tbox("SeatBack",(1.8,0.75,0.6),(0,1.15,1.15),TC_SEAT)
+for k,(x,z) in enumerate([(-0.95,-1.4),(0.95,-1.4),(-0.95,1.7),(0.95,1.7)]):
+    mi(f"Wheel{k}",TC,(x,0.38,z),mesh("CylinderMesh",top_radius="0.38",bottom_radius="0.38",height="0.25",radial_segments="14",rings="1"),BLACK,roll=90)
+for k,x in enumerate([-0.7,0.7]):
+    tbox(f"Headlight{k}",(0.32,0.14,0.04),(x,0.9,-2.31),TC_HEAD)
+    tbox(f"Taillight{k}",(0.3,0.1,0.04),(x,0.92,2.61),TC_TAIL)
+# The trunk lid swings up around its front edge.
+sc.node("TrunkLid","Node3D",TC,transform=xform((0,1.1,1.6)))
+tbox("Lid",(2.0,0.05,1.0),(0,0,0.5),TC_PAINT,parent=TC+"/TrunkLid")
+# Two pistols in the trunk.
+for k,x in enumerate([-0.25,0.25]):
+    tbox(f"TrunkPistol{k}",(0.05,0.035,0.2),(x,1.09,2.1),BLACK)
+light("TeamCarDome","Lights",(10.6,1.3,43.6),color=(1,0.85,0.6),energy=0.25,rng=2.5,shadow=False,fixture=None)
 # sign
 BX("SignBoard",E,-5.2,-2.8,1.2,2.2,22.1,22.14,RUST)
 label("SignText",E,(-4,1.7,22.16),0,"PROPERTY OF U.S. GOVERNMENT\nNO TRESPASSING\nBlackwater Weather Station",size=0.0035,font=36,color=(0.85,0.8,0.7),outline="0")

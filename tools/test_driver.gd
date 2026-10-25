@@ -151,23 +151,44 @@ func _run() -> void:
 		if m.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY:
 			all_on = false
 	check(all_on, "own model fully visible, not shadow-only (%d meshes)" % meshes.size())
-	check(body.get("acting") == 1.0, "speaker is acting (gesturing)")
 
+	# --- The trunk scene: Eli and Cole take the pistols from the team's car ---
+	check(od._trunk_actors.size() == 2, "Eli and Cole act the trunk scene (%d bodies)" % od._trunk_actors.size())
+	var car: Node3D = od.get_node_or_null("../Exterior/TeamCar")
+	check(car != null, "the team's car is parked at the start")
+
+	# --- Advance every line with real injected input ---
 	var head: Node3D = p.get_node("Head")
-	var d: float = od._camera.global_position.distance_to(head.global_position)
-	check(d > 1.0 and d < 5.0, "camera close-up on speaker (dist=%.2f m)" % d)
-
-	# --- Advance all 7 lines with real injected input ---
-	for i in range(0, 7):
-		var expected: String = od.DIALOGUE[i].text
+	var checked_speaker := false
+	var saw_photo := false
+	for i in range(od.DIALOGUE.size()):
+		var line: Dictionary = od.DIALOGUE[i]
+		var expected: String = line.text
 		if not await _until(func() -> bool:
 				return od._caption_text != null and od._caption_text.text == expected, 15.0):
 			_log("TIMEOUT: line %d never captioned (current=%s)" % [i,
 					str(od._caption_text.text) if od._caption_text else "<none>"])
 			break
+		if line.get("photo", false):
+			saw_photo = od._photo != null
+		if not line.get("trunk", false):
+			if od._trunk_actors.size() > 0:
+				check(false, "trunk bodies freed when the team talks")
+			# My own line (not at the trunk): I act it and the camera comes close.
+			if not checked_speaker and od.SPEAKER_IDS.get(line.character, -1) == p.character:
+				checked_speaker = true
+				await _timer(0.1)
+				check(body.get("acting") == 1.0, "speaker is acting (gesturing)")
+				var d: float = od._camera.global_position.distance_to(head.global_position)
+				check(d > 1.0 and d < 5.0, "camera close-up on speaker (dist=%.2f m)" % d)
 		await _timer(0.2)
 		_press("ui_accept")
 		_log("tapped continue after line %d at %0.1fs" % [i, (Time.get_ticks_msec() - t0) / 1000.0])
+
+	check(saw_photo, "Eli's photo shows on the photo line")
+	if car:
+		var lid: Node3D = car.get_node("TrunkLid")
+		check(lid.rotation_degrees.x < -60.0, "the trunk opened (%.0f deg)" % lid.rotation_degrees.x)
 
 	# --- Clean end ---
 	ok = await _until(func() -> bool: return od._camera == null and not GameState.menu_open, 10.0)

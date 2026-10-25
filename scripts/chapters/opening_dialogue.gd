@@ -56,8 +56,17 @@ var _shot_time := 0.0
 ## Yaw my own body is turning to while someone else talks (NAN = not turning).
 var _body_turn_to := NAN
 
-# The opening conversation when the team arrives at the weather station
+# The opening conversation when the team arrives at the weather station.
+# First Eli and Cole at the trunk of their car ("trunk"): they take the
+# pistols ("pistols"), talk about the missing people, and Eli takes out the
+# old photo of him with his mom and dad ("photo"). Then the whole team talks.
 const DIALOGUE := [
+	{"character": "Guard", "text": "Take this. Safety on until you need it.", "trunk": true, "pistols": true},
+	{"character": "Son", "text": "Got it.", "trunk": true},
+	{"character": "Guard", "text": "Seven people missing since August, Eli. Marcus and Jenna were the last two.", "trunk": true},
+	{"character": "Son", "text": "They only came out here because of me.", "trunk": true},
+	{"character": "Son", "text": "Mom, Dad and me. I was five. It's the last picture of us together.", "trunk": true, "photo": true},
+	{"character": "Guard", "text": "Your dad would be proud of you, kid. We bring them home. All of them.", "trunk": true},
 	{"character": "Journalist", "text": "There it is. The Blackwater Weather Station. Or what's left of it."},
 	{"character": "Guard", "text": "Sixteen years since they sealed this place. And seven people have walked in since August."},
 	{"character": "Engineer", "text": "I remember the night they locked it down... Said it was a gas leak. They lied."},
@@ -66,6 +75,15 @@ const DIALOGUE := [
 	{"character": "Guard", "text": "Then we'd better find a way in. Stay close. And keep your flashlights ready."},
 	{"character": "Engineer", "text": "Something tells me we're not going to like what we find down there..."},
 ]
+
+## The trunk scene: where Eli and Cole stand (in the car's own space: the
+## trunk is at +Z), the old photo, and the cutscene-only bodies that act it.
+const TRUNK_SPOTS := {Characters.Id.SON: Vector3(-0.5, 0.0, 3.35), Characters.Id.GUARD: Vector3(0.5, 0.0, 3.35)}
+const PHOTO_TEXTURE := "res://assets/textures/eli_family_photo.png"
+var _trunk_actors := {}   # character id -> Node3D
+var _hidden_bodies: Array[Node3D] = []
+var _photo: TextureRect = null
+var _photo_prop: Node3D = null
 
 ## Line speaker names -> character ids, so the camera can find that
 ## character's body among the players (or the stand-ins) in the level.
@@ -176,6 +194,14 @@ func _wait_line(i: int) -> bool:
 
 @rpc("authority", "call_local", "reliable")
 func _play_line(index: int) -> void:
+	var line: Dictionary = DIALOGUE[index]
+	if line.get("trunk", false):
+		_start_trunk()
+	else:
+		_end_trunk()
+	if line.get("pistols", false):
+		_take_pistols()
+	_show_photo(line.get("photo", false))
 	_aim_camera(index)
 	_caption_line(index)
 	_act_line(index)
@@ -183,6 +209,7 @@ func _play_line(index: int) -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _end_dialogue() -> void:
+	_end_trunk()
 	if _camera:
 		_camera.queue_free()
 		_camera = null
@@ -221,7 +248,9 @@ func _aim_camera(index: int) -> void:
 		return
 	var speaker_name: String = DIALOGUE[index].get("character", "")
 	var speaker := _find_speaker_body(speaker_name)
-	if speaker:
+	if DIALOGUE[index].get("trunk", false) and _trunk_actors.size() == 2:
+		_aim_trunk_camera(speaker, DIALOGUE[index].get("photo", false))
+	elif speaker:
 		var origin := _head_position(speaker)
 		# Stand in front of their face, slightly off to one side.
 		var forward := -speaker.global_transform.basis.z
@@ -297,8 +326,10 @@ func _act_line(index: int) -> void:
 		elif player.is_multiplayer_authority():
 			_body_turn_to = NAN
 
-	for id: int in _stand_ins:
-		var body: Node3D = _stand_ins[id]
+	var acted := _stand_ins.duplicate()
+	acted.merge(_trunk_actors)
+	for id: int in acted:
+		var body: Node3D = acted[id]
 		var model := body.get_node_or_null("Model") as CharacterModel
 		if model == null:
 			continue
@@ -311,7 +342,7 @@ func _act_line(index: int) -> void:
 				model.glance_toward(head)
 			else:
 				model.set_glance(0.0)
-		if speaker and body != speaker:
+		if speaker and body != speaker and not _trunk_actors.has(id):
 			body.set_meta("turn_to", _yaw_toward(body.global_position, head))
 
 
@@ -330,6 +361,8 @@ func _find_speaker_body(speaker_name: String) -> Node3D:
 	if not SPEAKER_IDS.has(speaker_name):
 		return null
 	var wanted: int = SPEAKER_IDS[speaker_name]
+	if _trunk_actors.has(wanted):
+		return _trunk_actors[wanted]
 	for p in get_tree().get_nodes_in_group("players"):
 		if p is Player and p.character == wanted:
 			return p
@@ -371,7 +404,7 @@ func _spawn_stand_ins() -> void:
 		var root := Node3D.new()
 		root.name = "StandIn_%d" % id
 		get_parent().add_child(root)
-		root.global_position = anchor.global_transform * STAND_IN_OFFSETS[i]
+		root.global_position = anchor.global_transform * STAND_IN_OFFSETS[i % STAND_IN_OFFSETS.size()]
 		root.look_at(anchor.global_position + Vector3.UP * 1.4, Vector3.UP)
 		var model := CharacterModel.new()
 		model.name = "Model"
@@ -567,3 +600,151 @@ func _wait_for_perspective_choices() -> void:
 	while _perspective_choices.size() < expected and waited < 30.0:
 		await get_tree().process_frame
 		waited += get_process_delta_time()
+
+
+# ------------------------------------------------------------- the trunk scene
+
+## Eli and Cole walk to the trunk of the team's car (Exterior/TeamCar). Their
+## real bodies are hidden for these lines and cutscene-only bodies act it, so
+## it looks the same on every computer wherever the players are standing.
+func _start_trunk() -> void:
+	if not _trunk_actors.is_empty():
+		return
+	var car := get_node_or_null("../Exterior/TeamCar") as Node3D
+	if car == null:
+		return
+	for id: int in TRUNK_SPOTS:
+		# Hide whoever plays (or stands in for) Eli and Cole.
+		for p in get_tree().get_nodes_in_group("players"):
+			if p is Player and p.character == id:
+				var body := (p as Player).get_node_or_null("BodyMesh") as Node3D
+				if body and body.visible:
+					body.visible = false
+					_hidden_bodies.append(body)
+		if _stand_ins.has(id) and (_stand_ins[id] as Node3D).visible:
+			_stand_ins[id].visible = false
+			_hidden_bodies.append(_stand_ins[id])
+		var root := Node3D.new()
+		root.name = "TrunkActor_%d" % id
+		get_parent().add_child(root)
+		root.global_position = car.global_transform * TRUNK_SPOTS[id]
+		var model := CharacterModel.new()
+		model.name = "Model"
+		root.add_child(model)
+		model.setup(id, false)
+		_trunk_actors[id] = root
+	# Face each other.
+	var eli: Node3D = _trunk_actors[Characters.Id.SON]
+	var cole: Node3D = _trunk_actors[Characters.Id.GUARD]
+	eli.rotation.y = _yaw_toward(eli.global_position, cole.global_position)
+	cole.rotation.y = _yaw_toward(cole.global_position, eli.global_position)
+	# The trunk swings open.
+	var lid := car.get_node_or_null("TrunkLid") as Node3D
+	if lid:
+		create_tween().tween_property(lid, "rotation_degrees:x", -75.0, 0.8).set_trans(Tween.TRANS_SINE)
+	var creak := "res://assets/audio/metal_creak.wav"
+	if ResourceLoader.exists(creak):
+		var sound := AudioStreamPlayer3D.new()
+		sound.stream = load(creak)
+		car.add_child(sound)
+		sound.position = Vector3(0, 1.1, 2.4)
+		sound.play()
+		sound.finished.connect(sound.queue_free)
+
+
+## Each of them takes a pistol out of the trunk (the real ones are in their
+## inventories already: see player_spawner.gd).
+func _take_pistols() -> void:
+	var car := get_node_or_null("../Exterior/TeamCar") as Node3D
+	if car:
+		for k in 2:
+			var gun := car.get_node_or_null("TrunkPistol%d" % k) as Node3D
+			if gun:
+				gun.visible = false
+	var black := StandardMaterial3D.new()
+	black.albedo_color = Color(0.05, 0.05, 0.055)
+	for id: int in _trunk_actors:
+		var gun := MeshInstance3D.new()
+		var mesh := BoxMesh.new()
+		mesh.size = Vector3(0.035, 0.05, 0.19)
+		gun.mesh = mesh
+		gun.material_override = black
+		gun.position = Vector3(0.24 if id == Characters.Id.SON else -0.24, 1.0, -0.3)
+		(_trunk_actors[id] as Node3D).add_child(gun)
+
+
+## A two-shot of Eli and Cole from behind the car (leaning toward whoever
+## talks), or over Eli's shoulder onto the photo.
+func _aim_trunk_camera(speaker: Node3D, photo: bool) -> void:
+	var eli: Node3D = _trunk_actors[Characters.Id.SON]
+	var cole: Node3D = _trunk_actors[Characters.Id.GUARD]
+	var car := get_node_or_null("../Exterior/TeamCar") as Node3D
+	var back := car.global_transform.basis.z.normalized() if car else Vector3.BACK
+	var mid := (eli.global_position + cole.global_position) / 2.0 + Vector3.UP * 1.45
+	if photo:
+		var head := eli.global_position + Vector3.UP * 1.6
+		var behind := eli.global_transform.basis.z.normalized()  # people face -Z
+		var side := eli.global_transform.basis.x.normalized()
+		_shot_pos = head + behind * 0.95 + side * 0.5 + Vector3.UP * 0.2
+		_shot_look = eli.global_position + Vector3.UP * 1.1 - behind * 0.35
+	else:
+		var lean := Vector3.ZERO
+		if speaker:
+			lean = (speaker.global_position - mid) * Vector3(0.35, 0, 0.35)
+		_shot_pos = mid + back * 2.6 + lean + Vector3.UP * 0.15
+		_shot_look = mid + lean * 0.5
+	_shot_time = 0.0
+	_camera.look_at_from_position(_shot_pos, _shot_look)
+
+
+## The old photo: big on screen, and small in Eli's hand.
+func _show_photo(show: bool) -> void:
+	if show and _photo == null and _bars and ResourceLoader.exists(PHOTO_TEXTURE):
+		var tex: Texture2D = load(PHOTO_TEXTURE)
+		_photo = TextureRect.new()
+		_photo.texture = tex
+		_photo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_photo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		_photo.anchor_left = 0.5
+		_photo.anchor_right = 0.5
+		_photo.anchor_top = 0.5
+		_photo.anchor_bottom = 0.5
+		_photo.offset_left = -170
+		_photo.offset_right = 170
+		_photo.offset_top = -300
+		_photo.offset_bottom = 110
+		_photo.rotation_degrees = -3.0
+		_photo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_photo.modulate.a = 0.0
+		_bars.add_child(_photo)
+		create_tween().tween_property(_photo, "modulate:a", 1.0, 0.6)
+		if _trunk_actors.has(Characters.Id.SON):
+			var mat := StandardMaterial3D.new()
+			mat.albedo_texture = tex
+			var quad := MeshInstance3D.new()
+			var mesh := QuadMesh.new()
+			mesh.size = Vector2(0.1, 0.12)
+			quad.mesh = mesh
+			quad.material_override = mat
+			quad.position = Vector3(0, 1.15, -0.32)
+			quad.rotation_degrees = Vector3(-60, 0, 0)
+			(_trunk_actors[Characters.Id.SON] as Node3D).add_child(quad)
+			_photo_prop = quad
+	elif not show and _photo:
+		_photo.queue_free()
+		_photo = null
+		if is_instance_valid(_photo_prop):
+			_photo_prop.queue_free()
+		_photo_prop = null
+
+
+## Back to the whole team: the real bodies come back.
+func _end_trunk() -> void:
+	_show_photo(false)
+	for id: int in _trunk_actors:
+		_trunk_actors[id].queue_free()
+	_trunk_actors.clear()
+	for body in _hidden_bodies:
+		if is_instance_valid(body):
+			body.visible = true
+	_hidden_bodies.clear()
