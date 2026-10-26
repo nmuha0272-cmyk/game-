@@ -125,7 +125,7 @@ const TALK := [
 	["nora", "I can speak for myself, thanks. Nora Vance. My source went missing out here a month ago, and I'm going to find out why."],
 	["walter", "Walter Kessler. I worked at that station, a long time ago. I know the way in."],
 	["cole", "They want the same thing we do, kid. We find Marcus and Jenna, and we get out."],
-	["eli", "...Okay. Okay."],
+	["eli", "...Okay. We're here."],
 
 	## Intro sequence: character presentations at the start
 	## Facility briefing: what each character knows about Deepwell
@@ -506,7 +506,7 @@ func _start_arrival() -> void:
 	_station.position.z = STATION_START_Z
 	_station.show()
 	var tween := create_tween()
-	tween.tween_interval(2.5)
+	tween.tween_interval(1.5)
 	tween.tween_property(_arrival_label, "modulate:a", 1.0, 2.0)
 
 
@@ -520,7 +520,7 @@ func _update_arrival(delta: float) -> void:
 		_speed = 0.0
 		if not _arrived:
 			_arrived = true
-			get_tree().create_timer(2.0).timeout.connect(_finish_arrival)
+			get_tree().create_timer(1.5).timeout.connect(_finish_arrival)
 	# Trees past the gate would stand inside the station grounds, so hide them.
 	for tree in _trees:
 		tree.visible = tree.position.z > _station.position.z + 3.0 or absf(tree.position.x) > 40.0
