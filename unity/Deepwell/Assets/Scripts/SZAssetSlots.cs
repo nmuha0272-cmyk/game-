@@ -62,6 +62,11 @@ namespace Deepwell
             new SlotInfo("computer", "Computers, monitors and the terminal", 0.5f, "computer", "monitor", "crt", "desktop pc", "pc", "terminal"),
             new SlotInfo("door", "Doors (2 m x 3 m)", 3.0f, "door"),
             new SlotInfo("long_man", "The Long Man (monster)", 2.9f, "long man", "longman", "slender", "creature", "monster"),
+            new SlotInfo("robot_kyle", "Robot Kyle character controller", 2.9f, "robot kyle", "kyle", "first person controller", "third person controller", "fps", "tps"),
+            new SlotInfo("human_motions", "Human Basic Motions", 0f, "human motions", "basic motions", "animations"),
+            new SlotInfo("survival_props", "Survival Props Pack", 0f, "survival props", "props", "items"),
+            new SlotInfo("retro_horror_items", "Retro PSX Horror Items", 0f, "retro horror", "psx items", "puzzle items"),
+            new SlotInfo("crowbar_asset", "Crowbar", 0.7f, "crowbar", "pry bar", "prybar"),
         };
 
         public class SlotInfo

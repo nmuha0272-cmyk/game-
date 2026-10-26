@@ -6,6 +6,8 @@ using UnityEngine;
 //   1-4 pick what's in your hand, left click use it (shoot, battery,
 //   flare...), R reload, G drop it, Tab inventory, Q your ability.
 // Eli and Cole start with the pistols they took from the car's trunk.
+// If you have a First Person or Third Person Controller imported from the
+// Unity Asset Store, replace the pistol model and camera setup accordingly.
 namespace Deepwell
 {
     public interface ISZInteractable
