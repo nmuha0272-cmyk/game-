@@ -66,25 +66,52 @@ namespace Deepwell
             DynamicGI.UpdateEnvironment();
         }
 
-        // Imported models (the level, the characters) often say "metal" in their
-        // files; Unity draws that as shiny chrome ("silver"). This turns it down
-        // on the copies the game uses (the model files stay exactly as they are).
-        public static void NotSoShiny(GameObject root, float maxMetal = 0.1f)
+        // Imported models (the level, the characters, downloaded Asset Store
+        // packs) often say "metal" in their files; Unity draws that as shiny
+        // chrome ("silver"). This turns it down on the copies the game uses
+        // (the model files stay exactly as they are).
+        // A metallic texture map wins over the metallic slider, so the map is
+        // switched off in the copy too: that was the "everything is chrome" bug.
+        public static void NotSoShiny(GameObject root, float maxMetal = 0.08f, float maxSmoothness = 0.35f)
         {
             var done = new HashSet<Material>();
             foreach (var r in root.GetComponentsInChildren<Renderer>(true))
             {
                 var mats = r.materials;  // copies, only for this game
-                foreach (var m in mats)
+                bool changed = false;
+                for (int i = 0; i < mats.Length; i++)
                 {
+                    var m = mats[i];
                     if (m == null || !done.Add(m)) continue;
-                    foreach (var prop in new[] { "_Metallic", "metallicFactor" })
-                        if (m.HasProperty(prop)) m.SetFloat(prop, Mathf.Min(m.GetFloat(prop), maxMetal));
-                    if (m.HasProperty("_Glossiness")) m.SetFloat("_Glossiness", Mathf.Min(m.GetFloat("_Glossiness"), 0.5f));
-                    if (m.HasProperty("_GlossMapScale")) m.SetFloat("_GlossMapScale", Mathf.Min(m.GetFloat("_GlossMapScale"), 0.5f));
+                    Tame(m, maxMetal, maxSmoothness);
+                    changed = true;
                 }
-                r.materials = mats;
+                if (changed) r.materials = mats;
             }
+        }
+
+        // One material: no chrome. Safe on any shader (Standard, glTF, ...).
+        public static void Tame(Material m, float maxMetal = 0.08f, float maxSmoothness = 0.35f)
+        {
+            if (m == null) return;
+            // The metallic map (PBR packs) overrides the slider: turn it off.
+            foreach (var map in new[] { "_MetallicGlossMap", "_MetallicMap", "_MaskMap" })
+            {
+                if (!m.HasProperty(map)) continue;
+                if (m.GetTexture(map) == null) continue;
+                m.SetTexture(map, null);
+            }
+            m.DisableKeyword("_METALLICGLOSSMAP");
+            foreach (var prop in new[] { "_Metallic", "metallicFactor", "_MetallicFactor" })
+                if (m.HasProperty(prop)) m.SetFloat(prop, Mathf.Min(m.GetFloat(prop), maxMetal));
+            foreach (var prop in new[] { "_Glossiness", "_Smoothness", "roughnessFactor", "_RoughnessFactor" })
+            {
+                if (!m.HasProperty(prop)) continue;
+                if (prop.Contains("oughness")) m.SetFloat(prop, Mathf.Max(m.GetFloat(prop), 1f - maxSmoothness));
+                else m.SetFloat(prop, Mathf.Min(m.GetFloat(prop), maxSmoothness));
+            }
+            if (m.HasProperty("_GlossMapScale")) m.SetFloat("_GlossMapScale", Mathf.Min(m.GetFloat("_GlossMapScale"), maxSmoothness));
+            if (m.HasProperty("_SmoothnessTextureChannel")) m.SetFloat("_SmoothnessTextureChannel", 0f);
         }
 
         // Store assets made for HDRP or URP show up pink here (this project uses

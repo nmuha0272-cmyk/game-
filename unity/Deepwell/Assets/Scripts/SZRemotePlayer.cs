@@ -86,7 +86,8 @@ namespace Deepwell
             {
                 _model.transform.localScale = new Vector3(_model.transform.localScale.x,
                     Mathf.Abs(_model.transform.localScale.x) * (_crouching ? 0.7f : 1f), _model.transform.localScale.z);
-                SZCharacters.PlayAnimation(_model, !_moving ? "idle" : _sprinting ? "run" : "walk");
+                SZCharacters.PlayAnimation(_model, !_moving ? "idle" : _sprinting ? "run" : "walk",
+                    !_moving ? 0f : _sprinting ? 4.2f : 1.7f);
             }
         }
     }

@@ -24,3 +24,6 @@
 # (Assets/Editor/SZSetup.cs); they're big, and already in git once.
 /Assets/Resources/Characters/
 /Assets/Resources/Characters.meta
+# Uploaded prop models are copied the same way; the originals are in assets/models.
+/Assets/Resources/Props/
+/Assets/Resources/Props.meta

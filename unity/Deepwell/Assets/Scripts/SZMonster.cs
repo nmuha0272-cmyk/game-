@@ -60,6 +60,7 @@ namespace Deepwell
         {
             // A downloaded monster (Asset Slots) first, then the Godot model, then a simple figure.
             _model = SZAssets.Spawn("long_man", transform, onGround: true) ?? SZCharacters.LoadModel("long_man", transform, 2.9f) ?? StandIn();
+            SZCharacters.SetHeavy(_model, true);
             var eyes = new GameObject("EyeGlow");
             eyes.transform.SetParent(transform, false);
             eyes.transform.localPosition = new Vector3(0f, 2.6f, 0.3f);
@@ -467,7 +468,7 @@ namespace Deepwell
         {
             float speed = (transform.position - _lastPos).magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
             _lastPos = transform.position;
-            SZCharacters.PlayAnimation(_model, speed > 3f ? "run" : speed > 0.3f ? "walk" : "idle");
+            SZCharacters.PlayAnimation(_model, speed > 3f ? "run" : speed > 0.3f ? "walk" : "idle", speed);
             if (_breath) _breath.volume = Mode == State.Chase ? 1f : 0.6f;
             if (_eyeGlow) _eyeGlow.intensity = Mode == State.Chase ? 2.2f + Mathf.Sin(Time.time * 20f) * 0.4f : 1.0f;
             if (Mode == State.Asleep && _breath && _breath.isPlaying) _breath.volume = 0.3f;

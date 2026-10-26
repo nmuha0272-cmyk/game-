@@ -62,7 +62,7 @@ namespace Deepwell
             }
             var level = Object.Instantiate(prefab, parent);
             level.name = "LevelGeometry";
-            SZGraphics.NotSoShiny(level, 0.35f);  // real metal (pipes, fences) keeps a little shine
+            SZGraphics.NotSoShiny(level, 0.12f);  // real metal (pipes, fences) keeps a little shine
             int solid = 0;
             foreach (var filter in level.GetComponentsInChildren<MeshFilter>())
             {
