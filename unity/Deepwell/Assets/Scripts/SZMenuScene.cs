@@ -40,14 +40,16 @@ namespace Deepwell
         // What the team says on the way (after you pick your character).
         static readonly string[,] Talk =
         {
-            { "ELI", "So... Uncle Cole. Why is there a journalist and an old man in the car?" },
-            { "COLE", "Eli, they're here because—" },
-            { "NORA", "I can speak for myself, thanks. Nora Vance. My source went missing out here a month ago, and I'm going to find out why." },
-            { "WALTER", "Walter Kessler. I worked at that station, a long time ago. I know the way in." },
-            { "COLE", "They want the same thing we do, kid. We find Marcus and Jenna, and we get out." },
-            { "ELI", "...Okay. Okay." },
+            { "ELI", "...Okay. We're here." },
+            { "ELI", "Dad always said this place was wrong. Mom's last tape - she tried to get the volunteers out. Walter killed her. Made it look like a gas leak. Dad - Sgt. Daniel Reyes - he was Volunteer 14. Walter took him into Project ECHO. That's where the real experiments happened. That's where he... where he became Echo." },
+            { "NORA", "Deepwell. Hidden beneath the Blackwater Weather Station. Officially Cold War biomedical research to create stronger soldiers. Unofficially Project BASTION. Volunteers told it was vitamin research. Officially shut down 1991, but a secret branch called Project ECHO kept going until the facility was sealed in 1999. My source went missing trying to expose G-7, the Goliath Serum. He worked here and was trying to expose it before he vanished." },
+            { "WALTER", "I designed the Goliath Chamber. Subject 7 - Goliath. The serum meant to create giant soldiers. Instead his bones never stopped growing. Moved to the maintenance tunnels. That's where the team meets the first monster. I built this place. I know every secret door, every weak point. In 1999 I sealed Level B. The containment order was my signature. 'Regardless of personnel inside.' Some of those people were still down there." },
+            { "COLE", "I sealed Level B in 1999 at age twenty. Following orders. But the containment order - my order - says 'regardless of personnel inside.' Some of those people were still down there. That's why I have the roster. My name's on it. I raised Eli after his parents died. That's my only promise - keep him alive, keep them all alive." },
+            { "ELI", "Nora, I know how this sounds, but me and Cole been through together, Army treated us both the same. No favoritism, no different standards. I am not saying you cannot do the job - I am saying we got where we are because we earned it together. Now let us move out." }
         };
-        static readonly int[] TalkWho = { 0, 1, 2, 3, 1, 0 };
+
+        static readonly int[] TalkWho = { 0, 1, 2, 3, 1, 0, 0, 2, 3, 1, 0 };
+
         int _line = -1;
         float _lineTime, _lineLength;
         Action _onTalkDone;
@@ -197,7 +199,7 @@ namespace Deepwell
             _speed = 0f;
         }
 
-        const float FadeAt = 2f;  // seconds after the car stops
+        const float FadeAt = 1.5f;  // seconds after the car stops
 
         // The character under the mouse in the 3D car (or -1).
         public int CharacterAt(Vector2 screenPoint)
