@@ -128,13 +128,11 @@ const TALK := [
 	["eli", "...Okay. Okay."],
 
 	## Intro sequence: character presentations at the start
-	## These play after character selection, before the drive
-	["eli", "\"Hi, I'm Eli Reyes. My parents died here in 1999. I need to find out what really happened.\""],
-	["nora", "\"I'm Nora Vance, investigative journalist. My source vanished trying to expose this place. I'm here for the truth.\""],
-	["walter", "\"Walter Kessler. I helped build what's down there. I know every corridor, every secret. I'm going in.\""],
-	["cole", "\"Name's Cole Brennan. Raised Eli after his parents died. I'm the guard. My job is to keep everyone alive. That's my only promise.\""],
-]
-## The rear-view mirror, above the dashboard (car space).
+	## Facility briefing: what each character knows about Deepwell
+	["eli", "Dad always said this place was wrong. Mom's last tape - she tried to get the volunteers out. Walter killed her. Made it look like a gas leak. Dad - Sgt. Daniel Reyes - he was Volunteer 14. Walter took him into Project ECHO. That's where the real experiments happened. That's where he... where he became Echo."],
+	["nora", "Deepwell. Hidden beneath the Blackwater Weather Station. Officially Cold War biomedical research to create stronger soldiers. Unofficially Project BASTION. Volunteers told it was vitamin research. Officially shut down 1991, but a secret branch called Project ECHO kept going until the facility was sealed in 1999. My source went missing trying to expose G-7, the Goliath Serum. He worked here and was trying to expose it before he vanished."],
+	["walter", "I designed the Goliath Chamber. Subject 7 - Goliath. The serum meant to create giant soldiers. Instead his bones never stopped growing. Moved to the maintenance tunnels. That's where the team meets the first monster. I built this place. I know every secret door, every weak point. In 1999 I sealed Level B. The containment order was my signature. 'Regardless of personnel inside.' Some of those people were still down there."],
+	["cole", "I sealed Level B in 1999 at age twenty. Following orders. But the containment order - my order - says 'regardless of personnel inside.' Some of those people were still down there. That's why I have the roster. My name's on it. I raised Eli after his parents died. That's my only promise - keep him alive, keep them all alive."],
 const MIRROR_POS := Vector3(0.0, 1.62, -0.6)
 
 var state := State.MENU
