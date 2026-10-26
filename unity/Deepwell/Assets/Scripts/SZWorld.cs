@@ -32,7 +32,8 @@ namespace Deepwell
         bool[] _triggerFired = new bool[0];
         readonly List<SZFlicker> _brokenLights = new List<SZFlicker>();
         readonly Dictionary<int, SZRemotePlayer> _remotes = new Dictionary<int, SZRemotePlayer>();
-        float _nextState, _nextSummary;
+        float _nextState, _nextSummary, _nextAmbientHorror;
+        float _tenseUntil;  // until when we're in tactical silence mode
         SZTrunkScene _trunk;
         bool _gotSummary;
 
@@ -206,6 +207,27 @@ namespace Deepwell
             if (Local == null) return;
             CheckTriggers();
             CheckCheckpoints();
+
+            // Play ambient horror sounds for tension (creaking, whispers, wind).
+            if (Time.time >= _nextAmbientHorror)
+            {
+                _nextAmbientHorror = Time.time + Random.Range(3f, 8f);
+                SZAudio.PlayAmbientHorror("creak_" + Random.Range(1, 4).ToString("D1"), 0.35f);
+                SZAudio.PlayAmbientHorror("whisper_" + Random.Range(1, 3).ToString("D1"), 0.25f);
+            }
+
+            // Tactical silence: lower master volume during tense moments.
+            const float TenseVolume = 0.2f;
+            const float CalmVolume = 0.9f;
+            if (_tenseUntil > Time.time)
+            {
+                AudioListener.volume = Mathf.Lerp(AudioListener.volume, TenseVolume, Time.deltaTime * 3f);
+            }
+            else
+            {
+                AudioListener.volume = Mathf.Lerp(AudioListener.volume, CalmVolume, Time.deltaTime * 3f);
+                _tenseUntil = 0f;
+            }
 
             var net = SZNet.Instance;
             if (net == null || !SZNet.Online) return;
@@ -515,6 +537,7 @@ namespace Deepwell
                 if (Time.time - _lastCaught < 3f) return;
                 _lastCaught = Time.time;
                 Local.OnCaught();
+                _tenseUntil = 0f;  // tactical silence ends when caught
             }
             else
             {

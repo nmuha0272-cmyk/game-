@@ -264,6 +264,15 @@ namespace Deepwell
             float power = 3.4f * FlashlightBrightness;
             // A dying battery dims and stutters.
             if (Battery < 0.15f) power *= 0.5f + 0.5f * Mathf.PerlinNoise(Time.time * 6f, 0f) * (Battery / 0.15f);
+            // If the monster is near, the flashlight flickers dramatically.
+            if (SZWorld.Instance != null && SZWorld.Instance.Monster != null)
+            {
+                float dist = Vector3.Distance(transform.position, SZWorld.Instance.Monster.transform.position);
+                if (dist < 15f && Flashlight.enabled)
+                {
+                    power *= 0.3f + 0.7f * Mathf.PingPong(Time.time * 8f, 1f);
+                }
+            }
             Flashlight.intensity = power;
         }
 

@@ -134,6 +134,7 @@ const TALK := [
 	["walter", "I designed the Goliath Chamber. Subject 7 - Goliath. The serum meant to create giant soldiers. Instead his bones never stopped growing. Moved to the maintenance tunnels. That's where the team meets the first monster. I built this place. I know every secret door, every weak point. In 1999 I sealed Level B. The containment order was my signature. 'Regardless of personnel inside.' Some of those people were still down there."],
 	["cole", "I sealed Level B in 1999 at age twenty. Following orders. But the containment order - my order - says 'regardless of personnel inside.' Some of those people were still down there. That's why I have the roster. My name's on it. I raised Eli after his parents died. That's my only promise - keep him alive, keep them all alive."],
 	## Cutscene: Eli and Cole army background
+	["nora", "And I thought you were just being condescending because I'm a woman in a field you dominated, kid. But now I see it's just Army bureaucracy."],
 	["eli", "Nora, I know how this sounds about slowing us down, but me and Cole been through Army together, treated the same, no favoritism, no different standards."],
 ],
 

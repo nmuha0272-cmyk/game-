@@ -715,11 +715,11 @@ namespace Deepwell
             if (_screen && Time.time > _wrongUntil && _screen.text == "WRONG") Show();
         }
 
-        // The big keypad on your screen.
+        // The big keypad on your screen (right side).
         public void Draw(SZGame game)
         {
             float w = 300f, h = 420f;
-            var r = new Rect(Screen.width / 2f - w / 2f, Screen.height / 2f - h / 2f, w, h);
+            var r = new Rect(Screen.width - 320f, Screen.height / 2f - h / 2f, w, h);
             game.Fill(r, new Color(0.08f, 0.08f, 0.09f, 0.97f));
             game.Fill(new Rect(r.x + 20, r.y + 20, w - 40, 60), new Color(0.03f, 0.08f, 0.04f));
             var screen = new GUIStyle(game.TitleStyle) { fontSize = 34, alignment = TextAnchor.MiddleCenter };
@@ -998,7 +998,7 @@ namespace Deepwell
         public void Draw(SZGame game)
         {
             float w = 330f, h = 420f;
-            var r = new Rect(Screen.width / 2f - w / 2f, Screen.height / 2f - h / 2f, w, h);
+            var r = new Rect(Screen.width - 350f, Screen.height / 2f - h / 2f, w, h);
             game.Fill(r, new Color(0.02f, 0.06f, 0.03f, 0.97f));
             var title = new GUIStyle(game.SmallStyle) { alignment = TextAnchor.MiddleCenter };
             title.normal.textColor = new Color(0.4f, 1f, 0.5f);

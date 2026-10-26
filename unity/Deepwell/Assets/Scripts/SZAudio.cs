@@ -82,6 +82,16 @@ namespace Deepwell
             Object.Destroy(go, clip.length + 0.1f);
         }
 
+        // Play a random ambient horror sound (creaking, whisper, wind).
+        // Call this from SZWorld.Update() or SZPlayer.Update() for tension.
+        public static void PlayAmbientHorror(string clipName, float volume = 0.4f, float minDelay = 3f, float maxDelay = 8f)
+        {
+            // This is called irregularly; each call schedules the next.
+            var clip = Clip(clipName);
+            if (clip == null) return;
+            SZAudio.Play2D(clipName, volume);
+        }
+
         // A sound that belongs to something (a door, the monster). Call Play() on it.
         public static AudioSource Attach(GameObject owner, string name, float volume = 1f, float range = 20f, bool loop = false)
         {

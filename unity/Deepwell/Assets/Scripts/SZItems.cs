@@ -88,17 +88,18 @@ namespace Deepwell
         // ---------------------------------------------------------------- item facts
 
         // How many grid cells an item takes (columns x rows).
+        // Sizes vary like Resident Evil 7: handguns are small, shotguns/rifles are long.
         public static Vector2Int SizeOf(string id)
         {
             switch (id)
             {
-                case "weapon_pistol": case "weapon_flare_gun": return new Vector2Int(2, 2);
-                case "weapon_revolver": case "weapon_suppressed_9mm": case "weapon_smg": case "weapon_tranq": return new Vector2Int(3, 2);
-                case "weapon_shotgun": return new Vector2Int(5, 2);
+                case "weapon_pistol": case "weapon_flare_gun": return new Vector2Int(1, 2);
+                case "weapon_revolver": case "weapon_suppressed_9mm": case "weapon_smg": case "weapon_tranq": return new Vector2Int(2, 2);
+                case "weapon_shotgun": return new Vector2Int(4, 2);
                 case "weapon_rifle": return new Vector2Int(6, 2);
                 case "flare": case "medkit": case "walkie": return new Vector2Int(1, 2);
                 case "crowbar": return new Vector2Int(1, 3);
-                case "gas_mask": case "car_battery": return new Vector2Int(2, 2);
+                case "gas_mask": case "car_battery": return new Vector2Int(1, 2);
                 case "fuel_can": return new Vector2Int(2, 3);
                 default: return new Vector2Int(1, 1);
             }
