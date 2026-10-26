@@ -126,6 +126,13 @@ const TALK := [
 	["walter", "Walter Kessler. I worked at that station, a long time ago. I know the way in."],
 	["cole", "They want the same thing we do, kid. We find Marcus and Jenna, and we get out."],
 	["eli", "...Okay. Okay."],
+
+	## Intro sequence: character presentations at the start
+	## These play after character selection, before the drive
+	["eli", "\"Hi, I'm Eli Reyes. My parents died here in 1999. I need to find out what really happened.\""],
+	["nora", "\"I'm Nora Vance, investigative journalist. My source vanished trying to expose this place. I'm here for the truth.\""],
+	["walter", "\"Walter Kessler. I helped build what's down there. I know every corridor, every secret. I'm going in.\""],
+	["cole", "\"Name's Cole Brennan. Raised Eli after his parents died. I'm the guard. My job is to keep everyone alive. That's my only promise.\""],
 ]
 ## The rear-view mirror, above the dashboard (car space).
 const MIRROR_POS := Vector3(0.0, 1.62, -0.6)
