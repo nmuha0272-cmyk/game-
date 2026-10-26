@@ -496,6 +496,8 @@ func _start_arrival() -> void:
 	_arrived = false
 	_select_ui.hide()
 	_refresh_highlights()
+	## If embedded, we'll reposition the station to the chapter 1 level's entrance
+	## after the level loads. For now, use the procedural station.
 	_station.position.z = STATION_START_Z
 	_station.show()
 	var tween := create_tween()
@@ -847,6 +849,18 @@ func _build_car() -> void:
 		_box(_car, Vector3(0.55, 0.5, 0.12), pos + Vector3(0, 0.3, 0.3), seat)
 	_box(_car, Vector3(1.8, 0.12, 0.6), Vector3(0, 0.9, 1.05), seat)
 	_box(_car, Vector3(1.8, 0.65, 0.12), Vector3(0, 1.25, 1.38), seat)
+
+	# Character action props inside the car (placeholder shapes).
+	# Cole checking his gun.
+	cole_gun := _box(_car, Vector3(0.1, 0.08, 0.2), Vector3(0.35, 0.85, 0.1), _mat(Color(0.8, 0.8, 0.8), 0.6, Color(0.5, 0.5, 0.5), 0.3))
+	cole_gun.rotation_degrees.z = _time.fmod(2.0) * 60.0
+
+	# Nora with her camera/notebook.
+	nora_item := _box(_car, Vector3(0.1, 0.08, 0.2), Vector3(-0.52, 0.85, 0.1), _mat(Color(0.7, 0.7, 0.7), 0.7, Color(0.5, 0.5, 0.5), 0.3))
+
+	# Walter with his wrench/tool.
+	walter_tool := _box(_car, Vector3(0.1, 0.08, 0.2), Vector3(0.52, 0.85, 0.1), _mat(Color(0.6, 0.6, 0.6), 0.7, Color(0.4, 0.4, 0.4), 0.3))
+	walter_tool.rotation_degrees.z = _time.fmod(1.5) * 45.0
 
 	# Wheels.
 	var tire := _mat(Color(0.02, 0.02, 0.02))

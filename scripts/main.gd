@@ -69,7 +69,16 @@ func _on_opening_finished() -> void:
 				return
 		_current_level = STORY_START
 		GameState.current_level = STORY_START
-		level_root.add_child(load(STORY_START).instantiate())
+		var level := load(STORY_START).instantiate()
+		level_root.add_child(level)
+		## Ensure the team's car is positioned at the station entrance
+		## after the level loads (in case the make_chapter1.py positioning
+		## needs adjustment, or for consistency with the arrival cutscene).
+		var team_car := level.find_node("TeamCar", true, false)
+		if is_instance_valid(team_car):
+			## Position car at the station: z=43.6 in Exterior local coords
+			## matches the arrival cutscene where the car stops at the gate.
+			team_car.transform = Transform3D().translated(Vector3(8.4, 0, 43.6)).looking_at(Vector3(8.4, 0, 43.6) + Vector3(0, 0, -1))
 
 
 func _show_main_menu(message := "") -> void:
