@@ -133,6 +133,10 @@ const TALK := [
 	["nora", "Deepwell. Hidden beneath the Blackwater Weather Station. Officially Cold War biomedical research to create stronger soldiers. Unofficially Project BASTION. Volunteers told it was vitamin research. Officially shut down 1991, but a secret branch called Project ECHO kept going until the facility was sealed in 1999. My source went missing trying to expose G-7, the Goliath Serum. He worked here and was trying to expose it before he vanished."],
 	["walter", "I designed the Goliath Chamber. Subject 7 - Goliath. The serum meant to create giant soldiers. Instead his bones never stopped growing. Moved to the maintenance tunnels. That's where the team meets the first monster. I built this place. I know every secret door, every weak point. In 1999 I sealed Level B. The containment order was my signature. 'Regardless of personnel inside.' Some of those people were still down there."],
 	["cole", "I sealed Level B in 1999 at age twenty. Following orders. But the containment order - my order - says 'regardless of personnel inside.' Some of those people were still down there. That's why I have the roster. My name's on it. I raised Eli after his parents died. That's my only promise - keep him alive, keep them all alive."],
+	## Cutscene: Eli and Cole army background
+	["eli", "Nora, I know how this sounds, but me and Cole been through together, Army treated us both the same. No favoritism, no different standards. I am not saying you cannot do the job - I am saying we got where we are because we earned it together. Now let us move out."]
+],
+
 const MIRROR_POS := Vector3(0.0, 1.62, -0.6)
 
 var state := State.MENU
