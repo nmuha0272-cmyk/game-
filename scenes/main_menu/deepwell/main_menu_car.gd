@@ -56,7 +56,7 @@ const CHARACTERS := {
 		"side_cam": Vector3(0.3, 1.52, -0.66),
 		"side_look": Vector3(-0.38, 1.4, -0.05),
 		"name": "ELI REYES",
-		"role": "THE SON  //  TRACKER",
+		"role": "THE SON  //  SURVIVOR",
 		"seat": Vector3(-0.38, 0.0, -0.1),
 		"color": Color(0.38, 0.23, 0.12),
 		"size": 1.0,

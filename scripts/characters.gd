@@ -12,7 +12,8 @@ const INFO := {
 		"held_item": "res://scenes/player/held_items/dog_tags.tscn",
 		"color": Color(0.42, 0.27, 0.16),  # brown canvas jacket
 		"ability_script": "res://scripts/abilities/son_sense.gd",
-		"personality": "Ordinary guy, not a soldier. Driven by loss, not training. Scared but keeps going.",
+		"personality": "College student and Army Reserve soldier, trained by his father as a kid. Not a career soldier like Cole — ordinary guy driven by loss. Scared but keeps going.",
+		"passive": "Military Training: steadier aim and faster reloads than everyone except Cole. Reads Morse code and military maps without a translation sheet.",
 	},
 	Id.JOURNALIST: {
 		"name": "The Journalist (Nora)",
