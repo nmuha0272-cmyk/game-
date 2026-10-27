@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/character_model.gd" id="cm_script"]
 [ext_resource type="Script" path="res://scripts/player/player_movement.gd" id="1_move"]
@@ -24,7 +24,8 @@
 [ext_resource type="Script" path="res://scripts/items/weapon_controls.gd" id="22_weapon_controls"]
 [ext_resource type="Script" path="res://scripts/player/perspective.gd" id="23_perspective"]
 [ext_resource type="Script" path="res://scripts/player/movement_sync.gd" id="24_sync"]
-[ext_resource type="AnimationLibrary" path="res://assets/animations/player/player_animations.tres" id="25_anim_lib"]
+[ext_resource type="Script" path="res://scripts/player/fear.gd" id="26_fear"]
+[ext_resource type="AnimationLibrary" path="res://assets/animations/player/player_animations.tres" id="27_anim_lib"]
 
 [sub_resource type="CapsuleShape3D" id="Shape_body"]
 resource_local_to_scene = true
@@ -95,6 +96,10 @@ script = ExtResource("2_stamina")
 
 [node name="Downed" type="Node" parent="."]
 script = ExtResource("13_downed")
+
+[node name="Fear" type="Node" parent="."]
+script = ExtResource("26_fear")
+player = NodePath("..")
 
 [node name="Inventory" type="Node" parent="."]
 script = ExtResource("15_inventory")
