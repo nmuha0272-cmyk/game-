@@ -70,7 +70,7 @@ const DIALOGUE := [
 	{"character": "Journalist", "text": "There it is. The Blackwater Weather Station. Or what's left of it."},
 	{"character": "Guard", "text": "Sixteen years since they sealed this place. And seven people have walked in since August."},
 	{"character": "Engineer", "text": "I remember the night they locked it down... Said it was a gas leak. They lied."},
-	{"character": "Son", "text": "My mom and dad died in there. Now Marcus and Jenna are in there too. I'm not losing anyone else."},
+	{"character": "Son", "text": "My mom and dad died in there. Now Marcus and Jenna are in there too. I'm not losing anyone else. I'm scared, but I'm going in."},
 	{"character": "Journalist", "text": "My source went in a month ago. If anyone's still alive, they're underground."},
 	{"character": "Guard", "text": "Then we'd better find a way in. Stay close. And keep your flashlights ready."},
 	{"character": "Engineer", "text": "Something tells me we're not going to like what we find down there..."},

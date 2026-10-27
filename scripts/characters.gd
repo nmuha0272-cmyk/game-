@@ -6,12 +6,13 @@ enum Id { NONE = -1, SON, JOURNALIST, ENGINEER, GUARD }
 
 const INFO := {
 	Id.SON: {
-		"name": "The Son (Eli)",
-		"role": "Tracker",
-		"ability": "Sense: see nearby monsters through walls.",
+		"name": "Eli Reyes",
+		"role": "Survivor",
+		"ability": "Survival Instinct: sense nearby danger through walls.",
 		"held_item": "res://scenes/player/held_items/dog_tags.tscn",
 		"color": Color(0.42, 0.27, 0.16),  # brown canvas jacket
 		"ability_script": "res://scripts/abilities/son_sense.gd",
+		"personality": "Ordinary guy, not a soldier. Driven by loss, not training. Scared but keeps going.",
 	},
 	Id.JOURNALIST: {
 		"name": "The Journalist (Nora)",
