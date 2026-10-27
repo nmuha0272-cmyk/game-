@@ -62,18 +62,18 @@ var _body_turn_to := NAN
 # old photo of him with his mom and dad ("photo"). Then the whole team talks.
 const DIALOGUE := [
 	{"character": "Guard", "text": "Take this. Safety on until you need it.", "trunk": true, "pistols": true},
-	{"character": "Son", "text": "Got it.", "trunk": true},
+	{"character": "Son", "text": "Got it. My hands are shaking, Cole.", "trunk": true},
 	{"character": "Guard", "text": "Seven people missing since August, Eli. Marcus and Jenna were the last two.", "trunk": true},
 	{"character": "Son", "text": "They only came out here because of me.", "trunk": true},
 	{"character": "Son", "text": "Mom, Dad and me. I was five. It's the last picture of us together.", "trunk": true, "photo": true},
 	{"character": "Guard", "text": "Your dad would be proud of you, kid. We bring them home. All of them.", "trunk": true},
-	{"character": "Journalist", "text": "There it is. The Blackwater Weather Station. Or what's left of it."},
-	{"character": "Guard", "text": "Sixteen years since they sealed this place. And seven people have walked in since August."},
-	{"character": "Engineer", "text": "I remember the night they locked it down... Said it was a gas leak. They lied."},
-	{"character": "Son", "text": "My mom and dad died in there. Now Marcus and Jenna are in there too. I'm not losing anyone else. I'm scared, but I'm going in."},
-	{"character": "Journalist", "text": "My source went in a month ago. If anyone's still alive, they're underground."},
-	{"character": "Guard", "text": "Then we'd better find a way in. Stay close. And keep your flashlights ready."},
-	{"character": "Engineer", "text": "Something tells me we're not going to like what we find down there..."},
+	{"character": "Journalist", "text": "There it is. The Blackwater Weather Station. Or what's left of it. I'm terrified.", "trunk": false},
+	{"character": "Guard", "text": "Sixteen years since they sealed this place. And seven people have walked in since August.", "trunk": false},
+	{"character": "Engineer", "text": "I remember the night they locked it down... Said it was a gas leak. They lied. I'm not looking forward to what's inside.", "trunk": false},
+	{"character": "Son", "text": "My mom and dad died in there. Now Marcus and Jenna are in there too. I'm not losing anyone else. I'm scared, but I'm going in.", "trunk": false},
+	{"character": "Journalist", "text": "My source went in a month ago. If anyone's still alive, they're underground. I'm scared too, but I need answers.", "trunk": false},
+	{"character": "Guard", "text": "Then we'd better find a way in. Stay close. And keep your flashlights ready. I've got you all.", "trunk": false},
+	{"character": "Engineer", "text": "Something tells me we're not going to like what we find down there...", "trunk": false},
 ]
 
 ## The trunk scene: where Eli and Cole stand (in the car's own space: the

@@ -122,8 +122,8 @@ enum State { MENU, SELECT, TALK, ARRIVING }
 const TALK := [
 	["eli", "So... Uncle Cole. Why is there a journalist and an old man in the car?"],
 	["cole", "Eli, they're here because—"],
-	["nora", "I can speak for myself, thanks. Nora Vance. My source went missing out here a month ago, and I'm going to find out why."],
-	["walter", "Walter Kessler. I worked at that station, a long time ago. I know the way in."],
+	["nora", "I can speak for myself, thanks. Nora Vance. My source went missing out here a month ago, and I'm going to find out why. I'm terrified, but I need answers."],
+	["walter", "Walter Kessler. I worked at that station, a long time ago. I know the way in. I'm not looking forward to what we'll find inside."],
 	["cole", "They want the same thing we do, kid. We find Marcus and Jenna, and we get out."],
 	["eli", "...Okay. We're here."],
 
@@ -135,7 +135,7 @@ const TALK := [
 	["cole", "I sealed Level B in 1999 at age twenty. Following orders. But the containment order - my order - says 'regardless of personnel inside.' Some of those people were still down there. That's why I have the roster. My name's on it. I raised Eli after his parents died. That's my only promise - keep him alive, keep them all alive."],
 	## Cutscene: Eli and Cole army background
 	["nora", "And I thought you were just being condescending because I'm a woman in a field you dominated, kid. But now I see it's just Army bureaucracy."],
-	["eli", "Nora, I know how this sounds about slowing us down, but me and Cole been through Army together, treated the same, no favoritism, no different standards."],
+	["eli", "Nora, I know how this sounds about slowing us down, but me and Cole are trained to protect ourselves. Army training. We watch each other's backs."],
 ],
 
 const MIRROR_POS := Vector3(0.0, 1.62, -0.6)
