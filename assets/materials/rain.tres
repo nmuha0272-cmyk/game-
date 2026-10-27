@@ -1,0 +1,6 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[resource]
+shader = ExtResource("shader")
+
+[ext_resource type="Shader" path="res://assets/shaders/rain.gdshader" id="1"]

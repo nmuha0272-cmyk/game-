@@ -125,6 +125,7 @@
 [ext_resource type="Resource" path="res://lore/personal_dorm_scrawl.tres" id="469_x"]
 [ext_resource type="Resource" path="res://lore/file_missing_seven.tres" id="475_x"]
 [ext_resource type="Resource" path="res://lore/personal_son_friends_camera.tres" id="476_x"]
+[ext_resource type="ParticleProcessMaterial" path="res://assets/materials/rain_process.tres" id="477_x"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_70"]
 albedo_color = Color(0.22, 0.27, 0.3, 1)
@@ -1758,6 +1759,45 @@ shadow_enabled = true
 directional_shadow_max_distance = 70.0
 
 [node name="Exterior" type="Node3D" parent="."]
+
+[node name="Rain" type="GPUParticles3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0)
+emitting = true
+one_shot = false
+amount = 4000
+lifetime = 1.5
+lifetime_randomness = 0.3
+speed_scale = 6.0
+scale = 1.0
+scale_randomness = 0.2
+gravity = Vector3(0, -9.8, 0)
+gravity_vector = Vector3(0, -1, 0)
+direction = Vector3(0, -1, 0)
+spread = 15.0
+angular_velocity = Vector3(0, 0, 0)
+angular_velocity_randomness = 0.0
+orbit_velocity = Vector3(0, 0, 0)
+linear_accel = Vector3(0, 0, 0)
+radial_accel = 0.0
+tangential_accel = 0.0
+damping = 0.0
+damping_randomness = 0.0
+max_distance = 0.0
+max_distance_randomness = 0.0
+draw_order_1 = 0
+draw_order_2 = 0
+process_material = ExtResource("477_x")
+draw_passes = 1
+local_coords = false
+explosiveness = 0.0
+random_ratio = 0.0
+speed_randomness = 0.3
+velocity_ramp_texture = null
+velocity_ramp_texture_velocity_scale = 0.0
+color_ramp_texture = null
+emission_sphere = 0.0
+emission_rect_extents = Vector3(120, 0, 310)
+emission_rect_shape = 1
 
 [node name="Station" type="Node3D" parent="."]
 
