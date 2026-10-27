@@ -628,8 +628,9 @@ namespace Deepwell
 
         protected override void Build()
         {
-            // A downloaded keypad (Asset Slots), or a simple box.
-            if (SZAssets.Spawn("keypad", transform, onGround: false) == null)
+            // A downloaded keypad or control panel (Asset Slots), or a simple box.
+            var panel = SZAssets.Has("control_panel") ? "control_panel" : "keypad";
+            if (SZAssets.Spawn(panel, transform, onGround: false) == null)
             {
                 Part(PrimitiveType.Cube, Vector3.zero, new Vector3(0.18f, 0.26f, 0.05f), new Color(0.16f, 0.16f, 0.17f));
                 Part(PrimitiveType.Cube, new Vector3(0f, 0.08f, 0.03f), new Vector3(0.14f, 0.05f, 0.01f), new Color(0.05f, 0.12f, 0.06f));

@@ -37,6 +37,9 @@ namespace Deepwell
         };
         // Model file names in Resources/Characters (kept the same as the Godot project's).
         static readonly string[] Models = { "eli", "frank", "journalist", "engineer" };
+        // Asset slot names: a rigged model with idle/walk/run clips (Mixamo, the
+        // Human Basic Motions pack...) can be dropped in and replaces the file.
+        static readonly string[] SlotIds = { "eli", "cole", "nora", "walter" };
         public static readonly Color[] Colors =
         {
             new Color(0.35f, 0.55f, 0.95f), new Color(0.45f, 0.6f, 0.35f),
@@ -52,8 +55,16 @@ namespace Deepwell
         public static string ModelFile(SZCharacter c) => Models[(int)c];
         public static float Height(SZCharacter c) => Heights[(int)c];
 
-        public static GameObject MakeBody(SZCharacter c, Transform parent) =>
-            LoadModel(Models[(int)c], parent, Heights[(int)c]) ?? StandIn(parent, Colors[(int)c]);
+        public static GameObject MakeBody(SZCharacter c, Transform parent)
+        {
+            var slot = SZAssets.Spawn(SlotIds[(int)c], parent, onGround: true, size: Heights[(int)c]);
+            if (slot != null)
+            {
+                PlayAnimation(slot, "idle");
+                return slot;
+            }
+            return LoadModel(Models[(int)c], parent, Heights[(int)c]) ?? StandIn(parent, Colors[(int)c]);
+        }
 
         // A model from Resources/Characters, scaled to the given height, feet on the ground.
         public static GameObject LoadModel(string file, Transform parent, float height)
@@ -77,27 +88,37 @@ namespace Deepwell
                 model.transform.localPosition = new Vector3(0f, -feet, 0f);
             }
             foreach (var col in model.GetComponentsInChildren<Collider>()) Object.Destroy(col);
+            var anim = model.AddComponent<SZModelAnim>();
+            anim.Init();
             PlayAnimation(model, "idle");
             return model;
         }
 
-        // Plays the first animation whose name contains the word (if the model has animations).
-        public static void PlayAnimation(GameObject model, string word)
+        // Plays the model's own clip for idle/walk/run if it has one; models
+        // without clips (the game's own .glb files) get made-up motion instead.
+        public static void PlayAnimation(GameObject model, string word, float speed = 0f)
         {
-            var anim = model ? model.GetComponentInChildren<Animation>() : null;
-            if (anim == null) return;
-            foreach (AnimationState state in anim)
+            var anim = ModelAnim(model);
+            if (anim != null) anim.Play(word, speed);
+        }
+
+        // The Long Man's made-up motion is slower and heavier than a person's.
+        public static void SetHeavy(GameObject model, bool heavy)
+        {
+            var anim = ModelAnim(model);
+            if (anim != null) anim.Heavy = heavy;
+        }
+
+        static SZModelAnim ModelAnim(GameObject model)
+        {
+            if (!model) return null;
+            var anim = model.GetComponent<SZModelAnim>();
+            if (anim == null)
             {
-                if (state.name.ToLowerInvariant().Contains(word))
-                {
-                    if (!anim.IsPlaying(state.name))
-                    {
-                        state.wrapMode = WrapMode.Loop;
-                        anim.CrossFade(state.name, 0.25f);
-                    }
-                    return;
-                }
+                anim = model.AddComponent<SZModelAnim>();
+                anim.Init();
             }
+            return anim;
         }
 
         static GameObject StandIn(Transform parent, Color color)

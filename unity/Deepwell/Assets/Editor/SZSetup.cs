@@ -1,4 +1,5 @@
 using System.IO;
+using Deepwell;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -19,7 +20,17 @@ namespace Deepwell.EditorTools
     {
         const string ScenePath = "Assets/Scenes/Deepwell.unity";
         const string ModelsFolder = "Assets/Resources/Characters";
+        const string PropsFolder = "Assets/Resources/Props";
         static readonly string[] ModelFiles = { "eli.glb", "frank.glb", "journalist.glb", "engineer.glb", "long_man.glb" };
+        // The uploads the game can show instead of placeholder shapes.
+        // (rename -> keeps the slot finder happy: "keycard", "tape reel"...)
+        static readonly string[][] PropFiles =
+        {
+            new[] { "fuse.glb", "fuse.glb" },
+            new[] { "tape_reel.glb", "tape_reel.glb" },
+            new[] { "control_panel.glb", "control_panel.glb" },
+            new[] { "card_a.glb", "keycard.glb" },
+        };
         const string DoneKey = "Deepwell.SetupDone.v2";
 
         static SZSetup()
@@ -27,11 +38,28 @@ namespace Deepwell.EditorTools
             EditorApplication.delayCall += () =>
             {
                 if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+                // Models missing (first open, new machine, a deleted folder) -> copy
+                // them again. This used to run only once per project, so a project
+                // that lost its models stayed empty (the "models aren't showing" bug).
+                if (AnyModelMissing()) CopyCharacterModels();
                 if (EditorPrefs.GetBool(DoneKey + Application.dataPath, false)) return;
                 EditorPrefs.SetBool(DoneKey + Application.dataPath, true);
                 SetUpEverything();
             };
         }
+
+        static bool AnyModelMissing()
+        {
+            foreach (var file in ModelFiles)
+                if (!File.Exists(Path.Combine(ModelsFolder, file))) return true;
+            foreach (var pair in PropFiles)
+                if (File.Exists(Path.Combine(GodotAssets(), "props", pair[0])) && !File.Exists(Path.Combine(PropsFolder, pair[1])))
+                    return true;
+            return false;
+        }
+
+        // Assets -> Deepwell -> unity -> the Godot project.
+        static string GodotAssets() => Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "assets", "models"));
 
         [MenuItem("Deepwell/Set Up Project (run this if something looks wrong)")]
         public static void SetUpEverything()
@@ -68,18 +96,19 @@ namespace Deepwell.EditorTools
             so.ApplyModifiedProperties();
         }
 
-        [MenuItem("Deepwell/Copy Character Models from the Godot Project")]
+        [MenuItem("Deepwell/Copy Models from the Godot Project")]
         public static void CopyCharacterModels()
         {
-            // Assets -> Deepwell -> unity -> the Godot project.
-            var source = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "assets", "models", "characters"));
-            if (!Directory.Exists(source))
+            var source = Path.Combine(GodotAssets(), "characters");
+            var props = Path.Combine(GodotAssets(), "props");
+            if (!Directory.Exists(source) && !Directory.Exists(props))
             {
-                Debug.Log("Deepwell: no Godot character models found at " + source +
+                Debug.Log("Deepwell: no Godot models found at " + GodotAssets() +
                           ". People will look like simple stand-in figures. (Keep the unity folder inside the game folder to get the models.)");
                 return;
             }
             Directory.CreateDirectory(ModelsFolder);
+            Directory.CreateDirectory(PropsFolder);
             int copied = 0;
             foreach (var file in ModelFiles)
             {
@@ -89,11 +118,45 @@ namespace Deepwell.EditorTools
                 File.Copy(from, to);
                 copied++;
             }
+            foreach (var pair in PropFiles)
+            {
+                var from = Path.Combine(props, pair[0]);
+                var to = Path.Combine(PropsFolder, pair[1]);
+                if (!File.Exists(from) || File.Exists(to)) continue;
+                File.Copy(from, to);
+                copied++;
+            }
             if (copied > 0)
             {
-                Debug.Log("Deepwell: copied " + copied + " character models. Unity is importing them (this can take a minute).");
+                Debug.Log("Deepwell: copied " + copied + " models. Unity is importing them (this can take a minute).");
                 AssetDatabase.Refresh();
             }
+        }
+
+        // A quick answer to "why isn't it showing?": what's in the folders, and
+        // which asset slots have a model and which still use the placeholder.
+        [MenuItem("Deepwell/Check Models and Assets")]
+        public static void CheckModelsAndAssets()
+        {
+            var report = new System.Text.StringBuilder("Deepwell models and assets:\n");
+            foreach (var file in ModelFiles)
+                report.Append("  character ").Append(file).Append(File.Exists(Path.Combine(ModelsFolder, file)) ? "  OK\n" : "  MISSING\n");
+            foreach (var pair in PropFiles)
+                report.Append("  prop ").Append(pair[1]).Append(File.Exists(Path.Combine(PropsFolder, pair[1])) ? "  OK\n" : "  missing (placeholder is used)\n");
+            var slots = SZAssetSlotsTools.Load(create: false);
+            if (slots != null)
+            {
+                int filled = 0;
+                foreach (var slot in slots.slots) if (slot.prefab != null) filled++;
+                report.Append("  asset slots filled: ").Append(filled).Append(" / ").Append(slots.slots.Count).Append('\n');
+                foreach (var info in SZAssetSlots.Info)
+                {
+                    var slot = slots.Find(info.id);
+                    report.Append("    ").Append(info.label).Append(": ")
+                          .Append(slot != null && slot.prefab != null ? slot.prefab.name : "placeholder").Append('\n');
+                }
+            }
+            Debug.Log(report.ToString());
         }
 
         static void MakeScene()

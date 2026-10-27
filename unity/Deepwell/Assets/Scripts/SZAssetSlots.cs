@@ -34,22 +34,22 @@ namespace Deepwell
         // its longest side), and words that find a matching asset by name.
         public static readonly SlotInfo[] Info =
         {
-            new SlotInfo("pistol", "Pistol (held, in the trunk, and on the floor)", 0.22f, "pistol", "handgun", "glock", "beretta", "m1911", "1911", "colt", "9mm", "usp", "p226", "sidearm"),
-            new SlotInfo("revolver", "Revolver", 0.3f, "revolver", "magnum"),
+            new SlotInfo("pistol", "Pistol (held, in the trunk, and on the floor)", 0.22f, "pistol", "handgun", "glock", "beretta", "m1911", "1911", "colt", "9mm", "usp", "p226", "sidearm", " 92 ", " 93r "),
+            new SlotInfo("revolver", "Revolver", 0.3f, "revolver", "magnum", "wesson", "python", " 357 ", " 38 "),
             new SlotInfo("shotgun", "Shotgun", 1.0f, "shotgun", "remington", "pump action"),
-            new SlotInfo("smg", "Submachine gun", 0.6f, "smg", "mp5", "uzi", "submachine"),
-            new SlotInfo("rifle", "Rifle", 1.0f, "rifle", "ak47", "ak 47", "m4a1", "m16", "ar15", "sniper", "carbine"),
+            new SlotInfo("smg", "Submachine gun", 0.6f, "smg", "mp5", "mp7", "uzi", "submachine", "m1a1"),
+            new SlotInfo("rifle", "Rifle", 1.0f, "rifle", "ak47", "ak 47", "akm", "m4a1", "m16", "ar15", "mcx", "sniper", "carbine"),
             new SlotInfo("flashlight", "Flashlight (in your hand)", 0.25f, "flashlight", "torch light", "torchlight"),
             new SlotInfo("battery", "Battery", 0.09f, "battery", "batteries", "aa cell"),
             new SlotInfo("flare", "Flare", 0.22f, "flare", "road flare"),
             new SlotInfo("medkit", "Medkit", 0.32f, "medkit", "med kit", "first aid", "firstaid", "health kit", "healthkit"),
-            new SlotInfo("keycard", "Keycard", 0.09f, "keycard", "key card", "access card", "id card", "security card"),
+            new SlotInfo("keycard", "Keycard", 0.09f, "keycard", "key card", "access card", "id card", "security card", "plastic card"),
             new SlotInfo("fuse", "Fuse", 0.1f, "fuse"),
             new SlotInfo("crowbar", "Crowbar", 0.7f, "crowbar", "pry bar", "prybar"),
             new SlotInfo("gas_mask", "Gas mask", 0.3f, "gas mask", "gasmask", "respirator"),
             new SlotInfo("walkie", "Walkie-talkie", 0.22f, "walkie", "talkie", "handheld radio", "two way radio"),
             new SlotInfo("reel_tape", "Reel tape", 0.18f, "reel tape", "tape reel", "cassette", "audio tape"),
-            new SlotInfo("ammo", "Ammo box", 0.14f, "ammo", "ammunition", "bullets", "cartridge"),
+            new SlotInfo("ammo", "Ammo box", 0.14f, "ammo", "ammu", "ammunition", "bullets", "cartridge"),
             new SlotInfo("backpack", "Backpack", 0.5f, "backpack", "rucksack"),
             new SlotInfo("pouch", "Pouch", 0.22f, "pouch"),
             new SlotInfo("fuel_can", "Fuel can", 0.45f, "fuel can", "jerry can", "jerrycan", "gas can", "petrol can"),
@@ -57,6 +57,7 @@ namespace Deepwell
             new SlotInfo("note", "Notes and files", 0.3f, "note", "paper", "document", "letter", "folder", "clipboard"),
             new SlotInfo("car", "The team's car (home screen and at the station)", 4.8f, "car", "sedan", "vehicle", "suv", "pickup truck", "station wagon"),
             new SlotInfo("keypad", "Keypads", 0.26f, "keypad", "key pad", "code lock", "numpad", "pin pad"),
+            new SlotInfo("control_panel", "Control panels (puzzle terminals)", 0.5f, "control panel"),
             new SlotInfo("locker", "Lockers you hide in", 2.15f, "locker", "metal cabinet", "wardrobe"),
             new SlotInfo("desk", "Desks", 1.6f, "desk", "office table", "work table", "writing table"),
             new SlotInfo("computer", "Computers, monitors and the terminal", 0.5f, "computer", "monitor", "crt", "desktop pc", "pc", "terminal"),
@@ -67,6 +68,10 @@ namespace Deepwell
             new SlotInfo("survival_props", "Survival Props Pack", 0f, "survival props", "props", "items"),
             new SlotInfo("retro_horror_items", "Retro PSX Horror Items", 0f, "retro horror", "psx items", "puzzle items"),
             new SlotInfo("crowbar_asset", "Crowbar", 0.7f, "crowbar", "pry bar", "prybar"),
+            new SlotInfo("eli", "Eli (rigged model with animations)", 1.78f, "eli"),
+            new SlotInfo("cole", "Cole (rigged model with animations)", 1.9f, "cole", "frank"),
+            new SlotInfo("nora", "Nora (rigged model with animations)", 1.68f, "nora", "journalist"),
+            new SlotInfo("walter", "Walter (rigged model with animations)", 1.75f, "walter", "engineer"),
         };
 
         public class SlotInfo
@@ -164,7 +169,8 @@ namespace Deepwell
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.Euler(slot.rotation);
             go.transform.localScale = Vector3.one;
-            SZGraphics.FixPink(go);   // HDRP/URP assets would be pink
+            SZGraphics.FixPink(go);        // HDRP/URP assets would be pink
+            SZGraphics.NotSoShiny(go);     // PBR packs would look like silver chrome
 
             var renderers = go.GetComponentsInChildren<Renderer>();
             if (renderers.Length == 0) return go;
