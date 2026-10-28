@@ -2212,39 +2212,6 @@ size = Vector3(0.2, 3.1, 0.2)
 material = ExtResource("63_x")
 use_collision = true
 
-[node name="CarBody" type="CSGBox3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0.75, 39)
-size = Vector3(4.2, 0.9, 1.9)
-material = SubResource("StandardMaterial3D_70")
-use_collision = true
-
-[node name="CarCabin" type="CSGBox3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3, 1.55, 39)
-size = Vector3(2.2, 0.7, 1.7)
-material = SubResource("StandardMaterial3D_70")
-use_collision = true
-
-[node name="Wheel0" type="MeshInstance3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -10.4, 0.35, 38)
-mesh = SubResource("CylinderMesh_102")
-surface_material_override/0 = SubResource("StandardMaterial3D_72")
-
-[node name="Wheel1" type="MeshInstance3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -10.4, 0.35, 40)
-mesh = SubResource("CylinderMesh_102")
-surface_material_override/0 = SubResource("StandardMaterial3D_72")
-
-[node name="Wheel2" type="MeshInstance3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -7.6, 0.35, 38)
-mesh = SubResource("CylinderMesh_102")
-surface_material_override/0 = SubResource("StandardMaterial3D_72")
-
-[node name="Wheel3" type="MeshInstance3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -7.6, 0.35, 40)
-mesh = SubResource("CylinderMesh_102")
-surface_material_override/0 = SubResource("StandardMaterial3D_72")
-
-[node name="Windshield" type="MeshInstance3D" parent="Exterior"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18, 1.55, 39)
 mesh = SubResource("BoxMesh_103")
 surface_material_override/0 = SubResource("StandardMaterial3D_72")
@@ -2269,7 +2236,7 @@ script = ExtResource("31_x")
 item_id = "battery"
 
 [node name="TeamCar" type="StaticBody3D" parent="Exterior"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8.4, 0, 43.6)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -5.5, 0, 9.0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Exterior/TeamCar"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0.2)
@@ -3258,6 +3225,10 @@ surface_material_override/0 = ExtResource("62_x")
 
 [node name="FrontDoor" parent="Station" instance=ExtResource("10_x")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+
+[node name="Lock" type="Node" parent="Station/FrontDoor"]
+script = ExtResource("28_x")
+kind := 1
 
 [node name="BaseFront" type="CSGBox3D" parent="Station"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0.225)
@@ -10507,7 +10478,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76, -9, -50)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 67.75, -9, -49)
 
 [node name="Yard" type="Area3D" parent="Checkpoints"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 7.5)
 script = ExtResource("37_x")
 order = 1
 
@@ -10518,13 +10489,13 @@ shape = SubResource("BoxShape3D_459")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -1.5, 0)
 
 [node name="Spawn2" type="Marker3D" parent="Checkpoints/Yard"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
-
-[node name="Spawn3" type="Marker3D" parent="Checkpoints/Yard"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, -1.5, 0)
 
+[node name="Spawn3" type="Marker3D" parent="Checkpoints/Yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -1.5, 1.5)
+
 [node name="Spawn4" type="Marker3D" parent="Checkpoints/Yard"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 1.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, -1.5, 1.5)
 
 [node name="Tunnels" type="Area3D" parent="Checkpoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -7.5, -38)
