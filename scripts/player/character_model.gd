@@ -78,8 +78,21 @@ func _setup_rigged(character: int, is_local: bool) -> void:
 	if is_local:
 		for part: MeshInstance3D in _rig.find_children("*", "MeshInstance3D", true, false):
 			part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
-	# Add fly effects on the character (flies on the model)
-	add_fly_effects(_rig, character)
+	# Map character integer to name string for fly targeting
+	var character_name := ""
+	switch character:
+		0:
+			character_name = "son"
+		1:
+			character_name = "guard"
+		2:
+			character_name = "journalist"
+		3:
+			character_name = "engineer"
+	# Default target_chars is empty -> flies on all characters
+	var target_chars: Array[String] = []
+	# Add fly effects with character name and target list
+	add_fly_effects(_rig, character_name, target_chars)
 
 
 func _add_part(parent: Node3D, file: String, is_local: bool) -> void:
@@ -173,7 +186,7 @@ func clear_acting() -> void:
 	acting = 0.0
 	glance = 0.0
 
-func add_fly_effects(rig: HumanRig, character_id: int) -> void:
+func add_fly_effects(rig: HumanRig, character_id: String, target_chars: Array[String] = []) -> void:
 	# Create fly particle system as a child of the rig
 	var fly_particles := GPUParticles3D.new()
 	fly_particles.name = "FlyEffects"
@@ -194,6 +207,11 @@ func add_fly_effects(rig: HumanRig, character_id: int) -> void:
 	fly_particles.angle_randomness = PI
 	fly_particles.cooking = false
 	rig.add_child(fly_particles)
+	# Only add flies if target_chars is empty or character_id is in target_chars
+	if target_chars.empty() or character_id in target_chars:
+		pass
+	else:
+		fly_particles.queue_free()
 	# Set texture to fly shape
 	var fly_texture := ImageTexture.new()
 	var fly_image := Image.new()
