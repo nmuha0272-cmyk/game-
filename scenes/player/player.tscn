@@ -84,7 +84,7 @@ script = ExtResource("cm_script")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-&"": ExtResource("25_anim_lib")
+&"": ExtResource("27_anim_lib")
 }
 playback_process_mode = 1
 
@@ -97,7 +97,7 @@ script = ExtResource("2_stamina")
 [node name="Downed" type="Node" parent="."]
 script = ExtResource("13_downed")
 
-[node name="Fear" type="Node" parent="."]
+[node name="Fear" type="Node" parent="." node_paths=PackedStringArray("player")]
 script = ExtResource("26_fear")
 player = NodePath("..")
 

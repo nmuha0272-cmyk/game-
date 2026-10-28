@@ -56,7 +56,7 @@
    "p": [
     0.0,
     1.5,
-    17.0
+    7.5
    ],
    "r": [
     0.0,
@@ -74,28 +74,28 @@
      "p": [
       1.5,
       0.0,
-      17.0
-     ]
-    },
-    {
-     "p": [
-      0.0,
-      0.0,
-      17.0
+      7.5
      ]
     },
     {
      "p": [
       -1.5,
       0.0,
-      17.0
+      7.5
      ]
     },
     {
      "p": [
+      1.5,
       0.0,
+      9.0
+     ]
+    },
+    {
+     "p": [
+      -1.5,
       0.0,
-      18.5
+      9.0
      ]
     }
    ]
@@ -455,9 +455,9 @@
    ],
    "mover": -1,
    "p": [
-    -8.6,
+    5.3,
     0.95,
-    43.6
+    9.0
    ],
    "r": [
     0.0,
@@ -1649,9 +1649,16 @@
   {
    "photo": false,
    "pistols": false,
-   "text": "Got it.",
+   "text": "Got it. My hands are shaking, Cole.",
    "trunk": true,
    "who": "Son"
+  },
+  {
+   "photo": false,
+   "pistols": false,
+   "text": "And grab the crowbar by the trunk. The front door's been jammed for years.",
+   "trunk": true,
+   "who": "Guard"
   },
   {
    "photo": false,
@@ -1684,7 +1691,7 @@
   {
    "photo": false,
    "pistols": false,
-   "text": "There it is. The Blackwater Weather Station. Or what's left of it.",
+   "text": "There it is. The Blackwater Weather Station. Or what's left of it. I'm terrified.",
    "trunk": false,
    "who": "Journalist"
   },
@@ -1698,28 +1705,28 @@
   {
    "photo": false,
    "pistols": false,
-   "text": "I remember the night they locked it down... Said it was a gas leak. They lied.",
+   "text": "I remember the night they locked it down... Said it was a gas leak. They lied. I'm not looking forward to what's inside.",
    "trunk": false,
    "who": "Engineer"
   },
   {
    "photo": false,
    "pistols": false,
-   "text": "My mom and dad died in there. Now Marcus and Jenna are in there too. I'm not losing anyone else.",
+   "text": "My mom and dad died in there. Now Marcus and Jenna are in there too. I'm not losing anyone else. I'm scared, but I'm going in.",
    "trunk": false,
    "who": "Son"
   },
   {
    "photo": false,
    "pistols": false,
-   "text": "My source went in a month ago. If anyone's still alive, they're underground.",
+   "text": "My source went in a month ago. If anyone's still alive, they're underground. I'm scared too, but I need answers.",
    "trunk": false,
    "who": "Journalist"
   },
   {
    "photo": false,
    "pistols": false,
-   "text": "Then we'd better find a way in. Stay close. And keep your flashlights ready.",
+   "text": "Then we'd better find a way in. Stay close. And keep your flashlights ready. I've got you all.",
    "trunk": false,
    "who": "Guard"
   },
@@ -1734,8 +1741,8 @@
  "doors": [
   {
    "id": 0,
-   "lock": "",
-   "locked": false,
+   "lock": "jammed",
+   "locked": true,
    "name": "FrontDoor",
    "p": [
     0.5,
@@ -1871,9 +1878,9 @@
    "puzzle": true,
    "r": [
     0.0,
-    -0.09,
+    -0.5272,
     0.0,
-    0.9959
+    0.8498
    ]
   },
   {
@@ -2072,6 +2079,23 @@
     6.0,
     0.2,
     41.0
+   ]
+  },
+  {
+   "color": [
+    0.55,
+    0.12,
+    0.08,
+    1.0
+   ],
+   "hint": "Pries open jammed doors (breaks after one use).",
+   "id": "crowbar",
+   "lore": "",
+   "name": "Crowbar",
+   "p": [
+    2.8,
+    0.2,
+    9.8
    ]
   },
   {
@@ -5018,7 +5042,7 @@
    "size": 0.115199997089803,
    "source": 48,
    "template": "WIRING DIAGRAM - POWER ROOM BREAKERS\n%s",
-   "text": "WIRING DIAGRAM - POWER ROOM BREAKERS\n1 DOWN   2 UP   3 DOWN"
+   "text": "WIRING DIAGRAM - POWER ROOM BREAKERS\n1 UP   2 DOWN   3 DOWN"
   },
   {
    "billboard": false,
@@ -5172,7 +5196,7 @@
    "size": 0.136000001803041,
    "source": 61,
    "template": "DRAIN CHART - TUNNEL E PUMPS\n%s",
-   "text": "DRAIN CHART - TUNNEL E PUMPS\n1 DOWN   2 UP   3 DOWN   4 DOWN"
+   "text": "DRAIN CHART - TUNNEL E PUMPS\n1 UP   2 UP   3 DOWN   4 UP"
   },
   {
    "billboard": false,
@@ -5199,7 +5223,7 @@
    "size": 0.108000000938773,
    "source": 67,
    "template": "BED 1\nTAG: %s",
-   "text": "BED 1\nTAG: 6"
+   "text": "BED 1\nTAG: 3"
   },
   {
    "billboard": false,
@@ -5226,7 +5250,7 @@
    "size": 0.108000000938773,
    "source": 67,
    "template": "BED 2\nTAG: %s",
-   "text": "BED 2\nTAG: 3"
+   "text": "BED 2\nTAG: 9"
   },
   {
    "billboard": false,
@@ -5253,7 +5277,7 @@
    "size": 0.108000000938773,
    "source": 67,
    "template": "BED 3\nTAG: %s",
-   "text": "BED 3\nTAG: 0"
+   "text": "BED 3\nTAG: 2"
   },
   {
    "billboard": false,
@@ -5280,7 +5304,7 @@
    "size": 0.140000004321337,
    "source": 78,
    "template": "dir. safe - %s\n(don't forget AGAIN)",
-   "text": "dir. safe - 1068\n(don't forget AGAIN)"
+   "text": "dir. safe - 5994\n(don't forget AGAIN)"
   },
   {
    "billboard": false,
@@ -5307,7 +5331,7 @@
    "size": 0.0879999995231628,
    "source": 89,
    "template": "VAULT CODE\n%s\n(changes every minute)",
-   "text": "VAULT CODE\n4908\n(changes every minute)"
+   "text": "VAULT CODE\n0219\n(changes every minute)"
   },
   {
    "billboard": false,
@@ -5334,7 +5358,7 @@
    "size": 0.140000004321337,
    "source": 93,
    "template": "RELAY BAND - LIVE\n%s\n(it drifts: keep calling it out)",
-   "text": "RELAY BAND - LIVE\n93.5 MHz\n(it drifts: keep calling it out)"
+   "text": "RELAY BAND - LIVE\n94.5 MHz\n(it drifts: keep calling it out)"
   },
   {
    "billboard": false,
@@ -5361,7 +5385,7 @@
    "size": 0.0703999996185303,
    "source": 103,
    "template": "TOE TAG 1 of 4\n%s",
-   "text": "TOE TAG 1 of 4\n5"
+   "text": "TOE TAG 1 of 4\n6"
   },
   {
    "billboard": false,
@@ -5388,7 +5412,7 @@
    "size": 0.0703999996185303,
    "source": 103,
    "template": "TOE TAG 2 of 4\n%s",
-   "text": "TOE TAG 2 of 4\n5"
+   "text": "TOE TAG 2 of 4\n4"
   },
   {
    "billboard": false,
@@ -5415,7 +5439,7 @@
    "size": 0.0703999996185303,
    "source": 103,
    "template": "TOE TAG 3 of 4\n%s",
-   "text": "TOE TAG 3 of 4\n6"
+   "text": "TOE TAG 3 of 4\n2"
   },
   {
    "billboard": false,
@@ -5442,7 +5466,7 @@
    "size": 0.0703999996185303,
    "source": 103,
    "template": "TOE TAG 4 of 4\n%s",
-   "text": "TOE TAG 4 of 4\n5"
+   "text": "TOE TAG 4 of 4\n2"
   },
   {
    "billboard": false,
@@ -6068,9 +6092,9 @@
    "flicker": 0.5,
    "group": -1,
    "p": [
-    9.3,
+    5.1,
     1.75,
-    39.0
+    9.0
    ],
    "pulse": false,
    "r": [
@@ -6095,9 +6119,9 @@
    "flicker": -1.0,
    "group": -1,
    "p": [
-    -10.6,
+    3.3,
     1.3,
-    43.6
+    9.0
    ],
    "pulse": false,
    "r": [
@@ -6118,7 +6142,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.651671767234802,
+   "energy": 0.649602830410004,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6145,7 +6169,7 @@
     0.6,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 1.39999997615814,
    "flicker": 0.25,
    "group": -1,
    "p": [
@@ -6172,7 +6196,7 @@
     0.5,
     1.0
    ],
-   "energy": 1.10000002384186,
+   "energy": 0.0,
    "flicker": 0.55,
    "group": -1,
    "p": [
@@ -6226,7 +6250,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.600000023841858,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -6253,7 +6277,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.9,
    "group": -1,
    "p": [
@@ -6280,7 +6304,7 @@
     0.04,
     1.0
    ],
-   "energy": 0.977507710456848,
+   "energy": 0.974404215812683,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6415,7 +6439,7 @@
     0.04,
     1.0
    ],
-   "energy": 0.814589738845825,
+   "energy": 0.812003493309021,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6577,7 +6601,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.300000011920929,
    "flicker": 0.9,
    "group": -1,
    "p": [
@@ -6658,7 +6682,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.325835883617401,
+   "energy": 0.324801415205002,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6793,7 +6817,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.550000011920929,
    "flicker": 0.75,
    "group": -1,
    "p": [
@@ -6820,7 +6844,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.550000011920929,
+   "energy": 0.0,
    "flicker": 0.9,
    "group": -1,
    "p": [
@@ -6847,7 +6871,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.550000011920929,
+   "energy": 0.0,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -6955,7 +6979,7 @@
     0.72,
     1.0
    ],
-   "energy": 0.899999976158142,
+   "energy": 0.0,
    "flicker": 0.25,
    "group": -1,
    "p": [
@@ -7009,7 +7033,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.488753855228424,
+   "energy": 0.487202107906342,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -7063,7 +7087,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.7,
    "group": -1,
    "p": [
@@ -7117,7 +7141,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.85,
    "group": -1,
    "p": [
@@ -7279,7 +7303,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.4,
    "group": -1,
    "p": [
@@ -7522,7 +7546,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.449999988079071,
    "flicker": 0.9,
    "group": -1,
    "p": [
@@ -7576,7 +7600,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.449999988079071,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -7826,9 +7850,9 @@
    "id": "personal_journalist_notebook",
    "kind": "lore_personal",
    "p": [
-    7.4,
-    1.2,
-    39.0
+    7.05,
+    1.18,
+    9.0
    ],
    "r": [
     0.0,
@@ -10394,9 +10418,9 @@
    "parent": -1,
    "r": [
     0.0,
-    -0.09,
+    -0.5272,
     0.0,
-    0.9959
+    0.8498
    ]
   },
   {
@@ -13544,7 +13568,7 @@
    "p": [
     1.5,
     0.0,
-    45.0
+    7.5
    ],
    "r": [
     0.0,
@@ -13557,7 +13581,7 @@
    "p": [
     -1.5,
     0.0,
-    45.0
+    7.5
    ],
    "r": [
     0.0,
@@ -13570,7 +13594,7 @@
    "p": [
     1.5,
     0.0,
-    46.5
+    9.0
    ],
    "r": [
     0.0,
@@ -13583,7 +13607,7 @@
    "p": [
     -1.5,
     0.0,
-    46.5
+    9.0
    ],
    "r": [
     0.0,
@@ -13595,9 +13619,9 @@
  ],
  "team_car": {
   "p": [
-   -8.4,
+   5.5,
    0.0,
-   43.6
+   9.0
   ],
   "r": [
    0.0,

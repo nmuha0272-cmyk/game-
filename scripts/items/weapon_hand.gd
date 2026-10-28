@@ -17,7 +17,7 @@ var _base_position := Vector3.ZERO
 func _ready() -> void:
 	if inventory:
 		inventory.changed.connect(_refresh)
-	_rng.seed = Time.get_ticks_msec().to_int() ^ inventory.player.name.to_int()
+	_rng.randomize()
 	_base_position = position
 	_refresh()
 
@@ -28,7 +28,7 @@ func _process(_delta: float) -> void:
 	_refresh()
 
 	# Shake the weapon with fear when a monster is near.
-	var fear := inventory.player.get_meta("fear", 0.0)
+	var fear: float = inventory.player.get_meta("fear", 0.0)
 	if fear > 0.05:
 		var shake := fear
 		if inventory.player.character == Characters.Id.JOURNALIST:

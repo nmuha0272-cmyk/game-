@@ -136,7 +136,7 @@ const TALK := [
 	## Cutscene: Eli and Cole army background
 	["nora", "And I thought you were just being condescending because I'm a woman in a field you dominated, kid. But now I see it's just Army bureaucracy."],
 	["eli", "Nora, I know how this sounds about slowing us down, but me and Cole are trained to protect ourselves. Army training. We watch each other's backs."],
-],
+]
 
 const MIRROR_POS := Vector3(0.0, 1.62, -0.6)
 
@@ -146,7 +146,11 @@ var selected := ""
 var taken: Array[String] = []
 
 var _time := 0.0
-var _car: Node3D
+var _car: Node3D  # holds both cars, the people and the mirror (it bobs on the road)
+## The plain stand-in car on the title screen, and the detailed one once
+## you pick a character (both are built once; only one shows).
+var _placeholder_car: Node3D
+var _hero_car: Node3D
 var _roof: Node3D
 var _camera: Camera3D
 var _scrollers: Array[Node3D] = []
@@ -196,7 +200,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_road_and_forest()
 	_build_station()
-	_build_placeholder_car()
+	_build_cars()
 	for id: String in CHARACTER_ORDER:
 		_build_character(id)
 	_build_mirror()
@@ -227,6 +231,10 @@ func _process(delta: float) -> void:
 	_car.position.y = (sin(_time * 9.0) * 0.008 + sin(_time * 2.3) * 0.012) * shake
 	_car.rotation.z = sin(_time * 1.7) * 0.006 * shake
 	_car.rotation.x = sin(_time * 3.1) * 0.003 * shake
+
+	if _cole_gun:
+		_cole_gun.rotation_degrees.z = fmod(_time, 2.0) * 60.0
+		_walter_tool.rotation_degrees.z = fmod(_time, 1.5) * 45.0
 
 	# Characters breathe and sway with the car.
 	for id: String in _figures:
@@ -329,7 +337,7 @@ func _set_state(new_state: State) -> void:
 		get_tree().create_timer(1.2).timeout.connect(func() -> void:
 			if state == State.SELECT:
 				_select_ui.show()
-				_set_hovered("")
+				_set_hovered(""))
 		_refresh_info()
 	else:
 		state = State.MENU
@@ -338,10 +346,7 @@ func _set_state(new_state: State) -> void:
 		_menu.show()
 		if _menu.has_method("show_main_buttons"):
 			_menu.show_main_buttons()
-		# Free hero car and rebuild placeholder for menu display
-		if _car:
-			_car.queue_free()
-		_build_placeholder_car()
+		_show_hero_car(false)  # the plain car on the title screen
 	_refresh_highlights()
 
 
@@ -358,10 +363,7 @@ func enter_select() -> void:
 
 func _on_play_requested(_a: Variant = null, _b: Variant = null) -> void:
 	if state == State.MENU:
-		# Free placeholder car and build hero car for select/arrival
-		if _car:
-			_car.queue_free()
-		_build_hero_car()
+		_show_hero_car(true)  # the detailed car for picking and the drive
 		_set_state(State.SELECT)
 
 
@@ -813,6 +815,31 @@ func _build_station() -> void:
 	_station.add_child(gate_lamp)
 
 
+var _cole_gun: Node3D
+var _walter_tool: Node3D
+
+
+## Both cars go inside one holder (_car), so the people and the mirror ride
+## along whichever one is showing.
+func _build_cars() -> void:
+	_build_hero_car()
+	_hero_car = _car
+	_build_placeholder_car()
+	_placeholder_car = _car
+	_car = Node3D.new()
+	_car.name = "Car"
+	add_child(_car)
+	for car: Node3D in [_hero_car, _placeholder_car]:
+		remove_child(car)
+		_car.add_child(car)
+	_show_hero_car(false)
+
+
+func _show_hero_car(hero: bool) -> void:
+	_hero_car.visible = hero
+	_placeholder_car.visible = not hero
+
+
 func _build_hero_car() -> void:
 	_car = Node3D.new()
 	add_child(_car)
@@ -868,17 +895,14 @@ func _build_hero_car() -> void:
 	_box(_car, Vector3(1.8, 0.12, 0.6), Vector3(0, 0.9, 1.05), seat)
 	_box(_car, Vector3(1.8, 0.65, 0.12), Vector3(0, 1.25, 1.38), seat)
 
-	# Character action props inside the car (placeholder shapes).
+	# Character action props inside the car (placeholder shapes); they turn
+	# a little in _process (Cole checking his gun, Walter's wrench).
 	# Cole checking his gun.
-	cole_gun := _box(_car, Vector3(0.1, 0.08, 0.2), Vector3(0.35, 0.85, 0.1), _mat(Color(0.8, 0.8, 0.8), 0.6, Color(0.5, 0.5, 0.5), 0.3))
-	cole_gun.rotation_degrees.z = _time.fmod(2.0) * 60.0
-
+	_cole_gun = _box(_car, Vector3(0.1, 0.08, 0.2), Vector3(0.35, 0.85, 0.1), _mat(Color(0.8, 0.8, 0.8), 0.6, Color(0.5, 0.5, 0.5), 0.3))
 	# Nora with her camera/notebook.
-	nora_item := _box(_car, Vector3(0.1, 0.08, 0.2), Vector3(-0.52, 0.85, 0.1), _mat(Color(0.7, 0.7, 0.7), 0.7, Color(0.5, 0.5, 0.5), 0.3))
-
+	_box(_car, Vector3(0.1, 0.08, 0.2), Vector3(-0.52, 0.85, 0.1), _mat(Color(0.7, 0.7, 0.7), 0.7, Color(0.5, 0.5, 0.5), 0.3))
 	# Walter with his wrench/tool.
-	walter_tool := _box(_car, Vector3(0.1, 0.08, 0.2), Vector3(0.52, 0.85, 0.1), _mat(Color(0.6, 0.6, 0.6), 0.7, Color(0.4, 0.4, 0.4), 0.3))
-	walter_tool.rotation_degrees.z = _time.fmod(1.5) * 45.0
+	_walter_tool = _box(_car, Vector3(0.1, 0.08, 0.2), Vector3(0.52, 0.85, 0.1), _mat(Color(0.6, 0.6, 0.6), 0.7, Color(0.4, 0.4, 0.4), 0.3))
 
 	# Wheels.
 	var tire := _mat(Color(0.02, 0.02, 0.02))

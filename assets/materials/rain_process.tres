@@ -1,18 +1,13 @@
-[gd_resource type="ParticleProcessMaterial" load_steps=1 format=3]
+[gd_resource type="ParticleProcessMaterial" format=3]
 
 [resource]
-lifetime = 1.5
-lifetime_randomness = 0.3
-speed_scale = 6.0
-speed_randomness = 0.3
+emission_shape = 3
+emission_box_extents = Vector3(45, 1, 55)
+direction = Vector3(0.05, -1, 0)
+spread = 3.0
+initial_velocity_min = 16.0
+initial_velocity_max = 20.0
 gravity = Vector3(0, -9.8, 0)
-direction = Vector3(0, -1, 0)
-spread = 15.0
-linear_accel = Vector3(0, 0, 0)
-tangential_accel = 0.0
-radial_accel = 0.0
-damping = 0.0
-angle = 0.0
-angle_randomness = 0.0
-hue_variation = 0.0
-color = Color(0.8, 0.9, 1.0, 0.3)
+scale_min = 0.7
+scale_max = 1.3
+collision_mode = 2

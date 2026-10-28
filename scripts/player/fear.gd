@@ -25,12 +25,6 @@ var eli_shake_mult := 0.6
 ## Nora is not trained with weapons - she shakes hardest.
 var nora_shake_mult := 1.8
 
-var _rng := RandomNumberGenerator.new()
-
-func _ready() -> void:
-	_rng.seed = Time.get_ticks_msec().to_int() ^ player.name.to_int()
-
-
 func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority():
 		return

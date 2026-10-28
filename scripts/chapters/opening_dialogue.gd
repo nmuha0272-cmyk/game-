@@ -63,6 +63,7 @@ var _body_turn_to := NAN
 const DIALOGUE := [
 	{"character": "Guard", "text": "Take this. Safety on until you need it.", "trunk": true, "pistols": true},
 	{"character": "Son", "text": "Got it. My hands are shaking, Cole.", "trunk": true},
+	{"character": "Guard", "text": "And grab the crowbar by the trunk. The front door's been jammed for years.", "trunk": true},
 	{"character": "Guard", "text": "Seven people missing since August, Eli. Marcus and Jenna were the last two.", "trunk": true},
 	{"character": "Son", "text": "They only came out here because of me.", "trunk": true},
 	{"character": "Son", "text": "Mom, Dad and me. I was five. It's the last picture of us together.", "trunk": true, "photo": true},

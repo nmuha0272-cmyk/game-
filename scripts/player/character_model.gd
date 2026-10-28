@@ -23,6 +23,8 @@ const RIGGED := {
 	Characters.Id.ENGINEER: ["engineer", 1.75],
 	Characters.Id.GUARD: ["frank", 1.9],
 }
+## Who gets flies around them (names from MODEL_NAMES, like "son"). Empty = everyone.
+const FLY_TARGETS: Array[String] = []
 ## The rigged models are this tall (in their own units).
 const RIGGED_MODEL_HEIGHT := 0.98
 
@@ -78,21 +80,10 @@ func _setup_rigged(character: int, is_local: bool) -> void:
 	if is_local:
 		for part: MeshInstance3D in _rig.find_children("*", "MeshInstance3D", true, false):
 			part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
-	# Map character integer to name string for fly targeting
-	var character_name := ""
-	switch character:
-		0:
-			character_name = "son"
-		1:
-			character_name = "guard"
-		2:
-			character_name = "journalist"
-		3:
-			character_name = "engineer"
-	# Default target_chars is empty -> flies on all characters
-	var target_chars: Array[String] = []
-	# Add fly effects with character name and target list
-	add_fly_effects(_rig, character_name, target_chars)
+	# Flies buzz around the others (not you: they'd be in front of your eyes).
+	# Put character names in FLY_TARGETS to give flies to only some of them.
+	if not is_local and (FLY_TARGETS.is_empty() or MODEL_NAMES.get(character, "") in FLY_TARGETS):
+		add_fly_effects(_rig)
 
 
 func _add_part(parent: Node3D, file: String, is_local: bool) -> void:
@@ -186,41 +177,34 @@ func clear_acting() -> void:
 	acting = 0.0
 	glance = 0.0
 
-func add_fly_effects(rig: HumanRig, character_id: String, target_chars: Array[String] = []) -> void:
-	# Create fly particle system as a child of the rig
-	var fly_particles := GPUParticles3D.new()
-	fly_particles.name = "FlyEffects"
-	fly_particles.emitting = true
-	fly_particles.one_shot = false
-	fly_particles.amount = 5
-	fly_particles.lifetime = 2.0
-	fly_particles.lifetime_randomness = 1.0
-	fly_particles.speed_scale = 2.0
-	fly_particles.speed_randomness = 2.0
-	fly_particles.direction = Vector3(0, -1, 0)
-	fly_particles.direction_randomness = Vector3(1, 0.5, 1)
-	fly_particles.gravity = Vector3(0, -0.5, 0)
-	fly_particles.scale = Vector3(0.1, 0.1, 0.1)
-	fly_particles.scale_randomness = Vector3(0.05, 0.05, 0.05)
-	fly_particles.color = Color(0.8, 0.8, 0.8)
-	fly_particles.angle = PI
-	fly_particles.angle_randomness = PI
-	fly_particles.cooking = false
-	rig.add_child(fly_particles)
-	# Only add flies if target_chars is empty or character_id is in target_chars
-	if target_chars.empty() or character_id in target_chars:
-		pass
-	else:
-		fly_particles.queue_free()
-	# Set texture to fly shape
-	var fly_texture := ImageTexture.new()
-	var fly_image := Image.new()
-	fly_image.resize(16, 16)
-	for x in range(16):
-		for y in range(16):
-			fly_image.set_pixel(x, y, Color(1, 1, 1, 0.8))
-	fly_texture.load_image(fly_image)
-	fly_particles.process_material = StandardMaterial3D.new()
-	((StandardMaterial3D)fly_particles.process_material).albedo_texture = fly_texture
-	var cull := CPUParticleCullMode._2D
-	fly_particles.cull_mode = cull
+## A few flies buzzing around the head and shoulders (tiny dark specks).
+func add_fly_effects(rig: Node3D) -> void:
+	var flies := GPUParticles3D.new()
+	flies.name = "FlyEffects"
+	flies.amount = 5
+	flies.lifetime = 2.0
+	flies.randomness = 1.0
+	flies.position = Vector3(0, RIGGED_MODEL_HEIGHT * 0.85, 0)  # around the head
+	flies.visibility_aabb = AABB(Vector3(-1, -1, -1), Vector3(2, 2, 2))
+	var motion := ParticleProcessMaterial.new()
+	motion.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	motion.emission_sphere_radius = 0.25
+	motion.direction = Vector3(0, 1, 0)
+	motion.spread = 180.0
+	motion.initial_velocity_min = 0.2
+	motion.initial_velocity_max = 0.6
+	motion.gravity = Vector3.ZERO
+	motion.orbit_velocity_min = 0.3  # circling, like real flies
+	motion.orbit_velocity_max = 0.9
+	motion.turbulence_enabled = true
+	motion.turbulence_noise_strength = 2.0
+	flies.process_material = motion
+	var speck := QuadMesh.new()
+	speck.size = Vector2(0.012, 0.012) / maxf(_rig_scale, 0.01)  # (the rig is scaled up)
+	var look := StandardMaterial3D.new()
+	look.albedo_color = Color(0.04, 0.04, 0.035)
+	look.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	look.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	speck.material = look
+	flies.draw_pass_1 = speck
+	rig.add_child(flies)

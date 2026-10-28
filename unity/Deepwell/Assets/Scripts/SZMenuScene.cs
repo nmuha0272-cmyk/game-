@@ -38,19 +38,23 @@ namespace Deepwell
         public bool MirrorShot => Mode == State.Select && Time.time < _mirrorShotUntil;
 
         // What the team says on the way (after you pick your character).
+        // (The same lines as the Godot version: main_menu_car.gd TALK.)
         static readonly string[,] Talk =
         {
+            { "ELI", "So... Uncle Cole. Why is there a journalist and an old man in the car?" },
+            { "COLE", "Eli, they're here because—" },
+            { "NORA", "I can speak for myself, thanks. Nora Vance. My source went missing out here a month ago, and I'm going to find out why. I'm terrified, but I need answers." },
+            { "WALTER", "Walter Kessler. I worked at that station, a long time ago. I know the way in. I'm not looking forward to what we'll find inside." },
+            { "COLE", "They want the same thing we do, kid. We find Marcus and Jenna, and we get out." },
             { "ELI", "...Okay. We're here." },
-            { "ELI", "Dad always said this place was wrong. Mom's last tape - she tried to get the volunteers out. Walter killed her. Made it look like a gas leak. Dad - Sgt. Daniel Reyes - he was Volunteer 14. Walter took him into Project ECHO. That's where the real experiments happened. That's where he... where he became Echo." },
+            { "ELI", "Dad always said this place was wrong. Mom's last tape - she tried to get the volunteers out. Dad - Sgt. Daniel Reyes - he was Volunteer 14. They took him into Project ECHO. That's where the real experiments happened. That's where he... where he became Echo." },
             { "NORA", "Deepwell. Hidden beneath the Blackwater Weather Station. Officially Cold War biomedical research to create stronger soldiers. Unofficially Project BASTION. Volunteers told it was vitamin research. Officially shut down 1991, but a secret branch called Project ECHO kept going until the facility was sealed in 1999. My source went missing trying to expose G-7, the Goliath Serum. He worked here and was trying to expose it before he vanished." },
-            { "WALTER", "I designed the Goliath Chamber. Subject 7 - Goliath. The serum meant to create giant soldiers. Instead his bones never stopped growing. Moved to the maintenance tunnels. That's where the team meets the first monster. I built this place. I know every secret door, every weak point. In 1999 I sealed Level B. The containment order was my signature. 'Regardless of personnel inside.' Some of those people were still down there." },
+            { "WALTER", "I worked at that station, a long time ago. I know every secret door, every weak point. In 1999 I signed the containment order for Level B. 'Regardless of personnel inside.' Some of those people were still down there." },
             { "COLE", "I sealed Level B in 1999 at age twenty. Following orders. But the containment order - my order - says 'regardless of personnel inside.' Some of those people were still down there. That's why I have the roster. My name's on it. I raised Eli after his parents died. That's my only promise - keep him alive, keep them all alive." },
             { "NORA", "And I thought you were just being condescending because I'm a woman in a field you dominated, kid. But now I see it's just Army bureaucracy." },
-{ "ELI", "Nora, I know how this sounds about slowing us down, but me and Cole been through Army together, treated the same, no favoritism, no different standards." }
+            { "ELI", "Nora, I know how this sounds about slowing us down, but me and Cole are trained to protect ourselves. Army training. We watch each other's backs." },
         };
-
-        static readonly int[] TalkWho = { 0, 1, 2, 3, 1, 0, 0, 2, 3, 1, 0, 2 };
-
+        static readonly int[] TalkWho = { 0, 1, 2, 3, 1, 0, 0, 2, 3, 1, 2, 0 };
         int _line = -1;
         float _lineTime, _lineLength;
         Action _onTalkDone;

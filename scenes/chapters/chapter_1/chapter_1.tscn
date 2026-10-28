@@ -126,6 +126,7 @@
 [ext_resource type="Resource" path="res://lore/file_missing_seven.tres" id="475_x"]
 [ext_resource type="Resource" path="res://lore/personal_son_friends_camera.tres" id="476_x"]
 [ext_resource type="ParticleProcessMaterial" path="res://assets/materials/rain_process.tres" id="477_x"]
+[ext_resource type="Material" path="res://assets/materials/rain.tres" id="478_x"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_70"]
 albedo_color = Color(0.22, 0.27, 0.3, 1)
@@ -1742,6 +1743,10 @@ size = Vector3(9, 2.7, 8)
 [sub_resource type="BoxShape3D" id="BoxShape3D_474"]
 size = Vector3(6, 3, 4)
 
+[sub_resource type="QuadMesh" id="QuadMesh_rain"]
+material = ExtResource("478_x")
+size = Vector2(0.015, 0.45)
+
 [node name="Chapter1" type="Node3D"]
 script = ExtResource("38_x")
 
@@ -1760,238 +1765,129 @@ directional_shadow_max_distance = 70.0
 
 [node name="Exterior" type="Node3D" parent="."]
 
-# Room 1: Weather Station Exterior
-# Gate at front, building behind
-[node name="StationExterior" type="CSGBox3D" parent="Exterior"]
+[node name="Rain" type="GPUParticles3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24, 12)
+amount = 6000
+lifetime = 1.4
+preprocess = 1.4
+visibility_aabb = AABB(-50, -30, -60, 100, 32, 120)
+process_material = ExtResource("477_x")
+draw_pass_1 = SubResource("QuadMesh_rain")
+
+[node name="RainRoof" type="GPUParticlesCollisionBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.25, 6, -10.2)
+size = Vector3(30.8, 12, 25.2)
+
+[node name="NewBuildingDraft" type="Node3D" parent="Exterior"]
+visible = false
+
+[node name="StationExterior" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 size = Vector3(50, 10, 30)
-material = ExtResource("65_x")  # asphalt
-use_collision = true
+material = ExtResource("65_x")
+use_collision = false
 
-# Gate area
-[node name="Gate" type="CSGBox3D" parent="Exterior"]
+[node name="Gate" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 size = Vector3(8, 6, 2)
-material = ExtResource("63_x")  # rusty metal
-use_collision = true
+material = ExtResource("63_x")
+use_collision = false
 
-# Building footprint
-[node name="BuildingFootprint" type="CSGBox3D" parent="Exterior"]
+[node name="BuildingFootprint" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, -25)
 size = Vector3(40, 10, 35)
-material = ExtResource("59_x")  # concrete
-use_collision = true
+material = ExtResource("59_x")
+use_collision = false
 
-# Room 2: Station Office
-# Split Code: computer shows code, keypad in different room
-[node name="OfficeComputer" type="CSGBox3D" parent="Exterior"]
+[node name="OfficeComputer" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, -10)
 size = Vector3(6, 3, 1)
-material = ExtResource("62_x")  # painted wall
-use_collision = true
+material = ExtResource("62_x")
+use_collision = false
 
-[node name="OfficeKeypad" type="CSGBox3D" parent="Exterior"]
+[node name="OfficeKeypad" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1, -10)
 size = Vector3(4, 3, 1)
 material = ExtResource("62_x")
-use_collision = true
+use_collision = false
 
-# Corkboard with newspaper clippings
-[node name="Corkboard" type="CSGBox3D" parent="Exterior"]
+[node name="Corkboard" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1, -20)
 size = Vector3(8, 4, 1)
 material = ExtResource("62_x")
-use_collision = true
+use_collision = false
 
-[node name="FileDirectory" type="CSGBox3D" parent="Exterior"]
+[node name="FileDirectory" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1, -20)
 size = Vector3(6, 3, 1)
 material = ExtResource("62_x")
-use_collision = true
+use_collision = false
 
-# Room 3: Hidden Stairwell
-# Dark and narrow, flashlights start draining here
-[node name="Stairwell" type="CSGBox3D" parent="Exterior"]
+[node name="Stairwell" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -35)
 size = Vector3(8, 6, 8)
 material = ExtResource("59_x")
-use_collision = true
+use_collision = false
 
-# Tally marks on wall (environmental clue)
-[node name="TallyMarks" type="CSGBox3D" parent="Exterior"]
+[node name="TallyMarks" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1.5, -38)
 size = Vector3(20, 1, 1)
 material = ExtResource("63_x")
-use_collision = true
+use_collision = false
 
-# Room 4: Maintenance Tunnels
-# Vent Crawl to unlock door from other side, then first monster encounter
-[node name="TunnelEntrance" type="CSGBox3D" parent="Exterior"]
+[node name="TunnelEntrance" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, -50)
 size = Vector3(12, 6, 8)
 material = ExtResource("59_x")
-use_collision = true
+use_collision = false
 
-[node name="VentCrawl" type="CSGBox3D" parent="Exterior"]
+[node name="VentCrawl" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 1, -60)
 size = Vector3(4, 6, 4)
 material = ExtResource("59_x")
-use_collision = true
+use_collision = false
 
-# Goliath encounter area
-[node name="GoliathArena" type="CSGBox3D" parent="Exterior"]
+[node name="GoliathArena" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 1, -70)
 size = Vector3(15, 8, 10)
 material = ExtResource("63_x")
-use_collision = true
+use_collision = false
 
-# Room 5: Elevator Room
-# Power Routing: Engineer repairs elevator generator, others find fuses, Dual Key Console starts elevator
-[node name="ElevatorShaft" type="CSGBox3D" parent="Exterior"]
+[node name="ElevatorShaft" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 1, -85)
 size = Vector3(6, 10, 6)
 material = ExtResource("59_x")
-use_collision = true
+use_collision = false
 
-[node name="FuseBox1" type="CSGBox3D" parent="Exterior"]
+[node name="FuseBox1" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 1, -80)
 size = Vector3(3, 3, 2)
 material = ExtResource("63_x")
-use_collision = true
+use_collision = false
 
-[node name="FuseBox2" type="CSGBox3D" parent="Exterior"]
+[node name="FuseBox2" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, -85)
 size = Vector3(3, 3, 2)
 material = ExtResource("63_x")
-use_collision = true
+use_collision = false
 
-# Dual Key Console
-[node name="DualKeyConsole" type="CSGBox3D" parent="Exterior"]
+[node name="DualKeyConsole" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 1, -90)
 size = Vector3(8, 4, 2)
 material = ExtResource("62_x")
-use_collision = true
+use_collision = false
 
-# Elevator control panel
-[node name="ElevatorPanel" type="CSGBox3D" parent="Exterior"]
+[node name="ElevatorPanel" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55, 1, -95)
 size = Vector3(6, 3, 2)
 material = ExtResource("62_x")
-use_collision = true
+use_collision = false
 
-# Height chart (environmental clue - Subject 7 medical log)
-[node name="HeightChart" type="CSGBox3D" parent="Exterior"]
+[node name="HeightChart" type="CSGBox3D" parent="Exterior/NewBuildingDraft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 2, -75)
 size = Vector3(2, 15, 1)
 material = ExtResource("62_x")
-use_collision = true
-
-# Lore markers
-
-# Room 1: Weather Station Exterior - Personal Item (Journalist)
-[node name="PersonalItemJournalistCar" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2, -5)
-script = ExtResource("31_x")
-item_id = "car"
-lore_id = "personal_journalist_notebook"
-
-# Room 2: Station Office - Lore Files
-[node name="FileStaffDirectory" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, -12)
-script = ExtResource("31_x")
-item_id = "paper"
-lore_id = "file_staff_directory"
-
-[node name="PersonalItemEngineerNameplate" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2, -15)
-script = ExtResource("31_x")
-item_id = "nameplate"
-lore_id = "personal_engineer_nameplate"
-
-# Room 3: Hidden Stairwell - Personal Items + Poster
-[node name="PersonalItemGuardRoster" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2, -38)
-script = ExtResource("31_x")
-item_id = "roster"
-lore_id = "personal_guard_roster"
-
-[node name="PersonalItemSonID" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 2, -42)
-script = ExtResource("31_x")
-item_id = "id_card"
-lore_id = "personal_son_volunteer_id"
-
-[node name="PosterStrongerSoldiers" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 2, -40)
-script = ExtResource("31_x")
-item_id = "poster"
-lore_id = "file_poster_stronger"
-
-# Room 4: Maintenance Tunnels - Lore + Photo
-[node name="FileSubject7" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38, 2, -78)
-script = ExtResource("31_x")
-item_id = "reel_tape"
-lore_id = "tape_subject7"
-
-[node name="PhotoGoliath" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 2, -65)
-script = ExtResource("31_x")
-item_id = "photo"
-lore_id = "personal_son_photo"
-
-# Room 5: Elevator Room - Lore Files
-[node name="FileContainmentOrder" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 2, -90)
-script = ExtResource("31_x")
-item_id = "paper"
-lore_id = "file_containment_order"
-
-[node name="PersonalEngineerBlueprints" type="Marker3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 2, -95)
-script = ExtResource("31_x")
-item_id = "paper"
-lore_id = "personal_engineer_blueprints"
-
-# Rain and environmental audio
-[node name="Rain" type="GPUParticles3D" parent="Exterior"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0)
-emitting = true
-one_shot = false
-amount = 4000
-lifetime = 1.5
-lifetime_randomness = 0.3
-speed_scale = 6.0
-scale = 1.0
-scale_randomness = 0.2
-gravity = Vector3(0, -9.8, 0)
-gravity_vector = Vector3(0, -1, 0)
-direction = Vector3(0, -1, 0)
-spread = 15.0
-angular_velocity = Vector3(0, 0, 0)
-angular_velocity_randomness = 0.0
-orbit_velocity = Vector3(0, 0, 0)
-linear_accel = Vector3(0, 0, 0)
-radial_accel = 0.0
-tangential_accel = 0.0
-damping = 0.0
-damping_randomness = 0.0
-max_distance = 0.0
-max_distance_randomness = 0.0
-draw_order_1 = 0
-draw_order_2 = 0
-process_material = ExtResource("477_x")
-draw_passes = 1
-local_coords = false
-explosiveness = 0.0
-random_ratio = 0.0
-speed_randomness = 0.3
-velocity_ramp_texture = null
-velocity_ramp_texture_velocity_scale = 0.0
-color_ramp_texture = null
-emission_sphere = 0.0
-emission_rect_extents = Vector3(120, 0, 310)
-emission_rect_shape = 1
+use_collision = false
 
 [node name="Station" type="Node3D" parent="."]
 
@@ -2406,13 +2302,8 @@ size = Vector3(0.2, 3.1, 0.2)
 material = ExtResource("63_x")
 use_collision = true
 
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18, 1.55, 39)
-mesh = SubResource("BoxMesh_103")
-surface_material_override/0 = SubResource("StandardMaterial3D_72")
-cast_shadow = 0
-
 [node name="CarDomeLight" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3, 1.75, 39)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 1.75, 9.0)
 light_color = Color(1, 0.8, 0.5, 1)
 light_energy = 0.15
 shadow_enabled = true
@@ -2421,7 +2312,7 @@ script = ExtResource("33_x")
 brokenness = 0.5
 
 [node name="InformantNotebook" parent="Lore" instance=ExtResource("20_x")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.4, 1.2, 39)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.05, 1.18, 9.0)
 entry = ExtResource("104_x")
 
 [node name="battery_96" type="Marker3D" parent="ItemSpawnPoints"]
@@ -2590,7 +2481,7 @@ mesh = SubResource("BoxMesh_130")
 surface_material_override/0 = SubResource("StandardMaterial3D_72")
 
 [node name="TeamCarDome" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6, 1.3, 43.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 1.3, 9.0)
 light_color = Color(1, 0.85, 0.6, 1)
 light_energy = 0.25
 shadow_enabled = false
@@ -2755,6 +2646,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
 mesh = SubResource("CylinderMesh_138")
 surface_material_override/0 = SubResource("StandardMaterial3D_72")
 cast_shadow = 0
+
+[node name="crowbar_trunk" type="Marker3D" parent="ItemSpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0.2, 9.8)
+script = ExtResource("31_x")
+item_id = "crowbar"
 
 [node name="crowbar_161" type="Marker3D" parent="ItemSpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.2, 15.5)
@@ -3422,7 +3318,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
 
 [node name="Lock" type="Node" parent="Station/FrontDoor"]
 script = ExtResource("28_x")
-kind := 1
+kind = 1
 
 [node name="BaseFront" type="CSGBox3D" parent="Station"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0.225)
@@ -10788,16 +10684,16 @@ spawn_points = NodePath("../SpawnPoints")
 [node name="SpawnPoints" type="Node3D" parent="."]
 
 [node name="Spawn1" type="Marker3D" parent="SpawnPoints"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 45)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 7.5)
 
 [node name="Spawn2" type="Marker3D" parent="SpawnPoints"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 45)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 7.5)
 
 [node name="Spawn3" type="Marker3D" parent="SpawnPoints"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 46.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 9)
 
 [node name="Spawn4" type="Marker3D" parent="SpawnPoints"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 46.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 9)
 
 [node name="TeamMonitor" type="Node" parent="."]
 script = ExtResource("36_x")

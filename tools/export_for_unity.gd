@@ -170,7 +170,8 @@ func _walk_child(child: Node, node: Node, level: Node) -> void:
 		_slot_tag = ""
 		return
 	if child is CSGShape3D:
-		if child.is_root_shape():
+		# (Hidden building pieces, like Exterior/NewBuildingDraft, aren't in the game.)
+		if child.is_root_shape() and child.is_visible_in_tree():
 			_add_csg(child)
 		return  # its children are part of the same baked mesh
 	if child is MultiMeshInstance3D:

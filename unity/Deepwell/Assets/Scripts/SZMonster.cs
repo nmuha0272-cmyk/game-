@@ -342,7 +342,7 @@ namespace Deepwell
             var target = SZWorld.Instance.PlayerViews().Find(p => p.id == playerId);
             _lastSeen = target.alive ? target.position : transform.position;
             if (Mode != State.Chase) SZAudio.PlayAt("monster_shriek", Eyes, 0.9f, 40f);
-            if (SZNet.IsAuthority) SZWorld.Instance._tenseUntil = Time.time + 30f;  // 30 seconds of tense silence
+            if (SZNet.IsAuthority) SZWorld.Instance.TenseUntil = Time.time + 30f;  // 30 seconds of tense silence
             SetState(State.Chase);
         }
 

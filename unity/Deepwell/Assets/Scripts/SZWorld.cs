@@ -33,7 +33,8 @@ namespace Deepwell
         readonly List<SZFlicker> _brokenLights = new List<SZFlicker>();
         readonly Dictionary<int, SZRemotePlayer> _remotes = new Dictionary<int, SZRemotePlayer>();
         float _nextState, _nextSummary, _nextAmbientHorror;
-        float _tenseUntil;  // until when we're in tactical silence mode
+        public float TenseUntil;  // until when we're in tactical silence mode
+        float _tenseMix = 1f;      // 1 = normal volume, lower = the tense quiet
         SZTrunkScene _trunk;
         bool _gotSummary;
 
@@ -125,6 +126,7 @@ namespace Deepwell
                 net.PeerLeft -= RemoveRemote;
             }
             if (Instance == this) Instance = null;
+            AudioListener.volume = SZGame.MasterVolume;
             NavMesh.RemoveAllNavMeshData();
         }
 
@@ -216,18 +218,12 @@ namespace Deepwell
                 SZAudio.PlayAmbientHorror("whisper_" + Random.Range(1, 3).ToString("D1"), 0.25f);
             }
 
-            // Tactical silence: lower master volume during tense moments.
-            const float TenseVolume = 0.2f;
-            const float CalmVolume = 0.9f;
-            if (_tenseUntil > Time.time)
-            {
-                AudioListener.volume = Mathf.Lerp(AudioListener.volume, TenseVolume, Time.deltaTime * 3f);
-            }
-            else
-            {
-                AudioListener.volume = Mathf.Lerp(AudioListener.volume, CalmVolume, Time.deltaTime * 3f);
-                _tenseUntil = 0f;
-            }
+            // Tactical silence: everything goes quieter during tense moments
+            // (a share of the player's own volume setting).
+            const float TenseShare = 0.22f;
+            if (TenseUntil <= Time.time) TenseUntil = 0f;
+            _tenseMix = Mathf.Lerp(_tenseMix, TenseUntil > 0f ? TenseShare : 1f, Time.deltaTime * 3f);
+            AudioListener.volume = SZGame.MasterVolume * _tenseMix;
 
             var net = SZNet.Instance;
             if (net == null || !SZNet.Online) return;
@@ -537,7 +533,7 @@ namespace Deepwell
                 if (Time.time - _lastCaught < 3f) return;
                 _lastCaught = Time.time;
                 Local.OnCaught();
-                _tenseUntil = 0f;  // tactical silence ends when caught
+                TenseUntil = 0f;  // tactical silence ends when caught
             }
             else
             {

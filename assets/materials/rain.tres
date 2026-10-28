@@ -1,6 +1,8 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+[gd_resource type="StandardMaterial3D" format=3]
 
 [resource]
-shader = ExtResource("shader")
-
-[ext_resource type="Shader" path="res://assets/shaders/rain.gdshader" id="1"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.72, 0.78, 0.88, 0.32)
+billboard_mode = 2
+billboard_keep_scale = true

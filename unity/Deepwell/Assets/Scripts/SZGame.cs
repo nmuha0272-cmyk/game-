@@ -55,7 +55,8 @@ namespace Deepwell
             SZGraphics.LoadQuality();
             SZPlayer.MouseSensitivity = PlayerPrefs.GetFloat("sz_mouse", 2f);
             SZPlayer.FlashlightBrightness = PlayerPrefs.GetFloat("sz_flashlight", 1f);
-            AudioListener.volume = PlayerPrefs.GetFloat("sz_volume", 0.9f);
+            MasterVolume = PlayerPrefs.GetFloat("sz_volume", 0.9f);
+            AudioListener.volume = MasterVolume;
             Subtitles = PlayerPrefs.GetInt("sz_subtitles", 1) == 1;
             BigSubtitles = PlayerPrefs.GetInt("sz_big_subtitles", 0) == 1;
             _playerName = PlayerPrefs.GetString("sz_name", "");
@@ -355,7 +356,7 @@ namespace Deepwell
             _controlsOpen = false;
             PlayerPrefs.SetFloat("sz_mouse", SZPlayer.MouseSensitivity);
             PlayerPrefs.SetFloat("sz_flashlight", SZPlayer.FlashlightBrightness);
-            PlayerPrefs.SetFloat("sz_volume", AudioListener.volume);
+            PlayerPrefs.SetFloat("sz_volume", MasterVolume);
             PlayerPrefs.Save();
             _screen = _settingsBack;
         }
@@ -625,8 +626,9 @@ namespace Deepwell
             GUI.Label(new Rect(x, y, 260, 30), "Flashlight brightness: " + Mathf.RoundToInt(SZPlayer.FlashlightBrightness * 100) + "%", _small);
             SZPlayer.FlashlightBrightness = GUI.HorizontalSlider(new Rect(x + 260, y + 8, 380, 20), SZPlayer.FlashlightBrightness, 0.4f, 2f);
             y += 50f;
-            GUI.Label(new Rect(x, y, 260, 30), "Volume: " + Mathf.RoundToInt(AudioListener.volume * 100) + "%", _small);
-            AudioListener.volume = GUI.HorizontalSlider(new Rect(x + 260, y + 8, 380, 20), AudioListener.volume, 0f, 1f);
+            GUI.Label(new Rect(x, y, 260, 30), "Volume: " + Mathf.RoundToInt(MasterVolume * 100) + "%", _small);
+            MasterVolume = GUI.HorizontalSlider(new Rect(x + 260, y + 8, 380, 20), MasterVolume, 0f, 1f);
+            if (_world == null) AudioListener.volume = MasterVolume;  // (in a game, SZWorld mixes in the tense quiet)
             y += 50f;
             GUI.Label(new Rect(x, y, 260, 30), "Subtitles", _small);
             if (GUI.Button(new Rect(x + 260, y - 8, 120, 44), Subtitles ? "> ON" : "ON", _button)) Subtitles = true;
@@ -643,6 +645,8 @@ namespace Deepwell
         // ---------------------------------------------------------------- subtitles
 
         public static bool Subtitles = true, BigSubtitles;
+        // The volume the player picked in Settings (tense moments go quieter than this).
+        public static float MasterVolume = 0.9f;
 
         // ---------------------------------------------------------------- changing the keys
 

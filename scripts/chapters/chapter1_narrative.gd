@@ -20,8 +20,8 @@ func _ready() -> void:
 
 
 func _create_mentor_intro_trigger() -> void:
-	# Near the start - Exterior area (near the car)
-	var trigger = _make_trigger("MENTOR_INTRO", Vector3(8, 0.5, 15), 6.0)
+	# Near the start - the porch of the main building (by the parked car)
+	var trigger = _make_trigger("MENTOR_INTRO", Vector3(2.5, 0.5, 4.5), 6.0)
 	chapter_root.add_child(trigger)
 
 
