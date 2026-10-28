@@ -78,6 +78,8 @@ func _setup_rigged(character: int, is_local: bool) -> void:
 	if is_local:
 		for part: MeshInstance3D in _rig.find_children("*", "MeshInstance3D", true, false):
 			part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	# Add fly effects on the character (flies on the model)
+	add_fly_effects(_rig, character)
 
 
 func _add_part(parent: Node3D, file: String, is_local: bool) -> void:
@@ -170,3 +172,37 @@ func set_glance(degrees: float) -> void:
 func clear_acting() -> void:
 	acting = 0.0
 	glance = 0.0
+
+func add_fly_effects(rig: HumanRig, character_id: int) -> void:
+	# Create fly particle system as a child of the rig
+	var fly_particles := GPUParticles3D.new()
+	fly_particles.name = "FlyEffects"
+	fly_particles.emitting = true
+	fly_particles.one_shot = false
+	fly_particles.amount = 5
+	fly_particles.lifetime = 2.0
+	fly_particles.lifetime_randomness = 1.0
+	fly_particles.speed_scale = 2.0
+	fly_particles.speed_randomness = 2.0
+	fly_particles.direction = Vector3(0, -1, 0)
+	fly_particles.direction_randomness = Vector3(1, 0.5, 1)
+	fly_particles.gravity = Vector3(0, -0.5, 0)
+	fly_particles.scale = Vector3(0.1, 0.1, 0.1)
+	fly_particles.scale_randomness = Vector3(0.05, 0.05, 0.05)
+	fly_particles.color = Color(0.8, 0.8, 0.8)
+	fly_particles.angle = PI
+	fly_particles.angle_randomness = PI
+	fly_particles.cooking = false
+	rig.add_child(fly_particles)
+	# Set texture to fly shape
+	var fly_texture := ImageTexture.new()
+	var fly_image := Image.new()
+	fly_image.resize(16, 16)
+	for x in range(16):
+		for y in range(16):
+			fly_image.set_pixel(x, y, Color(1, 1, 1, 0.8))
+	fly_texture.load_image(fly_image)
+	fly_particles.process_material = StandardMaterial3D.new()
+	((StandardMaterial3D)fly_particles.process_material).albedo_texture = fly_texture
+	var cull := CPUParticleCullMode._2D
+	fly_particles.cull_mode = cull
