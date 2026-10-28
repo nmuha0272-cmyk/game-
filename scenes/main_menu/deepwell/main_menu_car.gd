@@ -196,7 +196,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_road_and_forest()
 	_build_station()
-	_build_car()
+	_build_placeholder_car()
 	for id: String in CHARACTER_ORDER:
 		_build_character(id)
 	_build_mirror()
@@ -329,7 +329,7 @@ func _set_state(new_state: State) -> void:
 		get_tree().create_timer(1.2).timeout.connect(func() -> void:
 			if state == State.SELECT:
 				_select_ui.show()
-				_set_hovered(""))
+				_set_hovered("")
 		_refresh_info()
 	else:
 		state = State.MENU
@@ -338,6 +338,10 @@ func _set_state(new_state: State) -> void:
 		_menu.show()
 		if _menu.has_method("show_main_buttons"):
 			_menu.show_main_buttons()
+		# Free hero car and rebuild placeholder for menu display
+		if _car:
+			_car.queue_free()
+		_build_placeholder_car()
 	_refresh_highlights()
 
 
@@ -354,6 +358,10 @@ func enter_select() -> void:
 
 func _on_play_requested(_a: Variant = null, _b: Variant = null) -> void:
 	if state == State.MENU:
+		# Free placeholder car and build hero car for select/arrival
+		if _car:
+			_car.queue_free()
+		_build_hero_car()
 		_set_state(State.SELECT)
 
 
@@ -805,7 +813,7 @@ func _build_station() -> void:
 	_station.add_child(gate_lamp)
 
 
-func _build_car() -> void:
+func _build_hero_car() -> void:
 	_car = Node3D.new()
 	add_child(_car)
 
@@ -912,6 +920,47 @@ func _build_car() -> void:
 	dash_light.light_energy = 0.15
 	dash_light.omni_range = 1.6
 	_car.add_child(dash_light)
+
+
+func _build_placeholder_car() -> void:
+	_car = Node3D.new()
+	add_child(_car)
+
+	var placeholder_mat := _mat(Color(0.15, 0.15, 0.15), 0.8)
+
+	# Simple blocky placeholder car body
+	_box(_car, Vector3(2.0, 0.5, 4.5), Vector3(0, 0.6, 0.3), placeholder_mat)       # floor/lower body
+	_box(_car, Vector3(1.8, 0.05, 2.5), Vector3(0, 0.85, 0.4), _mat(Color(0.05, 0.045, 0.04)))  # cabin floor
+	_box(_car, Vector3(2.0, 0.4, 1.5), Vector3(0, 1.0, -1.6), placeholder_mat)     # hood
+	_box(_car, Vector3(2.0, 0.4, 1.0), Vector3(0, 1.0, 2.0), placeholder_mat)       # trunk
+	_box(_car, Vector3(0.1, 0.4, 2.4), Vector3(-1.0, 1.0, 0.5), placeholder_mat)   # door left
+	_box(_car, Vector3(0.1, 0.4, 2.4), Vector3(1.0, 1.0, 0.5), placeholder_mat)    # door right
+	_box(_car, Vector3(2.05, 0.1, 4.5), Vector3(0, 0.35, 0.3), _mat(Color(0.2, 0.2, 0.2))) # bumper line
+	_box(_car, Vector3(1.8, 0.05, 2.0), Vector3(0, 1.7, 0.5), placeholder_mat)     # roof
+
+	# Simple wheels (4)
+	var tire := _mat(Color(0.02, 0.02, 0.02))
+	for pos in [Vector3(-0.95, 0.4, -1.5), Vector3(0.95, 0.4, -1.5), Vector3(-0.95, 0.4, 1.6), Vector3(0.95, 0.4, 1.6)]:
+		var w := MeshInstance3D.new()
+		var w_mesh := CylinderMesh.new()
+		w_mesh.top_radius = 0.4
+		w_mesh.bottom_radius = 0.4
+		w_mesh.height = 0.25
+		w.mesh = w_mesh
+		w.position = pos
+		w.rotation_degrees.z = 90.0
+		w.material_override = tire
+		_car.add_child(w)
+
+	# Simple headlights (2)
+	var head_mat := _mat(Color(1, 1, 0.9), 0.2, Color(1, 0.95, 0.8), 2.0)
+	for x in [-0.7, 0.7]:
+		_box(_car, Vector3(0.35, 0.15, 0.05), Vector3(x, 1.0, -2.4), head_mat)
+
+	# Simple taillights (2)
+	var tail_mat := _mat(Color(0.5, 0.02, 0.02), 0.3, Color(1, 0.05, 0.03), 1.5)
+	for x in [-0.7, 0.7]:
+		_box(_car, Vector3(0.3, 0.12, 0.05), Vector3(x, 1.05, 2.7), tail_mat)
 
 
 func _build_character(id: String) -> void:
