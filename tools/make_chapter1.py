@@ -173,6 +173,26 @@ BX("LandingFill",R,8,10,-4.6,-4.0,-25.3,-23.6,ROCK); BX("JunctionFill",R,8,10,-9
 
 # ============================================================ ROOM 1: EXTERIOR
 E="Exterior"
+# Rain over the outside (it stops at the station's roof).
+rain_drop=sc.sub("QuadMesh", material=ER(sc.ext("Material","res://assets/materials/rain.tres")), size="Vector2(0.015, 0.45)")
+sc.node("Rain","GPUParticles3D",E,transform=xform((0,24,12)),amount="6000",lifetime="1.4",preprocess="1.4",
+        visibility_aabb="AABB(-50, -30, -60, 100, 32, 120)",process_material=ER(sc.ext("ParticleProcessMaterial","res://assets/materials/rain_process.tres")),
+        draw_pass_1=SR(rain_drop))
+def rain_stop(name,x1,x2,y1,y2,z1,z2):
+    sc.node(name,"GPUParticlesCollisionBox3D",E,transform=xform(((x1+x2)/2,(y1+y2)/2,(z1+z2)/2)),size=v3(x2-x1,y2-y1,z2-z1))
+# (the station's roof, except the hole over the west office)
+rain_stop("RainRoofN",-18.65,12.15,0,12,-22.8,-8.5); rain_stop("RainRoofS",-18.65,12.15,0,12,-6.5,2.4)
+rain_stop("RainRoofW",-18.65,-5.5,0,12,-8.5,-6.5); rain_stop("RainRoofE",-3.0,12.15,0,12,-8.5,-6.5)
+rain_stop("RainGround",-55,55,-6,0,-50,72)  # (so it never falls into the rooms underground)
+# Nasir's gray-box layout for a new building, kept hidden (and not solid) as a draft.
+sc.node("NewBuildingDraft","Node3D",E,visible="false")
+for n,c,sz,mt in [("StationExterior",(0,0,0),(50,10,30),ROAD),("Gate",(0,0,8),(8,6,2),METAL),("BuildingFootprint",(-20,0,-25),(40,10,35),CONC),
+                  ("OfficeComputer",(-5,1,-10),(6,3,1),DWOOD),("OfficeKeypad",(15,1,-10),(4,3,1),DWOOD),("Corkboard",(-15,1,-20),(8,4,1),DWOOD),
+                  ("FileDirectory",(10,1,-20),(6,3,1),DWOOD),("Stairwell",(-10,1,-35),(8,6,8),CONC),("TallyMarks",(-15,1.5,-38),(20,1,1),METAL),
+                  ("TunnelEntrance",(-20,1,-50),(12,6,8),CONC),("VentCrawl",(-25,1,-60),(4,6,4),CONC),("GoliathArena",(-30,1,-70),(15,8,10),METAL),
+                  ("ElevatorShaft",(-35,1,-85),(6,10,6),CONC),("FuseBox1",(-40,1,-80),(3,3,2),METAL),("FuseBox2",(-20,1,-85),(3,3,2),METAL),
+                  ("DualKeyConsole",(-50,1,-90),(8,4,2),DWOOD),("ElevatorPanel",(-55,1,-95),(6,3,2),DWOOD),("HeightChart",(-35,2,-75),(2,15,1),DWOOD)]:
+    B(n,E+"/NewBuildingDraft",c,sz,mt,collide=False)
 BX("Road",E,-22,22,0,0.02,36,42,ROAD,collide=False)
 # Invisible walls where the forest gets too thick to walk through.
 sc.node("ForestEdge","StaticBody3D",E)
@@ -224,13 +244,10 @@ for n,(x1,x2,z1,z2) in {"FenceSouthW":(-15,-1.6,21.96,22.04),"FenceSouthE":(1.6,
 for k,x in enumerate(x for x in range(-15,16,3) if abs(x) > 2):
     BX(f"PostS{k}",E,x-0.07,x+0.07,0,3.1,21.93,22.07,METAL)
 BX("GatePostL",E,-1.75,-1.55,0,3.1,21.9,22.1,METAL); BX("GatePostR",E,1.55,1.75,0,3.1,21.9,22.1,METAL)
-# abandoned car + notebook
-BX("CarBody",E,-11.1,-6.9,0.3,1.2,38.05,39.95,CAR); BX("CarCabin",E,-10.4,-8.2,1.2,1.9,38.15,39.85,CAR)
-for k,(wx,wz) in enumerate([(-10.4,38),(-10.4,40),(-7.6,38),(-7.6,40)]):
-    mi(f"Wheel{k}",E,(wx,0.35,wz),mesh("CylinderMesh",top_radius="0.35",bottom_radius="0.35",height="0.25",radial_segments="12",rings="1"),BLACK,pitch=90)
-mi("Windshield",E,(-8.18,1.55,39),mesh("BoxMesh",size=v3(0.04,0.6,1.6)),BLACK,shadow=False)
-light("CarDomeLight","Lights",(-9.3,1.75,39),color=(1,0.8,0.5),energy=0.15,rng=2.0,flicker=0.5,fixture=None)
-inst("lpersonal","InformantNotebook","Lore",(-7.4,1.2,39),0,entry=ER(LORE("personal_journalist_notebook")))
+# (The old abandoned car outside the gate is gone: the team's car is parked by
+# the main building now. Its dome light and the informant's notebook moved to it.)
+light("CarDomeLight","Lights",(-5.1,1.75,9.0),color=(1,0.8,0.5),energy=0.15,rng=2.0,flicker=0.5,fixture=None)
+inst("lpersonal","InformantNotebook","Lore",(-7.05,1.18,9.0),0,entry=ER(LORE("personal_journalist_notebook")))
 item("battery",(-6,0.2,41))
 # The team's own car (they drove here in it; the same car as the home screen).
 # Parked on the road next to where everyone starts. At the start, Eli and Cole
@@ -245,7 +262,7 @@ TC_SEAT=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.12,0.09,0.07), roughn
 TC_HEAD=SR(sc.sub("StandardMaterial3D", albedo_color=col(1,1,0.9), emission_enabled="true", emission=col(1,0.95,0.8), emission_energy_multiplier="3.0"))
 TC_TAIL=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.5,0.02,0.02), emission_enabled="true", emission=col(1,0.05,0.03), emission_energy_multiplier="2.0"))
 TC="Exterior/TeamCar"
-sc.node("TeamCar","StaticBody3D","Exterior",transform=xform((8.4,0,43.6),90))
+sc.node("TeamCar","StaticBody3D","Exterior",transform=xform((-5.5,0,9.0),90))  # by the main building
 sc.node("CollisionShape3D","CollisionShape3D",TC,transform=xform((0,0.95,0.2)),shape=SR(sc.sub("BoxShape3D",size=v3(2.0,1.3,4.8))))
 def tbox(name,size,pos,mat,parent=TC,pitch=0):
     mi(name,parent,pos,mesh("BoxMesh",size=v3(*size)),mat,pitch=pitch)
@@ -274,7 +291,7 @@ tbox("Lid",(2.0,0.05,1.0),(0,0,0.5),TC_PAINT,parent=TC+"/TrunkLid")
 # Two pistols in the trunk.
 for k,x in enumerate([-0.25,0.25]):
     tbox(f"TrunkPistol{k}",(0.05,0.035,0.2),(x,1.09,2.1),BLACK)
-light("TeamCarDome","Lights",(10.6,1.3,43.6),color=(1,0.85,0.6),energy=0.25,rng=2.5,shadow=False,fixture=None)
+light("TeamCarDome","Lights",(-3.3,1.3,9.0),color=(1,0.85,0.6),energy=0.25,rng=2.5,shadow=False,fixture=None)
 # sign
 BX("SignBoard",E,-5.2,-2.8,1.2,2.2,22.1,22.14,RUST)
 label("SignText",E,(-4,1.7,22.16),0,"PROPERTY OF U.S. GOVERNMENT\nNO TRESPASSING\nBlackwater Weather Station",size=0.0035,font=36,color=(0.85,0.8,0.7),outline="0")
@@ -295,7 +312,8 @@ B("Mast","Station",(6,7.5,-4),(0.15,8,0.15),METAL,collide=False)
 for k,y in enumerate([5,8,10.5]):
     B(f"MastBar{k}","Station",(6,y,-4),(1.4-k*0.35,0.06,0.06),METAL,collide=False)
 light("MastWarning","Lights",(6,11.6,-4),color=(1,0.1,0.05),energy=0.8,rng=6,pulse=True,shadow=False,fixture="bulb")
-item("crowbar",(8,0.2,15.5))
+item("crowbar",(-2.8,0.2,9.8))  # by the trunk, for the jammed front door
+item("crowbar",(8,0.2,15.5))   # (the yard one, for the gate)
 BX("LampPole",E,2.9,3.1,0,4.6,5.9,6.1,METAL)
 light("YardLamp","Lights",(3,4.4,6.4),color=(1,0.85,0.6),energy=1.4,rng=12,flicker=0.25,fixture="bulb")
 B("LampArm",E,(3,4.62,6.2),(0.08,0.08,0.5),METAL,collide=False)
@@ -320,7 +338,10 @@ BX("WestWall",St,-10.15,-9.85,0,H,-16,0,WALL); BX("EastWall",St,9.85,10.15,0,H,-
 BX("HallWestA",St,-1.15,-0.85,0,H,-16,-4,WALL); BX("HallWestB",St,-1.15,-0.85,0,H,-2.5,0,WALL)
 BX("HallEastA",St,1.85,2.15,0,H,-16,-11,WALL); BX("HallEastB",St,1.85,2.15,0,H,-9,-3,WALL); BX("HallEastC",St,1.85,2.15,0,H,-1.5,0,WALL)
 BX("DirectorWall",St,2,10,0,H,-6.3,-6.0,WALL)
-BX("Roof",St,-10.3,10.3,H,H+0.3,-16.3,0.3,CONC)
+# The roof has fallen in over the west office (HOLE): it's built in four pieces round the gap.
+HOLE=(-5.5,-3.0,-8.5,-6.5)  # x1, x2, z1, z2
+BX("RoofN",St,-10.3,10.3,H,H+0.3,-16.3,HOLE[2],CONC); BX("RoofS",St,-10.3,10.3,H,H+0.3,HOLE[3],0.3,CONC)
+BX("RoofW",St,-10.3,HOLE[0],H,H+0.3,HOLE[2],HOLE[3],CONC); BX("RoofE",St,HOLE[1],10.3,H,H+0.3,HOLE[2],HOLE[3],CONC)
 BX("StairHouseW",St,7.7,8.0,0,3.0,-22.4,-16,WALL); BX("StairHouseE",St,10.0,10.3,0,3.0,-22.4,-16,WALL)
 BX("StairHouseN",St,7.7,10.3,0,3.0,-22.7,-22.4,WALL); BX("StairHouseRoof",St,7.7,10.3,3.0,3.3,-22.7,-16,CONC)
 # furniture
@@ -357,6 +378,7 @@ for k,(x,z,yaw) in enumerate([(-7,0.17,0),(-4,0.17,0),(5,0.17,0),(8,0.17,0),(-10
     for j,roll in enumerate([25,-20]):
         mi(f"Board{k}_{j}",St,(x+(0.01 if yaw==0 else 0),1.7,z+(0.02 if yaw==0 else 0)),mesh("BoxMesh",size=v3(1.5,0.16,0.04)),DWOOD,yaw=yaw,roll=roll)
 inst("door","FrontDoor",St,(-0.5,0,0),0)
+sc.node("Lock","Node",f"{St}/FrontDoor",script=ER(S_LOCK),kind="1")  # jammed: pry it with the crowbar from the trunk
 # --- The outside of the station: a cold-war building that has rotted for years.
 # All of it is just for looks (no collision), except the step and the AC units.
 GRIME=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.06,0.05,0.035,0.55), transparency="1", roughness="1.0"))
@@ -461,6 +483,196 @@ sc.node("BuildingLights","Node3D","Puzzles",script=ER(S_LIGHTS))
 light("OfficeLight","Puzzles/BuildingLights",(-5,3.0,-8),energy=0.9,rng=8,flicker=0.3); light("HallLight","Puzzles/BuildingLights",(0.5,3.0,-8),energy=0.6,rng=6,flicker=0.6)
 light("DirectorLight","Puzzles/BuildingLights",(6,3.0,-11),energy=0.8,rng=6,flicker=0.15); light("BreakLight","Puzzles/BuildingLights",(6,3.0,-3),energy=0.6,rng=5,flicker=0.8)
 sc.node("Buzz","AudioStreamPlayer3D","Sound",transform=xform((0,2.8,-8)),stream=ER(BUZZ),volume_db="-20.0",unit_size="3.0",autoplay="true")
+
+# ------------------------------------------------------------ nobody has touched it in years
+# The station is falling apart (a caved-in roof, rubble, ivy, mold, cobwebs,
+# dead leaves blown in, water on the floor), but its emergency power still
+# runs: exit signs, red emergency lamps, a humming vending machine, sparking
+# cables and an old computer that still works. All of it is just for looks
+# (no collision) except the fallen roof slab, the vending machine and the cage.
+DEC="Station/Decay"; sc.node("Decay","Node3D",St)
+def flat(c,a=1.0,rough=1.0,cull=False,metal=0.0,glow=None,glow_e=1.0):
+    p=dict(albedo_color=col(*c,a),roughness=str(rough))
+    if a<1: p["transparency"]="1"
+    if cull: p["cull_mode"]="2"
+    if metal: p["metallic"]=str(metal)
+    if glow: p.update(emission_enabled="true",emission=col(*glow),emission_energy_multiplier=str(glow_e))
+    return SR(sc.sub("StandardMaterial3D",**p))
+IVY=flat((0.1,0.24,0.06),cull=True); IVY2=flat((0.17,0.32,0.08),cull=True); WEED=flat((0.22,0.3,0.09),cull=True)
+MOLD=flat((0.03,0.05,0.02),0.55); WATERSTAIN=flat((0.12,0.09,0.05),0.4); COBWEB=flat((0.85,0.85,0.82),0.22,cull=True)
+LEAF=flat((0.22,0.12,0.04),cull=True); LEAF2=flat((0.3,0.18,0.06),cull=True); DUST=flat((0.35,0.33,0.3),0.35)
+PUDDLE=flat((0.02,0.025,0.03),0.85,rough=0.04,metal=0.3); RUBBLE=CONC; TILE=flat((0.62,0.6,0.55))
+CRACK=flat((0.02,0.02,0.02),0.8); WIRE=flat((0.03,0.03,0.03)); COPPER=flat((0.55,0.3,0.12),metal=0.8,rough=0.4)
+EXITGLOW=flat((0.1,0.9,0.3),glow=(0.15,1,0.35),glow_e=3.0); REDGLOW=flat((1,0.1,0.05),glow=(1,0.12,0.06),glow_e=4.0)
+VEND=flat((0.5,0.08,0.06),rough=0.5,metal=0.3); VENDGLASS=flat((0.75,0.8,0.7),glow=(0.6,0.75,0.55),glow_e=0.8)
+CRT=flat((0.6,0.57,0.5),rough=0.7); FLOPPY=flat((0.08,0.1,0.25),rough=0.6)
+random.seed(77)
+def quad(name,pos,w,h,mat,yaw=0,pitch=0,roll=0):
+    mi(name,DEC,pos,mesh("QuadMesh",size=f"Vector2({w:g}, {h:g})"),mat,yaw=yaw,pitch=pitch,roll=roll,shadow=False)
+def plane(name,pos,w,d,mat,yaw=0):
+    mi(name,DEC,pos,mesh("PlaneMesh",size=f"Vector2({w:g}, {d:g})"),mat,yaw=yaw,shadow=False)
+def chunk(name,pos,size,yaw=None,pitch=None):
+    mi(name,DEC,pos,mesh("BoxMesh",size=v3(*size)),RUBBLE,yaw=random.uniform(0,360) if yaw is None else yaw,
+       pitch=random.uniform(-25,25) if pitch is None else pitch,roll=random.uniform(-25,25))
+# Lots of small leaves and grass blades are drawn as batches (MultiMesh), like the forest.
+BATCH={}
+def batch(kind,pos,size,yaw=0,pitch=0,roll=0):
+    """One leaf/blade (a 1x1 quad scaled to size=(w,h)), turned yaw/pitch/roll degrees."""
+    BATCH.setdefault(kind,[]).append((pos,size,yaw,pitch,roll))
+def rot(yaw,pitch,roll):
+    cy,sy=math.cos(math.radians(yaw)),math.sin(math.radians(yaw)); cp,sp=math.cos(math.radians(pitch)),math.sin(math.radians(pitch))
+    cr,sr=math.cos(math.radians(roll)),math.sin(math.radians(roll))
+    Y=[[cy,0,sy],[0,1,0],[-sy,0,cy]]; Xm=[[1,0,0],[0,cp,-sp],[0,sp,cp]]; Z=[[cr,-sr,0],[sr,cr,0],[0,0,1]]
+    mul=lambda a,b: [[sum(a[i][k]*b[k][j] for k in range(3)) for j in range(3)] for i in range(3)]
+    return mul(mul(Y,Xm),Z)
+def emit_batches():
+    quad1=mesh("QuadMesh",size="Vector2(1, 1)")
+    for kind,mat in (("ivy",IVY),("ivy2",IVY2),("weed",WEED),("leaf",LEAF),("leaf2",LEAF2)):
+        items=BATCH.get(kind,[])
+        if not items: continue
+        buf=[]
+        for (x,y,z),(w,h),yw,pt,rl in items:
+            m=rot(yw,pt,rl)
+            buf+=[m[0][0]*w,m[0][1]*h,m[0][2],x, m[1][0]*w,m[1][1]*h,m[1][2],y, m[2][0]*w,m[2][1]*h,m[2][2],z]
+        mm=sc.sub("MultiMesh", transform_format="1", instance_count=str(len(items)), mesh=quad1,
+                  buffer="PackedFloat32Array("+", ".join(f"{v:.3f}" for v in buf)+")")
+        sc.node("Leaves_"+kind,"MultiMeshInstance3D",DEC,multimesh=SR(mm),material_override=mat,cast_shadow="0")
+def tuft(name,x,y,z,size=0.35):
+    """A clump of weeds: thin grass blades leaning out."""
+    for j in range(random.randint(5,9)):
+        batch("weed" if j%3 else "ivy2",(x+random.uniform(-0.08,0.08),y+size*0.45,z+random.uniform(-0.08,0.08)),
+              (random.uniform(0.04,0.07),size*random.uniform(0.6,1.0)),yaw=random.uniform(0,180),roll=random.uniform(-25,25))
+
+# The caved-in roof: a broken slab leaning into the office, rubble, rebar, and the rain coming in.
+hx,hz=(HOLE[0]+HOLE[1])/2,(HOLE[2]+HOLE[3])/2
+B("FallenSlab",DEC,(hx-0.3,1.2,hz+0.3),(2.3,0.22,3.4),CONC,yaw=12,pitch=40)  # one end on the floor, one up at the hole
+for k in range(16):
+    r=random.uniform(0.15,0.45)
+    chunk(f"Rubble{k}",(hx+random.uniform(-1.9,1.9),r*0.35,hz+random.uniform(-1.6,1.6)),(r,r*0.7,r*0.9))
+for k in range(5):
+    mi(f"Rebar{k}",DEC,(HOLE[0]+0.35*k+0.4,H+0.05,HOLE[2]+0.05),mesh("CylinderMesh",top_radius="0.012",bottom_radius="0.012",height="0.9",radial_segments="5",rings="1"),
+       RUST,pitch=random.uniform(55,80),roll=random.uniform(-10,10),shadow=False)
+plane("RoofPuddle",(hx+0.4,0.025,hz-0.2),2.6,2.0,PUDDLE,yaw=20)
+plane("DrippingPuddle",(-1.5,0.024,-12.5),1.1,0.8,PUDDLE,yaw=-15)
+for k in range(5):
+    tuft(f"HoleWeed{k}",hx+random.uniform(-1.5,1.5),0.02,hz+random.uniform(-1.3,1.3),random.uniform(0.25,0.5))
+# A small tree has grown up under the hole.
+mi("SaplingTrunk",DEC,(hx+1.2,0.6,hz-0.9),mesh("CylinderMesh",top_radius="0.025",bottom_radius="0.045",height="1.2",radial_segments="6",rings="1"),BARK,roll=6)
+for k in range(5):
+    mi(f"SaplingLeaves{k}",DEC,(hx+1.2+random.uniform(-0.3,0.3),1.1+k*0.15,hz-0.9+random.uniform(-0.3,0.3)),
+       mesh("SphereMesh",radius="0.3",height="0.4",radial_segments="8",rings="4"),IVY2,shadow=False)
+# Moonlight falling through the hole.
+sc.node("HoleMoonlight","SpotLight3D",DEC,transform=xform((hx,H+2.5,hz),0,-90),light_color=col(0.55,0.65,0.9),light_energy="2.2",
+        spot_range="7.0",spot_angle="28.0",shadow_enabled="true")
+sc.node("HoleRainSound","AudioStreamPlayer3D","Sound",transform=xform((hx,1.5,hz)),stream=ER(DRIP),volume_db="-6.0",unit_size="4.0",autoplay="true")
+
+# Ceiling tiles that came down, and some still hanging by a corner.
+for k in range(12):
+    x=random.uniform(-9,9); z=random.uniform(-15,-0.8)
+    if -1.2<x<2.2: continue  # keep the hall clear
+    mi(f"FloorTile{k}",DEC,(x,0.03,z),mesh("BoxMesh",size=v3(0.6,0.02,0.6)),TILE,yaw=random.uniform(0,90),pitch=random.uniform(-6,6),shadow=False)
+for k,(x,z) in enumerate([(-7.5,-3),(-2.5,-13.5),(4.5,-4.5),(0.5,-6),(7,-12)]):
+    mi(f"HangingTile{k}",DEC,(x,H-0.45,z),mesh("BoxMesh",size=v3(0.6,0.02,0.6)),TILE,yaw=random.uniform(0,90),pitch=random.uniform(45,70),shadow=False)
+# Cables hanging from the ceiling. Two of them still spark (the power works!).
+for k,(x,z,spark) in enumerate([(-7.8,-5.5,False),(0.6,-10.5,True),(4,-2,False),(-2,-14,False),(6.5,-13.8,True)]):
+    length=random.uniform(0.9,1.6)
+    mi(f"Cable{k}",DEC,(x,H-length/2,z),mesh("CylinderMesh",top_radius="0.012",bottom_radius="0.012",height=f"{length:.2f}",radial_segments="5",rings="1"),
+       WIRE,pitch=random.uniform(-12,12),roll=random.uniform(-12,12),shadow=False)
+    mi(f"CableEnd{k}",DEC,(x,H-length,z),mesh("CylinderMesh",top_radius="0.016",bottom_radius="0.004",height="0.06",radial_segments="5",rings="1"),COPPER,shadow=False)
+    if spark:
+        light(f"Spark{k}",DEC,(x,H-length-0.05,z),color=(0.6,0.75,1),energy=1.4,rng=3.0,flicker=0.95,shadow=False,fixture=None)
+# Cracks running across the walls.
+for k,(x,y,z,yaw,length) in enumerate([(-6,2.2,0.16,0,1.6),(4.5,1.2,0.16,0,1.2),(-9.84,2.0,-7,90,2.0),(9.84,1.6,-13,-90,1.4),
+                                       (-3,2.4,-15.84,180,1.8),(-0.84,1.4,-6,90,1.1),(1.84,2.2,-12.5,-90,1.3)]):
+    for j in range(3):
+        quad(f"Crack{k}_{j}",(x+(j*length/3-length/3 if yaw in (0,180) else 0),y-j*0.25,z+(0 if yaw in (0,180) else j*length/3-length/3)),
+             length/3,0.03,CRACK,yaw=yaw,roll=random.uniform(-35,35))
+# Mold creeping up from the floor and down from the ceiling, and water stains under the hole.
+for k,(x,z,yaw) in enumerate([(-9.84,-14,90),(-9.84,-6,90),(9.84,-3,-90),(-4,-15.84,0),(5,-15.84,0),(-6,-0.16,180),(7,-0.16,180),(-0.84,-11,90)]):
+    quad(f"MoldLow{k}",(x,0.4,z),random.uniform(1.0,2.2),0.8,MOLD,yaw=yaw)
+    quad(f"MoldHigh{k}",(x+(0.3 if yaw in (0,180) else 0),H-0.35,z),random.uniform(0.8,1.6),0.7,MOLD,yaw=yaw)
+for k,(x,z) in enumerate([(HOLE[0]+0.2,HOLE[2]-0.01),(HOLE[1]+0.4,HOLE[3]+0.01)]):
+    quad(f"WaterStain{k}",(x,1.9,z),1.4,2.2,WATERSTAIN,yaw=0 if k else 180)
+# Cobwebs in the corners.
+for k,(x,z,yaw) in enumerate([(-9.6,-15.6,45),(9.6,-15.6,-45),(-9.6,-0.4,135),(9.6,-0.4,-135),(-1.25,-15.6,-45),(1.55,-0.4,45),(2.4,-6.6,45),(9.6,-6.6,-45)]):
+    quad(f"Cobweb{k}",(x,H-0.35,z),0.9,0.7,COBWEB,yaw=yaw,pitch=-20)
+# Dead leaves blown in under the front door, and dust everywhere.
+for k in range(90):
+    x=random.uniform(-2.5,3.5); z=random.uniform(-4.5,-0.3) if k<70 else random.uniform(-9,-6)
+    batch("leaf" if k%2 else "leaf2",(x if k<70 else random.uniform(-6,-2.5),0.012+k*0.0001,z),(0.09,0.07),yaw=random.uniform(0,360),pitch=-90)
+for k,(x,z,w,d) in enumerate([(-6,-12,3,2.5),(5,-12,3,3),(6,-1.5,2.5,1.5),(-7,-2,2,2.5)]):
+    plane(f"Dust{k}",(x,0.021,z),w,d,DUST,yaw=random.uniform(0,40))
+# A filing cabinet that fell over (the drawers spilled papers).
+prop("FallenCabinet",DEC,"cabinet",(-8.2,0.33,-15.3),20,roll=90)
+for k in range(6):
+    mi(f"SpilledPaper{k}",DEC,(-7.4+random.uniform(-0.6,0.6),0.026,-14.8+random.uniform(-0.6,0.6)),mesh("PlaneMesh",size="Vector2(0.21, 0.29)"),PAPER,yaw=random.uniform(0,360),shadow=False)
+
+# Outside: ivy climbing the walls, weeds along the bottom, a sagging gutter.
+def ivy(name,x,z,yaw,height,width):
+    """Ivy growing up a wall from the ground: a few woody stems, covered in small leaves."""
+    along=(1,0) if yaw in (0,180) else (0,1)
+    out=0.03*(1 if yaw==0 else -1 if yaw==180 else (1 if yaw==90 else -1))
+    for st in range(3):
+        sx=random.uniform(-width/3,width/3); lean=random.uniform(-14,14); h=height*random.uniform(0.7,1.0)
+        mi(f"{name}Stem{st}",DEC,(x+along[0]*sx,h/2,z+along[1]*sx),mesh("CylinderMesh",top_radius="0.008",bottom_radius="0.02",height=f"{h:.2f}",radial_segments="4",rings="1"),
+           BARK,yaw=yaw,roll=lean,shadow=False)
+    for j in range(int(height*width*28)+10):
+        y=random.uniform(0.05,height)**1.0; spread=width/2*(1.15-y/height*0.7)
+        off=random.uniform(-spread,spread); size=random.uniform(0.1,0.2)
+        pos=(x+along[0]*off+(out if yaw in (90,-90) else 0)*0, y, z+along[1]*off)
+        pos=(pos[0]+(0 if yaw in (0,180) else out*random.uniform(0.3,1.5)),pos[1],pos[2]+(out*random.uniform(0.3,1.5) if yaw in (0,180) else 0))
+        batch("ivy" if j%3 else "ivy2",pos,(size,size*0.9),yaw=yaw+random.uniform(-30,30),pitch=random.uniform(-25,25),roll=random.uniform(0,360))
+for k,(x,z,yaw,h,w) in enumerate([(-8.6,0.34,0,3.6,2.4),(-4.6,0.34,0,2.2,1.4),(3.8,0.34,0,3.0,1.6),(8.2,0.34,0,3.8,2.2),
+                                    (-10.42,-2,-90,3.4,2.6),(-10.42,-11,-90,3.8,3.0),(10.42,-6.5,90,2.8,2.0),(10.42,-14,90,3.6,2.2)]):
+    ivy(f"Ivy{k}",x,z,yaw,h,w)
+for k in range(26):
+    side=random.choice(["front","west","east"])
+    if side=="front": x,z=random.uniform(-10,10),random.uniform(0.45,0.9)
+    elif side=="west": x,z=random.uniform(-10.9,-10.45),random.uniform(-16,0)
+    else: x,z=random.uniform(10.45,10.9),random.uniform(-16,0)
+    if -2<x<3 and side=="front": continue  # (not on the door step)
+    tuft(f"BaseWeed{k}",x,0,z,random.uniform(0.25,0.6))
+for k in range(18):
+    x=random.uniform(-14,14); z=random.uniform(2,20)
+    tuft(f"YardWeed{k}",x,0,z,random.uniform(0.2,0.45))
+emit_batches()
+mi("SaggingGutter",DEC,(-6.5,H+0.05,0.48),mesh("BoxMesh",size=v3(4.0,0.1,0.12)),METAL,roll=-14,shadow=False)
+
+# Emergency power: still on after all these years.
+for k,(x,z,yaw) in enumerate([(0.5,-0.2,180),(2.2,-10.0,90),(9,-15.75,0)]):
+    mi(f"ExitSign{k}",DEC,(x,2.75,z),mesh("BoxMesh",size=v3(0.5,0.2,0.05)),EXITGLOW,yaw=yaw,shadow=False)
+    label(f"ExitText{k}",DEC,(x+(0 if yaw in (0,180) else (0.03 if yaw==90 else -0.03)),2.75,z+(0.03 if yaw==0 else (-0.03 if yaw==180 else 0))),yaw,"EXIT",size=0.004,font=32,color=(0.9,1,0.9),outline="0")
+light("ExitGlow",DEC,(0.5,2.6,-0.6),color=(0.2,1,0.4),energy=0.25,rng=3.0,shadow=False,fixture=None)
+for k,(x,z,yaw) in enumerate([(-9.8,-9,90),(-0.85,-14.5,90),(9.8,-9,-90),(6,-0.2,180)]):
+    mi(f"EmergencyLamp{k}",DEC,(x,2.6,z),mesh("BoxMesh",size=v3(0.35,0.15,0.12)),REDGLOW,yaw=yaw,shadow=False)
+    light(f"EmergencyGlow{k}",DEC,(x+(0.3 if x<0 and yaw==90 else (-0.3 if x>0 and yaw==-90 else 0)),2.4,z+(-0.3 if yaw==180 else 0)),
+          color=(1,0.15,0.08),energy=0.32,rng=4.5,flicker=0.1,shadow=False,fixture=None)
+# The vending machine in the break room hums and glows.
+BX("VendingMachine",St,8.6,9.6,0,1.9,-5.9,-5.15,METAL)
+mi("VendingFront",DEC,(9.1,0.95,-5.14),mesh("BoxMesh",size=v3(1.0,1.9,0.02)),VEND,shadow=False)
+mi("VendingWindow",DEC,(8.95,1.15,-5.12),mesh("BoxMesh",size=v3(0.6,1.1,0.02)),VENDGLASS,shadow=False)
+light("VendingGlow",DEC,(9,1.2,-4.7),color=(0.75,0.9,0.7),energy=0.5,rng=3.0,flicker=0.05,shadow=False,fixture=None)
+sc.node("VendingHum","AudioStreamPlayer3D","Sound",transform=xform((9,1,-5.3)),stream=ER(BUZZ),volume_db="-14.0",unit_size="2.5",autoplay="true")
+
+# ------------------------------------------------------------ the floppy disk puzzle
+# The director left a floppy disk on his desk. The old records computer in
+# the office still works: put the disk in and it unlocks the supply cage.
+item("floppy_disk",(6.3,0.93,-10.2))
+desk("RecordsDesk",-2.9,-1.3,-15.5,-14.7)
+BX("RecordsCRT",St,-2.45,-1.75,0.9,1.5,-15.45,-14.95,CRT)
+BX("RecordsScreen",St,-2.38,-1.82,1.0,1.42,-14.96,-14.94,SCREEN,collide=False)
+inst("clamp","RecordsDrive","Puzzles",(-1.55,1.05,-14.85),0,item_id=S("floppy_disk"),insert_time="1.0",engineer_insert_time="1.0",
+     label_text=S("DISK DRIVE"),prompt_text=S("Disk drive"))
+sc.node("RecordsText","Label3D","Puzzles",transform=xform((-2.1,1.22,-14.93)),pixel_size="0.0022",text=S("RECORDS v2.1\nINSERT DISK"),
+        font_size="32",modulate=col(0.4,1,0.5),outline_size="0")
+# The supply cage in the west office's back corner (chain-link, so you can see what's inside).
+BX("CageSouth",St,-10,-7,0,H,-13.55,-13.45,FENCE)
+BX("CageEastBack",St,-7.05,-6.95,0,H,-16,-15.6,FENCE)
+BX("CageTop",St,-10,-7,2.98,3.02,-16,-13.5,FENCE,collide=False)
+inst("door","SupplyCage","Puzzles",(-7,0,-13.6),90,puzzle_controlled="true")
+gate("RecordsGate","Puzzles",["../RecordsDrive"],["../SupplyCage"],msg="The old computer reads the disk... SUPPLY CAGE: UNLOCKED.")
+crate("CageCrate","Station",-9.4,0,-15.4,0.6)
+item("battery",(-9.4,0.65,-15.4)); item("medkit",(-8.6,0.2,-15.5)); item("flare",(-8.0,0.2,-15.6)); item("battery",(-9.5,0.2,-14.3))
 
 # ============================================================ ROOM 3: HIDDEN STAIRWELL
 label("TallyMarks","Underground",(8.05,-2.7,-25.5),90,"\n".join(["|||| " * 9]*9),size=0.003,font=32,color=(0.75,0.72,0.65),outline="0")
@@ -1287,7 +1499,7 @@ for k,p in enumerate([(51.1,-9,-76),(55,-9,-84),(43,-9,-90),(37,-9,-84.9),(76,-9
     sc.node(f"NewPoint{k+1}","Marker3D","Monsters/PatrolPoints",transform=xform(p))
 
 # ============================================================ CHECKPOINTS, SPAWNS, SYSTEMS
-checkpoint("Yard",1,(0,1.5,17),(8,3,4),[(-1.5,0),(0,0),(1.5,0),(0,1.5)])
+checkpoint("Yard",1,(0,1.5,7.5),(8,3,4),[(-1.5,0),(1.5,0),(-1.5,1.5),(1.5,1.5)])
 checkpoint("Tunnels",2,(9,-7.5,-38),(8,3,4),[(-1.5,1),(0,1),(1.5,1),(0,2)])
 checkpoint("Shutter",3,(9,-7.5,-52.5),(4,3,2),[(-1,0),(0,0),(1,0),(0,0.8)])
 checkpoint("ElevatorApproach",5,(18,-7.5,-68),(4,3,2),[(-1.5,0),(0,0),(1.5,0),(3,0)])
@@ -1297,7 +1509,7 @@ sc.node("ItemSpawner","MultiplayerSpawner",".",node_paths=["spawn_points"],spawn
 sc.node("Players","Node3D",".")
 sc.node("PlayerSpawner","MultiplayerSpawner",".",node_paths=["spawn_points"],spawn_path=NP("../Players"),script=ER(S_PSPAWN),spawn_points=NP("../SpawnPoints"))
 sc.node("SpawnPoints","Node3D",".")
-for k,(x,z) in enumerate([(-1.5,45),(1.5,45),(-1.5,46.5),(1.5,46.5)]):
+for k,(x,z) in enumerate([(-1.5,7.5),(1.5,7.5),(-1.5,9),(1.5,9)]):  # by the front door
     sc.node(f"Spawn{k+1}","Marker3D","SpawnPoints",transform=xform((x,0,z),0))
 sc.node("TeamMonitor","Node",".",script=ER(S_TEAM))
 

@@ -28,6 +28,11 @@ const INFO := {
 		"color": Color(0.75, 0.1, 0.08), "model": "res://assets/models/props/card_a.glb", "model_turn": Vector3(-90, 0, 0),
 		"hint": "Opens every security door. Just carry it.",
 	},
+	"floppy_disk": {
+		"name": "Floppy Disk", "shape": "box", "size": Vector3(0.09, 0.004, 0.094),
+		"color": Color(0.08, 0.1, 0.25),
+		"hint": "An old 3.5\" disk, labeled RECORDS. Old computers can still read it.",
+	},
 	"crowbar": {
 		"name": "Crowbar", "shape": "box", "size": Vector3(0.025, 0.6, 0.025),
 		"color": Color(0.55, 0.12, 0.08),
