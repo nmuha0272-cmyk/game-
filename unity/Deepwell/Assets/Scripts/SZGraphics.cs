@@ -77,7 +77,15 @@ namespace Deepwell
             var done = new HashSet<Material>();
             foreach (var r in root.GetComponentsInChildren<Renderer>(true))
             {
-                var mats = r.materials;  // copies, only for this game
+                // Copies, only for this game (in the editor's preview, made by hand:
+                // r.materials there would change the asset files themselves).
+                Material[] mats;
+                if (Application.isPlaying) mats = r.materials;
+                else
+                {
+                    mats = r.sharedMaterials;
+                    for (int i = 0; i < mats.Length; i++) if (mats[i] != null) mats[i] = new Material(mats[i]);
+                }
                 bool changed = false;
                 for (int i = 0; i < mats.Length; i++)
                 {
@@ -86,7 +94,8 @@ namespace Deepwell
                     Tame(m, maxMetal, maxSmoothness);
                     changed = true;
                 }
-                if (changed) r.materials = mats;
+                if (changed && Application.isPlaying) r.materials = mats;
+                else if (changed) r.sharedMaterials = mats;
             }
         }
 

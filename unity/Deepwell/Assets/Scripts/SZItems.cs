@@ -430,7 +430,7 @@ namespace Deepwell
             p.transform.localScale = size;
             p.transform.localRotation = Quaternion.Euler(tiltX, 0f, 0f);
             p.GetComponent<Renderer>().sharedMaterial = mat;
-            Object.Destroy(p.GetComponent<Collider>());
+            SZAssets.Remove(p.GetComponent<Collider>());
         }
     }
 

@@ -174,7 +174,7 @@ namespace Deepwell
             var go = UnityEngine.Object.Instantiate(slot.prefab, holder.transform);
             MakeQuiet(go);
             go.transform.SetParent(parent, false);
-            UnityEngine.Object.Destroy(holder);
+            Remove(holder);
             go.name = "Asset " + id;
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.Euler(slot.rotation);
@@ -197,6 +197,14 @@ namespace Deepwell
             var anchor = onGround ? new Vector3(bounds.center.x, bounds.min.y, bounds.center.z) : bounds.center;
             go.transform.position += parent.position - anchor;
             return go;
+        }
+
+        // Destroy that also works in the editor (the level preview), not only in the game.
+        public static void Remove(UnityEngine.Object thing)
+        {
+            if (thing == null) return;
+            if (Application.isPlaying) UnityEngine.Object.Destroy(thing);
+            else UnityEngine.Object.DestroyImmediate(thing);
         }
 
         enum Shape { Any, Tall, Flat, Wall, Long }

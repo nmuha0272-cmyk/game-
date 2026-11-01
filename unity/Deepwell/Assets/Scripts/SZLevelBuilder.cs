@@ -52,13 +52,22 @@ namespace Deepwell
         }
 
         // The level model: anything named "COL_..." is solid.
-        static void BuildGeometry(string chapter, Transform parent)
+        // The editor's level preview (Deepwell > Show Level in Scene): the level
+        // model with your downloaded assets swapped in, without the game running.
+        public static GameObject PreviewGeometry(string chapter, Transform parent)
+        {
+            MoverParts.Clear();
+            SlotGroups.Clear();
+            return BuildGeometry(chapter, parent, preview: true);
+        }
+
+        static GameObject BuildGeometry(string chapter, Transform parent, bool preview = false)
         {
             var prefab = Resources.Load<GameObject>($"Levels/{chapter}_level");
             if (prefab == null)
             {
                 Debug.LogError($"Levels/{chapter}_level.glb didn't import. Is the glTFast package installed? (Window > Package Manager)");
-                return;
+                return null;
             }
             var level = Object.Instantiate(prefab, parent);
             level.name = "LevelGeometry";
@@ -68,7 +77,7 @@ namespace Deepwell
             {
                 // A model with several materials (like the ground and rock) is split into
                 // child pieces, so check the piece's parents for the "COL_" name too.
-                if (filter.sharedMesh != null && IsSolid(filter.transform, level.transform))
+                if (!preview && filter.sharedMesh != null && IsSolid(filter.transform, level.transform))
                 {
                     var collider = filter.gameObject.AddComponent<MeshCollider>();
                     collider.sharedMesh = filter.sharedMesh;
@@ -89,7 +98,8 @@ namespace Deepwell
                 }
             }
             ReplaceWithAssets(parent);
-            if (solid == 0) Debug.LogError("Deepwell: no solid level parts were found, so you would fall through the floor.");
+            if (solid == 0 && !preview) Debug.LogError("Deepwell: no solid level parts were found, so you would fall through the floor.");
+            return level;
         }
 
         static bool IsSolid(Transform t, Transform root)

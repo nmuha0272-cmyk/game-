@@ -148,6 +148,7 @@ namespace Deepwell.EditorTools
             EditorGUILayout.HelpBox(
                 "Downloaded assets go in these slots by themselves (by their name). Drag a prefab or model onto a slot to pick one yourself. " +
                 "Empty slots use the game's simple placeholder shapes. Turn = rotation if it faces the wrong way.", MessageType.Info);
+            if (GUILayout.Button("SHOW THE LEVEL IN THE SCENE (see your assets without pressing Play)")) SZPreview.Show();
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("Find assets in my project now")) SZAssetSlotsTools.AutoFillWholeProject();
@@ -192,7 +193,11 @@ namespace Deepwell.EditorTools
                 }
             }
             EditorGUILayout.EndScrollView();
-            if (GUI.changed) AssetDatabase.SaveAssets();
+            if (GUI.changed)
+            {
+                AssetDatabase.SaveAssets();
+                SZPreview.RefreshIfShown();  // see the change in the Scene view right away
+            }
         }
     }
 }

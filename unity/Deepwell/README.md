@@ -102,6 +102,11 @@ ability, Esc pause. In cutscenes: Space = next, hold Space = skip.
 then press the new one. Settings also has **Subtitles** on/off and a large
 size.
 
+**See the level without pressing Play:** Deepwell > Show Level in Scene (or the
+big button in Deepwell > Asset Slots) builds Chapter 1 in the Scene view with your
+assets in place. Change a slot's asset, Turn or Size and it updates by itself.
+Deepwell > Hide Level Preview takes it away (it's never saved into the scene).
+
 **Your own blood, body-part and puzzle-item assets:** import them and they go in
 their slots by file name (Deepwell > Asset Slots shows every slot): floppy disk,
 brass key, blood pool, blood splatter, handprints, severed arm, severed leg.
