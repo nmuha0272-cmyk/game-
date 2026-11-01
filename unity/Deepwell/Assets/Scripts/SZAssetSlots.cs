@@ -178,6 +178,9 @@ namespace Deepwell
             go.name = "Asset " + id;
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.Euler(slot.rotation);
+            // Models made in other programs often come in lying on their side.
+            // Unless you set a Rotation yourself, turn it the way this slot needs.
+            if (slot.rotation == Vector3.zero) go.transform.localRotation = Quaternion.Euler(Upright(id, go));
             go.transform.localScale = Vector3.one;
             SZGraphics.FixPink(go);        // HDRP/URP assets would be pink
             SZGraphics.NotSoShiny(go);     // PBR packs would look like silver chrome
@@ -194,6 +197,76 @@ namespace Deepwell
             var anchor = onGround ? new Vector3(bounds.center.x, bounds.min.y, bounds.center.z) : bounds.center;
             go.transform.position += parent.position - anchor;
             return go;
+        }
+
+        enum Shape { Any, Tall, Flat, Wall, Long }
+
+        // How each kind of thing should stand: tall (up), flat (on the floor),
+        // on a wall (thin toward you), or long (pointing forward).
+        static Shape ShapeOf(string id)
+        {
+            switch (id)
+            {
+                case "locker": case "door": case "long_man": case "eli": case "cole": case "nora": case "walter": case "robot_kyle":
+                case "fuel_can": case "flashlight_stand":
+                    return Shape.Tall;
+                case "bloodpool": case "floppy_disk": case "keycard": case "note": case "reel_tape":
+                    return Shape.Flat;
+                case "bloodsplat": case "handprint": case "keypad": case "control_panel":
+                    return Shape.Wall;
+                case "pistol": case "revolver": case "shotgun": case "smg": case "rifle": case "crowbar": case "crowbar_asset":
+                case "flashlight": case "severedarm": case "severedleg": case "brass_key": case "car":
+                    return Shape.Long;
+                default:
+                    return Shape.Any;
+            }
+        }
+
+        // The turn (degrees) that makes the model stand the way its slot needs.
+        static Vector3 Upright(string id, GameObject go)
+        {
+            var shape = ShapeOf(id);
+            if (shape == Shape.Any) return Vector3.zero;
+            // The model's size along its own x, y, z.
+            var toLocal = go.transform.worldToLocalMatrix;
+            var min = Vector3.one * float.MaxValue;
+            var max = Vector3.one * float.MinValue;
+            foreach (var r in go.GetComponentsInChildren<Renderer>(true))
+            {
+                Mesh mesh = r is SkinnedMeshRenderer skin ? skin.sharedMesh : r.GetComponent<MeshFilter>()?.sharedMesh;
+                if (mesh == null) continue;
+                var b = mesh.bounds;
+                var m = toLocal * r.transform.localToWorldMatrix;
+                for (int c = 0; c < 8; c++)
+                {
+                    var corner = b.center + Vector3.Scale(b.extents, new Vector3((c & 1) == 0 ? -1 : 1, (c & 2) == 0 ? -1 : 1, (c & 4) == 0 ? -1 : 1));
+                    var p = m.MultiplyPoint3x4(corner);
+                    min = Vector3.Min(min, p);
+                    max = Vector3.Max(max, p);
+                }
+            }
+            if (min.x > max.x) return Vector3.zero;
+            var s = max - min;
+            switch (shape)
+            {
+                case Shape.Tall:  // tallest side should go up
+                    if (s.z > s.y && s.z >= s.x) return new Vector3(-90f, 0f, 0f);
+                    if (s.x > s.y && s.x > s.z) return new Vector3(0f, 0f, 90f);
+                    break;
+                case Shape.Flat:  // thinnest side should go up
+                    if (s.z < s.y && s.z <= s.x) return new Vector3(-90f, 0f, 0f);
+                    if (s.x < s.y && s.x < s.z) return new Vector3(0f, 0f, 90f);
+                    break;
+                case Shape.Wall:  // thinnest side should face out of the wall
+                    if (s.y < s.z && s.y <= s.x) return new Vector3(90f, 0f, 0f);
+                    if (s.x < s.z && s.x < s.y) return new Vector3(0f, 90f, 0f);
+                    break;
+                case Shape.Long:  // longest side should point forward
+                    if (s.y > s.z && s.y >= s.x) return new Vector3(90f, 0f, 0f);
+                    if (s.x > s.z && s.x > s.y) return new Vector3(0f, 90f, 0f);
+                    break;
+            }
+            return Vector3.zero;
         }
 
         // Swap a downloaded asset in for a level object (a desk, a computer, the

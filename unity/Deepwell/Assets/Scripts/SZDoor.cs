@@ -67,8 +67,9 @@ namespace Deepwell
             if (_wood == null)
             {
                 _wood = SZGraphics.Lit(new Color(0.22f, 0.2f, 0.18f), 0.25f);
-                _metal = SZGraphics.Lit(new Color(0.35f, 0.34f, 0.32f), 0.6f);
-                _metal.SetFloat("_Metallic", 0.8f);
+                // Old dull metal (a shiny metal setting made the handles and kick plates look like chrome).
+                _metal = SZGraphics.Lit(new Color(0.33f, 0.31f, 0.28f), 0.3f);
+                _metal.SetFloat("_Metallic", 0.25f);
             }
             // In Godot the door reaches along its +X from the hinge; X is mirrored in Unity.
             Part(hinge.transform, "Panel", new Vector3(-Width / 2f, Height / 2f, 0f), new Vector3(Width, Height, Thickness), _wood, true);

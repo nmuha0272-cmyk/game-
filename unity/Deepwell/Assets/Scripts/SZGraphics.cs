@@ -95,13 +95,21 @@ namespace Deepwell
         {
             if (m == null) return;
             // The metallic map (PBR packs) overrides the slider: turn it off.
-            foreach (var map in new[] { "_MetallicGlossMap", "_MetallicMap", "_MaskMap" })
+            foreach (var map in new[] { "_MetallicGlossMap", "_MetallicMap", "_MaskMap", "metallicRoughnessTexture", "_SpecGlossMap" })
             {
                 if (!m.HasProperty(map)) continue;
                 if (m.GetTexture(map) == null) continue;
                 m.SetTexture(map, null);
             }
             m.DisableKeyword("_METALLICGLOSSMAP");
+            m.DisableKeyword("_SPECGLOSSMAP");
+            // "Specular setup" materials: a bright specular color is what looks like chrome.
+            if (m.HasProperty("_SpecColor"))
+            {
+                var spec = m.GetColor("_SpecColor");
+                float most = Mathf.Max(spec.r, spec.g, spec.b);
+                if (most > 0.12f) m.SetColor("_SpecColor", spec * (0.12f / most));
+            }
             foreach (var prop in new[] { "_Metallic", "metallicFactor", "_MetallicFactor" })
                 if (m.HasProperty(prop)) m.SetFloat(prop, Mathf.Min(m.GetFloat(prop), maxMetal));
             foreach (var prop in new[] { "_Glossiness", "_Smoothness", "roughnessFactor", "_RoughnessFactor" })
