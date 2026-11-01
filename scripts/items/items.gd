@@ -28,6 +28,11 @@ const INFO := {
 		"color": Color(0.75, 0.1, 0.08), "model": "res://assets/models/props/card_a.glb", "model_turn": Vector3(-90, 0, 0),
 		"hint": "Opens every security door. Just carry it.",
 	},
+	"brass_key": {
+		"name": "Brass Key", "shape": "box", "size": Vector3(0.025, 0.004, 0.07),
+		"color": Color(0.75, 0.6, 0.2),
+		"hint": "A janitor's key on a bloody ring. It opens the janitor's closet.",
+	},
 	"floppy_disk": {
 		"name": "Floppy Disk", "shape": "box", "size": Vector3(0.09, 0.004, 0.094),
 		"color": Color(0.08, 0.1, 0.25),

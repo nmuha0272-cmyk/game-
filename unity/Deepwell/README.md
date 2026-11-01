@@ -102,6 +102,12 @@ ability, Esc pause. In cutscenes: Space = next, hold Space = skip.
 then press the new one. Settings also has **Subtitles** on/off and a large
 size.
 
+**Your own blood, body-part and puzzle-item assets:** import them and they go in
+their slots by file name (Deepwell > Asset Slots shows every slot): floppy disk,
+brass key, blood pool, blood splatter, handprints, severed arm, severed leg.
+Until a slot has an asset, the game uses its simple stand-in. If a wall splatter
+lies flat, set that slot's Rotation to 90 0 0.
+
 **Saving:** F5 = quick save, F9 = quick load (or SAVE GAME / LOAD LAST SAVE in
 the pause menu). The game also saves by itself at every checkpoint. On the
 menu, CONTINUE goes straight back to your save (CONTINUE + HOST lets friends

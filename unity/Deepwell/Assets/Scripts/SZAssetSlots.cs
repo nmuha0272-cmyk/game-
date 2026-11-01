@@ -68,6 +68,16 @@ namespace Deepwell
             new SlotInfo("survival_props", "Survival Props Pack", 0f, "survival props", "props", "items"),
             new SlotInfo("retro_horror_items", "Retro PSX Horror Items", 0f, "retro horror", "psx items", "puzzle items"),
             new SlotInfo("crowbar_asset", "Crowbar", 0.7f, "crowbar", "pry bar", "prybar"),
+            // Puzzle items in the station (keypad/keycard come first, so "key" alone means this key).
+            new SlotInfo("floppy_disk", "Floppy disk (puzzle item)", 0.09f, "floppy", "floppy disk", "diskette", "disk", "disc"),
+            new SlotInfo("brass_key", "Brass key (the janitor's closet)", 0.07f, "brass key", "old key", "door key", "skeleton key", "key"),
+            // Blood and body parts (the director's office). Blood pools lie flat on the floor;
+            // wall splatter stands up on the wall (if yours lies flat, set its Rotation to 90 0 0).
+            new SlotInfo("bloodpool", "Blood pool / puddle (floor)", 0.9f, "blood pool", "pool of blood", "blood puddle", "puddle", "blood floor"),
+            new SlotInfo("bloodsplat", "Blood splatter (wall)", 0.7f, "blood splatter", "blood splat", "splatter", "splat", "blood decal", "blood wall", "blood"),
+            new SlotInfo("handprint", "Bloody handprints", 0.2f, "handprint", "hand print", "bloody hand"),
+            new SlotInfo("severedarm", "Severed arm (holds the brass key)", 0.65f, "severed arm", "cut arm", "arm", "severed hand", "body part", "bodypart", "gore"),
+            new SlotInfo("severedleg", "Severed leg", 0.9f, "severed leg", "cut leg", "leg"),
             new SlotInfo("eli", "Eli (rigged model with animations)", 1.78f, "eli"),
             new SlotInfo("cole", "Cole (rigged model with animations)", 1.9f, "cole", "frank"),
             new SlotInfo("nora", "Nora (rigged model with animations)", 1.68f, "nora", "journalist"),

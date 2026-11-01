@@ -576,4 +576,15 @@ func _slot_tag_for(node_name: String) -> String:
 		return "DESK"
 	if node_name.contains("Monitor") or node_name.contains("Screen") or node_name.contains("Computer"):
 		return "COMPUTER"
+	# Blood and body parts: a downloaded asset in that slot (Unity: Deepwell > Asset Slots) replaces them.
+	if node_name.begins_with("BloodPool") or node_name in ["ArmPool", "LegPool"] or node_name.begins_with("FloorSplat"):
+		return "BLOODPOOL"
+	if node_name.begins_with("WallSplat"):
+		return "BLOODSPLAT"
+	if node_name.begins_with("Handprint"):
+		return "HANDPRINT"
+	if node_name in ["SeveredArm", "SeveredHand", "ArmWound"]:
+		return "SEVEREDARM"
+	if node_name in ["SeveredLeg", "Boot", "LegWound"]:
+		return "SEVEREDLEG"
 	return ""

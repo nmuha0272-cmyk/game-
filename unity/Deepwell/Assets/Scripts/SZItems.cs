@@ -402,6 +402,10 @@ namespace Deepwell
                 case "battery": Part(root, PrimitiveType.Cylinder, new Vector3(0f, 0.045f, 0f), new Vector3(0.05f, 0.045f, 0.05f), metal); break;
                 case "flare": Part(root, PrimitiveType.Cylinder, new Vector3(0f, 0.03f, 0f), new Vector3(0.035f, 0.13f, 0.035f), metal, 90f); break;
                 case "medkit": Part(root, PrimitiveType.Cube, new Vector3(0f, 0.06f, 0f), new Vector3(0.2f, 0.12f, 0.3f), metal); break;
+                case "brass_key":
+                    Part(root, PrimitiveType.Cube, new Vector3(0f, 0.004f, 0.01f), new Vector3(0.012f, 0.004f, 0.05f), metal);   // the blade
+                    Part(root, PrimitiveType.Cylinder, new Vector3(0f, 0.004f, -0.025f), new Vector3(0.028f, 0.002f, 0.028f), metal);  // the bow
+                    break;
                 case "floppy_disk":
                     Part(root, PrimitiveType.Cube, new Vector3(0f, 0.003f, 0f), new Vector3(0.09f, 0.004f, 0.094f), metal);                  // the disk
                     Part(root, PrimitiveType.Cube, new Vector3(0f, 0.0055f, 0.03f), new Vector3(0.05f, 0.002f, 0.03f), SZGraphics.Lit(new Color(0.7f, 0.7f, 0.72f), 0.6f)); // metal shutter

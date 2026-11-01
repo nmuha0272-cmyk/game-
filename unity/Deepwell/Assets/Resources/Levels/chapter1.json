@@ -743,9 +743,9 @@
    ],
    "r": [
     0.0,
-    0.0219,
+    -0.0139,
     0.0,
-    0.9998
+    0.9999
    ]
   },
   {
@@ -762,9 +762,9 @@
    ],
    "r": [
     0.0,
-    -0.0311,
+    0.0149,
     0.0,
-    0.9995
+    0.9999
    ]
   },
   {
@@ -781,9 +781,9 @@
    ],
    "r": [
     0.0,
-    0.0225,
+    -0.0029,
     0.0,
-    0.9997
+    1.0
    ]
   },
   {
@@ -799,9 +799,9 @@
    ],
    "r": [
     0.0,
-    0.7216,
+    -0.9979,
     0.0,
-    0.6924
+    0.0641
    ]
   },
   {
@@ -817,9 +817,9 @@
    ],
    "r": [
     0.0,
-    0.8454,
+    -0.212,
     0.0,
-    0.5342
+    0.9773
    ]
   },
   {
@@ -835,9 +835,9 @@
    ],
    "r": [
     0.0,
-    0.5207,
+    -0.4407,
     0.0,
-    0.8537
+    0.8977
    ]
   },
   {
@@ -853,9 +853,9 @@
    ],
    "r": [
     0.0,
-    0.1024,
+    0.4791,
     0.0,
-    0.9947
+    0.8778
    ]
   },
   {
@@ -871,9 +871,9 @@
    ],
    "r": [
     0.0,
-    0.1074,
+    -0.8954,
     0.0,
-    0.9942
+    0.4452
    ]
   },
   {
@@ -889,9 +889,9 @@
    ],
    "r": [
     0.0,
-    -0.5427,
+    0.5089,
     0.0,
-    0.8399
+    0.8608
    ]
   },
   {
@@ -983,9 +983,9 @@
    ],
    "r": [
     0.0,
-    -0.227,
+    -0.9331,
     0.0,
-    0.9739
+    -0.3597
    ]
   },
   {
@@ -1001,9 +1001,9 @@
    ],
    "r": [
     0.0,
-    -0.0615,
+    -0.9233,
     0.0,
-    0.9981
+    -0.3841
    ]
   },
   {
@@ -1019,9 +1019,9 @@
    ],
    "r": [
     0.0,
-    -0.6713,
+    -0.8989,
     0.0,
-    0.7412
+    0.4381
    ]
   },
   {
@@ -1075,9 +1075,9 @@
    ],
    "r": [
     0.0,
-    0.1492,
+    -0.9871,
     0.0,
-    0.9888
+    0.16
    ]
   },
   {
@@ -1276,7 +1276,7 @@
     2.70000004768372,
     0.300000011920929
    ],
-   "mover": 56,
+   "mover": 60,
    "p": [
     -9.0,
     -7.65,
@@ -1371,7 +1371,7 @@
     1.89999997615814,
     1.20000004768372
    ],
-   "mover": 71,
+   "mover": 75,
    "p": [
     17.38,
     0.95,
@@ -1390,7 +1390,7 @@
     0.899999976158142,
     1.0
    ],
-   "mover": 80,
+   "mover": 84,
    "p": [
     -9.1,
     0.45,
@@ -1409,7 +1409,7 @@
     2.70000004768372,
     0.119999997317791
    ],
-   "mover": 104,
+   "mover": 108,
    "p": [
     -46.0,
     -7.65,
@@ -1853,6 +1853,24 @@
    "id": 16,
    "lock": "",
    "locked": false,
+   "name": "JanitorCloset",
+   "p": [
+    -4.2,
+    0.0,
+    -4.0
+   ],
+   "puzzle": true,
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "id": 20,
+   "lock": "",
+   "locked": false,
    "name": "SupplyCage",
    "p": [
     7.0,
@@ -1868,7 +1886,7 @@
    ]
   },
   {
-   "id": 19,
+   "id": 23,
    "lock": "",
    "locked": false,
    "name": "BoltedDoor",
@@ -1886,7 +1904,7 @@
    ]
   },
   {
-   "id": 22,
+   "id": 26,
    "lock": "",
    "locked": false,
    "name": "TunnelDoor",
@@ -1904,7 +1922,7 @@
    ]
   },
   {
-   "id": 23,
+   "id": 27,
    "lock": "",
    "locked": false,
    "name": "ElevatorRoomDoor",
@@ -1922,7 +1940,7 @@
    ]
   },
   {
-   "id": 37,
+   "id": 41,
    "lock": "",
    "locked": false,
    "name": "LabDoor",
@@ -1934,13 +1952,13 @@
    "puzzle": true,
    "r": [
     0.0,
-    -0.0602,
+    -0.5163,
     0.0,
-    0.9982
+    0.8564
    ]
   },
   {
-   "id": 42,
+   "id": 46,
    "lock": "",
    "locked": false,
    "name": "ArchiveDoor",
@@ -1958,7 +1976,7 @@
    ]
   },
   {
-   "id": 45,
+   "id": 49,
    "lock": "",
    "locked": false,
    "name": "PowerRoomDoor",
@@ -1976,7 +1994,7 @@
    ]
   },
   {
-   "id": 58,
+   "id": 62,
    "lock": "",
    "locked": false,
    "name": "DarkroomDoor",
@@ -1994,7 +2012,7 @@
    ]
   },
   {
-   "id": 62,
+   "id": 66,
    "lock": "",
    "locked": false,
    "name": "PumpDoor",
@@ -2012,7 +2030,7 @@
    ]
   },
   {
-   "id": 73,
+   "id": 77,
    "lock": "",
    "locked": false,
    "name": "AirlockInnerDoor",
@@ -2030,7 +2048,7 @@
    ]
   },
   {
-   "id": 86,
+   "id": 90,
    "lock": "",
    "locked": false,
    "name": "ArmoryDoor",
@@ -2048,7 +2066,7 @@
    ]
   },
   {
-   "id": 88,
+   "id": 92,
    "lock": "",
    "locked": false,
    "name": "BoothDoor",
@@ -2066,7 +2084,7 @@
    ]
   },
   {
-   "id": 93,
+   "id": 97,
    "lock": "",
    "locked": false,
    "name": "VaultDoor",
@@ -2084,7 +2102,7 @@
    ]
   },
   {
-   "id": 107,
+   "id": 111,
    "lock": "",
    "locked": false,
    "name": "ColdDoor",
@@ -2258,6 +2276,40 @@
   },
   {
    "color": [
+    0.75,
+    0.6,
+    0.2,
+    1.0
+   ],
+   "hint": "A janitor's key on a bloody ring. It opens the janitor's closet.",
+   "id": "brass_key",
+   "lore": "",
+   "name": "Brass Key",
+   "p": [
+    -6.35,
+    0.08,
+    -13.05
+   ]
+  },
+  {
+   "color": [
+    0.85,
+    0.8,
+    0.65,
+    1.0
+   ],
+   "hint": "Fits into fuse boxes to power doors and machines.",
+   "id": "fuse",
+   "lore": "",
+   "name": "Fuse",
+   "p": [
+    -10.1,
+    0.2,
+    12.6
+   ]
+  },
+  {
+   "color": [
     0.08,
     0.1,
     0.25,
@@ -2268,9 +2320,9 @@
    "lore": "",
    "name": "Floppy Disk",
    "p": [
-    -6.3,
-    0.93,
-    -10.2
+    -3.0,
+    0.2,
+    -5.3
    ]
   },
   {
@@ -3478,6 +3530,31 @@
    "size": 0.128000006079674,
    "source": -1,
    "text": "EXIT"
+  },
+  {
+   "billboard": false,
+   "color": [
+    0.75,
+    0.72,
+    0.6,
+    1.0
+   ],
+   "digit": -1,
+   "hidden_until": -1,
+   "p": [
+    -3.2,
+    2.3,
+    -3.94
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": 0.128000006079674,
+   "source": -1,
+   "text": "JANITOR"
   },
   {
    "billboard": false,
@@ -5166,7 +5243,7 @@
    ],
    "digit": -1,
    "hidden_text": "NO POWER",
-   "hidden_until": 39,
+   "hidden_until": 43,
    "p": [
     -79.22,
     -7.7,
@@ -5179,7 +5256,7 @@
     0.7071
    ],
    "size": 0.160000007599592,
-   "source": 41,
+   "source": 45,
    "template": "ARCHIVE DOOR\nCODE: %s",
    "text": "ARCHIVE DOOR\nCODE: NO POWER"
   },
@@ -5281,9 +5358,9 @@
     0.7071
    ],
    "size": 0.115199997089803,
-   "source": 51,
+   "source": 55,
    "template": "WIRING DIAGRAM - POWER ROOM BREAKERS\n%s",
-   "text": "WIRING DIAGRAM - POWER ROOM BREAKERS\n1 DOWN   2 DOWN   3 UP"
+   "text": "WIRING DIAGRAM - POWER ROOM BREAKERS\n1 UP   2 UP   3 UP"
   },
   {
    "billboard": false,
@@ -5295,7 +5372,7 @@
    ],
    "digit": -1,
    "hidden_text": "(empty photo board)",
-   "hidden_until": 59,
+   "hidden_until": 63,
    "p": [
     -18.1,
     -7.5,
@@ -5308,7 +5385,7 @@
     0.7071
    ],
    "size": 0.127999996766448,
-   "source": 61,
+   "source": 65,
    "template": "PHOTO: the pump room door.\nOn the keypad, in marker: %s",
    "text": "PHOTO: the pump room door.\nOn the keypad, in marker: (empty photo board)"
   },
@@ -5435,9 +5512,9 @@
     1.0
    ],
    "size": 0.136000001803041,
-   "source": 64,
+   "source": 68,
    "template": "DRAIN CHART - TUNNEL E PUMPS\n%s",
-   "text": "DRAIN CHART - TUNNEL E PUMPS\n1 UP   2 DOWN   3 DOWN   4 UP"
+   "text": "DRAIN CHART - TUNNEL E PUMPS\n1 DOWN   2 DOWN   3 UP   4 DOWN"
   },
   {
    "billboard": false,
@@ -5462,9 +5539,9 @@
     0.7071
    ],
    "size": 0.108000000938773,
-   "source": 70,
+   "source": 74,
    "template": "BED 1\nTAG: %s",
-   "text": "BED 1\nTAG: 7"
+   "text": "BED 1\nTAG: 8"
   },
   {
    "billboard": false,
@@ -5489,9 +5566,9 @@
     0.7071
    ],
    "size": 0.108000000938773,
-   "source": 70,
+   "source": 74,
    "template": "BED 2\nTAG: %s",
-   "text": "BED 2\nTAG: 4"
+   "text": "BED 2\nTAG: 3"
   },
   {
    "billboard": false,
@@ -5516,9 +5593,9 @@
     0.7071
    ],
    "size": 0.108000000938773,
-   "source": 70,
+   "source": 74,
    "template": "BED 3\nTAG: %s",
-   "text": "BED 3\nTAG: 1"
+   "text": "BED 3\nTAG: 3"
   },
   {
    "billboard": false,
@@ -5543,9 +5620,9 @@
     0.0
    ],
    "size": 0.140000004321337,
-   "source": 81,
+   "source": 85,
    "template": "dir. safe - %s\n(don't forget AGAIN)",
-   "text": "dir. safe - 9554\n(don't forget AGAIN)"
+   "text": "dir. safe - 5291\n(don't forget AGAIN)"
   },
   {
    "billboard": false,
@@ -5570,9 +5647,9 @@
     1.0
    ],
    "size": 0.0879999995231628,
-   "source": 92,
+   "source": 96,
    "template": "VAULT CODE\n%s\n(changes every minute)",
-   "text": "VAULT CODE\n8506\n(changes every minute)"
+   "text": "VAULT CODE\n7262\n(changes every minute)"
   },
   {
    "billboard": false,
@@ -5597,9 +5674,9 @@
     0.0
    ],
    "size": 0.140000004321337,
-   "source": 96,
+   "source": 100,
    "template": "RELAY BAND - LIVE\n%s\n(it drifts: keep calling it out)",
-   "text": "RELAY BAND - LIVE\n92.5 MHz\n(it drifts: keep calling it out)"
+   "text": "RELAY BAND - LIVE\n94.0 MHz\n(it drifts: keep calling it out)"
   },
   {
    "billboard": false,
@@ -5624,9 +5701,9 @@
     1.0
    ],
    "size": 0.0703999996185303,
-   "source": 106,
+   "source": 110,
    "template": "TOE TAG 1 of 4\n%s",
-   "text": "TOE TAG 1 of 4\n4"
+   "text": "TOE TAG 1 of 4\n6"
   },
   {
    "billboard": false,
@@ -5651,7 +5728,7 @@
     0.7071
    ],
    "size": 0.0703999996185303,
-   "source": 106,
+   "source": 110,
    "template": "TOE TAG 2 of 4\n%s",
    "text": "TOE TAG 2 of 4\n4"
   },
@@ -5678,9 +5755,9 @@
     0.7071
    ],
    "size": 0.0703999996185303,
-   "source": 106,
+   "source": 110,
    "template": "TOE TAG 3 of 4\n%s",
-   "text": "TOE TAG 3 of 4\n7"
+   "text": "TOE TAG 3 of 4\n3"
   },
   {
    "billboard": false,
@@ -5705,9 +5782,9 @@
     1.0
    ],
    "size": 0.0703999996185303,
-   "source": 106,
+   "source": 110,
    "template": "TOE TAG 4 of 4\n%s",
-   "text": "TOE TAG 4 of 4\n2"
+   "text": "TOE TAG 4 of 4\n7"
   },
   {
    "billboard": false,
@@ -5732,9 +5809,9 @@
     0.0
    ],
    "size": 0.115199997089803,
-   "source": 113,
+   "source": 117,
    "template": "AUX POWER - DORM BREAKERS\n%s",
-   "text": "AUX POWER - DORM BREAKERS\n1 DOWN   2 UP   3 UP   4 DOWN   5 UP"
+   "text": "AUX POWER - DORM BREAKERS\n1 UP   2 DOWN   3 UP   4 DOWN   5 DOWN"
   },
   {
    "billboard": false,
@@ -5979,7 +6056,7 @@
     0.08,
     1.0
    ],
-   "energy": 0.319999992847443,
+   "energy": 0.0,
    "flicker": 0.1,
    "group": -1,
    "p": [
@@ -6060,7 +6137,7 @@
     0.08,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.319999992847443,
    "flicker": 0.1,
    "group": -1,
    "p": [
@@ -6141,7 +6218,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.35,
    "group": -1,
    "p": [
@@ -6278,7 +6355,7 @@
    ],
    "energy": 1.20000004768372,
    "flicker": -1.0,
-   "group": 24,
+   "group": 28,
    "p": [
     -34.0,
     -5.6,
@@ -6305,7 +6382,7 @@
    ],
    "energy": 1.20000004768372,
    "flicker": -1.0,
-   "group": 24,
+   "group": 28,
    "p": [
     -42.0,
     -5.6,
@@ -6386,7 +6463,7 @@
    ],
    "energy": 1.0,
    "flicker": -1.0,
-   "group": 38,
+   "group": 42,
    "p": [
     -68.0,
     -5.6,
@@ -6413,7 +6490,7 @@
    ],
    "energy": 1.0,
    "flicker": -1.0,
-   "group": 38,
+   "group": 42,
    "p": [
     -76.0,
     -5.6,
@@ -6440,7 +6517,7 @@
    ],
    "energy": 0.800000011920929,
    "flicker": -1.0,
-   "group": 48,
+   "group": 52,
    "p": [
     -19.0,
     -7.0,
@@ -6467,7 +6544,7 @@
    ],
    "energy": 1.0,
    "flicker": -1.0,
-   "group": 55,
+   "group": 59,
    "p": [
     -19.0,
     -5.6,
@@ -6494,7 +6571,7 @@
    ],
    "energy": 0.899999976158142,
    "flicker": -1.0,
-   "group": 55,
+   "group": 59,
    "p": [
     -9.0,
     -6.6,
@@ -6521,7 +6598,7 @@
    ],
    "energy": 0.699999988079071,
    "flicker": -1.0,
-   "group": 95,
+   "group": 99,
    "p": [
     -60.3,
     -6.6,
@@ -6548,7 +6625,7 @@
    ],
    "energy": 0.800000011920929,
    "flicker": -1.0,
-   "group": 100,
+   "group": 104,
    "p": [
     -67.75,
     -6.7,
@@ -6627,7 +6704,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.669057667255402,
+   "energy": 0.64348691701889,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6654,7 +6731,7 @@
     0.6,
     1.0
    ],
-   "energy": 1.39999997615814,
+   "energy": 0.0,
    "flicker": 0.25,
    "group": -1,
    "p": [
@@ -6735,7 +6812,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.600000023841858,
+   "energy": 0.0,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -6762,7 +6839,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.9,
    "group": -1,
    "p": [
@@ -6789,7 +6866,7 @@
     0.04,
     1.0
    ],
-   "energy": 1.00358653068542,
+   "energy": 0.965230405330658,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -6924,7 +7001,7 @@
     0.04,
     1.0
    ],
-   "energy": 0.836322069168091,
+   "energy": 0.804358661174774,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -7059,7 +7136,7 @@
     0.2,
     1.0
    ],
-   "energy": 0.25,
+   "energy": 0.0,
    "flicker": 0.7,
    "group": -1,
    "p": [
@@ -7113,7 +7190,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.349999994039536,
+   "energy": 0.0,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -7140,7 +7217,7 @@
     0.5,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.7,
    "group": -1,
    "p": [
@@ -7167,7 +7244,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.334528833627701,
+   "energy": 0.321743458509445,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -7221,7 +7298,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -7275,7 +7352,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.600000023841858,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -7383,7 +7460,7 @@
     0.88,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.400000005960464,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -7464,7 +7541,7 @@
     0.72,
     1.0
    ],
-   "energy": 0.899999976158142,
+   "energy": 0.0,
    "flicker": 0.25,
    "group": -1,
    "p": [
@@ -7518,7 +7595,7 @@
     0.05,
     1.0
    ],
-   "energy": 0.501793265342712,
+   "energy": 0.482615202665329,
    "flicker": -1.0,
    "group": -1,
    "p": [
@@ -7545,7 +7622,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.3,
    "group": -1,
    "p": [
@@ -7572,7 +7649,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.7,
    "group": -1,
    "p": [
@@ -7653,7 +7730,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.2,
    "group": -1,
    "p": [
@@ -7707,7 +7784,7 @@
     0.6,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.349999994039536,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -7815,7 +7892,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.5,
+   "energy": 0.0,
    "flicker": 0.3,
    "group": -1,
    "p": [
@@ -7842,7 +7919,7 @@
     0.9,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.5,
    "flicker": 0.7,
    "group": -1,
    "p": [
@@ -7869,7 +7946,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.0,
+   "energy": 0.449999988079071,
    "flicker": 0.7,
    "group": -1,
    "p": [
@@ -7896,7 +7973,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.5,
    "group": -1,
    "p": [
@@ -7923,7 +8000,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.9,
    "group": -1,
    "p": [
@@ -7950,7 +8027,7 @@
     0.7,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.4,
    "group": -1,
    "p": [
@@ -8085,7 +8162,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.6,
    "group": -1,
    "p": [
@@ -8112,7 +8189,7 @@
     1.0,
     1.0
    ],
-   "energy": 0.449999988079071,
+   "energy": 0.0,
    "flicker": 0.4,
    "group": -1,
    "p": [
@@ -10020,6 +10097,218 @@
    ]
   },
   {
+   "id": "Puzzles/BreakFuseBox",
+   "kind": "item_socket",
+   "name": "BreakFuseBox",
+   "p": [
+    -9.84,
+    1.3,
+    -1.5
+   ],
+   "params": [
+    {
+     "k": "item_id",
+     "s": "fuse"
+    },
+    {
+     "k": "insert_time",
+     "n": 4.0
+    },
+    {
+     "k": "engineer_insert_time",
+     "n": 1.0
+    },
+    {
+     "k": "label_text",
+     "s": "CLOSET POWER"
+    },
+    {
+     "k": "active_rotation",
+     "v": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "k": "active_offset",
+     "v": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "k": "lamp",
+     "refs": [
+      -1
+     ],
+     "s": "Lamp"
+    },
+    {
+     "k": "requires_message",
+     "s": "Not yet."
+    },
+    {
+     "k": "prompt_text",
+     "s": "Interact"
+    },
+    {
+     "b": true,
+     "k": "enabled"
+    }
+   ],
+   "parent": -1,
+   "r": [
+    0.0,
+    0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "id": "Puzzles/JanitorCloset",
+   "kind": "door",
+   "name": "JanitorCloset",
+   "p": [
+    -4.2,
+    0.0,
+    -4.0
+   ],
+   "params": [
+    {
+     "k": "open_angle",
+     "n": -100.0
+    },
+    {
+     "b": true,
+     "k": "puzzle_controlled"
+    },
+    {
+     "k": "swing_time",
+     "n": 0.6
+    },
+    {
+     "k": "prompt_text",
+     "s": "Interact"
+    },
+    {
+     "b": true,
+     "k": "enabled"
+    }
+   ],
+   "parent": -1,
+   "r": [
+    0.0,
+    -0.7071,
+    0.0,
+    0.7071
+   ]
+  },
+  {
+   "id": "Puzzles/ClosetKeyLock",
+   "kind": "item_socket",
+   "name": "ClosetKeyLock",
+   "p": [
+    -3.2,
+    1.2,
+    -3.9
+   ],
+   "params": [
+    {
+     "k": "item_id",
+     "s": "brass_key"
+    },
+    {
+     "k": "insert_time",
+     "n": 1.0
+    },
+    {
+     "k": "engineer_insert_time",
+     "n": 1.0
+    },
+    {
+     "k": "label_text",
+     "s": "KEY"
+    },
+    {
+     "k": "active_rotation",
+     "v": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "k": "active_offset",
+     "v": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "k": "lamp",
+     "refs": [
+      -1
+     ],
+     "s": "Lamp"
+    },
+    {
+     "k": "requires_message",
+     "s": "Not yet."
+    },
+    {
+     "k": "prompt_text",
+     "s": "Closet lock"
+    },
+    {
+     "b": true,
+     "k": "enabled"
+    }
+   ],
+   "parent": -1,
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "id": "Puzzles/ClosetGate",
+   "kind": "puzzle_gate",
+   "name": "ClosetGate",
+   "params": [
+    {
+     "k": "inputs",
+     "refs": [
+      15,
+      17
+     ]
+    },
+    {
+     "k": "outputs",
+     "refs": [
+      16
+     ]
+    },
+    {
+     "k": "mode",
+     "n": 0.0
+    },
+    {
+     "b": true,
+     "k": "latch"
+    },
+    {
+     "k": "solved_message",
+     "s": "The closet's lock clicks open."
+    }
+   ],
+   "parent": -1
+  },
+  {
    "id": "Puzzles/RecordsDrive",
    "kind": "item_socket",
    "name": "RecordsDrive",
@@ -10136,13 +10425,13 @@
     {
      "k": "inputs",
      "refs": [
-      15
+      19
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      16
+      20
      ]
     },
     {
@@ -10338,13 +10627,13 @@
     {
      "k": "inputs",
      "refs": [
-      20
+      24
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      19
+      23
      ]
     },
     {
@@ -10666,16 +10955,16 @@
     {
      "k": "inputs",
      "refs": [
-      25,
-      26,
-      27
+      29,
+      30,
+      31
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      24,
-      28
+      28,
+      32
      ]
     },
     {
@@ -10713,11 +11002,11 @@
     {
      "k": "inputs",
      "refs": [
-      29,
-      30,
-      44,
-      113,
-      101
+      33,
+      34,
+      48,
+      117,
+      105
      ]
     },
     {
@@ -10782,7 +11071,7 @@
     {
      "k": "requires",
      "refs": [
-      31
+      35
      ],
      "s": "ConsolesEnabled"
     },
@@ -10854,7 +11143,7 @@
     {
      "k": "requires",
      "refs": [
-      31
+      35
      ],
      "s": "ConsolesEnabled"
     },
@@ -10887,8 +11176,8 @@
     {
      "k": "inputs",
      "refs": [
-      32,
-      33
+      36,
+      37
      ]
     },
     {
@@ -11044,9 +11333,9 @@
    "parent": -1,
    "r": [
     0.0,
-    -0.0602,
+    -0.5163,
     0.0,
-    0.9982
+    0.8564
    ]
   },
   {
@@ -11140,13 +11429,13 @@
     {
      "k": "inputs",
      "refs": [
-      39
+      43
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      38
+      42
      ]
     },
     {
@@ -11239,13 +11528,13 @@
     {
      "k": "inputs",
      "refs": [
-      41
+      45
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      42
+      46
      ]
     },
     {
@@ -11450,13 +11739,13 @@
     {
      "k": "inputs",
      "refs": [
-      46
+      50
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      45
+      49
      ]
     },
     {
@@ -11570,13 +11859,13 @@
     {
      "k": "inputs",
      "refs": [
-      49
+      53
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      48
+      52
      ]
     },
     {
@@ -11608,7 +11897,7 @@
     {
      "k": "powered_by",
      "refs": [
-      50
+      54
      ],
      "s": "FuelGate"
     },
@@ -11648,7 +11937,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 51,
+   "parent": 55,
    "r": [
     0.0,
     0.7071,
@@ -11679,7 +11968,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 51,
+   "parent": 55,
    "r": [
     0.0,
     0.7071,
@@ -11710,7 +11999,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 51,
+   "parent": 55,
    "r": [
     0.0,
     0.7071,
@@ -11782,15 +12071,15 @@
     {
      "k": "inputs",
      "refs": [
-      50,
-      51
+      54,
+      55
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      55,
-      56
+      59,
+      60
      ]
     },
     {
@@ -11903,7 +12192,7 @@
     {
      "k": "requires",
      "refs": [
-      57
+      61
      ],
      "s": "PowerRestored"
     },
@@ -12034,13 +12323,13 @@
     {
      "k": "inputs",
      "refs": [
-      61
+      65
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      62
+      66
      ]
     },
     {
@@ -12072,7 +12361,7 @@
     {
      "k": "powered_by",
      "refs": [
-      57
+      61
      ],
      "s": "PowerRestored"
     },
@@ -12112,7 +12401,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 64,
+   "parent": 68,
    "r": [
     0.0,
     0.7071,
@@ -12143,7 +12432,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 64,
+   "parent": 68,
    "r": [
     0.0,
     0.7071,
@@ -12174,7 +12463,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 64,
+   "parent": 68,
    "r": [
     0.0,
     0.7071,
@@ -12205,7 +12494,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 64,
+   "parent": 68,
    "r": [
     0.0,
     0.7071,
@@ -12221,14 +12510,14 @@
     {
      "k": "inputs",
      "refs": [
-      64
+      68
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      60,
-      23
+      64,
+      27
      ]
     },
     {
@@ -12320,13 +12609,13 @@
     {
      "k": "inputs",
      "refs": [
-      70
+      74
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      71
+      75
      ]
     },
     {
@@ -12586,23 +12875,23 @@
     {
      "k": "outer_door",
      "refs": [
-      37
+      41
      ],
      "s": "LabDoor"
     },
     {
      "k": "inner_door",
      "refs": [
-      73
+      77
      ],
      "s": "AirlockInnerDoor"
     },
     {
      "k": "buttons",
      "refs": [
-      74,
-      75,
-      76
+      78,
+      79,
+      80
      ]
     },
     {
@@ -12699,7 +12988,7 @@
     {
      "k": "inputs",
      "refs": [
-      78
+      82
      ]
     },
     {
@@ -12791,13 +13080,13 @@
     {
      "k": "inputs",
      "refs": [
-      81
+      85
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      80
+      84
      ]
     },
     {
@@ -12851,13 +13140,13 @@
     {
      "k": "inputs",
      "refs": [
-      83
+      87
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      22
+      26
      ]
     },
     {
@@ -12888,7 +13177,7 @@
     {
      "k": "source",
      "refs": [
-      83
+      87
      ],
      "s": "TunnelKeypad"
     },
@@ -13107,14 +13396,14 @@
     {
      "k": "inputs",
      "refs": [
-      87,
-      89
+      91,
+      93
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      88
+      92
      ]
     },
     {
@@ -13246,14 +13535,14 @@
     {
      "k": "inputs",
      "refs": [
-      92
+      96
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      93,
-      95
+      97,
+      99
      ]
     },
     {
@@ -13348,7 +13637,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 96,
+   "parent": 100,
    "r": [
     0.0,
     0.0,
@@ -13379,7 +13668,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 96,
+   "parent": 100,
    "r": [
     0.0,
     0.0,
@@ -13452,13 +13741,13 @@
     {
      "k": "inputs",
      "refs": [
-      96
+      100
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      100
+      104
      ]
     },
     {
@@ -13668,14 +13957,14 @@
     {
      "k": "inputs",
      "refs": [
-      102,
-      103
+      106,
+      107
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      104
+      108
      ]
     },
     {
@@ -13768,13 +14057,13 @@
     {
      "k": "inputs",
      "refs": [
-      106
+      110
      ]
     },
     {
      "k": "outputs",
      "refs": [
-      107
+      111
      ]
     },
     {
@@ -13912,8 +14201,8 @@
     {
      "k": "inputs",
      "refs": [
-      109,
-      110
+      113,
+      114
      ]
     },
     {
@@ -14016,7 +14305,7 @@
     {
      "k": "powered_by",
      "refs": [
-      112
+      116
      ],
      "s": "DormPowerLever"
     },
@@ -14056,7 +14345,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 113,
+   "parent": 117,
    "r": [
     0.0,
     0.7071,
@@ -14087,7 +14376,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 113,
+   "parent": 117,
    "r": [
     0.0,
     0.7071,
@@ -14118,7 +14407,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 113,
+   "parent": 117,
    "r": [
     0.0,
     0.7071,
@@ -14149,7 +14438,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 113,
+   "parent": 117,
    "r": [
     0.0,
     0.7071,
@@ -14180,7 +14469,7 @@
      "k": "enabled"
     }
    ],
-   "parent": 113,
+   "parent": 117,
    "r": [
     0.0,
     0.7071,
@@ -14257,6 +14546,26 @@
   ]
  },
  "triggers": [
+  {
+   "chase": false,
+   "message": "COLE: Nobody touch it. This blood is fresh... whatever did this is still in here.",
+   "p": [
+    -4.2,
+    1.0,
+    -10.2
+   ],
+   "r": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.0,
+    2.0,
+    3.0
+   ]
+  },
   {
    "chase": false,
    "message": "It's cold down here. Something smells like rust and old blood.",

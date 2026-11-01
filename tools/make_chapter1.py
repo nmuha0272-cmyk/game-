@@ -360,7 +360,7 @@ BX("Monitor",St,-9.75,-9.3,0.9,1.65,-12.6,-11.4,BLACK)
 desk("TapeDesk",-9.4,-7.6,-10.1,-8.7); desk("EngineerDesk",-4.8,-3.2,-11.4,-10.6)
 desk("FileDesk",-5.8,-4.2,-5.4,-4.6); desk("DirectorDesk",5,7,-10.5,-9.5); desk("BreakTable",5.2,6.8,-3.6,-2.4)
 chair("ChairEng",-4,-10,180); chair("ChairFile",-5,-4,0); chair("ChairDirector",6,-9,0); chair("ChairTipped",-7,-7,40,tipped=True)
-chair("ChairBreak1",5.5,-4,0); chair("ChairBreak2",6.7,-2,200,tipped=True)
+chair("ChairBreak1",4.8,-2.0,180)  # (out of the closet door's way); chair("ChairBreak2",6.7,-2,200,tipped=True)
 for k,z in enumerate([-2.2,-2.9,-3.6]):
     prop(f"Cabinet{k}",St,"cabinet",(-9.5,0,z),-90,collide=("box",(0.6,1.35,0.65),(0,0.675,0)))
 BX("Bookshelf",St,2.2,2.6,0,2.0,-14.5,-12.5,DWOOD)
@@ -635,6 +635,65 @@ for k in range(26):
 for k in range(18):
     x=random.uniform(-14,14); z=random.uniform(2,20)
     tuft(f"YardWeed{k}",x,0,z,random.uniform(0.2,0.45))
+# ------------------------------------------------------------ fresh blood
+# Something got the janitor here, not long ago: a fresh trail from the
+# director's door to the stairwell door, a pool, handprints, his arm (still
+# holding the closet key) and a leg. Cole says it: the blood is fresh.
+BLOOD=flat((0.5,0.02,0.02),0.95,rough=0.06,metal=0.1,cull=True); BLOOD_DARK=flat((0.28,0.0,0.0),0.92,rough=0.1,cull=True)
+SPLAT=flat((0.55,0.03,0.03),0.9,rough=0.08,cull=True); SKIN=flat((0.62,0.47,0.4),rough=0.7); SLEEVE=flat((0.2,0.24,0.3))
+random.seed(13)
+def blob(name,pos,r,mat,wall=False,yaw=0):
+    """A round splat of blood (on the floor, or on the back wall when wall=True)."""
+    r=max(0.01,round(r*50)/50)
+    m=mesh("CylinderMesh",top_radius=f"{r:g}",bottom_radius=f"{r:g}",height="0.002",radial_segments="14",rings="1")
+    mi(name,DEC,pos,m,mat,yaw=yaw,pitch=90 if wall else 0,shadow=False)
+def splat(name,x,y,z,size,wall=False,drips=0):
+    """A splash: one big splat, smaller ones round it, and drips running down (on a wall)."""
+    blob(name,(x,y,z),size,SPLAT,wall)
+    for j in range(7):
+        a=random.uniform(0,math.tau); d=size*random.uniform(0.9,2.2)
+        dx,dy=math.cos(a)*d,math.sin(a)*d
+        if wall: blob(f"{name}S{j}",(x+dx,y+dy*0.8,z+0.001),size*random.uniform(0.12,0.35),SPLAT,True)
+        else: blob(f"{name}S{j}",(x+dx,y+0.0005,z+dy),size*random.uniform(0.12,0.35),SPLAT)
+    for j in range(drips):
+        length=random.uniform(0.25,0.9); dx=random.uniform(-size*0.8,size*0.8)
+        quad(f"{name}D{j}",(x+dx,y-size*0.5-length/2,z+0.002),random.uniform(0.012,0.025),length,BLOOD_DARK)
+        blob(f"{name}DE{j}",(x+dx,y-size*0.5-length,z+0.003),0.02,BLOOD_DARK,True)
+# The drag trail: smeared streaks from the director's door to the stairwell door.
+for k in range(22):
+    t=k/21; x=3.0+t*(8.4-3.0); z=-10.0+t*(-14.8+10.0)
+    yaw=-48+random.uniform(-6,6)
+    for j,off in enumerate((-0.12,0.0,0.12)):
+        ox,oz=math.cos(math.radians(yaw+90))*off,-math.sin(math.radians(yaw+90))*off
+        quad(f"Smear{k}_{j}",(x+ox,0.022+k*0.0002+j*0.0001,z+oz),random.uniform(0.16,0.28),random.uniform(0.3,0.45),
+             BLOOD if (k+j)%3 else BLOOD_DARK,pitch=-90,yaw=yaw+random.uniform(-4,4))
+blob("BloodPool",(8.4,0.026,-14.6),0.6,BLOOD); blob("BloodPoolB",(8.0,0.027,-14.9),0.42,BLOOD); blob("BloodPoolC",(8.8,0.0275,-14.3),0.3,BLOOD_DARK)
+blob("BloodPool2",(4.3,0.026,-11.5),0.32,BLOOD); blob("BloodPool2B",(4.5,0.027,-11.3),0.2,BLOOD)
+for k in range(14):
+    splat(f"FloorSplat{k}",random.uniform(3.5,8.8),0.028+k*0.0001,random.uniform(-15.2,-10.5),random.uniform(0.03,0.08))
+# Splashes, drips and bloody handprints on the back wall and the stairwell door frame.
+for k,(x,y,size,drips) in enumerate([(6.5,1.45,0.22,5),(7.4,0.75,0.14,3),(5.1,1.95,0.09,2)]):
+    splat(f"WallSplat{k}",x,y,-15.84,size,wall=True,drips=drips)
+for k,(x,y,roll) in enumerate([(7.1,1.25,10),(7.45,1.05,-15),(6.8,0.85,25),(7.6,1.5,-5)]):
+    quad(f"Handprint{k}",(x,y,-15.835),0.11,0.13,BLOOD_DARK,roll=roll)
+    for f in range(4):
+        quad(f"Handprint{k}F{f}",(x-0.045+f*0.03,y+0.1,-15.834),0.022,0.08,BLOOD_DARK,roll=roll)
+    quad(f"Handprint{k}T",(x+0.07,y+0.02,-15.834),0.022,0.06,BLOOD_DARK,roll=roll-50)
+    quad(f"Handprint{k}Drag",(x,y-0.25,-15.836),0.08,0.35,BLOOD_DARK,roll=roll)
+splat("DeskSplat",6.0,0.912,-9.8,0.08)
+# The janitor's arm, still in its sleeve, holding his brass key.
+mi("SeveredArm",DEC,(6.6,0.06,-13.4),mesh("CapsuleMesh",radius="0.05",height="0.62",radial_segments="8",rings="2"),SLEEVE,pitch=90,yaw=35)
+mi("SeveredHand",DEC,(6.43,0.05,-13.18),mesh("BoxMesh",size=v3(0.08,0.035,0.1)),SKIN,yaw=35)
+mi("ArmWound",DEC,(6.78,0.06,-13.66),mesh("CylinderMesh",top_radius="0.052",bottom_radius="0.052",height="0.02",radial_segments="8",rings="1"),BLOOD,pitch=90,yaw=35)
+blob("ArmPool",(6.75,0.026,-13.7),0.24,BLOOD)
+item("brass_key",(6.35,0.08,-13.05))
+# A leg by the stairwell door, one boot still on.
+mi("SeveredLeg",DEC,(9.1,0.08,-13.6),mesh("CapsuleMesh",radius="0.07",height="0.85",radial_segments="8",rings="2"),SLEEVE,pitch=90,yaw=-70)
+mi("Boot",DEC,(8.75,0.09,-13.48),mesh("BoxMesh",size=v3(0.12,0.12,0.26)),BLACK,yaw=20)
+mi("LegWound",DEC,(9.48,0.08,-13.73),mesh("CylinderMesh",top_radius="0.072",bottom_radius="0.072",height="0.02",radial_segments="8",rings="1"),BLOOD,pitch=90,yaw=-70)
+blob("LegPool",(9.5,0.026,-13.8),0.28,BLOOD)
+stinger("FreshBlood",(4.2,1,-10.2),(3,2,3),msg="COLE: Nobody touch it. This blood is fresh... whatever did this is still in here.")
+
 emit_batches()
 mi("SaggingGutter",DEC,(-6.5,H+0.05,0.48),mesh("BoxMesh",size=v3(4.0,0.1,0.12)),METAL,roll=-14,shadow=False)
 
@@ -655,9 +714,23 @@ light("VendingGlow",DEC,(9,1.2,-4.7),color=(0.75,0.9,0.7),energy=0.5,rng=3.0,fli
 sc.node("VendingHum","AudioStreamPlayer3D","Sound",transform=xform((9,1,-5.3)),stream=ER(BUZZ),volume_db="-14.0",unit_size="2.5",autoplay="true")
 
 # ------------------------------------------------------------ the floppy disk puzzle
-# The director left a floppy disk on his desk. The old records computer in
-# the office still works: put the disk in and it unlocks the supply cage.
-item("floppy_disk",(6.3,0.93,-10.2))
+# The puzzle chain in the station:
+#   keypad code -> director's office (the janitor's arm still holds his BRASS KEY)
+#   + a FUSE from the yard shed -> fuse box in the break room
+#   -> brass key + power open the JANITOR'S CLOSET -> the FLOPPY DISK inside
+#   -> the old records computer reads it -> the SUPPLY CAGE unlocks.
+item("fuse",(10.1,0.2,12.6))  # in the yard shed
+inst("fuse","BreakFuseBox","Puzzles",(9.84,1.3,-1.5),-90,label_text=S("CLOSET POWER"))
+# The janitor's closet in the break room's back corner (its whole east side is the door).
+BX("ClosetSouth",St,2.15,4.2,0,H,-4.05,-3.95,WALL)
+inst("door","JanitorCloset","Puzzles",(4.2,0,-4),90,puzzle_controlled="true")
+inst("clamp","ClosetKeyLock","Puzzles",(3.2,1.2,-3.9),0,item_id=S("brass_key"),insert_time="1.0",engineer_insert_time="1.0",
+     label_text=S("KEY"),prompt_text=S("Closet lock"))
+gate("ClosetGate","Puzzles",["../BreakFuseBox","../ClosetKeyLock"],["../JanitorCloset"],msg="The closet's lock clicks open.")
+item("floppy_disk",(3.0,0.2,-5.3))
+mi("Bucket",DEC,(2.6,0.18,-4.5),mesh("CylinderMesh",top_radius="0.17",bottom_radius="0.14",height="0.36",radial_segments="10",rings="1"),RUST)
+mi("Mop",DEC,(2.4,0.75,-5.6),mesh("CylinderMesh",top_radius="0.015",bottom_radius="0.015",height="1.5",radial_segments="5",rings="1"),WOOD,pitch=12)
+label("ClosetSign",DEC,(3.2,2.3,-3.94),0,"JANITOR",size=0.004,font=32,color=(0.75,0.72,0.6),outline="0")
 desk("RecordsDesk",-2.9,-1.3,-15.5,-14.7)
 BX("RecordsCRT",St,-2.45,-1.75,0.9,1.5,-15.45,-14.95,CRT)
 BX("RecordsScreen",St,-2.38,-1.82,1.0,1.42,-14.96,-14.94,SCREEN,collide=False)

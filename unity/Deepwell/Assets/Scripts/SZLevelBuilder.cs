@@ -102,9 +102,13 @@ namespace Deepwell
         // Desks, computers and the team's car: if a downloaded asset is in that
         // slot (Deepwell > Asset Slots), it stands in their place. Their colliders
         // stay, so you still bump into them the same way.
+        class Spot { public Bounds bounds; public Quaternion facing; }
+
         static void ReplaceWithAssets(Transform parent)
         {
-            var done = new Dictionary<string, List<Bounds>>();
+            // Pieces of the same kind that touch (a monitor and its screen, the
+            // drops round a blood splat) become one spot, and one asset fills it.
+            var spots = new Dictionary<string, List<Spot>>();
             foreach (var pair in SlotGroups)
             {
                 var id = pair.Key.Substring(0, pair.Key.LastIndexOf('_')).ToLowerInvariant();
@@ -115,15 +119,16 @@ namespace Deepwell
                 var bounds = renderers[0].bounds;
                 foreach (var r in renderers) bounds.Encapsulate(r.bounds);
                 foreach (var r in renderers) r.enabled = false;
-                // A monitor and its screen are two parts: only one asset for both.
+                if (!spots.TryGetValue(id, out var list)) spots[id] = list = new List<Spot>();
                 var grown = bounds;
                 grown.Expand(0.2f);
-                if (!done.TryGetValue(id, out var placed)) done[id] = placed = new List<Bounds>();
-                if (placed.Exists(b => b.Intersects(grown))) continue;
-                placed.Add(bounds);
-                var facing = Quaternion.Euler(0f, pair.Value[0].eulerAngles.y, 0f);
-                SZAssets.Replace(id, bounds, facing, parent);
+                var near = list.Find(sp => sp.bounds.Intersects(grown));
+                if (near != null) near.bounds.Encapsulate(bounds);
+                else list.Add(new Spot { bounds = bounds, facing = Quaternion.Euler(0f, pair.Value[0].eulerAngles.y, 0f) });
             }
+            foreach (var pair in spots)
+                foreach (var spot in pair.Value)
+                    SZAssets.Replace(pair.Key, spot.bounds, spot.facing, parent);
         }
 
         static void BuildEnvironment(SZLevelData data, Transform parent)
