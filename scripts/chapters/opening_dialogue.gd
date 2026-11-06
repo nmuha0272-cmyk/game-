@@ -58,15 +58,15 @@ var _body_turn_to := NAN
 
 # The opening conversation when the team arrives at the weather station.
 # First Eli and Cole at the trunk of their car ("trunk"): they take the
-# pistols ("pistols"), talk about the missing people, and Eli takes out the
-# old photo of him with his mom and dad ("photo"). Then the whole team talks.
+# pistols ("pistols") and talk about the missing people. Then the whole team
+# talks. (A line with "photo": true would show Eli's old family photo; the
+# photo scene was taken out, but it still works if a line asks for it.)
 const DIALOGUE := [
 	{"character": "Guard", "text": "Take this. Safety on until you need it.", "trunk": true, "pistols": true},
 	{"character": "Son", "text": "Got it. My hands are shaking, Cole.", "trunk": true},
 	{"character": "Guard", "text": "And grab the crowbar by the trunk. The front door's been jammed for years.", "trunk": true},
 	{"character": "Guard", "text": "Seven people missing since August, Eli. Marcus and Jenna were the last two.", "trunk": true},
 	{"character": "Son", "text": "They only came out here because of me.", "trunk": true},
-	{"character": "Son", "text": "Mom, Dad and me. I was five. It's the last picture of us together.", "trunk": true, "photo": true},
 	{"character": "Guard", "text": "Your dad would be proud of you, kid. We bring them home. All of them.", "trunk": true},
 	{"character": "Journalist", "text": "There it is. The Blackwater Weather Station. Or what's left of it. I'm terrified.", "trunk": false},
 	{"character": "Guard", "text": "Sixteen years since they sealed this place. And seven people have walked in since August.", "trunk": false},

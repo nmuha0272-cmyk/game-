@@ -18,7 +18,7 @@ extends CanvasLayer
 @onready var flash_overlay: ColorRect = $FlashOverlay
 @onready var downed_overlay: ColorRect = $DownedOverlay
 @onready var gas_overlay: ColorRect = $GasOverlay
-@onready var hotbar: HBoxContainer = $Hotbar
+@onready var hotbar: BoxContainer = $Hotbar  # the 4 quick slots, down the right side
 @onready var battery_label: Label = $BatteryLabel
 @onready var subtitle_label: Label = $SubtitleLabel
 @onready var quick_chat_wheel: Node = $QuickChatWheel
@@ -129,7 +129,7 @@ func _build_quick_hotbar() -> void:
 	_quick_panels.clear()
 	_quick_labels.clear()
 
-	# Fixed 4 quick slots, wider
+	# Fixed 4 quick slots, one above the other on the right
 	var width := 160
 	for i in Inventory.QUICK_SLOTS:
 		var panel := PanelContainer.new()

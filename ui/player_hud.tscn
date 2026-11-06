@@ -128,16 +128,18 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.25, 0.4, 0.05, 0.3)
 
-[node name="Hotbar" type="HBoxContainer" parent="."]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -600.0
-offset_top = -130.0
-offset_right = 600.0
-offset_bottom = -96.0
+[node name="Hotbar" type="VBoxContainer" parent="."]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -184.0
+offset_top = -140.0
+offset_right = -24.0
+offset_bottom = 140.0
+grow_horizontal = 0
+grow_vertical = 2
 mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 8

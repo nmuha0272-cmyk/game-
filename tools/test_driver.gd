@@ -153,7 +153,6 @@ func _run() -> void:
 	# --- Advance every line with real injected input ---
 	var head: Node3D = p.get_node("Head")
 	var checked_speaker := false
-	var saw_photo := false
 	for i in range(od.DIALOGUE.size()):
 		var line: Dictionary = od.DIALOGUE[i]
 		var expected: String = line.text
@@ -162,10 +161,7 @@ func _run() -> void:
 			_log("TIMEOUT: line %d never captioned (current=%s)" % [i,
 					str(od._caption_text.text) if od._caption_text else "<none>"])
 			break
-		if line.get("photo", false):
-			saw_photo = od._photo != null
-			await _shot("4_trunk_photo", 0.3)
-		elif i == 0:
+		if i == 0:
 			await _shot("2_trunk_scene", 0.6)
 		if not line.get("trunk", false):
 			if od._trunk_actors.size() > 0:
@@ -181,7 +177,7 @@ func _run() -> void:
 		_press("ui_accept")
 		_log("tapped continue after line %d at %0.1fs" % [i, (Time.get_ticks_msec() - t0) / 1000.0])
 
-	check(saw_photo, "Eli's photo shows on the photo line")
+	check(od._photo == null, "no family photo scene (it was taken out)")
 	if car:
 		var lid: Node3D = car.get_node("TrunkLid")
 		check(lid.rotation_degrees.x < -60.0, "the trunk opened (%.0f deg)" % lid.rotation_degrees.x)
