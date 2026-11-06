@@ -5,31 +5,46 @@ requesting solo as The Journalist (Nora)
 PASS: solo host registered
 PASS: character picked: The Journalist (Nora)
 starting game
-PASS: newspaper intro appears after character select
-newspaper phase 1 up - NOT skipping, letting it play
-opening cutscene finished naturally
+PASS: no newspaper intro: straight into the level
 level loaded: Chapter1, waiting for dialogue...
+PASS: every item in the level exists []
+PASS: every puzzle is wired up []
+PASS: every puzzle door has a puzzle that opens it []
+PASS: every locked door has its key somewhere []
+PASS: every item slot's item is somewhere in the level []
+PASS: enough crowbars (2) for the jammed doors (1) and crowbar slots (1)
 PASS: level has 2 pack upgrades to find
-dialogue triggered at 68.5s
+dialogue triggered at 33.9s
 PASS: controls frozen (menu_open) during dialogue
 PASS: cutscene camera created
 PASS: letterbox bars created
-PASS: caption shows line 0: There it is. The Blackwater Weather Station. Or what's left of it.
-PASS: caption shows who speaks: THE JOURNALIST (NORA)
+PASS: caption shows line 0: Take this. Safety on until you need it.
+PASS: caption shows who speaks: THE GUARD (COLE)
 PASS: player spawned (1 found)
 PASS: 3 stand-in bodies spawned (3)
 PASS: stand-in bodies have rigged models
 PASS: own nameplate hidden during scene
 PASS: own model fully visible, not shadow-only (1 meshes)
+PASS: Eli and Cole act the trunk scene (2 bodies)
+PASS: the team's car is parked at the start
+tapped continue after line 0 at 34.1s
+tapped continue after line 1 at 34.4s
+tapped continue after line 2 at 34.7s
+tapped continue after line 3 at 35.0s
+tapped continue after line 4 at 35.3s
+tapped continue after line 5 at 35.6s
+tapped continue after line 6 at 36.0s
 PASS: speaker is acting (gesturing)
-PASS: camera close-up on speaker (dist=2.63 m)
-tapped continue after line 0 at 68.7s
-tapped continue after line 1 at 69.0s
-tapped continue after line 2 at 69.3s
-tapped continue after line 3 at 69.6s
-tapped continue after line 4 at 69.9s
-tapped continue after line 5 at 70.2s
-tapped continue after line 6 at 70.5s
+PASS: camera close-up on speaker (dist=2.62 m)
+tapped continue after line 7 at 36.4s
+tapped continue after line 8 at 36.7s
+tapped continue after line 9 at 37.0s
+tapped continue after line 10 at 37.3s
+tapped continue after line 11 at 37.6s
+tapped continue after line 12 at 37.9s
+tapped continue after line 13 at 38.2s
+PASS: Eli's photo shows on the photo line
+PASS: the trunk opened (-75 deg)
 PASS: cutscene ended and controls restored
 PASS: menu_open false after scene
 PASS: bars freed after scene
@@ -64,4 +79,9 @@ PASS: storage caps at 10 slots
 PASS: total capacity is 14
 PASS: no more storage slots past the cap
 PASS: extra pouch kept when it can't be worn
+PASS: F5 writes a save file
+PASS: F9 reloads the level and puts you where you saved
+PASS: your inventory comes back from the save (10 storage)
+PASS: the team's progress comes back from the save
+PASS: the intro doesn't play again after loading
 TEST_RESULT: ALL PASS

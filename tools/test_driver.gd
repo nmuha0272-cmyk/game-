@@ -86,6 +86,7 @@ func _run() -> void:
 	var level: Node = main.level_root.get_child(0)
 	var od: Node = level.get_node("OpeningDialogue")
 	_log("level loaded: %s, waiting for dialogue..." % level.name)
+	_check_level(level)
 
 	# The pack upgrades have to actually be lying around to be found.
 	var spawner: Node = ItemSpawner.find(get_tree())
@@ -286,6 +287,72 @@ func _run() -> void:
 	DirAccess.remove_absolute(GameState.SAVE_PATH)  # (don't leave a test save behind)
 
 	finish()
+
+
+## Looks over the whole level for things that would make the chapter
+## unwinnable: puzzles wired to nothing, items that don't exist, locks with no
+## key anywhere, doors only a puzzle can open that no puzzle opens.
+func _check_level(level: Node) -> void:
+	var spawned := {}  # item id -> how many are lying around
+	var spawn_root := level.get_node_or_null("ItemSpawnPoints")
+	var bad_items: Array[String] = []
+	if spawn_root:
+		for point in spawn_root.get_children():
+			var id := str(point.get("item_id"))
+			spawned[id] = spawned.get(id, 0) + 1
+			if not Items.INFO.has(id):
+				bad_items.append("%s (%s)" % [point.name, id])
+			var lore := str(point.get("lore_id"))
+			if lore != "" and Lore.get_entry(lore) == null:
+				bad_items.append("%s (lore %s)" % [point.name, lore])
+	check(bad_items.is_empty(), "every item in the level exists %s" % str(bad_items))
+
+	var bad_gates: Array[String] = []
+	var opened: Array[Node] = []
+	for gate in level.find_children("*", "", true, false):
+		if not gate is PuzzleGate:
+			continue
+		for n in gate.inputs + gate.outputs:
+			if n == null:
+				bad_gates.append(str(level.get_path_to(gate)))
+	check(bad_gates.is_empty(), "every puzzle is wired up %s" % str(bad_gates))
+	# Anything that points at a door can open it (puzzle gates, the airlock, terminals...).
+	for node in level.find_children("*", "", true, false):
+		if node is Door or node.get_script() == null:
+			continue
+		for prop in node.get_property_list():
+			if not prop.usage & PROPERTY_USAGE_SCRIPT_VARIABLE:
+				continue
+			var value = node.get(prop.name)
+			if value is Node:
+				opened.append(value)
+			elif value is Array:
+				for v in value:
+					if v is Node:
+						opened.append(v)
+
+	var bad_doors: Array[String] = []
+	var bad_locks: Array[String] = []
+	var bad_sockets: Array[String] = []
+	for node in level.find_children("*", "", true, false):
+		if node is Door and node.puzzle_controlled and not node in opened:
+			bad_doors.append(str(level.get_path_to(node)))
+		elif node is DoorLock:
+			var need: Array = ["crowbar"] if node.kind == DoorLock.Kind.JAMMED else \
+					DoorLock.KEYCARD_ORDER.slice(DoorLock.KEYCARD_ORDER.find(node.keycard_color)).map(func(c: String) -> String: return "keycard_" + c)
+			if not need.any(func(id: String) -> bool: return spawned.has(id)):
+				bad_locks.append("%s needs %s" % [level.get_path_to(node), need])
+		elif node is PuzzleInput and node.get("item_id") != null:
+			var id := str(node.get("item_id"))
+			if not Items.INFO.has(id) or not spawned.has(id):
+				bad_sockets.append("%s needs %s" % [level.get_path_to(node), id])
+	check(bad_doors.is_empty(), "every puzzle door has a puzzle that opens it %s" % str(bad_doors))
+	check(bad_locks.is_empty(), "every locked door has its key somewhere %s" % str(bad_locks))
+	check(bad_sockets.is_empty(), "every item slot's item is somewhere in the level %s" % str(bad_sockets))
+	var crowbars := int(spawned.get("crowbar", 0))
+	var jammed := level.find_children("*", "", true, false).filter(func(n: Node) -> bool: return n is DoorLock and n.kind == DoorLock.Kind.JAMMED).size()
+	var clamps := level.find_children("*", "", true, false).filter(func(n: Node) -> bool: return n is PuzzleInput and str(n.get("item_id")) == "crowbar").size()
+	check(crowbars >= jammed + clamps, "enough crowbars (%d) for the jammed doors (%d) and crowbar slots (%d)" % [crowbars, jammed, clamps])
 
 
 func check(cond: bool, what: String) -> void:

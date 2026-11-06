@@ -10,6 +10,6 @@ extends Marker3D
 		"ammo_308", "ammo_dart", "ammo_flare_shell",
 		"weapon_revolver", "weapon_pistol", "weapon_suppressed_9mm",
 		"weapon_shotgun", "weapon_smg", "weapon_rifle", "weapon_tranq",
-		"weapon_flare_gun") var item_id := "battery"
+		"weapon_flare_gun", "floppy_disk", "brass_key") var item_id := "battery"
 ## For reel tapes: which lore entry is recorded on it (lore/<id>.tres).
 @export var lore_id := ""
