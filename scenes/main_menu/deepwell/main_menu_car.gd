@@ -140,6 +140,16 @@ const TALK := [
 
 const MIRROR_POS := Vector3(0.0, 1.62, -0.6)
 
+## The real car (Nasir's Volvo S90 or Audi RS Q8): put the model in
+## assets/models/cars/ named volvo_s90, audi_rs_q8 or car (.glb, .gltf or .fbx)
+## and the car scenes use it instead of the box car. Until then the box car is
+## the placeholder. If it sits wrong, change these:
+const CAR_MODEL_NAMES := ["car", "volvo_s90", "audi_rs_q8"]
+const CAR_MODEL_TYPES := ["glb", "gltf", "fbx", "blend"]
+const CAR_MODEL_TURN := 180.0  # degrees: set it to 0.0 if the car faces backwards
+const CAR_MODEL_LENGTH := 5.0  # meters long (a real S90 is 4.96, an RS Q8 5.01)
+const CAR_MODEL_OFFSET := Vector3(0.0, 0.0, 0.2)  # move it (meters): x right, y up, z back
+
 var state := State.MENU
 var hovered := ""
 var selected := ""
@@ -833,6 +843,56 @@ func _build_cars() -> void:
 		remove_child(car)
 		_car.add_child(car)
 	_show_hero_car(false)
+	for car: Node3D in [_hero_car, _placeholder_car]:
+		_swap_in_real_car(car)
+
+
+## If the real car model is there, it replaces the boxes (the lights stay).
+func _swap_in_real_car(car: Node3D) -> void:
+	var scene: PackedScene = null
+	for car_name: String in CAR_MODEL_NAMES:
+		for type: String in CAR_MODEL_TYPES:
+			var path := "res://assets/models/cars/%s.%s" % [car_name, type]
+			if scene == null and ResourceLoader.exists(path):
+				scene = load(path) as PackedScene
+	if scene == null:
+		return
+	var model := scene.instantiate() as Node3D
+	if model == null:
+		return
+	for child in car.get_children():
+		if child is GeometryInstance3D:
+			child.visible = false
+	var holder := Node3D.new()
+	holder.name = "RealCar"
+	car.add_child(holder)
+	holder.add_child(model)
+	# Lay it along the car (its longest side front to back), then turn and size it.
+	var box := _model_box(model, holder)
+	if box.size.x > box.size.z:
+		model.rotation.y = PI / 2.0
+		box = _model_box(model, holder)
+	model.rotation.y += deg_to_rad(CAR_MODEL_TURN)
+	box = _model_box(model, holder)
+	var length := maxf(box.size.z, 0.001)
+	model.scale *= CAR_MODEL_LENGTH / length
+	box = _model_box(model, holder)
+	model.position += Vector3(-box.get_center().x, -box.position.y, -box.get_center().z) + CAR_MODEL_OFFSET
+
+
+## The model's size and place, measured in the holder's own space.
+func _model_box(model: Node3D, holder: Node3D) -> AABB:
+	var box := AABB()
+	var first := true
+	var to_holder := holder.global_transform.affine_inverse()
+	for part in model.find_children("*", "VisualInstance3D", true, false):
+		var b: AABB = (to_holder * (part as VisualInstance3D).global_transform) * (part as VisualInstance3D).get_aabb()
+		if first:
+			box = b
+			first = false
+		else:
+			box = box.merge(b)
+	return box
 
 
 func _show_hero_car(hero: bool) -> void:
