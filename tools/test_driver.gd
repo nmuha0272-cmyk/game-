@@ -59,6 +59,7 @@ func _run() -> void:
 	var main: Node = get_tree().root.get_node("Main")
 	_log("main scene up at %0.1fs" % ((Time.get_ticks_msec() - t0) / 1000.0))
 	await _timer(0.5)
+	await _shot("1_main_menu", 2.5)
 
 	# --- Solo game with selected character ---
 	var playtest_char := _get_playtest_character()
@@ -104,6 +105,7 @@ func _run() -> void:
 		return finish("dialogue never triggered")
 	_log("dialogue triggered at %0.1fs" % ((Time.get_ticks_msec() - t0) / 1000.0))
 
+	await _shot("3_opening_cutscene", 0.0)
 	# --- Mid-scene state ---
 	check(GameState.menu_open, "controls frozen (menu_open) during dialogue")
 	check(od._camera != null, "cutscene camera created")
@@ -162,6 +164,9 @@ func _run() -> void:
 			break
 		if line.get("photo", false):
 			saw_photo = od._photo != null
+			await _shot("4_trunk_photo", 0.3)
+		elif i == 0:
+			await _shot("2_trunk_scene", 0.6)
 		if not line.get("trunk", false):
 			if od._trunk_actors.size() > 0:
 				check(false, "trunk bodies freed when the team talks")
@@ -197,6 +202,7 @@ func _run() -> void:
 	check(body_after.get("acting") == 0.0 and body_after.get("glance") == 0.0,
 			"acting/glance cleared after scene")
 
+	await _shot("5_player_view", 0.3)
 	# --- Third person (C) ---
 	var hud: Node = p.get_node("HUD")
 	check(hud.get_node_or_null("NoiseMeter") == null, "no loudness meter on the HUD")
@@ -353,6 +359,18 @@ func _check_level(level: Node) -> void:
 	var jammed := level.find_children("*", "", true, false).filter(func(n: Node) -> bool: return n is DoorLock and n.kind == DoorLock.Kind.JAMMED).size()
 	var clamps := level.find_children("*", "", true, false).filter(func(n: Node) -> bool: return n is PuzzleInput and str(n.get("item_id")) == "crowbar").size()
 	check(crowbars >= jammed + clamps, "enough crowbars (%d) for the jammed doors (%d) and crowbar slots (%d)" % [crowbars, jammed, clamps])
+
+
+## Pictures of the game while it plays: only when the playtest runs with a
+## window (not --headless) and SZ_SHOTS is set to a folder.
+func _shot(shot_name: String, wait: float) -> void:
+	var folder := OS.get_environment("SZ_SHOTS")
+	if folder.is_empty() or DisplayServer.get_name() == "headless":
+		return
+	if wait > 0.0:
+		await _timer(wait)
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(folder.path_join(shot_name + ".png"))
 
 
 func check(cond: bool, what: String) -> void:
