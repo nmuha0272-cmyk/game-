@@ -4,9 +4,9 @@ extends CharacterBody3D
 ## Only the computer that owns this player runs the movement. Everyone else
 ## receives the position through the MultiplayerSynchronizer.
 
-@export var walk_speed := 3.5
-@export var sprint_speed := 6.0
-@export var crouch_speed := 1.8
+@export var walk_speed := 4.5
+@export var sprint_speed := 7.0
+@export var crouch_speed := 2.3
 ## How quickly the player speeds up and slows down. Higher = snappier.
 @export var acceleration := 10.0
 ## How hard a jump pushes you up. Higher = you jump higher.

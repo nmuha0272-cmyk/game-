@@ -25,6 +25,13 @@ const RIGGED := {
 }
 ## Who gets flies around them (names from MODEL_NAMES, like "son"). Empty = everyone.
 const FLY_TARGETS: Array[String] = []
+## Newer models made by Nasir. They're used instead of the ones above when the
+## file is there. "paint": the model has no textures yet, so it's colored by
+## height (assets/shaders/paint_by_height.gdshader) until they come.
+const NEW_MODELS := {
+	Characters.Id.SON: {"path": "res://assets/models/realistic game character 3d model (1).fbx", "paint": true},
+}
+const PAINT_SHADER := "res://assets/shaders/paint_by_height.gdshader"
 ## The rigged models are this tall (in their own units).
 const RIGGED_MODEL_HEIGHT := 0.98
 
@@ -49,7 +56,7 @@ func setup(character: int, is_local: bool) -> void:
 		child.queue_free()
 	_limbs.clear()
 	_rig = null
-	if RIGGED.has(character) and ResourceLoader.exists(RIGGED_FOLDER + RIGGED[character][0] + ".glb"):
+	if RIGGED.has(character) and ResourceLoader.exists(_model_path(character)):
 		_setup_rigged(character, is_local)
 		return
 	var model: String = MODEL_NAMES.get(character, "son")
@@ -70,7 +77,12 @@ func setup(character: int, is_local: bool) -> void:
 
 func _setup_rigged(character: int, is_local: bool) -> void:
 	var info: Array = RIGGED[character]
-	var model := (load(RIGGED_FOLDER + info[0] + ".glb") as PackedScene).instantiate()
+	var model := (load(_model_path(character)) as PackedScene).instantiate()
+	if NEW_MODELS.has(character) and NEW_MODELS[character].get("paint", false):
+		var paint := ShaderMaterial.new()
+		paint.shader = load(PAINT_SHADER)
+		for part: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+			part.material_override = paint
 	model.set_script(HumanRig)
 	_rig = model as HumanRig
 	_rig_scale = info[1] / RIGGED_MODEL_HEIGHT
@@ -84,6 +96,13 @@ func _setup_rigged(character: int, is_local: bool) -> void:
 	# Put character names in FLY_TARGETS to give flies to only some of them.
 	if not is_local and (FLY_TARGETS.is_empty() or MODEL_NAMES.get(character, "") in FLY_TARGETS):
 		add_fly_effects(_rig)
+
+
+## Which model file a character uses (a new one if it's there).
+func _model_path(character: int) -> String:
+	if NEW_MODELS.has(character) and ResourceLoader.exists(NEW_MODELS[character].path):
+		return NEW_MODELS[character].path
+	return RIGGED_FOLDER + RIGGED[character][0] + ".glb"
 
 
 func _add_part(parent: Node3D, file: String, is_local: bool) -> void:
