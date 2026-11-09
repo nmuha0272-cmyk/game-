@@ -26,12 +26,10 @@ const RIGGED := {
 ## Who gets flies around them (names from MODEL_NAMES, like "son"). Empty = everyone.
 const FLY_TARGETS: Array[String] = []
 ## Newer models made by Nasir. They're used instead of the ones above when the
-## file is there. "paint": the model has no textures yet, so it's colored by
-## height (assets/shaders/paint_by_height.gdshader) until they come.
+## file is there (with their own colors, as Nasir paints them).
 const NEW_MODELS := {
-	Characters.Id.SON: {"path": "res://assets/models/realistic game character 3d model (1).fbx", "paint": true},
+	Characters.Id.SON: {"path": "res://assets/models/realistic game character 3d model (1).fbx"},
 }
-const PAINT_SHADER := "res://assets/shaders/paint_by_height.gdshader"
 ## The rigged models are this tall (in their own units).
 const RIGGED_MODEL_HEIGHT := 0.98
 
@@ -78,11 +76,6 @@ func setup(character: int, is_local: bool) -> void:
 func _setup_rigged(character: int, is_local: bool) -> void:
 	var info: Array = RIGGED[character]
 	var model := (load(_model_path(character)) as PackedScene).instantiate()
-	if NEW_MODELS.has(character) and NEW_MODELS[character].get("paint", false):
-		var paint := ShaderMaterial.new()
-		paint.shader = load(PAINT_SHADER)
-		for part: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
-			part.material_override = paint
 	model.set_script(HumanRig)
 	_rig = model as HumanRig
 	_rig_scale = info[1] / RIGGED_MODEL_HEIGHT
