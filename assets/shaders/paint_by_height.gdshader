@@ -23,14 +23,19 @@ void fragment() {
 	float side = abs(body.x);
 	vec3 c = jacket;
 	if (y < 0.065) c = boots;
-	else if (side > 0.15 && y > 0.37 && y < 0.53) c = skin;           // hands
-	else if (y < 0.47 || (side < 0.085 && y < 0.53)) c = jeans;  // (and the top of the jeans, under the belt)
-	else if (y < 0.86) {
+	else if (side > 0.14 && y > 0.31 && y < 0.505) c = skin;                     // hands (fingertips too)
+	else if (y < 0.45 || (side < 0.06 && body.z > 0.0 && y < 0.535)) c = jeans;  // jeans (and the top, seen in front)
+	else if (y < 0.825) {
 		c = jacket;
 		if (side < 0.05 && y > 0.53 && y < 0.565 && body.z > 0.015) c = belt;        // belt, seen through the open jacket
-		else if (side < 0.045 && y > 0.565 && y < 0.83 && body.z > 0.015) c = shirt;  // shirt under the open jacket
+		else if (side < 0.045 && y > 0.565 && body.z > -0.01) c = shirt;  // shirt under the open jacket
 	}
-	else if (y > 0.935 || (y > 0.89 && body.z < -0.015)) c = hair;
+	else if (y < 0.875) {
+		// The chin and neck (the jacket collar is round the sides and back).
+		if (side < 0.05 && body.z > -0.035) c = skin;
+		else c = jacket;
+	}
+	else if (y > 0.935 || (y > 0.89 && body.z < -0.015) || (y > 0.91 && side > 0.043)) c = hair;
 	else c = skin;
 	ALBEDO = c;
 	ROUGHNESS = 0.82;
