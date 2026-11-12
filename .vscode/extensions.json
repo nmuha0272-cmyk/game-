@@ -1,0 +1,4 @@
+{
+	// VS Code asks to install these when you open the game folder.
+	"recommendations": ["geequlim.godot-tools"]
+}

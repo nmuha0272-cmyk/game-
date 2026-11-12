@@ -1,0 +1,20 @@
+{
+	// Press F5 (or Run > Start Debugging) to play the game.
+	// Needs the "godot-tools" extension and Godot 4.7 (see .vscode/settings.json).
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Play Deepwell",
+			"type": "godot",
+			"request": "launch",
+			"project": "${workspaceFolder}"
+		},
+		{
+			"name": "Play Deepwell (test the whole game automatically)",
+			"type": "godot",
+			"request": "launch",
+			"project": "${workspaceFolder}",
+			"additional_options": "-- --playtest"
+		}
+	]
+}

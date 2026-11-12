@@ -1,0 +1,20 @@
+{
+	// Terminal > Run Task... > "Play Deepwell" also starts the game (no debugger).
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Play Deepwell",
+			"type": "process",
+			"command": "${config:godotTools.editorPath.godot4}",
+			"args": ["--path", "${workspaceFolder}"],
+			"problemMatcher": []
+		},
+		{
+			"label": "Open Deepwell in the Godot editor",
+			"type": "process",
+			"command": "${config:godotTools.editorPath.godot4}",
+			"args": ["--path", "${workspaceFolder}", "--editor"],
+			"problemMatcher": []
+		}
+	]
+}

@@ -1,0 +1,7 @@
+{
+	// Where Godot 4.7 is on your computer. Change this to your own path, for example:
+	// "C:\\Users\\YourName\\Downloads\\Godot_v4.7-stable_win64\\Godot_v4.7-stable_win64.exe"
+	// (Tip: in File Explorer, Shift + right-click the Godot .exe > "Copy as path",
+	// paste it here, and change every \ to \\ .)
+	"godotTools.editorPath.godot4": "C:\\Godot\\Godot_v4.7-stable_win64.exe"
+}
