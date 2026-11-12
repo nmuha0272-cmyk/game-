@@ -274,12 +274,12 @@ func _process(delta: float) -> void:
 	elif state == State.TALK and _talk_line >= 0 and _talk_line < TALK.size():
 		# The camera goes to whoever is talking.
 		var who: String = TALK[_talk_line][0]
-		pos = CHARACTERS[who]["side_cam"] + Vector3(sin(_time * 0.6) * 0.012, sin(_time * 0.9) * 0.01, 0.0)
-		look = CHARACTERS[who]["side_look"]
+		pos = CHARACTERS[who]["side_cam"] + _face_lift(who) + Vector3(sin(_time * 0.6) * 0.012, sin(_time * 0.9) * 0.01, 0.0)
+		look = CHARACTERS[who]["side_look"] + _face_lift(who)
 	elif state == State.SELECT:
 		if hovered != "":
-			pos = CHARACTERS[hovered]["side_cam"]
-			look = CHARACTERS[hovered]["side_look"]
+			pos = CHARACTERS[hovered]["side_cam"] + _face_lift(hovered)
+			look = CHARACTERS[hovered]["side_look"] + _face_lift(hovered)
 		else:
 			pos = BACKSEAT_CAM_POS
 			look = BACKSEAT_CAM_TARGET
@@ -1075,7 +1075,8 @@ func _build_character(id: String) -> void:
 			var height: float = MODEL_FILES[id][1]
 			var size := height / RIGGED_MODEL_HEIGHT
 			var front := id in ["eli", "cole"]
-			var hips := Vector3(c["seat"].x, 0.93 if front else 0.98, 0.3 if front else 1.2)  # (car space)
+			size *= 0.94  # (a touch smaller, so heads clear the car's low roof)
+			var hips := Vector3(c["seat"].x, 0.88 if front else 0.93, 0.3 if front else 1.2)  # (car space)
 			var body: Dictionary = PoseShader.BODIES[MODEL_FILES[id][0]]
 			model.set_script(null)
 			PoseShader.apply(model, MODEL_FILES[id][0], true)
@@ -1172,7 +1173,17 @@ func _build_character(id: String) -> void:
 	label.visible = false
 	root.add_child(label)
 
-	_figures[id] = {"root": root, "materials": materials, "label": label, "rig": rig}
+	_figures[id] = {"root": root, "materials": materials, "label": label, "rig": rig,
+			"posed": rig == null and not materials.is_empty() and materials[0] is ShaderMaterial}
+
+
+## The real (posed) models' faces sit higher than the simple figures' did, so
+## the close-up cameras rise to meet them.
+const REAL_FACE_LIFT := Vector3(0.0, 0.2, 0.0)
+
+
+func _face_lift(id: String) -> Vector3:
+	return REAL_FACE_LIFT if _figures.has(id) and _figures[id].get("posed", false) else Vector3.ZERO
 
 
 func _build_camera() -> void:
