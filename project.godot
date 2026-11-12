@@ -188,3 +188,6 @@ sync_walk={
 ]
 }
 
+[rendering]
+
+textures/default_filters/anisotropic_filtering_level=4

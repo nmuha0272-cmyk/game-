@@ -164,18 +164,41 @@ func _apply_brightness(world_env: WorldEnvironment) -> void:
 	env.fog_enabled = graphics == 0  # cheap fog instead of volumetric fog
 	env.fog_density = 0.03
 	env.fog_light_color = Color(0.05, 0.06, 0.08)
+	# A more film-like look: AgX keeps bright lights from blowing out to flat
+	# white, and a soft bloom makes lamps, signs and the flashlight glow.
+	env.tonemap_mode = Environment.TONE_MAPPER_AGX
+	if not env.has_meta("scene_exposure"):
+		env.set_meta("scene_exposure", env.tonemap_exposure)
+	env.tonemap_exposure = float(env.get_meta("scene_exposure")) * 1.4  # (AgX is a little darker)
+	env.glow_enabled = graphics >= 1
+	env.glow_intensity = 0.8
+	env.glow_bloom = 0.06
+	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
+	env.ssao_radius = 1.2
+	env.ssao_intensity = 2.2
+	env.ssil_radius = 4.0
 
 
 func _apply_graphics_to_viewport() -> void:
 	var viewport := get_tree().root
-	viewport.msaa_3d = Viewport.MSAA_2X if graphics >= 2 else Viewport.MSAA_DISABLED
-	viewport.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA if graphics == 1 else Viewport.SCREEN_SPACE_AA_DISABLED
+	# Smooth edges: 4x MSAA plus FXAA on High (catches fences, wires and grass), FXAA on Medium.
+	viewport.msaa_3d = Viewport.MSAA_4X if graphics >= 2 else Viewport.MSAA_DISABLED
+	viewport.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA if graphics >= 1 else Viewport.SCREEN_SPACE_AA_DISABLED
+	# Faraway models keep their detail longer on High.
+	viewport.mesh_lod_threshold = 0.6 if graphics >= 2 else 1.0 if graphics == 1 else 2.0
+	# Sharp, soft-edged shadows.
 	RenderingServer.directional_shadow_atlas_set_size(4096 if graphics >= 2 else 2048, true)
-	viewport.positional_shadow_atlas_size = 4096 if graphics >= 1 else 2048
-	RenderingServer.directional_soft_shadow_filter_set_quality(
-			RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM if graphics >= 2 else RenderingServer.SHADOW_QUALITY_HARD)
-	RenderingServer.positional_soft_shadow_filter_set_quality(
-			RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM if graphics >= 2 else RenderingServer.SHADOW_QUALITY_HARD)
+	viewport.positional_shadow_atlas_size = 8192 if graphics >= 2 else 4096 if graphics == 1 else 2048
+	var soft := RenderingServer.SHADOW_QUALITY_SOFT_HIGH if graphics >= 2 else \
+			RenderingServer.SHADOW_QUALITY_SOFT_LOW if graphics == 1 else RenderingServer.SHADOW_QUALITY_HARD
+	RenderingServer.directional_soft_shadow_filter_set_quality(soft)
+	RenderingServer.positional_soft_shadow_filter_set_quality(soft)
+	# Finer shading in corners (ambient occlusion and bounce light), and smoother fog.
+	RenderingServer.environment_set_ssao_quality(
+			RenderingServer.ENV_SSAO_QUALITY_HIGH if graphics >= 2 else RenderingServer.ENV_SSAO_QUALITY_MEDIUM, true, 0.5, 2, 50.0, 300.0)
+	RenderingServer.environment_set_ssil_quality(
+			RenderingServer.ENV_SSIL_QUALITY_HIGH if graphics >= 2 else RenderingServer.ENV_SSIL_QUALITY_MEDIUM, true, 0.5, 4, 50.0, 300.0)
+	RenderingServer.environment_set_volumetric_fog_volume_size(128 if graphics >= 2 else 64, 128 if graphics >= 2 else 64)
 
 
 func _load() -> void:

@@ -25,11 +25,10 @@ const RIGGED := {
 }
 ## Who gets flies around them (names from MODEL_NAMES, like "son"). Empty = everyone.
 const FLY_TARGETS: Array[String] = []
-## Newer models made by Nasir. They're used instead of the ones above when the
-## file is there (with their own colors, as Nasir paints them).
-const NEW_MODELS := {
-	Characters.Id.SON: {"path": "res://assets/models/realistic game character 3d model (1).fbx"},
-}
+## Newer models made by Nasir, used instead of the ones above when listed here
+## and the file is there, e.g. Characters.Id.SON: {"path": "res://...glb"}.
+## (Eli's new model is waiting for its paint, so Eli uses eli.glb for now.)
+const NEW_MODELS := {}
 ## The rigged models are this tall (in their own units).
 const RIGGED_MODEL_HEIGHT := 0.98
 
@@ -82,6 +81,9 @@ func _setup_rigged(character: int, is_local: bool) -> void:
 	_rig.scale = Vector3.ONE * _rig_scale
 	_rig.rotation.y = PI  # the models face +Z; players face -Z
 	add_child(_rig)
+	# No skeleton (a T-pose statue): the pose shader at least puts the arms down.
+	if _rig._sk == null and _model_path(character).ends_with(info[0] + ".glb"):
+		PoseShader.apply(_rig, info[0])
 	if is_local:
 		for part: MeshInstance3D in _rig.find_children("*", "MeshInstance3D", true, false):
 			part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY

@@ -104,8 +104,18 @@ static func get_melee_info(id: String) -> Dictionary:
 	return INFO.get(id, {})
 
 
-## A simple gray-box gun model (firearms).
+## Real gun models: they replace the gray box (id -> [file, length in meters]).
+## The model should point its muzzle toward -Z with the top up (like the box).
+const MODELS := {
+	"pistol": ["res://assets/models/weapons/cgtrader_optimized_Glock17.fbx", 0.22],  # Nasir's Glock 17
+}
+
+
+## The gun's look: its real model if it has one (MODELS), or a simple gray box.
 static func make_mesh(id: String) -> Node3D:
+	if MODELS.has(id) and ResourceLoader.exists(MODELS[id][0]):
+		var length: float = MODELS[id][1]
+		return Items.fit_model(MODELS[id][0], Vector3(0.05, 0.14, length))
 	var holder := Node3D.new()
 	var metal := Color(0.12, 0.12, 0.13)
 	var grip := Color(0.2, 0.13, 0.08)

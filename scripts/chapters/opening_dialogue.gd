@@ -97,6 +97,7 @@ var SPEAKER_IDS := {
 
 
 func _ready() -> void:
+	_real_trunk_pistols()
 	if not auto_play or GameState.checkpoint_order != 0 or GameState.from_save or not multiplayer.is_server():
 		return
 	await _wait_for_intro()
@@ -664,16 +665,28 @@ func _take_pistols() -> void:
 			var gun := car.get_node_or_null("TrunkPistol%d" % k) as Node3D
 			if gun:
 				gun.visible = false
-	var black := StandardMaterial3D.new()
-	black.albedo_color = Color(0.05, 0.05, 0.055)
 	for id: int in _trunk_actors:
-		var gun := MeshInstance3D.new()
-		var mesh := BoxMesh.new()
-		mesh.size = Vector3(0.035, 0.05, 0.19)
-		gun.mesh = mesh
-		gun.material_override = black
+		var gun := Weapons.make_mesh("pistol")
 		gun.position = Vector3(0.24 if id == Characters.Id.SON else -0.24, 1.0, -0.3)
 		(_trunk_actors[id] as Node3D).add_child(gun)
+
+
+## The two pistols waiting in the trunk: the real pistol model (lying on its
+## side) instead of the plain boxes the level has, when there is one.
+func _real_trunk_pistols() -> void:
+	if not Weapons.MODELS.has("pistol") or not ResourceLoader.exists(Weapons.MODELS["pistol"][0]):
+		return
+	var car := get_node_or_null("../Exterior/TeamCar") as Node3D
+	if car == null:
+		return
+	for k in 2:
+		var box := car.get_node_or_null("TrunkPistol%d" % k) as MeshInstance3D
+		if box == null:
+			continue
+		box.mesh = null  # (the node stays: _take_pistols hides it)
+		var gun := Weapons.make_mesh("pistol")
+		gun.rotation_degrees.z = 90.0
+		box.add_child(gun)
 
 
 ## A two-shot of Eli and Cole from behind the car (leaning toward whoever

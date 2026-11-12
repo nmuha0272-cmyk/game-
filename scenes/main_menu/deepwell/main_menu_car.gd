@@ -17,9 +17,9 @@ extends Node3D
 ##         slows to a stop, and the screen fades to black before the lobby
 ##         (or next scene) loads. Press Enter or Esc to skip the drive.
 ##
-## The seats show simple sitting figures. The team's real models (MODEL_FILES)
-## sit there instead once they have a skeleton; for now they are T-pose
-## statues, which can't sit, so they appear in the game instead.
+## The team's real models (MODEL_FILES) sit in the seats. They have no
+## skeleton yet (T-pose statues), so PoseShader bends them to sit with their
+## arms down; a model with a skeleton is posed by HumanRig instead.
 
 signal character_confirmed(character_id: String)
 ## Only when `embedded`: the arrival drive finished and the screen is black.
@@ -573,7 +573,10 @@ func _refresh_highlights() -> void:
 		var glow := 0.0
 		if state == State.SELECT:
 			glow = 0.9 if id == selected else 0.45 if id == hovered else 0.0
-		for mat: StandardMaterial3D in data["materials"]:
+		for mat: Material in data["materials"]:
+			if mat is ShaderMaterial:  # a posed model (PoseShader)
+				mat.set_shader_parameter("glow", glow * 0.18)
+				continue
 			mat.emission_enabled = glow > 0.0
 			mat.emission = Color(COLOR_HIGHLIGHT, 1.0)
 			mat.emission_energy_multiplier = glow * 0.18
@@ -1065,14 +1068,31 @@ func _build_character(id: String) -> void:
 		holder.add_child(model)
 		if rig._sk == null:
 			rig._ready()  # find the skeleton (the script was added after loading)
-		if rig._sk == null:
-			model.queue_free()  # no skeleton: a T-pose statue can't sit in the car
+		if rig._sk == null and PoseShader.knows(MODEL_FILES[id][0]):
+			# No skeleton (a T-pose statue): the pose shader puts the arms down and
+			# bends the legs to sit, with the hips on the seat cushion.
+			rig = null
+			var height: float = MODEL_FILES[id][1]
+			var size := height / RIGGED_MODEL_HEIGHT
+			var front := id in ["eli", "cole"]
+			var hips := Vector3(c["seat"].x, 0.93 if front else 0.98, 0.3 if front else 1.2)  # (car space)
+			var body: Dictionary = PoseShader.BODIES[MODEL_FILES[id][0]]
+			model.set_script(null)
+			PoseShader.apply(model, MODEL_FILES[id][0], true)
+			model.scale = Vector3.ONE * size
+			model.rotation.y = PI  # the models face +Z; people in the car face -Z
+			model.position = hips - c["seat"] - Vector3(0, float(body.hip_y) * size, 0)
+			for part: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+				for i in part.mesh.get_surface_count():
+					materials.append(part.get_surface_override_material(i))
+		elif rig._sk == null:
+			model.queue_free()  # no skeleton and no pose numbers: the simple figure instead
 			rig = null
 		else:
 			var height: float = MODEL_FILES[id][1]
 			model.scale = Vector3.ONE * height / RIGGED_MODEL_HEIGHT
 			model.rotation.y = PI  # the models face +Z; people in the car face -Z
-	if rig == null:
+	if rig == null and materials.is_empty():
 		var s: float = c["size"]
 		var body_mat := _mat(c["color"], 0.85)
 		var skin_mat := _mat(Color(0.62, 0.48, 0.38), 0.7)
