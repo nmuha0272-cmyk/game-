@@ -38,7 +38,8 @@ const INFO := {
 		"held_item": "res://scenes/player/held_items/heavy_flashlight.tscn",
 		"color": Color(0.3, 0.33, 0.22),  # olive field jacket
 		"ability_script": "res://scripts/abilities/guard_strength.gd",
-		# Cole is big: his footsteps are louder.
+		# Cole is big: a bit slower, and his footsteps are louder.
+		"speed_multiplier": 0.92,
 		"footstep_volume_db": 5.0,
 	},
 }
