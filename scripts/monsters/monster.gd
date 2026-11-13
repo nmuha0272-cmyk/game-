@@ -54,10 +54,10 @@ enum HidingCounter { NONE, DRAG, OVERLOAD }
 
 @export_group("Speed")
 @export var patrol_speed := 2.0
-@export var investigate_speed := 3.3
+@export var investigate_speed := 3.8
 ## Faster than walking (3.5), slower than sprinting (6), so stamina matters.
 ## Even Cole (slower, 5.1 sprint) can pull away for a few seconds.
-@export var chase_speed := 5.4  # (players walk 4.5, sprint 7)
+@export var chase_speed := 6.4  # (players walk 5.5, sprint 8.5)
 @export var search_speed := 2.6
 @export var turn_speed := 6.0
 

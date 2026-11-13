@@ -14,7 +14,7 @@ extends Node
 @export var restart_point: Marker3D
 @export var alarm_lights: Node3D
 @export var message := "ALARM! It is loose. RUN for the lift!"
-@export var chase_speed := 4.7
+@export var chase_speed := 5.7
 
 var _started := false
 var _from_trigger := false
