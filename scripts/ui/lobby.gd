@@ -1,6 +1,7 @@
 extends Control
-## The lobby: shows who is connected, lets everyone pick a character,
-## and gives the host a Start button.
+## The lobby: shows who is connected and gives the host a Start button.
+## Characters are picked in the car at the start, so once someone has one
+## the pick buttons are hidden (the lobby is only a between-chapters screen).
 
 signal start_requested
 signal leave_requested
@@ -68,6 +69,9 @@ func refresh() -> void:
 		var owner_id := GameState.get_owner_of(character)
 		button.set_pressed_no_signal(owner_id == my_id)
 		button.disabled = owner_id != 0 and owner_id != my_id
+
+	# You pick your character in the car; don't offer to change it here.
+	character_buttons.visible = GameState.get_character(my_id) == Characters.Id.NONE
 
 	var is_host := multiplayer.is_server()
 	start_button.visible = is_host
