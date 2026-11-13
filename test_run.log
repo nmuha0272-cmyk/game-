@@ -14,7 +14,7 @@ PASS: every locked door has its key somewhere []
 PASS: every item slot's item is somewhere in the level []
 PASS: enough crowbars (2) for the jammed doors (1) and crowbar slots (1)
 PASS: level has 2 pack upgrades to find
-dialogue triggered at 33.9s
+dialogue triggered at 32.5s
 PASS: controls frozen (menu_open) during dialogue
 PASS: cutscene camera created
 PASS: letterbox bars created
@@ -27,23 +27,22 @@ PASS: own nameplate hidden during scene
 PASS: own model fully visible, not shadow-only (1 meshes)
 PASS: Eli and Cole act the trunk scene (2 bodies)
 PASS: the team's car is parked at the start
-tapped continue after line 0 at 34.1s
-tapped continue after line 1 at 34.4s
-tapped continue after line 2 at 34.7s
-tapped continue after line 3 at 35.0s
-tapped continue after line 4 at 35.3s
-tapped continue after line 5 at 35.6s
-tapped continue after line 6 at 36.0s
+tapped continue after line 0 at 32.7s
+tapped continue after line 1 at 33.0s
+tapped continue after line 2 at 33.3s
+tapped continue after line 3 at 33.6s
+tapped continue after line 4 at 33.9s
+tapped continue after line 5 at 34.2s
 PASS: speaker is acting (gesturing)
 PASS: camera close-up on speaker (dist=2.62 m)
-tapped continue after line 7 at 36.4s
-tapped continue after line 8 at 36.7s
-tapped continue after line 9 at 37.0s
-tapped continue after line 10 at 37.3s
-tapped continue after line 11 at 37.6s
-tapped continue after line 12 at 37.9s
-tapped continue after line 13 at 38.2s
-PASS: Eli's photo shows on the photo line
+tapped continue after line 6 at 34.7s
+tapped continue after line 7 at 35.0s
+tapped continue after line 8 at 35.3s
+tapped continue after line 9 at 35.6s
+tapped continue after line 10 at 35.9s
+tapped continue after line 11 at 36.2s
+tapped continue after line 12 at 36.5s
+PASS: no family photo scene (it was taken out)
 PASS: the trunk opened (-75 deg)
 PASS: cutscene ended and controls restored
 PASS: menu_open false after scene
