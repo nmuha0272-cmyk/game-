@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LoreEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/lore/lore_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = "personal_son_twin_photo"
+title = "Photo: The Reyes Twins"
+type = 2
+text = "Two little boys in matching jackets, standing in front of the weather station. One is grinning. The other - the one on the left - looks straight at the camera.\n\nOn the back, in Eli's handwriting: MATEO & ELI. BLACKWATER, 1999."
+owner_character = 0
+voice_line = "Mateo always said he was the big brother. I told him that didn't count. I'd give a lot to hear him say it again."

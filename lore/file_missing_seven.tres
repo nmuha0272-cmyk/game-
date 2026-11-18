@@ -7,6 +7,6 @@ script = ExtResource("1_entry")
 id = "file_missing_seven"
 title = "MISSING - Have You Seen Them?"
 type = 0
-text = "A sheriff's poster, stapled over older ones. Seven faces.\n\nMISSING NEAR THE BLACKWATER WEATHER STATION\n\nDaniel Marsh, 41 - reporter\nRuth Alvarez, 58 - hiker\nTomas Greer, 33 - surveyor\nKelly Ann Doss, 19 - student\nOwen Pratt, 27 - trucker\nMarcus Bell, 21 - student\nJenna Park, 20 - student\n\nLast seen: the access road, between August and October 2015.\nIf you have information, call the Sheriff's Office.\n\nSomeone has written across the bottom in marker: THEY WENT IN. NOBODY CAME OUT."
+text = "A sheriff's poster, stapled over older ones. Eight faces - the last one added in different ink, only two weeks ago.\n\nMISSING NEAR THE BLACKWATER WEATHER STATION\n\nDaniel Marsh, 41 - reporter\nRuth Alvarez, 58 - hiker\nTomas Greer, 33 - surveyor\nKelly Ann Doss, 19 - student\nOwen Pratt, 27 - trucker\nMarcus Bell, 21 - student\nJenna Park, 20 - student\nMateo Reyes, 21 - Army Reserve, last seen in his uniform jacket\n\nLast seen: the access road, between August and October 2015.\nIf you have information, call the Sheriff's Office.\n\nSomeone has written across the bottom in marker: THEY WENT IN. NOBODY CAME OUT."
 owner_character = -1
 voice_line = ""

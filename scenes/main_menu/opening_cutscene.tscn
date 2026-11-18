@@ -77,7 +77,7 @@ theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
 layout_mode = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_font_sizes/font_size = 36
-text = "SEVENTH PERSON MISSING
+text = "EIGHTH PERSON MISSING
 NEAR OLD WEATHER STATION"
 horizontal_alignment = 1
 autowrap_mode = 3
@@ -93,9 +93,11 @@ layout_mode = 2
 theme_override_colors/default_color = Color(0.1, 0.1, 0.1, 1)
 theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
-text = "BLACKWATER COUNTY — Two college students have become the sixth and seventh people to vanish near the abandoned Blackwater Weather Station this year.
+text = "BLACKWATER COUNTY — Two college students became the sixth and seventh people to vanish near the abandoned Blackwater Weather Station this year.
 
 [b]Marcus Bell, 21, and Jenna Park, 20[/b], told friends they were going to film \"the creepiest place in the state\" for their channel. Their car was found Saturday at the end of the access road, keys still in the ignition.
+
+Now an eighth is missing. [b]Mateo Reyes, 21[/b], the twin brother of Eli Reyes, was last seen walking toward the station two weeks ago in his Army Reserve jacket.
 
 They join five others missing since August, including reporter [b]Daniel Marsh[/b], who had been investigating the station's past.
 
@@ -144,7 +146,7 @@ He was five years old in 1999, when his mom and dad drove to work at the weather
 
 Now Marcus and Jenna, his two best friends, had gone out there. For him. To find out what really happened to his parents.
 
-And they had not come back.
+And Mateo - his twin, the one who was always first - had gone after them. None of them had come back.
 
 Cole Brennan, the soldier who took Eli in when his parents died and raised him like his own son, said no. Then he said he was coming too.
 
@@ -152,7 +154,7 @@ Nora Vance, a reporter, had lost her source out there.
 
 Walter Kessler said he used to work at the station. He said he knew the way in.
 
-[i]Seven people are missing. Four are going in after them.[/i][/center]"
+[i]Eight people are missing. Four are going in after them.[/i][/center]"
 fit_content = true
 scroll_active = false
 

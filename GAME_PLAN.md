@@ -43,9 +43,10 @@ official story was a gas leak).
 
 **Why they go in (2015):** seven people have gone missing near the station
 since August, including Eli's two best friends, **Marcus Bell** and **Jenna
-Park**, who went in to find out what really happened to his parents. Four
-people go in after them, led by **Cole Brennan**, the soldier who raised Eli
-like a son after his parents died.
+Park**, who went in to find out what really happened to his parents. Two weeks
+ago the count became eight when Eli's twin brother, **Mateo Reyes**,
+vanished after following them. Four people go in after them, led by **Cole
+Brennan**, the soldier who raised Eli like a son after his parents died.
 
 **Frozen in time:** The facility never upgraded its Cold War equipment, so
 everything inside looks like the 1960s–70s (reel tapes, bulky computers,
@@ -106,12 +107,14 @@ reel-to-reel tapes, propaganda posters, gas masks, bulky old computers.
 
 | Name | Who or what |
 |---|---|
-| **Eli Reyes** | The Son, age 21 |
+| **Eli Reyes** | The Son, age 21. College student and Army Reserve soldier, trained by his father as a kid |
+| **Mateo Reyes** | Eli's twin brother, age 21. Went missing near the weather station two weeks before the game starts — the eighth person to vanish |
 | **Sgt. Daniel Reyes** | Eli's father, Volunteer 14. Officially died in the 1999 sealing; really Walter took him into Project ECHO, and he became **Echo** |
 | **Dr. Maria Reyes** | Eli's mother, a Deepwell doctor. Murdered by Walter in 1999 when she tried to get the volunteers out; her last message is on a reel tape in Chapter 1 |
 | **Marcus Bell** | Eli's best friend, 21, engineering student. Missing. Found alive in Chapter 4, then playable (see "The Walter twist") |
 | **Jenna Park** | Eli's best friend, 20. Missing with Marcus |
 | **The Missing Seven** | Daniel Marsh (Nora's source), Ruth Alvarez, Tomas Greer, Kelly Ann Doss, Owen Pratt, Marcus Bell, Jenna Park |
+| **The Eighth** | **Mateo Reyes**, missing since two weeks ago. The newspaper headline is "EIGHTH PERSON MISSING" |
 | **Nora Vance** | The Journalist, age 35 |
 | **Walter Kessler** | The Engineer, age 60. **Secretly the main villain** (revealed halfway through Chapter 4): he started Project ECHO, designed the Goliath Chamber, killed Eli's parents in 1999, and has kept the experiments going ever since |
 | **Cole Brennan** | The Guard, age 36. Sealed Level B in 1999 at age 20, then **took 5-year-old Eli in and raised him like his own son**. They have a father-and-son relationship (Eli doesn't know Cole sealed his dad inside) |
@@ -151,10 +154,17 @@ buttons on top of it). `scripts/main.gd` opens it when the game starts.
      the car?" Cole: "Eli, they're here because—" Nora cuts in: "I can
      speak for myself, thanks. Nora Vance. My source went missing out here
      a month ago, and I'm going to find out why." Walter: "Walter Kessler.
-     I worked at that station, a long time ago. I know the way in." Cole:
-     "They want the same thing we do, kid. We find Marcus and Jenna, and we
-     get out." Eli: "...Okay. Okay."
-   - The old newspaper intro was removed: the story opens in the car.
+      I worked at that station, a long time ago. I know the way in." Eli:
+      "EIGHTH PERSON MISSING. That's the headline. My twin brother Mateo -
+      always the brave one - walked into that station
+      two weeks ago." Cole: "They want the same thing we do, kid. We find
+      Marcus, Jenna, and Mateo, and we get out." Eli: "...Okay. We're here."
+    - **Mateo is mentioned in the car, the opening newspaper and the MISSING
+      poster** — the paper's headline is "EIGHTH PERSON MISSING" and Eli's
+      twin, Mateo Reyes, 21, went into the station two weeks ago. Eli's
+      motivation is now: find Marcus, Jenna, *and* his twin.
+    - The old newspaper intro was removed from the normal flow: the story
+      opens in the car. Its text is kept in `opening_cutscene.tscn`.
    - Eli = The Son, Cole = The Guard, Nora = The Journalist, Walter = The Engineer
 4. **The drive:** the camera moves behind the car, it drives up to the
    station gate and stops (Enter or Esc skips it).
@@ -345,7 +355,7 @@ Every puzzle below requires teamwork.
 | 2 | Power Station | Walter | Conduit | Restore three generators to power the facility | Clues reveal Walter built the Goliath Chamber |
 | 3 | Level B | Cole | The Sealed | Get through the sealed holding cells in total silence | The truth about the night Cole sealed the doors |
 | 4 | Project ECHO | Eli | Echo (first appearance) | Find Eli's father's cell and the ECHO lab. **Halfway through: Walter is revealed as the main villain** and leaves the team; soon after, they find Marcus alive | Eli realizes Echo **is** his father. Echo escapes deeper into Deepwell |
-| 5 | Still Running | Whole team (with Marcus) | The Warden | Discover a hidden modern lab under the old one | The experiments never stopped. Walter restarted them (with Lillian Ashby's money) and lured the Missing Seven here as new test subjects |
+| 5 | Still Running | Whole team (with Marcus) | The Warden | Discover a hidden modern lab under the old one | The experiments never stopped. Walter restarted them (with Lillian Ashby's money) and lured the Missing Seven — and Mateo — here as new test subjects |
 | 6 | The Way Out | Whole team (with Marcus) | The Warden and Echo | Escape as Walter floods Deepwell to erase the evidence | Eli must choose to free his father or end him, and the team only escapes if everyone works together |
 
 ### The Walter twist and the character switch
@@ -357,8 +367,8 @@ the "gas leak". He took Eli's father, Sgt. Daniel Reyes (Volunteer 14), into
 Project ECHO, and Daniel slowly became **Echo**. Officially both parents
 died that night. Walter has been alive and running the experiments in
 secret ever since, and in 2015 he lured the Missing Seven (Marcus and Jenna
-too) to Deepwell as new test subjects. He joined the team to bring them
-down deeper.
+too) and Eli's twin Mateo to Deepwell as new test subjects. He joined the
+team to bring them down deeper.
 
 - **Chapters 1–3:** Walter is a normal playable character. Small clues hint
   at him (he knows the way in, he "used to work here", he built the Goliath
@@ -642,7 +652,7 @@ Tasks:
 
 | # | Section | What you do |
 |---|---|---|
-| 1 | Exterior | Lift the gate (Cole), find the crowbar. A **MISSING poster** with the seven names is on the station's front wall |
+| 1 | Exterior | Lift the gate (Cole), find the crowbar. A **MISSING poster** with the seven names, plus Eli's twin Mateo's, is on the station's front wall |
 | 2 | Front door power | Terminal (lights-out puzzle) + breaker by the front door: the station's lights come on |
 | 3 | Office | Split code (computer + keypad), tape machine, safe, infirmary, push the filing cabinet to find the stairs |
 | 4 | Hidden stairwell | Real steps, batteries drain from here. **Marcus and Jenna's camera** is on the landing (Eli's personal item) |

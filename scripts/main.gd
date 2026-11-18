@@ -24,6 +24,7 @@ const HOME_CHARACTERS := {
 
 var _current_level := STORY_START
 var home: Node3D
+var _lobby_for_car_select := false
 ## Network ids of the players whose car has reached the gate.
 var _arrived_ids := {}
 
@@ -41,7 +42,7 @@ func _ready() -> void:
 	menu.host_requested.connect(_on_host_requested)
 	menu.join_requested.connect(_on_join_requested)
 	menu.solo_requested.connect(_on_solo_requested)
-	lobby.start_requested.connect(_on_start_requested)
+	lobby.start_requested.connect(_on_lobby_start)
 	lobby.leave_requested.connect(_on_leave_requested)
 	$Menus/PauseMenu.leave_requested.connect(_on_leave_requested)
 	menu.settings_requested.connect(settings_menu.open)
@@ -122,7 +123,9 @@ func _on_home_host(_port: int) -> void:
 	GameState.local_player_name = _typed_name()
 	GameState.start_hosting()
 	get_window().title = "Subject Zero (Host)"
-	home.enter_select()
+	_lobby_for_car_select = true
+	_show_lobby()
+	lobby.set_car_select_mode(true)
 
 
 ## CONTINUE: host (alone, or friends can join), pick characters, then the save loads.
@@ -241,17 +244,42 @@ func _on_join_requested(address: String) -> void:
 func _on_connected_to_server() -> void:
 	get_window().title = "Subject Zero (Player %d)" % multiplayer.get_unique_id()
 	if is_instance_valid(home):
-		home.enter_select()
+		home.enter_opening()
 		return
 	_show_lobby()
 	# The player list arrives from the host a moment later.
 
 
+func _on_lobby_start() -> void:
+	if _lobby_for_car_select:
+		_lobby_for_car_select = false
+		lobby.set_car_select_mode(false)
+		_open_opening_talk.rpc()
+	else:
+		_on_start_requested()
+
+
+@rpc("authority", "call_local", "reliable")
+func _open_opening_talk() -> void:
+	lobby.hide()
+	menu.hide()
+	_open_home()
+	if is_instance_valid(home):
+		home.enter_opening()
+
+
+@rpc("authority", "call_local", "reliable")
+func _set_lobby_normal() -> void:
+	lobby.set_car_select_mode(false)
+
+
 func _on_start_requested() -> void:
+	_lobby_for_car_select = false
 	GameState.start_game()
 
 
 func _on_game_started() -> void:
+	_lobby_for_car_select = false
 	_close_home()
 	lobby.hide()
 	menu.hide()
@@ -359,11 +387,16 @@ func _on_chapter_completed(text: String) -> void:
 		for child in level_root.get_children():
 			child.queue_free()
 	GameState.game_in_progress = false
+	_lobby_for_car_select = false
 	GameState.checkpoint_name = ""
 	GameState.checkpoint_order = 0
 	GameState.checkpoint_inventories = {}
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	$ScreenFader.fade_in(1.0)
+	if multiplayer.is_server():
+		_set_lobby_normal.rpc()
+	else:
+		lobby.set_car_select_mode(false)
 	lobby.show()
 	lobby.refresh()
 	get_tree().call_group("lobby_message", "show_message", text)
@@ -400,9 +433,11 @@ func _return_to_menu(message: String) -> void:
 		open_menu.hide()
 	$ScreenFader.fade_in(0.1)
 	GameState.reset()
+	_lobby_for_car_select = false
 	get_window().title = "Subject Zero"
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	lobby.hide()
+	lobby.set_car_select_mode(false)
 	menu.set_buttons_enabled(true)
 	menu.show_status(message)
 	_show_main_menu(message)

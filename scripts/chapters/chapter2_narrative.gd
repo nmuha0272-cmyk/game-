@@ -10,7 +10,7 @@ const CRASH_ARGUMENT := [
 	["Nora", "Great plan, Eli. 'Just take the elevator.' Now we're stuck at the bottom of a hole.", 5.0],
 	["Eli", "Nobody made you get in. You wanted your story, remember?", 4.5],
 	["Nora", "My SOURCE is down here. That's not a story, that's a person.", 4.5],
-	["Eli", "So are Marcus and Jenna! They came here because of me. I'm not turning back.", 5.0],
+	["Eli", "So are Marcus and Jenna - and so is my twin brother Mateo! They came here because of me. I'm not turning back.", 5.0],
 	["Nora", "And if they're already dead? Are we all supposed to die looking for them?", 5.0],
 	["Eli", "Don't. Don't you dare say that.", 3.5],
 	["Cole", "ENOUGH. Both of you. Yelling is how that thing finds us.", 4.5],
