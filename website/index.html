@@ -4,7 +4,7 @@
 <meta name="description" content="Deep Static Games, an indie horror studio. Now making Deepwell, a 1-4 player co-op horror game.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=UnifrakturMaguntia&display=swap">
 <style>
 /* Layout: one dark broadcast "feed": a monitor-framed intro, then the game's case file
    (station photo, missing list, the four who go in, footage), read top to bottom. */
@@ -326,6 +326,124 @@ nav a[aria-current="page"] { color: var(--bone); box-shadow: inset 0 -2px 0 var(
 @media (prefers-reduced-motion: reduce) {
   .deck.playing .reel, .polaroid canvas.develop, .transcript .cursor::after { animation: none; }
 }
+
+/* ---------- look & feel, round 2 ---------- */
+:root { --blood: #5e080c; --blood-wet: #93121a; --paper: #e4dccb; --ink: #1c1814; }
+.grain { position: fixed; inset: -50%; pointer-events: none; z-index: 49; opacity: 0.07; animation: grain 0.9s steps(4) infinite; }
+@keyframes grain { 0% { transform: translate(0, 0); } 25% { transform: translate(-3%, 2%); } 50% { transform: translate(2%, -3%); } 75% { transform: translate(-2%, -1%); } }
+.page:not([hidden]) { animation: pagein 0.55s ease-out; }
+@keyframes pagein { 0% { opacity: 0.35; filter: brightness(1.8) contrast(0.8); } 12% { opacity: 1; filter: none; } 18% { opacity: 0.6; } 26% { opacity: 1; } }
+h2 { text-shadow: 2px 0 rgba(176, 20, 28, 0.35); }
+.bar { position: sticky; }
+.drips { position: absolute; left: 0; right: 0; top: 100%; height: 0; pointer-events: none; }
+.drips i { position: absolute; top: 0; width: var(--w); height: var(--h); background: linear-gradient(to bottom, var(--blood) 0%, var(--blood-wet) 85%); border-radius: 0 0 99px 99px; transform-origin: top; animation: drip var(--t) cubic-bezier(.2,.6,.3,1) var(--d) both; opacity: 0.92; }
+.drips i::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: calc(var(--w) * 1.5); height: calc(var(--w) * 1.7); transform: translateX(-50%); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: var(--blood-wet); }
+@keyframes drip { from { transform: scaleY(0.05); } to { transform: scaleY(1); } }
+.splat { position: absolute; pointer-events: none; background: no-repeat center / contain; }
+
+/* home hero: a flashlight in the dark */
+.hero { padding-block: 28px 0; border-top: 0; }
+.torch { position: relative; height: clamp(440px, 60vw, 640px); overflow: hidden; border: 1px solid var(--rule); background: #000; touch-action: pan-y; cursor: none; --x: 58%; --y: 52%; --r: 1; }
+.torch-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+.torch-dark { position: absolute; inset: 0; background: radial-gradient(circle at var(--x) var(--y), rgba(0,0,0,0) 0, rgba(0,0,0,0.25) calc(80px * var(--r)), rgba(2,1,1,0.975) calc(210px * var(--r))); transition: opacity 0.08s; }
+.torch.off .torch-dark { background: rgba(2,1,1,0.985); }
+.hero-text { position: absolute; left: 0; bottom: 0; right: 0; padding: 32px; display: flex; flex-direction: column; gap: 6px; background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0)); pointer-events: none; }
+.hero-text a { pointer-events: auto; cursor: pointer; }
+.splat.corner2 { width: 130px; height: 130px; right: -24px; top: -34px; z-index: 2; opacity: 0.9; }
+.hero-title { font-size: clamp(72px, 15vw, 190px); line-height: 0.82; letter-spacing: 0.02em; text-shadow: 4px 0 rgba(176, 20, 28, 0.55), 0 0 40px rgba(0,0,0,0.8); }
+.hero-line { font: 400 clamp(17px, 2vw, 21px)/1.45 var(--body); margin: 10px 0 14px; color: var(--bone); }
+.hero-btns { display: flex; flex-wrap: wrap; gap: 12px; }
+.torch-hint { position: absolute; top: 18px; right: 20px; margin: 0; font: 500 11px/1 var(--mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ash); }
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.home-grid > * { min-width: 0; }
+.home-grid .intro { padding: 0; }
+.news-pic { position: relative; }
+.news-pic em { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-8deg); font: 700 30px/1 var(--display); letter-spacing: 0.2em; font-style: normal; color: var(--signal-hot); border: 3px solid var(--signal-hot); padding: 6px 12px; background: rgba(0,0,0,0.45); }
+
+/* the monster peeking in */
+.peek { position: fixed; bottom: 0; right: 0; height: min(78vh, 720px); width: auto; z-index: 30; pointer-events: none; opacity: 0;
+  transform: translateX(80%); filter: brightness(0.3) contrast(1.15) saturate(0.6); transition: transform 0.18s ease-out, opacity 0.12s; }
+.peek.left { right: auto; left: 0; transform: translateX(-80%) scaleX(-1); }
+.peek.show { opacity: 1; transform: translateX(52%); }
+.peek.left.show { transform: translateX(-52%) scaleX(-1); }
+body.flicker main { animation: flick 0.9s steps(1) both; }
+@keyframes flick { 0%, 20%, 45%, 70% { filter: brightness(0.35); } 10%, 30%, 55%, 100% { filter: none; } }
+
+/* subject 7 */
+.subject { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.subject > * { min-width: 0; }
+.subject p { color: var(--ash); }
+.subject-box { position: relative; background: radial-gradient(circle at 50% 45%, #1a1010, #050303 70%); border: 1px solid var(--rule); display: grid; place-items: center; padding: 24px; aspect-ratio: 4 / 5; max-width: 100%; overflow: hidden; }
+.subject-box img { width: 78%; height: auto; filter: brightness(0.07) contrast(1.4); transition: filter 0.25s; }
+.subject-box:hover img, .subject-box.lit img { filter: brightness(0.62) contrast(1.1); }
+.subject-box.lit { background: radial-gradient(circle at 50% 40%, #3a2e26, #050303 70%); }
+.subject-tag { position: absolute; left: 14px; bottom: 12px; font: 500 11px/1 var(--mono); letter-spacing: 0.16em; color: var(--signal-hot); }
+
+/* footage: dark shots that light up */
+.footage figure.dark img { filter: brightness(0.32); transition: filter 0.3s; }
+.footage figure.dark:hover img, .footage figure.dark:focus-within img { filter: none; }
+.footage figure { position: relative; }
+.footage .stamp { position: absolute; top: 10px; left: 12px; font: 500 11px/1 var(--mono); letter-spacing: 0.14em; color: var(--bone); text-shadow: 0 1px 2px #000; display: flex; gap: 6px; align-items: center; }
+.footage .stamp::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--signal-hot); animation: blink 1.4s steps(2) infinite; }
+
+/* ---------- the newspaper ---------- */
+.paper-sheet { position: relative; margin-top: 18px; background: var(--paper); color: var(--ink); padding: clamp(18px, 4vw, 44px);
+  display: grid; grid-template-columns: 1fr 280px; gap: 0 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  background-image: radial-gradient(circle at 80% 12%, rgba(120, 90, 50, 0.16), transparent 30%), radial-gradient(circle at 10% 90%, rgba(120, 90, 50, 0.18), transparent 35%); }
+.paper-sheet > * { min-width: 0; }
+.masthead { grid-column: 1 / -1; text-align: center; border-bottom: 4px double var(--ink); padding-bottom: 6px; margin-bottom: 24px; }
+.mast-row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font: 400 12px/1.4 "Old Standard TT", Georgia, serif; letter-spacing: 0.08em; text-transform: uppercase; padding-block: 6px; border-bottom: 1px solid var(--ink); }
+.mast-row.thick { border-top: 2px solid var(--ink); border-bottom: 0; }
+.mast-title { font: 400 clamp(38px, 8vw, 92px)/1.05 "UnifrakturMaguntia", "Old English Text MT", Georgia, serif; text-transform: none; letter-spacing: 0; color: var(--ink); padding-block: 10px 6px; }
+.lead .headline { font: 700 clamp(30px, 5vw, 54px)/1.02 "Old Standard TT", Georgia, serif; text-transform: none; color: var(--ink); text-shadow: none; letter-spacing: -0.01em; }
+.lead .standfirst { font: italic 400 clamp(17px, 2vw, 20px)/1.4 "Old Standard TT", Georgia, serif; margin: 12px 0 18px; color: #3a332c; max-width: none; }
+.cols { columns: 2 220px; column-gap: 28px; column-rule: 1px solid rgba(28, 24, 20, 0.3); font: 400 15.5px/1.6 "Old Standard TT", Georgia, serif; }
+.cols p { margin: 0 0 12px; max-width: none; text-align: justify; hyphens: auto; }
+.byline { font-size: 12px !important; letter-spacing: 0.12em; text-transform: uppercase; text-align: left !important; }
+.dropcap { float: left; font: 700 54px/0.85 "Old Standard TT", Georgia, serif; margin: 6px 8px 0 0; }
+.cols q { font-weight: 700; }
+.side { border-left: 1px solid var(--ink); padding-left: 24px; display: grid; gap: 18px; align-content: start; }
+.side .box { border-bottom: 1px solid rgba(28,24,20,0.4); padding-bottom: 16px; }
+.side h3 { font: 700 21px/1.15 "Old Standard TT", Georgia, serif; text-transform: none; color: var(--ink); letter-spacing: 0; margin-bottom: 8px; }
+.side p { margin: 0; font: 400 15px/1.55 "Old Standard TT", Georgia, serif; }
+.side .quiet p { font-style: italic; }
+.missing { grid-column: 1 / -1; border-top: 4px double var(--ink); margin-top: 28px; padding-top: 18px; }
+.missing-title { font: 700 clamp(28px, 4.5vw, 44px)/1 "Old Standard TT", Georgia, serif; color: var(--ink); text-transform: uppercase; text-align: center; text-shadow: none; letter-spacing: 0.06em; }
+.faces { list-style: none; padding: 0; margin: 22px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px 18px; }
+.faces li { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-family: "Old Standard TT", Georgia, serif; position: relative; }
+.faces canvas { width: 100%; height: auto; aspect-ratio: 4 / 5; display: block; border: 1px solid var(--ink); margin-bottom: 8px; filter: grayscale(1) contrast(1.1); transition: filter 0.3s; }
+.faces li:hover canvas { filter: grayscale(1) contrast(1.3) brightness(0.8); }
+.faces b { font-size: 17px; }
+.faces span { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; }
+.faces small { font-size: 13.5px; font-style: italic; color: #3a332c; }
+.faces li.newest::after { content: "NEW"; position: absolute; top: 8px; right: -6px; transform: rotate(8deg); font: 700 13px/1 var(--display); letter-spacing: 0.18em; color: #fff; background: #8f1017; padding: 5px 8px; }
+.call { text-align: center; font: italic 400 15px/1.4 "Old Standard TT", Georgia, serif; margin: 22px auto 0; }
+.splat.hand { width: 150px; height: 170px; right: 6%; top: 34%; transform: rotate(-24deg); opacity: 0.9; mix-blend-mode: multiply; }
+.splat.corner { width: 230px; height: 230px; left: -40px; bottom: -50px; opacity: 0.85; mix-blend-mode: multiply; }
+
+.sighting { margin-top: 40px; border: 1px solid var(--rule); background: var(--panel); padding: 28px; display: grid; gap: 12px; max-width: 760px; }
+.sighting p { color: var(--ash); margin: 6px 0 0; }
+.sighting label { font: 500 12px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ash); margin-top: 6px; }
+.sighting textarea { width: 100%; background: var(--void); color: var(--bone); border: 1px solid var(--rule); padding: 12px 14px; font: 400 15px/1.5 var(--body); resize: vertical; }
+.sighting textarea:focus { outline: 2px solid var(--signal); outline-offset: 0; }
+.sighting-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.sighting-msg { margin: 0 !important; font: 500 14px/1.4 var(--mono); color: var(--bone) !important; }
+.sighting-msg.glitch { color: var(--signal-hot) !important; letter-spacing: 0.2em; animation: flick 0.8s steps(1) 2; }
+
+@media (max-width: 900px) {
+  .paper-sheet { grid-template-columns: 1fr; }
+  .side { border-left: 0; padding-left: 0; border-top: 1px solid var(--ink); padding-top: 18px; margin-top: 10px; }
+  .faces { grid-template-columns: repeat(2, 1fr); }
+  .home-grid, .subject { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .hero-text { padding: 20px 16px; }
+  .torch-hint { display: none; }
+  .splat.hand { width: 100px; height: 115px; top: 46%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grain, .drips i, .page:not([hidden]), .footage .stamp::before { animation: none; }
+}
 </style>
 
 <header class="bar">
@@ -337,6 +455,7 @@ nav a[aria-current="page"] { color: var(--bone); box-shadow: inset 0 -2px 0 var(
     <nav aria-label="Pages">
       <a href="#home">Home</a>
       <a href="#deepwell">Deepwell</a>
+      <a href="#news">Newspaper</a>
       <a href="#characters">Characters</a>
       <a href="#archive">Archive</a>
       <a href="#footage">Footage</a>
@@ -348,27 +467,48 @@ nav a[aria-current="page"] { color: var(--bone); box-shadow: inset 0 -2px 0 var(
 <main class="wrap">
 
 <div class="page" data-page="home">
-  <div class="intro">
-    <div class="monitor">
-      <video id="intro" src="media/intro.mp4" poster="media/poster.jpg" muted autoplay loop playsinline preload="auto"
-             aria-label="Deep Static Games logo intro: TV static, a red heartbeat signal, then the studio name."></video>
-      <div class="rec"><i></i>CH 07 · LIVE</div>
+  <section class="hero">
+    <div class="torch" id="torch">
+      <img class="torch-img" src="media/monster_hall.jpg" alt="A dark room lit by a flashlight. Blood on the wall, and something very tall standing by the stairwell door.">
+      <div class="torch-dark" aria-hidden="true"></div>
+      <div class="hero-text">
+        <p class="eyebrow">Deep Static Games presents</p>
+        <h1 class="hero-title">Deepwell</h1>
+        <p class="hero-line">Eight people went in. Nobody came out.<br>Now it's your turn.</p>
+        <div class="hero-btns">
+          <a class="btn solid" href="#news">Read about the missing</a>
+          <a class="btn" href="#characters">Meet the four</a>
+        </div>
+      </div>
+      <p class="torch-hint" aria-hidden="true">Move your flashlight</p>
     </div>
-    <div class="intro-row">
-      <p>Deep Static Games makes horror you play with friends.</p>
-      <button class="btn" id="sound" type="button" aria-pressed="false">▶ Play with sound</button>
-    </div>
-  </div>
+  </section>
 
   <section class="s-home">
-    <p class="eyebrow">Now making</p>
-    <h2>Deepwell</h2>
-    <p class="lede">Eight people have gone missing near an old weather station. Four people go in after them. A 1–4 player co-op horror game.</p>
+    <div class="home-grid">
+      <div>
+        <p class="eyebrow">Now making</p>
+        <h2>A co-op horror game for 1–4 players</h2>
+        <p class="lede">Under an old weather station is a Cold War lab that was sealed in 1999 with people still inside. This year, eight people went missing on the road outside. Four people go in to find them.</p>
+      </div>
+      <div class="intro">
+        <div class="monitor">
+          <video id="intro" src="media/intro.mp4" poster="media/poster.jpg" muted autoplay loop playsinline preload="auto"
+                 aria-label="Deep Static Games logo intro: TV static, a red heartbeat signal, then the studio name."></video>
+          <div class="rec"><i></i>CH 07 · LIVE</div>
+        </div>
+        <div class="intro-row">
+          <p>Studio intro</p>
+          <button class="btn" id="sound" type="button" aria-pressed="false">▶ Play with sound</button>
+        </div>
+      </div>
+    </div>
+
     <div class="tiles">
-      <a class="tile" href="#deepwell"><div class="pic"><img src="media/station.jpg" alt="" loading="lazy"></div><b>The game</b><span>The station, the story and the missing.</span><i>Open →</i></a>
-      <a class="tile" href="#characters"><div class="pic"><img src="media/eli.jpg" alt="" loading="lazy"></div><b>Characters</b><span>Eli, Cole, Nora and Walter.</span><i>Open →</i></a>
+      <a class="tile" href="#news"><div class="pic news-pic"><img src="media/station.jpg" alt="" loading="lazy"><em>MISSING</em></div><b>The Courier</b><span>The local newspaper on the eight missing people.</span><i>Read →</i></a>
+      <a class="tile" href="#characters"><div class="pic"><img src="media/eli.jpg" alt="" loading="lazy"></div><b>Characters</b><span>Eli, Cole, Nora and Walter.</span><i>Meet them →</i></a>
       <a class="tile" href="#archive"><div class="pic"><img src="media/office.jpg" alt="" loading="lazy"></div><b>The Archive</b><span>Files, reel tapes and photos from Site 12.</span><i>Open →</i></a>
-      <a class="tile" href="#footage"><div class="pic"><img src="media/blood.jpg" alt="" loading="lazy"></div><b>Footage</b><span>Pictures from inside the game.</span><i>Open →</i></a>
+      <a class="tile" href="#footage"><div class="pic"><img src="media/monster_peek.jpg" alt="" loading="lazy"></div><b>Footage</b><span>Pictures from inside the game. Look closely.</span><i>Watch →</i></a>
     </div>
   </section>
   <div class="pager"><span></span><a href="#deepwell">Deepwell →</a></div>
@@ -447,7 +587,79 @@ nav a[aria-current="page"] { color: var(--bone); box-shadow: inset 0 -2px 0 var(
     </div>
   </section>
 
-  <div class="pager"><a href="#home">← Home</a><a href="#characters">Characters →</a></div>
+  <div class="pager"><a href="#home">← Home</a><a href="#news">Newspaper →</a></div>
+</div>
+<div class="page" data-page="news" hidden>
+  <section class="s-news">
+    <p class="eyebrow">From the local paper</p>
+    <div class="paper-sheet">
+      <span class="splat hand" data-kind="hand" data-seed="4" aria-hidden="true"></span>
+      <span class="splat corner" data-kind="splat" data-seed="9" aria-hidden="true"></span>
+      <header class="masthead">
+        <div class="mast-row"><span>Vol. LXIII · No. 207</span><span>Blackwater County's paper since 1952</span><span>50¢</span></div>
+        <h1 class="mast-title">The Blackwater Courier</h1>
+        <div class="mast-row thick"><span>Thursday, October 22, 2015</span><span>Weather: rain tonight, rain tomorrow</span></div>
+      </header>
+
+      <article class="lead">
+        <h2 class="headline">Eighth person vanishes near old weather station</h2>
+        <p class="standfirst">Army Reservist Mateo Reyes, 21, was last seen on the access road two weeks ago. Families ask why the search has stopped.</p>
+        <div class="cols">
+          <p class="byline">By Courier Staff</p>
+          <p><span class="dropcap">B</span>LACKWATER — Mateo Reyes was last seen walking up the station access road in his uniform jacket. He is the eighth person to go missing near the Blackwater Weather Station since August.</p>
+          <p>Two of the missing, students Marcus Bell and Jenna Park, are friends of Reyes's twin brother, Eli. Their families say the pair went to the station with a video camera in early October. Their car was found at the gate.</p>
+          <p>The Sheriff's Office says there is no evidence that the disappearances are connected to the station, which the government says "only measures rain and wind." The fence around it is still marked U.S. Government property.</p>
+          <p>The station has been closed since 1999, when a gas leak was blamed for deaths among its staff. Families of those workers say they were never allowed to see the bodies.</p>
+          <p>Someone has written across the bottom of the Sheriff's missing poster on the access road, in black marker: <q>They went in. Nobody came out.</q></p>
+        </div>
+      </article>
+
+      <aside class="side">
+        <div class="box">
+          <h3>Courier reporter still missing</h3>
+          <p>Our own reporter, Daniel Marsh, 41, has not been heard from since August. He was working on a story about the station. His editor says he never turned it in.</p>
+        </div>
+        <div class="box">
+          <h3>Notice</h3>
+          <p>The access road is closed after dark by order of the Sheriff. Do not go past the gate.</p>
+        </div>
+        <div class="box quiet">
+          <h3>Weather</h3>
+          <p>Rain tonight. Rain tomorrow. Fog near the station after midnight.</p>
+        </div>
+      </aside>
+
+      <section class="missing" aria-labelledby="missing-title">
+        <h2 class="missing-title" id="missing-title">Have you seen them?</h2>
+        <ol class="faces">
+          <li><canvas data-face="1" width="160" height="200" aria-hidden="true"></canvas><b>Daniel Marsh</b><span>41 · Reporter</span><small>Aug. Drove up to the station for a story.</small></li>
+          <li><canvas data-face="2" width="160" height="200" aria-hidden="true"></canvas><b>Ruth Alvarez</b><span>58 · Hiker</span><small>Aug. On the ridge trail above the road.</small></li>
+          <li><canvas data-face="3" width="160" height="200" aria-hidden="true"></canvas><b>Tomas Greer</b><span>33 · Surveyor</span><small>Aug. Marking the county line by the fence.</small></li>
+          <li><canvas data-face="4" width="160" height="200" aria-hidden="true"></canvas><b>Kelly Ann Doss</b><span>19 · Student</span><small>Sept. Walked to the gate on a dare.</small></li>
+          <li><canvas data-face="5" width="160" height="200" aria-hidden="true"></canvas><b>Owen Pratt</b><span>27 · Trucker</span><small>Sept. His truck was found with the engine running.</small></li>
+          <li><canvas data-face="6" width="160" height="200" aria-hidden="true"></canvas><b>Marcus Bell</b><span>21 · Student</span><small>Oct. Carrying a video camera.</small></li>
+          <li><canvas data-face="7" width="160" height="200" aria-hidden="true"></canvas><b>Jenna Park</b><span>20 · Student</span><small>Oct. With Marcus Bell.</small></li>
+          <li class="newest"><canvas data-face="8" width="160" height="200" aria-hidden="true"></canvas><b>Mateo Reyes</b><span>21 · Army Reserve</span><small>Two weeks ago. In his uniform jacket.</small></li>
+        </ol>
+        <p class="call">If you have information, call the Sheriff's Office.</p>
+      </section>
+    </div>
+
+    <form class="sighting" id="sighting" novalidate>
+      <div>
+        <p class="eyebrow">Report a sighting</p>
+        <h3>Did you see something on the access road?</h3>
+        <p>Tell the Courier what you saw. This is part of the Deepwell story: nothing you type leaves this page.</p>
+      </div>
+      <label for="seen">What did you see?</label>
+      <textarea id="seen" rows="3" placeholder="Lights by the gate, someone walking on the road..."></textarea>
+      <div class="sighting-row">
+        <button class="btn solid" type="submit">Send report</button>
+        <p class="sighting-msg" id="sighting-msg" role="status"></p>
+      </div>
+    </form>
+  </section>
+  <div class="pager"><a href="#deepwell">← Deepwell</a><a href="#characters">Characters →</a></div>
 </div>
 <div class="page" data-page="characters" hidden>
   <section class="s-team">
@@ -499,7 +711,22 @@ nav a[aria-current="page"] { color: var(--bone); box-shadow: inset 0 -2px 0 var(
     </div>
   </section>
 
-  <div class="pager"><a href="#deepwell">← Deepwell</a><a href="#archive">Archive →</a></div>
+  <section class="s-subject">
+    <div class="subject">
+      <div>
+        <p class="eyebrow">Something else is down there</p>
+        <h2>Subject 7</h2>
+        <p>The files don't use his name anymore. Week 1 he was six feet tall. By week 23 he was over nine feet and didn't fit in his cell. Then they moved him to the tunnels.</p>
+        <p>He hates light. He hears radios, doors and running. And if he sees you hide, he remembers where.</p>
+        <button class="btn" type="button" id="shine" aria-pressed="false">Shine your flashlight</button>
+      </div>
+      <div class="subject-box" id="subject-box">
+        <img src="media/monster_cutout.webp" alt="Subject 7: a skeletal, impossibly tall figure with long clawed arms and a torn cloth around its waist." width="420" height="576" loading="lazy">
+        <span class="subject-tag">H-7 · 9 ft 2 in</span>
+      </div>
+    </div>
+  </section>
+  <div class="pager"><a href="#news">← Newspaper</a><a href="#archive">Archive →</a></div>
 </div>
 <div class="page" data-page="archive" hidden>
   <section class="s-archive">
@@ -550,6 +777,10 @@ nav a[aria-current="page"] { color: var(--bone); box-shadow: inset 0 -2px 0 var(
       <figure class="tall"><img src="media/trunk.jpg" alt="Cole hands Eli a pistol by the car's trunk." loading="lazy"><figcaption><b>At the trunk.</b> "Safety on until you need it."</figcaption></figure>
       <figure class="half"><img src="media/office.jpg" alt="An abandoned office with a checkered floor, a wooden desk and a red emergency light." loading="lazy"><figcaption><b>Inside the station.</b> The power still works.</figcaption></figure>
       <figure class="half"><img src="media/blood.jpg" alt="Fresh blood on the walls and floor of a hallway, seen by flashlight." loading="lazy"><figcaption><b>The blood is fresh.</b> Someone was here tonight.</figcaption></figure>
+      <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:50</span><img src="media/monster_peek.jpg" alt="Behind a filing cabinet by the stairwell door, something pale and very tall." loading="lazy"><figcaption><b>Camera 4.</b> Something by the stairwell door. Hover to brighten.</figcaption></figure>
+      <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_hall.jpg" alt="Subject 7 standing at the back of the bloody room, long arms hanging to its knees." loading="lazy"><figcaption><b>Camera 4.</b> It's standing up now.</figcaption></figure>
+      <figure class="big dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_close.jpg" alt="Subject 7 up close in the flashlight: a skeletal body, a torn cloth, clawed hands." loading="lazy"><figcaption><b>Last frame.</b> The camera was knocked down a second later.</figcaption></figure>
+      <figure class="tall"><span class="splat corner2" data-kind="splat" data-seed="3" aria-hidden="true"></span><img src="media/blood.jpg" alt="Blood smeared across the floor toward the stairwell door." loading="lazy"><figcaption><b>The trail.</b> It leads to the stairwell.</figcaption></figure>
     </div>
   </section>
 
@@ -982,5 +1213,186 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   updateCounts();
   open(LORE[0]);
   window.__archiveShown = () => {};
+})();
+
+// ---------------------------------------------------------------- horror extras
+(function () {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const rng = seed => () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+  // Film grain over everything.
+  (function () {
+    const c = document.createElement("canvas"); c.width = c.height = 160;
+    const g = c.getContext("2d"), img = g.createImageData(160, 160);
+    for (let i = 0; i < img.data.length; i += 4) { const v = Math.random() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+    g.putImageData(img, 0, 0);
+    const d = document.createElement("div"); d.className = "grain"; d.setAttribute("aria-hidden", "true");
+    d.style.backgroundImage = "url(" + c.toDataURL() + ")";
+    document.body.append(d);
+  })();
+
+  // Blood dripping from the bottom of the top bar.
+  (function () {
+    const bar = document.querySelector(".bar"), box = document.createElement("div");
+    box.className = "drips"; box.setAttribute("aria-hidden", "true");
+    const r = rng(21);
+    for (let i = 0; i < 16; i++) {
+      const d = document.createElement("i");
+      const w = 3 + r() * 6;
+      d.style.left = (2 + r() * 96) + "%";
+      d.style.setProperty("--w", w.toFixed(1) + "px");
+      d.style.setProperty("--h", (8 + r() * (r() > 0.75 ? 70 : 26)).toFixed(0) + "px");
+      d.style.setProperty("--t", (6 + r() * 10).toFixed(1) + "s");
+      d.style.setProperty("--d", (r() * 4).toFixed(1) + "s");
+      box.append(d);
+    }
+    bar.append(box);
+  })();
+
+  // Blood splats and handprints, drawn once.
+  function drawSplat(kind, seed) {
+    const r = rng(seed * 977 + 13), c = document.createElement("canvas"); c.width = c.height = 300;
+    const g = c.getContext("2d");
+    g.fillStyle = "rgba(110, 8, 14, 0.92)";
+    const blob = (x, y, rad) => { g.beginPath(); for (let a = 0; a <= 6.3; a += 0.3) { const rr = rad * (0.75 + r() * 0.5); g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } g.fill(); };
+    if (kind === "hand") {
+      g.save(); g.translate(150, 180);
+      g.beginPath(); g.ellipse(0, 0, 52, 62, 0, 0, 7); g.fill();
+      [[-46, -70, -0.5, 40], [-20, -96, -0.15, 56], [8, -102, 0.05, 60], [34, -92, 0.25, 52], [62, -28, 0.9, 40]].forEach(([x, y, rot, len]) => {
+        g.save(); g.translate(x, y + len / 2); g.rotate(rot); g.beginPath(); g.ellipse(0, 0, 11, len / 2, 0, 0, 7); g.fill(); g.restore();
+      });
+      g.restore();
+      g.globalCompositeOperation = "destination-out";
+      for (let i = 0; i < 160; i++) { g.globalAlpha = r() * 0.8; g.beginPath(); g.arc(r() * 300, r() * 300, r() * 4, 0, 7); g.fill(); }
+      g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
+      for (let i = 0; i < 3; i++) { const x = 115 + r() * 70; g.fillRect(x, 230, 4 + r() * 3, 30 + r() * 60); }
+    } else {
+      blob(150, 150, 60);
+      for (let i = 0; i < 26; i++) { const a = r() * 6.28, d = 60 + r() * 80; blob(150 + Math.cos(a) * d, 150 + Math.sin(a) * d, 3 + r() * 12); }
+      for (let i = 0; i < 6; i++) { const a = r() * 6.28; g.save(); g.translate(150, 150); g.rotate(a); g.fillRect(40, -3, 70 + r() * 50, 5 + r() * 4); g.restore(); }
+    }
+    return c.toDataURL();
+  }
+  document.querySelectorAll(".splat").forEach(s => { s.style.backgroundImage = "url(" + drawSplat(s.dataset.kind, +s.dataset.seed || 1) + ")"; });
+
+  // Newspaper "photos": grainy halftone head-and-shoulders, each person a bit different.
+  const LOOKS = {
+    1: { hair: "short", glasses: true, shirt: 70, skin: 150 },
+    2: { hair: "bob", shirt: 120, skin: 165 },
+    3: { hair: "hardhat", shirt: 95, skin: 140 },
+    4: { hair: "long", shirt: 60, skin: 170 },
+    5: { hair: "cap", shirt: 110, skin: 135, beard: true },
+    6: { hair: "short", shirt: 50, skin: 120 },
+    7: { hair: "pony", shirt: 140, skin: 160 },
+    8: { hair: "buzz", shirt: 75, skin: 125, collar: true },
+  };
+  document.querySelectorAll("canvas[data-face]").forEach(c => {
+    const id = +c.dataset.face, L = LOOKS[id], r = rng(id * 7919), g = c.getContext("2d"), W = c.width, H = c.height;
+    const sky = g.createLinearGradient(0, 0, W, H); sky.addColorStop(0, "#d8d8d8"); sky.addColorStop(1, "#8a8a8a");
+    g.fillStyle = sky; g.fillRect(0, 0, W, H);
+    const cx = W / 2 + (r() - 0.5) * 14, hy = 84, hw = 31 + r() * 6, hh = hw * 1.28;
+    const grey = v => "rgb(" + v + "," + v + "," + v + ")";
+    // long hair goes behind the head
+    if (L.hair === "long") { g.fillStyle = grey(35); g.beginPath(); g.ellipse(cx, hy + 22, hw + 14, hh + 34, 0, 0, 7); g.fill(); }
+    // shoulders and shirt
+    g.fillStyle = grey(L.shirt);
+    g.beginPath(); g.moveTo(cx - 78, H); g.quadraticCurveTo(cx - 70, 136, cx, 132); g.quadraticCurveTo(cx + 70, 136, cx + 78, H); g.fill();
+    if (L.collar) { g.fillStyle = grey(40); g.beginPath(); g.moveTo(cx - 26, 136); g.lineTo(cx, 168); g.lineTo(cx + 26, 136); g.lineTo(cx + 40, 150); g.lineTo(cx, 190); g.lineTo(cx - 40, 150); g.fill(); }
+    // neck and head, lit from the left
+    g.fillStyle = grey(L.skin - 25); g.fillRect(cx - 13, hy + hh - 10, 26, 30);
+    const face = g.createLinearGradient(cx - hw, 0, cx + hw, 0); face.addColorStop(0, grey(L.skin + 30)); face.addColorStop(1, grey(L.skin - 45));
+    g.fillStyle = face; g.beginPath(); g.ellipse(cx, hy, hw, hh, 0, 0, 7); g.fill();
+    // eyes, nose, mouth
+    g.fillStyle = grey(30);
+    g.beginPath(); g.ellipse(cx - 12, hy - 4, 5, 3, 0, 0, 7); g.ellipse(cx + 12, hy - 4, 5, 3, 0, 0, 7); g.fill();
+    g.fillStyle = grey(L.skin - 50); g.fillRect(cx - 2, hy + 2, 5, 14);
+    g.fillStyle = grey(55); g.fillRect(cx - 10, hy + 24, 20, 3);
+    if (L.glasses) { g.strokeStyle = grey(20); g.lineWidth = 2.5; g.beginPath(); g.arc(cx - 12, hy - 4, 9, 0, 7); g.moveTo(cx + 21, hy - 4); g.arc(cx + 12, hy - 4, 9, 0, 7); g.moveTo(cx - 3, hy - 4); g.lineTo(cx + 3, hy - 4); g.stroke(); }
+    if (L.beard) { g.fillStyle = grey(45); g.beginPath(); g.ellipse(cx, hy + 26, hw * 0.8, 16, 0, 0, Math.PI); g.fill(); }
+    // hair and hats
+    g.fillStyle = grey(30);
+    const top = (w, h, y) => { g.beginPath(); g.ellipse(cx, y, w, h, 0, Math.PI, 0); g.fill(); };
+    if (L.hair === "short") top(hw + 3, hh * 0.62, hy - 8);
+    if (L.hair === "buzz") { g.fillStyle = grey(70); top(hw + 1, hh * 0.55, hy - 10); }
+    if (L.hair === "bob") { top(hw + 8, hh * 0.7, hy - 4); g.fillRect(cx - hw - 8, hy - 6, 14, 40); g.fillRect(cx + hw - 6, hy - 6, 14, 40); }
+    if (L.hair === "long") top(hw + 6, hh * 0.68, hy - 6);
+    if (L.hair === "pony") { top(hw + 4, hh * 0.66, hy - 6); g.beginPath(); g.ellipse(cx + hw + 4, hy - 4, 10, 30, 0.3, 0, 7); g.fill(); }
+    if (L.hair === "cap") { top(hw + 4, hh * 0.6, hy - 12); g.fillRect(cx - hw - 4, hy - 16, hw * 2 + 30, 7); }
+    if (L.hair === "hardhat") { g.fillStyle = grey(210); top(hw + 9, hh * 0.72, hy - 10); g.fillRect(cx - hw - 14, hy - 14, hw * 2 + 28, 6); }
+    // halftone print + paper grain
+    const img = g.getImageData(0, 0, W, H), d = img.data;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, v = Math.max(0, Math.min(255, d[i] + (r() - 0.5) * 50));
+      const dot = ((x % 3) - 1) ** 2 + ((y % 3) - 1) ** 2 < (1 - v / 255) * 3.2 ? 25 : 235;
+      d[i] = d[i + 1] = d[i + 2] = dot * 0.45 + v * 0.55;
+    }
+    g.putImageData(img, 0, 0);
+  });
+
+  // The flashlight on the home page.
+  (function () {
+    const t = document.getElementById("torch"); if (!t) return;
+    let last = 0, ang = 0;
+    function set(x, y) { t.style.setProperty("--x", x + "%"); t.style.setProperty("--y", y + "%"); }
+    t.addEventListener("pointermove", e => {
+      const b = t.getBoundingClientRect();
+      set(((e.clientX - b.left) / b.width * 100).toFixed(1), ((e.clientY - b.top) / b.height * 100).toFixed(1));
+      last = performance.now();
+    });
+    if (reduce) return;
+    (function drift(now) {
+      if (now - last > 2500) { ang += 0.006; set((56 + Math.cos(ang) * 16).toFixed(1), (48 + Math.sin(ang * 1.7) * 14).toFixed(1)); }
+      requestAnimationFrame(drift);
+    })(0);
+    // the light sometimes flickers out
+    (function flicker() {
+      setTimeout(() => {
+        let n = 0; const steps = [1, 0, 1, 0, 0, 1];
+        (function step() { t.classList.toggle("off", steps[n] === 0); if (++n < steps.length) setTimeout(step, 70 + Math.random() * 120); else t.classList.remove("off"); })();
+        flicker();
+      }, 6000 + Math.random() * 7000);
+    })();
+  })();
+
+  // Subject 7: shine the flashlight on him.
+  (function () {
+    const b = document.getElementById("shine"), box = document.getElementById("subject-box"); if (!b) return;
+    b.addEventListener("click", () => {
+      const on = !box.classList.contains("lit");
+      box.classList.toggle("lit", on); b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.textContent = on ? "Turn it off" : "Shine your flashlight";
+    });
+  })();
+
+  // Every so often he peeks in from the edge of the screen.
+  const peek = document.createElement("img");
+  peek.src = "media/monster_cutout.webp"; peek.alt = ""; peek.className = "peek"; peek.setAttribute("aria-hidden", "true");
+  document.body.append(peek);
+  let busy = false;
+  window.glimpse = function () {
+    if (reduce || busy || document.hidden) return;
+    busy = true;
+    peek.classList.toggle("left", Math.random() < 0.5);
+    document.body.classList.add("flicker");
+    requestAnimationFrame(() => peek.classList.add("show"));
+    setTimeout(() => peek.classList.remove("show"), 650 + Math.random() * 300);
+    setTimeout(() => { document.body.classList.remove("flicker"); busy = false; }, 1200);
+  };
+  (function loop() { setTimeout(() => { if (location.hash.slice(1) !== "home" && location.hash) window.glimpse(); loop(); }, 28000 + Math.random() * 30000); })();
+  window.addEventListener("hashchange", () => { if (Math.random() < 0.3) setTimeout(window.glimpse, 3500 + Math.random() * 4000); });
+
+  // Report a sighting.
+  (function () {
+    const f = document.getElementById("sighting"); if (!f) return;
+    const msg = document.getElementById("sighting-msg"), box = document.getElementById("seen");
+    f.addEventListener("submit", e => {
+      e.preventDefault();
+      if (!box.value.trim()) { msg.className = "sighting-msg"; msg.textContent = "Write what you saw first."; box.focus(); return; }
+      msg.className = "sighting-msg"; msg.textContent = "Thank you. Your report is on the Courier's desk.";
+      box.value = "";
+      setTimeout(() => { msg.className = "sighting-msg glitch"; msg.textContent = "WE SAW YOU TOO."; window.glimpse(); }, 2600);
+      setTimeout(() => { msg.className = "sighting-msg"; msg.textContent = "Thank you. Your report is on the Courier's desk."; }, 5200);
+    });
+  })();
 })();
 </script>
