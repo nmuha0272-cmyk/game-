@@ -13,7 +13,7 @@ extends Node
 
 @export var auto_play := true
 ## Seconds to wait after the intro cutscene before the characters talk.
-@export var delay := 2.0
+@export var delay := 0.5
 
 const SKIP_HOLD_TIME := 1.5
 const CAMERA_FOV := 45.0
@@ -65,13 +65,13 @@ const DIALOGUE := [
 	{"character": "Guard", "text": "Take this. Safety on until you need it.", "trunk": true, "pistols": true},
 	{"character": "Son", "text": "Got it. My hands are shaking, Cole.", "trunk": true},
 	{"character": "Guard", "text": "And grab the crowbar by the trunk. The front door's been jammed for years.", "trunk": true},
-	{"character": "Guard", "text": "Seven people missing since August, Eli. Marcus and Jenna were the last two.", "trunk": true},
-	{"character": "Son", "text": "They only came out here because of me.", "trunk": true},
-	{"character": "Guard", "text": "Your dad would be proud of you, kid. We bring them home. All of them.", "trunk": true},
+	{"character": "Guard", "text": "Eight people missing now, Eli. Marcus and Jenna first, then your brother Mateo two weeks ago.", "trunk": true},
+	{"character": "Son", "text": "They came out here because of me. And Mateo went after them.", "trunk": true},
+	{"character": "Guard", "text": "Your dad would be proud of you, kid. We bring Marcus, Jenna, and Mateo home. All of them.", "trunk": true},
 	{"character": "Journalist", "text": "There it is. The Blackwater Weather Station. Or what's left of it. I'm terrified.", "trunk": false},
-	{"character": "Guard", "text": "Sixteen years since they sealed this place. And seven people have walked in since August.", "trunk": false},
+	{"character": "Guard", "text": "Sixteen years since they sealed this place. And eight people have walked in since August.", "trunk": false},
 	{"character": "Engineer", "text": "I remember the night they locked it down... Said it was a gas leak. They lied. I'm not looking forward to what's inside.", "trunk": false},
-	{"character": "Son", "text": "My mom and dad died in there. Now Marcus and Jenna are in there too. I'm not losing anyone else. I'm scared, but I'm going in.", "trunk": false},
+	{"character": "Son", "text": "My mom and dad died in there. Now Marcus, Jenna, and Mateo - my twin - are in there too. I'm not losing anyone else. I'm scared, but I'm going in.", "trunk": false},
 	{"character": "Journalist", "text": "My source went in a month ago. If anyone's still alive, they're underground. I'm scared too, but I need answers.", "trunk": false},
 	{"character": "Guard", "text": "Then we'd better find a way in. Stay close. And keep your flashlights ready. I've got you all.", "trunk": false},
 	{"character": "Engineer", "text": "Something tells me we're not going to like what we find down there...", "trunk": false},
@@ -127,15 +127,6 @@ func _wait_for_intro() -> void:
 func _trigger_dialogue() -> void:
 	if played:
 		return
-
-	# Ask each player for their perspective preference before the cutscene.
-	# (Clear old answers first: an answer can arrive right away.)
-	_perspective_choices.clear()
-	_prompt_perspective.rpc()
-
-	# Wait for all players to choose (host waits, clients respond).
-	if multiplayer.is_server():
-		await _wait_for_perspective_choices()
 
 	played = true
 
@@ -522,88 +513,6 @@ func _make_bars() -> void:
 	layer.add_child(hint)
 	add_child(layer)
 	_bars = layer
-
-
-## Each player chooses first/third person before the chapter starts.
-## Runs on all clients; host waits for all to respond.
-@rpc("authority", "call_local", "reliable")
-func _prompt_perspective() -> void:
-	# In playtest mode, auto-choose first person so the test can proceed.
-	if OS.get_cmdline_user_args().has("--playtest"):
-		var me_test := Player.find(get_tree(), multiplayer.get_unique_id())
-		if me_test:
-			var persp_test := me_test.get_node_or_null("Perspective") as Perspective
-			if persp_test:
-				persp_test.third_person = false
-		# Directly append since we're on the host in playtest.
-		_perspective_choices.append(false)
-		return
-
-	var me := Player.find(get_tree(), multiplayer.get_unique_id())
-	if me == null:
-		_report_perspective_choice.rpc_id(1, false)
-		return
-	var persp := me.get_node_or_null("Perspective") as Perspective
-	if persp == null:
-		_report_perspective_choice.rpc_id(1, false)
-		return
-
-	# Simple prompt: show text, wait for 1 or 3 key.
-	var layer := CanvasLayer.new()
-	layer.layer = 20
-	var bg := ColorRect.new()
-	bg.color = Color(0, 0, 0, 0.85)
-	bg.anchors_preset = Control.PRESET_FULL_RECT
-	layer.add_child(bg)
-
-	var label := Label.new()
-	label.text = "Choose camera:\n[1] First Person\n[3] Third Person (C toggles later)"
-	label.anchors_preset = Control.PRESET_FULL_RECT
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.add_theme_font_size_override("font_size", 32)
-	label.add_theme_color_override("font_color", Color.WHITE)
-	layer.add_child(label)
-
-	add_child(layer)
-
-	var chosen_third := false
-
-	# Poll for key press (1 or 3) since we can't use a local function with nonlocal.
-	while true:
-		await get_tree().process_frame
-		if Input.is_key_pressed(KEY_1) or Input.is_key_pressed(KEY_KP_1):
-			chosen_third = false
-			break
-		if Input.is_key_pressed(KEY_3) or Input.is_key_pressed(KEY_KP_3):
-			chosen_third = true
-			break
-
-	persp.third_person = chosen_third
-	layer.queue_free()
-	_report_perspective_choice.rpc_id(1, chosen_third)
-
-
-@rpc("any_peer", "call_local", "reliable")
-func _report_perspective_choice(third: bool) -> void:
-	_perspective_choices.append(third)
-
-
-var _perspective_choices: Array[bool] = []
-
-
-## Host only: wait until every player has reported a choice.
-func _wait_for_perspective_choices() -> void:
-	var expected := GameState.players.size()
-	if expected == 0:
-		expected = 1
-	# Never wait forever: after 30 seconds the scene starts anyway (anyone who
-	# didn't answer keeps their Settings choice).
-	var waited := 0.0
-	while _perspective_choices.size() < expected and waited < 30.0:
-		await get_tree().process_frame
-		waited += get_process_delta_time()
 
 
 # ------------------------------------------------------------- the trunk scene

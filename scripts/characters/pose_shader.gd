@@ -51,3 +51,16 @@ static func apply(model: Node, model_name: String, sitting := false) -> void:
 			part.set_surface_override_material(i, mat)
 		# The bent pose reaches outside the model's original box: draw it anyway.
 		part.extra_cull_margin = 1.0
+
+
+static func set_sitting(model: Node, sitting: bool) -> void:
+	if model == null:
+		return
+	var value := 1.0 if sitting else 0.0
+	for part: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+		if part.mesh == null:
+			continue
+		for i in part.mesh.get_surface_count():
+			var mat := part.get_surface_override_material(i) as ShaderMaterial
+			if mat:
+				mat.set_shader_parameter("sit", value)

@@ -244,14 +244,14 @@ for n,(x1,x2,z1,z2) in {"FenceSouthW":(-15,-1.6,21.96,22.04),"FenceSouthE":(1.6,
 for k,x in enumerate(x for x in range(-15,16,3) if abs(x) > 2):
     BX(f"PostS{k}",E,x-0.07,x+0.07,0,3.1,21.93,22.07,METAL)
 BX("GatePostL",E,-1.75,-1.55,0,3.1,21.9,22.1,METAL); BX("GatePostR",E,1.55,1.75,0,3.1,21.9,22.1,METAL)
-# (The old abandoned car outside the gate is gone: the team's car is parked by
-# the main building now. Its dome light and the informant's notebook moved to it.)
-light("CarDomeLight","Lights",(-5.1,1.75,9.0),color=(1,0.8,0.5),energy=0.15,rng=2.0,flicker=0.5,fixture=None)
-inst("lpersonal","InformantNotebook","Lore",(-7.05,1.18,9.0),0,entry=ER(LORE("personal_journalist_notebook")))
+# The team's car waits on the road outside the gate, where everyone starts.
+# Its dome light and the informant's notebook moved with it.
+light("CarDomeLight","Lights",(-5.1,1.75,38.0),color=(1,0.8,0.5),energy=0.15,rng=2.0,flicker=0.5,fixture=None)
+inst("lpersonal","InformantNotebook","Lore",(-7.05,1.18,38.0),0,entry=ER(LORE("personal_journalist_notebook")))
 item("battery",(-6,0.2,41))
 # The team's own car (they drove here in it; the same car as the home screen).
-# Parked on the road next to where everyone starts. At the start, Eli and Cole
-# take the pistols out of its trunk (scripts/chapters/opening_dialogue.gd
+# Parked on the road outside the gate, next to where everyone starts. At the
+# start, Eli and Cole take the pistols out of its trunk (the opening cutscene
 # opens the TrunkLid). Built along its own Z (front at -Z, trunk at +Z),
 # turned so the trunk points down the road (+X).
 TC_PAINT=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.34,0.1,0.08), roughness="0.4", metallic="0.3"))
@@ -262,7 +262,7 @@ TC_SEAT=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.12,0.09,0.07), roughn
 TC_HEAD=SR(sc.sub("StandardMaterial3D", albedo_color=col(1,1,0.9), emission_enabled="true", emission=col(1,0.95,0.8), emission_energy_multiplier="3.0"))
 TC_TAIL=SR(sc.sub("StandardMaterial3D", albedo_color=col(0.5,0.02,0.02), emission_enabled="true", emission=col(1,0.05,0.03), emission_energy_multiplier="2.0"))
 TC="Exterior/TeamCar"
-sc.node("TeamCar","StaticBody3D","Exterior",transform=xform((-5.5,0,9.0),90))  # by the main building
+sc.node("TeamCar","StaticBody3D","Exterior",transform=xform((-5.5,0,38.0),90))  # road outside the gate
 sc.node("CollisionShape3D","CollisionShape3D",TC,transform=xform((0,0.95,0.2)),shape=SR(sc.sub("BoxShape3D",size=v3(2.0,1.3,4.8))))
 def tbox(name,size,pos,mat,parent=TC,pitch=0):
     mi(name,parent,pos,mesh("BoxMesh",size=v3(*size)),mat,pitch=pitch)
@@ -291,7 +291,7 @@ tbox("Lid",(2.0,0.05,1.0),(0,0,0.5),TC_PAINT,parent=TC+"/TrunkLid")
 # Two pistols in the trunk.
 for k,x in enumerate([-0.25,0.25]):
     tbox(f"TrunkPistol{k}",(0.05,0.035,0.2),(x,1.09,2.1),BLACK)
-light("TeamCarDome","Lights",(-3.3,1.3,9.0),color=(1,0.85,0.6),energy=0.25,rng=2.5,shadow=False,fixture=None)
+light("TeamCarDome","Lights",(-3.3,1.3,38.0),color=(1,0.85,0.6),energy=0.25,rng=2.5,shadow=False,fixture=None)
 # sign
 BX("SignBoard",E,-5.2,-2.8,1.2,2.2,22.1,22.14,RUST)
 label("SignText",E,(-4,1.7,22.16),0,"PROPERTY OF U.S. GOVERNMENT\nNO TRESPASSING\nBlackwater Weather Station",size=0.0035,font=36,color=(0.85,0.8,0.7),outline="0")
@@ -312,7 +312,7 @@ B("Mast","Station",(6,7.5,-4),(0.15,8,0.15),METAL,collide=False)
 for k,y in enumerate([5,8,10.5]):
     B(f"MastBar{k}","Station",(6,y,-4),(1.4-k*0.35,0.06,0.06),METAL,collide=False)
 light("MastWarning","Lights",(6,11.6,-4),color=(1,0.1,0.05),energy=0.8,rng=6,pulse=True,shadow=False,fixture="bulb")
-item("crowbar",(-2.8,0.2,9.8))  # by the trunk, for the jammed front door
+item("crowbar",(-2.8,0.2,38.8))  # by the trunk, for the jammed front door
 item("crowbar",(8,0.2,15.5))   # (the yard one, for the gate)
 BX("LampPole",E,2.9,3.1,0,4.6,5.9,6.1,METAL)
 light("YardLamp","Lights",(3,4.4,6.4),color=(1,0.85,0.6),energy=1.4,rng=12,flicker=0.25,fixture="bulb")
@@ -837,7 +837,7 @@ sc.node("Cutscenes","Node",".")
 sc.node("Intro","Node","Cutscenes",script=ER(S_CUT),play_on_start="true",shots=shots(
     ((-14,9,62),(0,2,-6),(-6,6.5,50),(0,2,-8),5.0,"1999. Site 12 was sealed... with people still inside."),
     ((-6.5,1.8,27),(-4,1.7,22),(-4.6,1.7,24.6),(-4,1.7,22),3.5,"Officially, it was only ever a weather station."),
-    ((7,2.2,15),(-5,3.4,-9),(3,2.8,9),(-5,3.4,-9),4.0,"2015. Seven people are missing. Four are going in."),
+    ((7,2.2,15),(-5,3.4,-9),(3,2.8,9),(-5,3.4,-9),4.0,"2015. Eight people are missing. Four are going in."),
     ((0.5,1.7,30),(0,1.4,22),(0.2,1.65,26),(0,1.3,22),2.5,"CHAPTER 1  -  THE SURFACE")))
 if LONG_MAN_ON:
   sc.node("Reveal","Node","Cutscenes",script=ER(S_CUT),shots=shots(
@@ -1186,6 +1186,7 @@ area("RoofSteps","Triggers",(6,1.5,-11),(7,3,8),S_SCARE,steps_from=v3(3,3.7,-14)
 # --- More story
 inst("lfile","WeatherMemo","Lore",(-4.4,0.9,-5),-15,entry=ER(LORE("file_weather_cover")))
 inst("lpersonal","TwoSoldiers","Lore",(6.3,0.9,-3.0),30,entry=ER(LORE("personal_son_photo")))
+inst("lpersonal","TwinPhoto","Lore",(6.9,0.9,-3.0),30,entry=ER(LORE("personal_son_twin_photo")))
 inst("lfile","SecurityLog","Lore",(5.5,-8.4,-37.5),0,entry=ER(LORE("file_security_log")))
 BX("SecurityDesk",U,4.6,6.4,-9,-8.4,-38.1,-36.9,METAL)
 BX("SecurityMonitor",U,5.2,5.9,-8.4,-7.9,-38.05,-37.7,BLACK)
@@ -1582,7 +1583,7 @@ sc.node("ItemSpawner","MultiplayerSpawner",".",node_paths=["spawn_points"],spawn
 sc.node("Players","Node3D",".")
 sc.node("PlayerSpawner","MultiplayerSpawner",".",node_paths=["spawn_points"],spawn_path=NP("../Players"),script=ER(S_PSPAWN),spawn_points=NP("../SpawnPoints"))
 sc.node("SpawnPoints","Node3D",".")
-for k,(x,z) in enumerate([(-1.5,7.5),(1.5,7.5),(-1.5,9),(1.5,9)]):  # by the front door
+for k,(x,z) in enumerate([(-1.5,38.5),(1.5,38.5),(-1.5,40.0),(1.5,40.0)]):  # road outside the gate
     sc.node(f"Spawn{k+1}","Marker3D","SpawnPoints",transform=xform((x,0,z),0))
 sc.node("TeamMonitor","Node",".",script=ER(S_TEAM))
 

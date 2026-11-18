@@ -1,25 +1,53 @@
 extends Control
-## The lobby: shows who is connected, lets everyone pick a character,
-## and gives the host a Start button.
+## The lobby: shows who is connected and gives the host a Start button.
+## Characters are picked in the car at the start, so once someone has one
+## the pick buttons are hidden (the lobby is only a between-chapters screen).
 
 signal start_requested
 signal leave_requested
 
 @onready var player_list: VBoxContainer = %PlayerList
 @onready var character_buttons: HBoxContainer = %CharacterButtons
+@onready var characters_header: Label = %CharactersHeader
 @onready var start_button: Button = %StartButton
 @onready var leave_button: Button = %LeaveButton
 @onready var hint_label: Label = %HintLabel
+@onready var invite_label: Label = %InviteLabel
+@onready var copy_invite_button: Button = %CopyInviteButton
+
+var _car_select_mode := false
 
 
 func _ready() -> void:
 	_build_character_buttons()
 	start_button.pressed.connect(func() -> void: start_requested.emit())
 	leave_button.pressed.connect(func() -> void: leave_requested.emit())
+	copy_invite_button.pressed.connect(_on_copy_invite_pressed)
+	invite_label.text = _invite_text()
 	GameState.players_changed.connect(refresh)
 	add_to_group("lobby_message")
 	visibility_changed.connect(refresh)
 	refresh()
+
+
+func set_car_select_mode(value: bool) -> void:
+	_car_select_mode = value
+	refresh()
+
+
+func _invite_text() -> String:
+	var ips: Array[String] = []
+	for address in IP.get_local_addresses():
+		if not address.contains(":") and address != "127.0.0.1":
+			ips.append(address)
+	if ips.is_empty():
+		ips.append("127.0.0.1")
+	return "INVITE FRIENDS (LAN): use Join Game with %s : 7777" % ", ".join(ips)
+
+
+func _on_copy_invite_pressed() -> void:
+	DisplayServer.clipboard_set(invite_label.text)
+	show_message("INVITE TEXT COPIED.")
 
 
 func _build_character_buttons() -> void:
@@ -69,9 +97,17 @@ func refresh() -> void:
 		button.set_pressed_no_signal(owner_id == my_id)
 		button.disabled = owner_id != 0 and owner_id != my_id
 
+	# You pick your character in the car; don't offer to change it here.
+	character_buttons.visible = not _car_select_mode and GameState.get_character(my_id) == Characters.Id.NONE
+	characters_header.visible = character_buttons.visible
+
 	var is_host := multiplayer.is_server()
 	start_button.visible = is_host
-	start_button.disabled = not GameState.can_start()
+	start_button.disabled = not _car_select_mode and not GameState.can_start()
+	start_button.text = "GO TO CAR" if _car_select_mode else "Start Game"
+	if _car_select_mode:
+		hint_label.text = "Invite friends, then press GO TO CAR." if is_host else "Waiting for the host to take everyone to the car..."
+		return
 	if GameState.get_character(my_id) == Characters.Id.NONE:
 		hint_label.text = "Pick a character."
 	elif is_host and not GameState.has_enough_players():

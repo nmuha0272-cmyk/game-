@@ -42,17 +42,16 @@ func _add_player(id: int) -> void:
 	if checkpoint:
 		data.position = checkpoint.get_spawn_position(players.get_child_count())
 	var player := spawn(data)
-	# Eli and Cole took a pistol each from the car's trunk (the arrival cutscene).
-	if not GameState.checkpoint_inventories.has(id) and data.character in [Characters.Id.SON, Characters.Id.GUARD]:
-		get_tree().create_timer(0.5).timeout.connect(func() -> void:
-			if is_instance_valid(player):
-				player.inventory.server_add(Items.create("weapon_pistol")))
-	# Give back the gear they had at the checkpoint (once everyone has the player).
-	if GameState.checkpoint_inventories.has(id):
+	if not is_instance_valid(player):
+		return
+	if not GameState.checkpoint_inventories.has(id):
+		var starting_items: Array = Characters.get_value(data.character, "inventory_items", [])
+		for item_id: String in starting_items:
+			if Items.INFO.has(item_id):
+				player.inventory.server_add(Items.create(item_id))
+	else:
 		var saved: Dictionary = GameState.checkpoint_inventories[id].duplicate(true)
-		get_tree().create_timer(0.5).timeout.connect(func() -> void:
-			if is_instance_valid(player):
-				player.inventory.server_set_slots(saved.get("quick", [{}, {}, {}, {}]), saved.get("storage", [{}, {}])))
+		player.inventory.server_set_slots(saved.get("quick", [{}, {}, {}, {}]), saved.get("storage", [{}, {}]))
 
 
 func _current_checkpoint() -> Checkpoint:

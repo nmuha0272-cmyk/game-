@@ -48,6 +48,31 @@ const INFO := {
 		"color": Color(0.8, 0.15, 0.1),
 		"hint": "Click to throw. Lights the area and distracts monsters for 10 seconds.",
 	},
+	"dog_tags": {
+		"name": "Dog Tags", "shape": "box", "size": Vector3(0.05, 0.004, 0.03),
+		"color": Color(0.65, 0.65, 0.58), "shiny": true,
+		"hint": "Eli's father's dog tags. He took them from the trunk before they left.",
+	},
+	"flashlight": {
+		"name": "Flashlight", "shape": "cylinder", "size": Vector3(0.035, 0.24, 0),
+		"color": Color(0.2, 0.22, 0.24),
+		"hint": "Eli's flashlight. Click a battery to keep the beam going.",
+	},
+	"heavy_flashlight": {
+		"name": "Heavy Flashlight", "shape": "cylinder", "size": Vector3(0.08, 0.38, 0),
+		"color": Color(0.28, 0.3, 0.26),
+		"hint": "Cole's heavy torch from the trunk. Cuts through the dark and the fog.",
+	},
+	"film_camera": {
+		"name": "Film Camera", "shape": "box", "size": Vector3(0.14, 0.09, 0.06),
+		"color": Color(0.16, 0.16, 0.18),
+		"hint": "Nora's camera. Click to photograph evidence and stun what you find.",
+	},
+	"wrench": {
+		"name": "Wrench", "shape": "box", "size": Vector3(0.05, 0.34, 0.04),
+		"color": Color(0.5, 0.52, 0.54), "shiny": true,
+		"hint": "Walter's wrench. Click to repair a machine or panel he can reach.",
+	},
 	"medkit": {
 		"name": "Med Kit", "shape": "box", "size": Vector3(0.2, 0.12, 0.08),
 		"color": Color(0.85, 0.85, 0.82),

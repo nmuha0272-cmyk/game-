@@ -24,10 +24,11 @@ func _ready() -> void:
 func _on_body_entered(body: Node3D) -> void:
 	if _triggered and only_once:
 		return
-	if requires_character != Characters.Id.NONE:
-		var player := body.get_parent()
-		if player and player is Player and player.character != requires_character:
-			return
+	# Only a player walking in counts (walls and floors overlap these too).
+	if not body is Player:
+		return
+	if requires_character != Characters.Id.NONE and (body as Player).character != requires_character:
+		return
 	_trigger()
 
 

@@ -1,34 +1,33 @@
 extends Node3D
 ## Deepwell home screen: a car driving down a dark forest road at night.
 ##
-## MENU:   the camera watches the car from outside, with the title and buttons
-##         (main_menu.tscn) on top.
-## SELECT: after Host or Join, the camera moves into the back seat, looking
-##         forward: Eli is driving, Cole is next to him, Nora and Walter are in
-##         the back. Hover over a name card (or a character) and the camera
-##         moves to that character's side and shows what they can do.
-##         Click to choose them. Arrow keys and Enter also work.
-## Picking a character shows their face in the rear-view mirror.
-## TALK:   after "PLAY AS ...", the team talks while Eli drives (subtitles at
-##         the bottom): "Uncle Cole, why is there a journalist and an old man
-##         in the car?" Tap Space for the next line, hold Space to skip.
-## ARRIVING: after the talk, the camera moves behind the car
-##         and it drives up to the gate of the Blackwater Weather Station,
-##         slows to a stop, and the screen fades to black before the lobby
-##         (or next scene) loads. Press Enter or Esc to skip the drive.
+## MENU:   the camera watches the car on the forest road, with the title and
+##         buttons (main_menu.tscn) on top.
+## TALK:   right after Go To Car, only Eli and Cole are in the car on the road.
+##         Eli asks for the info on the missing people; Cole explains and says
+##         they are meeting Nora and Walter at the gate before going in.
+##         Tap Space for the next line, hold Space to skip.
+## SELECT: when the talk ends the car has reached the gate. All four models
+##         stand at the open trunk, looking down into it and grabbing gear.
+##         A low camera looks up from the trunk. Hover a name card (or a
+##         character) for a close-up, then click to choose. Arrow keys and
+##         Enter also work. Picking never glows the models.
+## ARRIVING: after PLAY AS, the view holds on the trunk, then fades to black
+##         before the lobby (or next scene) loads.
 ##
-## The team's real models (MODEL_FILES) sit in the seats. They have no
-## skeleton yet (T-pose statues), so PoseShader bends them to sit with their
-## arms down; a model with a skeleton is posed by HumanRig instead.
+## The team's real models (MODEL_FILES) stand at the trunk in SELECT. They
+## have no skeleton yet (T-pose statues), so PoseShader poses them; a model
+## with a skeleton is posed by HumanRig instead.
 
 signal character_confirmed(character_id: String)
+signal voice_line_requested(line_id: String)
 ## Only when `embedded`: the arrival drive finished and the screen is black.
 signal arrived(character_id: String)
 
 ## True when this home screen runs inside the game's main scene
 ## (scenes/main.tscn). Then main.gd does the networking: Host/Join only send
-## signals, main.gd calls enter_select() once the game is hosted/joined, and
-## after the drive it emits `arrived` instead of changing scene.
+## signals, main.gd calls enter_opening() once the game is hosted/joined, and
+## after the pick it emits `arrived` instead of changing scene.
 var embedded := false
 
 const MENU_UI := preload("res://scenes/main_menu/deepwell/main_menu.tscn")
@@ -48,19 +47,35 @@ const DRIVE_SPEED := 17.0  # meters per second
 const STATION_START_Z := -75.0  # where the station appears, far down the road
 const STATION_STOP_Z := -9.0    # where its gate is when the car has stopped
 const ROAD_LENGTH := 160.0
+const TRUNK_OPEN_ANGLE := 68.0
+const MEET_POSITIONS := {
+	"eli": Vector3(-1.75, 0.0, 0.6),
+	"cole": Vector3(1.75, 0.0, 0.6),
+	"nora": Vector3(-4.15, 0.0, 0.2),
+	"walter": Vector3(4.15, 0.0, 0.2),
+}
+const TRUNK_POSITIONS := {
+	"walter": Vector3(1.35, 0.0, 3.55),
+	"nora": Vector3(0.45, 0.0, 3.4),
+	"eli": Vector3(-0.45, 0.0, 3.4),
+	"cole": Vector3(-1.35, 0.0, 3.55),
+}
 
 ## Order is the order the arrow keys cycle through.
 const CHARACTER_ORDER := ["eli", "cole", "nora", "walter"]
 const CHARACTERS := {
 	"eli": {
-		"side_cam": Vector3(0.3, 1.52, -0.66),
-		"side_look": Vector3(-0.38, 1.4, -0.05),
+		"side_cam": Vector3(-1.25, 0.92, 2.2),
+		"side_look": Vector3(-0.7, 1.4, 3.0),
+		"talk_cam": Vector3(0.3, 1.52, -0.66),
+		"talk_look": Vector3(-0.38, 1.4, -0.05),
 		"name": "ELI REYES",
 		"role": "THE SON  //  SURVIVOR",
-		"seat": Vector3(-0.38, 0.0, -0.1),
+		"seat": Vector3(-0.7, 0.0, 2.95),
+		"talk_seat": Vector3(-0.38, 0.0, -0.1),
 		"color": Color(0.38, 0.23, 0.12),
 		"size": 1.0,
-		"about": "21. College student and Army Reserve soldier. Both his parents died here in 1999. Now his two best friends are missing in there.",
+		"about": "21. College student and Army Reserve soldier. Both his parents died here in 1999. Now his two best friends - and his twin brother Mateo - are missing in there.",
 		"abilities": [
 			"SENSE: hold to see nearby monsters through walls for 3 seconds (20s cooldown).",
 			"MILITARY TRAINING: steadier aim and faster reloads. Reads Morse code and military maps.",
@@ -69,11 +84,14 @@ const CHARACTERS := {
 		"quote": "\"Dad always said: slow is smooth, smooth is fast.\"",
 	},
 	"cole": {
-		"side_cam": Vector3(-0.3, 1.52, -0.66),
-		"side_look": Vector3(0.38, 1.42, -0.05),
+		"side_cam": Vector3(1.25, 0.92, 2.2),
+		"side_look": Vector3(0.7, 1.4, 3.0),
+		"talk_cam": Vector3(-0.3, 1.52, -0.66),
+		"talk_look": Vector3(0.38, 1.42, -0.05),
 		"name": "COLE BRENNAN",
 		"role": "THE GUARD  //  PROTECTOR",
-		"seat": Vector3(0.38, 0.0, -0.1),
+		"seat": Vector3(0.7, 0.0, 2.95),
+		"talk_seat": Vector3(0.38, 0.0, -0.1),
 		"color": Color(0.29, 0.32, 0.19),
 		"size": 1.12,
 		"about": "36. Former soldier. Raised Eli after his parents died, like a father. Knows this place better than he admits.",
@@ -85,11 +103,14 @@ const CHARACTERS := {
 		"quote": "\"Eyes up, kid. Stay behind me.\"",
 	},
 	"nora": {
-		"side_cam": Vector3(0.08, 1.52, 0.38),
-		"side_look": Vector3(-0.55, 1.4, 1.02),
+		"side_cam": Vector3(-1.25, 0.98, 3.0),
+		"side_look": Vector3(-0.7, 1.4, 3.75),
+		"talk_cam": Vector3(-1.5, 1.85, 2.9),
+		"talk_look": Vector3(-0.7, 1.42, 3.75),
 		"name": "NORA VANCE",
 		"role": "THE JOURNALIST  //  STUNNER",
-		"seat": Vector3(-0.55, 0.08, 1.02),
+		"seat": Vector3(-0.7, 0.0, 3.75),
+		"talk_seat": Vector3(-0.7, 0.0, 3.75),
 		"color": Color(0.7, 0.58, 0.4),
 		"size": 0.95,
 		"about": "35. Investigative journalist. Her source vanished trying to expose Deepwell. She wants the proof.",
@@ -100,11 +121,14 @@ const CHARACTERS := {
 		"quote": "\"If it's real, I'm getting it on film.\"",
 	},
 	"walter": {
-		"side_cam": Vector3(-0.08, 1.52, 0.38),
-		"side_look": Vector3(0.55, 1.4, 1.02),
+		"side_cam": Vector3(1.25, 0.98, 3.0),
+		"side_look": Vector3(0.7, 1.4, 3.75),
+		"talk_cam": Vector3(1.5, 1.85, 2.9),
+		"talk_look": Vector3(0.7, 1.42, 3.75),
 		"name": "WALTER KESSLER",
 		"role": "THE ENGINEER  //  FIXER",
-		"seat": Vector3(0.55, 0.08, 1.02),
+		"seat": Vector3(0.7, 0.0, 3.75),
+		"talk_seat": Vector3(0.7, 0.0, 3.75),
 		"color": Color(0.13, 0.17, 0.32),
 		"size": 0.97,
 		"about": "60. Worked at Deepwell before it was sealed. Nervous, quiet, and hiding something.",
@@ -116,26 +140,25 @@ const CHARACTERS := {
 	},
 }
 
-enum State { MENU, SELECT, TALK, ARRIVING }
+enum State { MENU, SELECT, TALK, MEETING, ARRIVING }
 
-## What the team says on the way: [character id, line].
+## What Eli and Cole say on the drive, before Nora and Walter join at the gate.
 const TALK := [
-	["eli", "So... Uncle Cole. Why is there a journalist and an old man in the car?"],
-	["cole", "Eli, they're here because—"],
-	["nora", "I can speak for myself, thanks. Nora Vance. My source went missing out here a month ago, and I'm going to find out why. I'm terrified, but I need answers."],
-	["walter", "Walter Kessler. I worked at that station, a long time ago. I know the way in. I'm not looking forward to what we'll find inside."],
-	["cole", "They want the same thing we do, kid. We find Marcus and Jenna, and we get out."],
-	["eli", "...Okay. We're here."],
+	["eli", "so what info do you have on the missing people?", "road_01"],
+	["cole", "Marcus, Jenna, and your twin Mateo walked into that station and never came out. Before we go in, we're meeting two other people at the gate - Nora Vance and Walter Kessler. They know more than I do.", "road_02"],
+	["eli", "Then we go in together. We find them, and we all come out.", "road_03"],
+]
 
-	## Intro sequence: character presentations at the start
-	## Facility briefing: what each character knows about Deepwell
-	["eli", "Dad always said this place was wrong. Mom's last tape - she tried to get the volunteers out. Dad - Sgt. Daniel Reyes - he was Volunteer 14. They took him into Project ECHO. That's where the real experiments happened. That's where he... where he became Echo."],
-	["nora", "Deepwell. Hidden beneath the Blackwater Weather Station. Officially Cold War biomedical research to create stronger soldiers. Unofficially Project BASTION. Volunteers told it was vitamin research. Officially shut down 1991, but a secret branch called Project ECHO kept going until the facility was sealed in 1999. My source went missing trying to expose G-7, the Goliath Serum. He worked here and was trying to expose it before he vanished."],
-	["walter", "I worked at that station, a long time ago. I know every secret door, every weak point. In 1999 I signed the containment order for Level B. 'Regardless of personnel inside.' Some of those people were still down there."],
-	["cole", "I sealed Level B in 1999 at age twenty. Following orders. But the containment order - my order - says 'regardless of personnel inside.' Some of those people were still down there. That's why I have the roster. My name's on it. I raised Eli after his parents died. That's my only promise - keep him alive, keep them all alive."],
-	## Cutscene: Eli and Cole army background
-	["nora", "And I thought you were just being condescending because I'm a woman in a field you dominated, kid. But now I see it's just Army bureaucracy."],
-	["eli", "Nora, I know how this sounds about slowing us down, but me and Cole are trained to protect ourselves. Army training. We watch each other's backs."],
+const MEET := [
+	["nora", "You're late.", "meet_01"],
+	["cole", "We're here. Eli, this is Nora Vance. She's been chasing Blackwater for three years.", "meet_02"],
+	["nora", "I read about your father. I'm sorry.", "meet_03"],
+	["cole", "And that's Walter.", "meet_04"],
+	["walter", "I worked maintenance there. A long time ago. I know the tunnels. I didn't think I'd ever go back.", "meet_05"],
+	["eli", "Then why are you?", "meet_06"],
+	["walter", "Because I helped build it.", "meet_07"],
+	["eli", "My twin brother Mateo went in after Marcus and Jenna. Two weeks ago. He's the eighth name on that poster.", "meet_08"],
+	["cole", "That's why we're here. Gear's in the trunk. Grab what you need. We go in before sunrise.", "meet_09"],
 ]
 
 const MIRROR_POS := Vector3(0.0, 1.62, -0.6)
@@ -162,6 +185,8 @@ var _car: Node3D  # holds both cars, the people and the mirror (it bobs on the r
 var _placeholder_car: Node3D
 var _hero_car: Node3D
 var _roof: Node3D
+var _trunk_lid: Node3D
+var _trunk_lid_placeholder: Node3D
 var _camera: Camera3D
 var _scrollers: Array[Node3D] = []
 var _figures := {}      # id -> {"root": Node3D, "materials": Array, "label": Label3D}
@@ -178,11 +203,15 @@ var _cards := {}  # id -> Button
 var _unhover_timer: SceneTreeTimer
 var _speed := DRIVE_SPEED
 var _station: Node3D
+var _gas_station: Node3D
+var _station_lamp: OmniLight3D
 var _trees: Array[Node3D] = []
 var _fade: ColorRect
 var _arrival_label: Label
 var _arrived := false
 # The car talk.
+var _dialogue: Array = []
+var _dialogue_done := Callable()
 var _talk_line := -1
 var _talk_time := 0.0
 var _talk_length := 0.0
@@ -198,10 +227,10 @@ var _last_selected := ""
 
 const MENU_CAM_POS := Vector3(-4.2, 1.35, -6.0)
 const MENU_CAM_TARGET := Vector3(-1.4, 0.95, 0.4)
-const ARRIVE_CAM_POS := Vector3(-2.4, 2.6, 7.0)
-const ARRIVE_CAM_TARGET := Vector3(0.6, 1.6, -14.0)
-const BACKSEAT_CAM_POS := Vector3(0.0, 1.5, 1.18)
-const BACKSEAT_CAM_TARGET := Vector3(0.0, 1.32, -3.0)
+const ARRIVE_CAM_POS := Vector3(0.35, 0.72, 1.65)
+const ARRIVE_CAM_TARGET := Vector3(0.0, 1.38, 3.35)
+const SELECT_CAM_POS := Vector3(0.35, 0.72, 1.65)
+const SELECT_CAM_TARGET := Vector3(0.0, 1.38, 3.35)
 
 
 func _ready() -> void:
@@ -210,6 +239,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_road_and_forest()
 	_build_station()
+	_build_gas_station()
 	_build_cars()
 	for id: String in CHARACTER_ORDER:
 		_build_character(id)
@@ -222,84 +252,92 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_time += delta
 
-	# Move the world toward the camera so the car looks like it's driving.
-	if state == State.ARRIVING:
-		_update_arrival(delta)
-	elif state == State.TALK:
-		_update_talk(delta)
-	_update_mirror(delta)
+	if state == State.MENU or state == State.TALK:
+		for node in _scrollers:
+			node.position.z += _speed * delta
+			if node.position.z > 30.0:
+				node.position.z -= ROAD_LENGTH
+				if node.has_meta("side"):
+					node.position.x = float(node.get_meta("side")) * randf_range(5.5, 20.0)
 
-	for node in _scrollers:
-		node.position.z += _speed * delta
-		if node.position.z > 30.0:
-			node.position.z -= ROAD_LENGTH
-			if node.has_meta("side"):
-				node.position.x = float(node.get_meta("side")) * randf_range(5.5, 20.0)
-
-	# Bumpy road: the car bobs and sways a little.
-	var shake := _speed / DRIVE_SPEED
+	var shake := 1.0 if state == State.MENU or state == State.TALK else 0.15
 	_car.position.y = (sin(_time * 9.0) * 0.008 + sin(_time * 2.3) * 0.012) * shake
 	_car.rotation.z = sin(_time * 1.7) * 0.006 * shake
 	_car.rotation.x = sin(_time * 3.1) * 0.003 * shake
 
 	if _cole_gun:
 		_cole_gun.rotation_degrees.z = fmod(_time, 2.0) * 60.0
+	if _walter_tool:
 		_walter_tool.rotation_degrees.z = fmod(_time, 1.5) * 45.0
 
-	# Characters breathe and sway with the car.
 	for id: String in _figures:
-		var root: Node3D = _figures[id]["root"]
-		root.position.y = sin(_time * 1.6 + root.position.x * 3.0) * 0.006
-
-	# Rigged models sit: thighs forward, knees bent, Eli's hands on the wheel.
-	for id: String in _figures:
-		var rig := _figures[id]["rig"] as HumanRig
+		var data: Dictionary = _figures[id]
+		var root: Node3D = data["root"]
+		var holder: Node3D = data["holder"]
+		var mode: String = data.get("mode", "seat")
+		var at_trunk := mode == "trunk"
+		var reach := sin(_time * 2.4 + root.position.x * 5.0)
+		var bob := sin(_time * 1.6 + root.position.x * 3.0) * (0.006 if at_trunk else 0.002)
+		holder.rotation_degrees.x = -20.0 + reach * 6.0 if at_trunk else 0.0
+		holder.position.y = bob + (reach * 0.02 if at_trunk else 0.0)
+		var rig := data["rig"] as HumanRig
 		if rig == null:
 			continue
-		rig.set_pose(0.0, 0.0, 0.0, 0.0, sin(_time * 1.6))
-		for leg in ["LeftUpLeg", "RightUpLeg"]:
-			rig._turn(leg, HumanRig.SIDE, -85.0)
-		for knee in ["LeftLeg", "RightLeg"]:
-			rig._turn(knee, HumanRig.SIDE, 85.0)
-		if id == "eli":
-			for arm in ["LeftArm", "RightArm"]:
-				rig._turn(arm, HumanRig.SIDE, -55.0)
+		if at_trunk:
+			rig.set_pose(0.0, 0.0, 0.0, -26.0 + reach * 3.0, sin(_time * 1.6) * 0.4)
+			rig._turn("Spine", HumanRig.SIDE, 20.0 + reach * 4.0)
+			rig._turn("LeftArm", HumanRig.SIDE, -48.0 + reach * 14.0)
+			rig._turn("RightArm", HumanRig.SIDE, -48.0 - reach * 14.0)
+		elif mode == "meet":
+			rig.set_pose(0.0, 0.0, 0.0, 0.0, sin(_time * 1.6))
+		else:
+			rig.set_pose(0.0, 0.0, 0.0, 0.0, sin(_time * 1.6))
+			for leg in ["LeftUpLeg", "RightUpLeg"]:
+				rig._turn(leg, HumanRig.SIDE, -85.0)
+			for knee in ["LeftLeg", "RightLeg"]:
+				rig._turn(knee, HumanRig.SIDE, 85.0)
+			if id == "eli":
+				for arm in ["LeftArm", "RightArm"]:
+					rig._turn(arm, HumanRig.SIDE, -55.0)
 
-	# Glide the camera toward where it should be right now.
+	if state == State.TALK or state == State.MEETING:
+		_update_dialogue(delta)
+	if _station_lamp and (_gas_station.visible or _station.visible):
+		_station_lamp.light_energy = 1.1 + sin(_time * 7.0) * 0.08 + (0.25 if sin(_time * 23.0) > 0.92 else 0.0)
+	_update_mirror(delta)
+
 	var pos := MENU_CAM_POS + Vector3(sin(_time * 0.21) * 0.35, sin(_time * 0.33) * 0.08, 0.0)
 	var look := MENU_CAM_TARGET
-	if state == State.ARRIVING:
+	if state == State.ARRIVING and selected == "":
 		pos = ARRIVE_CAM_POS
 		look = ARRIVE_CAM_TARGET
-	elif state == State.TALK and _talk_line >= 0 and _talk_line < TALK.size():
-		# The camera goes to whoever is talking.
-		var who: String = TALK[_talk_line][0]
-		pos = CHARACTERS[who]["side_cam"] + _face_lift(who) + Vector3(sin(_time * 0.6) * 0.012, sin(_time * 0.9) * 0.01, 0.0)
-		look = CHARACTERS[who]["side_look"] + _face_lift(who)
-	elif state == State.SELECT:
-		if hovered != "":
-			pos = CHARACTERS[hovered]["side_cam"] + _face_lift(hovered)
-			look = CHARACTERS[hovered]["side_look"] + _face_lift(hovered)
+	elif (state == State.TALK or state == State.MEETING) and _talk_line >= 0 and _talk_line < _dialogue.size():
+		var who: String = _dialogue[_talk_line][0]
+		if state == State.MEETING:
+			var anchor: Vector3 = (_figures[who]["root"] as Node3D).position
+			var side := -1.0 if anchor.x > 0.0 else 1.0
+			pos = anchor + Vector3(side * 1.25, 1.65, -2.35) + _face_lift(who)
+			look = anchor + Vector3(0.0, 1.45, 0.0) + _face_lift(who)
 		else:
-			pos = BACKSEAT_CAM_POS
-			look = BACKSEAT_CAM_TARGET
-		# Just picked someone: look into the rear-view mirror at them.
-		if _time < _mirror_until:
-			pos = MIRROR_POS + Vector3(0.02, -0.06, 0.55)
-			look = MIRROR_POS + Vector3(0.0, 0.07, 0.0)  # the mirror sits low, below the info panel
-		pos += Vector3(sin(_time * 0.6) * 0.012, sin(_time * 0.9) * 0.01, 0.0)  # road bumps
-	_camera.fov = lerpf(_camera.fov, 28.0 if state == State.SELECT and _time < _mirror_until else 55.0, minf(delta * 4.0, 1.0))
-	# The cards fade away while you look in the mirror, so they don't cover it.
+			var c: Dictionary = CHARACTERS[who]
+			var close: Vector3 = c["talk_cam"] if who in ["eli", "cole"] else c["side_cam"]
+			var aim: Vector3 = c["talk_look"] if who in ["eli", "cole"] else c["side_look"]
+			pos = close + _face_lift(who)
+			look = aim + _face_lift(who)
+	elif state == State.SELECT or (state == State.ARRIVING and selected != ""):
+		pos = SELECT_CAM_POS
+		look = SELECT_CAM_TARGET
+	_camera.fov = lerpf(_camera.fov, 58.0 if state == State.SELECT else 55.0, minf(delta * 4.0, 1.0))
 	if _select_ui:
-		_select_ui.modulate.a = move_toward(_select_ui.modulate.a, 0.0 if _time < _mirror_until else 1.0, delta * 4.0)
+		_select_ui.modulate.a = move_toward(_select_ui.modulate.a, 1.0, delta * 4.0)
 	var target := Transform3D().looking_at(look - pos)
 	target.origin = pos
 	_camera.global_transform = _camera.global_transform.interpolate_with(target, 1.0 - exp(-4.0 * delta))
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if state == State.TALK:
-		# A tap on Space (or a click) moves on; holding Space skips (see _update_talk).
+	if state == State.TALK or state == State.MEETING:
+		# A tap on Space (or a click) moves on; holding Space skips.
 		if (event is InputEventMouseButton and event.pressed) or event.is_action_released("ui_accept"):
 			if _talk_hold < 0.35:
 				_talk_time = _talk_length
@@ -343,20 +381,34 @@ func _set_state(new_state: State) -> void:
 		state = State.SELECT
 		hovered = ""
 		_menu.hide()
-		# Show the character cards once the camera has moved into the back seat.
-		get_tree().create_timer(1.2).timeout.connect(func() -> void:
-			if state == State.SELECT:
-				_select_ui.show()
-				_set_hovered(""))
+		_apply_select_layout()
+		_select_ui.show()
+		_set_hovered("")
 		_refresh_info()
 	else:
 		state = State.MENU
 		hovered = ""
 		_select_ui.hide()
 		_menu.show()
+		_guns_grabbed = false
+		for id: String in _figures:
+			var gun: Node3D = _figures[id].get("gun") as Node3D
+			if gun:
+				gun.visible = false
+		if _cole_gun:
+			_cole_gun.visible = true
 		if _menu.has_method("show_main_buttons"):
 			_menu.show_main_buttons()
-		_show_hero_car(false)  # the plain car on the title screen
+		_show_hero_car(false)
+		for id: String in _figures:
+			var root: Node3D = _figures[id]["root"]
+			root.visible = false
+			_set_figure_mode(id, "seat")
+		for tree in _trees:
+			tree.visible = true
+		_station.hide()
+		_gas_station.hide()
+		_set_trunk_open(false)
 	_refresh_highlights()
 
 
@@ -365,16 +417,113 @@ func get_menu_ui() -> Control:
 	return _menu
 
 
-## Move into the car to pick a character (main.gd calls this once the game
-## is hosted or the join went through).
+func _apply_select_layout() -> void:
+	_show_hero_car(true)
+	_station.hide()
+	_gas_station.show()
+	for tree in _trees:
+		tree.visible = false
+	_set_trunk_open(true)
+	for id: String in CHARACTER_ORDER:
+		_move_figure_to(id, TRUNK_POSITIONS[id])
+		var root: Node3D = _figures[id]["root"]
+		root.visible = true
+		_set_figure_mode(id, "trunk")
+
+
+func _move_figure_to(id: String, target: Vector3, duration := 0.85) -> void:
+	if not _figures.has(id):
+		return
+	var data: Dictionary = _figures[id]
+	var previous: Tween = data.get("move_tween") as Tween
+	if previous != null and previous.is_valid():
+		previous.kill()
+	var root: Node3D = data["root"]
+	var tween := create_tween()
+	tween.tween_property(root, "position", target, duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	data["move_tween"] = tween
+
+
+func _grab_guns() -> void:
+	if _guns_grabbed:
+		return
+	_guns_grabbed = true
+	if _cole_gun:
+		_cole_gun.visible = false
+	for id: String in ["eli", "cole"]:
+		var gun: Node3D = _figures[id].get("gun") as Node3D
+		if gun == null:
+			continue
+		var side := -1.0 if id == "eli" else 1.0
+		gun.visible = true
+		gun.position = Vector3(side * 0.5, 0.95, 1.45)
+		gun.rotation_degrees = Vector3(0.0, 0.0, side * 18.0)
+		var tween := create_tween()
+		tween.tween_interval(0.15 if id == "eli" else 0.45)
+		tween.tween_property(gun, "position", Vector3(side * 0.28, 1.04, -0.24), 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.parallel().tween_property(gun, "rotation_degrees", Vector3.ZERO, 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
+func _set_figure_mode(id: String, mode: String) -> void:
+	if not _figures.has(id):
+		return
+	var data: Dictionary = _figures[id]
+	data["mode"] = mode
+	var seated := mode == "seat"
+	if data.get("posed", false):
+		var model: Node3D = data.get("model")
+		if model:
+			PoseShader.set_sitting(model, seated)
+			var body: Dictionary = PoseShader.BODIES[MODEL_FILES[id][0]]
+			model.position.y = 0.92 - float(body.hip_y) * model.scale.x if seated else 0.0
+	for limb: Dictionary in data.get("limbs", []):
+		var node: Node3D = limb["node"]
+		if limb["kind"] == "thigh":
+			node.rotation_degrees.x = 90.0 if seated else 0.0
+		elif limb["kind"] == "arm":
+			node.rotation_degrees.x = 55.0 if seated else (35.0 if mode == "trunk" else 8.0)
+
+
+func _set_car_talk_figures() -> void:
+	for id: String in CHARACTER_ORDER:
+		var previous: Tween = _figures[id].get("move_tween") as Tween
+		if previous != null and previous.is_valid():
+			previous.kill()
+	for id: String in ["eli", "cole"]:
+		var root: Node3D = _figures[id]["root"]
+		root.position = CHARACTERS[id]["talk_seat"]
+		root.visible = true
+		_set_figure_mode(id, "seat")
+	for id: String in ["nora", "walter"]:
+		var root: Node3D = _figures[id]["root"]
+		root.position = CHARACTERS[id]["seat"]
+		root.visible = false
+		_set_figure_mode(id, "seat")
+	_set_trunk_open(false)
+
+
+func _set_meeting_figures() -> void:
+	for id: String in CHARACTER_ORDER:
+		_move_figure_to(id, MEET_POSITIONS[id])
+		var root: Node3D = _figures[id]["root"]
+		root.visible = true
+		_set_figure_mode(id, "meet")
+	_set_trunk_open(false)
+
+
+## Play the Eli/Cole drive talk; the trunk search and pick follow it.
+func enter_opening() -> void:
+	if state == State.MENU:
+		_start_talk()
+
+
+## Kept as a small compatibility alias for older callers.
 func enter_select() -> void:
-	_on_play_requested()
+	enter_opening()
 
 
 func _on_play_requested(_a: Variant = null, _b: Variant = null) -> void:
-	if state == State.MENU:
-		_show_hero_car(true)  # the detailed car for picking and the drive
-		_set_state(State.SELECT)
+	enter_opening()
 
 
 # ------------------------------------------------------------------ Selection
@@ -417,12 +566,12 @@ func _confirm() -> void:
 		var game_state := get_node_or_null("/root/GameState")
 		if game_state and "chosen_character" in game_state:
 			game_state.chosen_character = selected
-	_start_talk()
+	_start_arrival()
 
 
 # ------------------------------------------------------------------ The car talk
 
-## After PLAY AS: the team talks while Eli drives, then the drive to the gate.
+## Right after Go To Car: Eli and Cole talk while the car drives to the gate.
 func _start_talk() -> void:
 	# CONTINUE: the talk already happened in the saved game, so straight to the station.
 	var game_state := get_node_or_null("/root/GameState")
@@ -432,42 +581,81 @@ func _start_talk() -> void:
 		return
 	state = State.TALK
 	hovered = ""
+	_menu.hide()
 	_select_ui.hide()
+	_station.position.z = STATION_START_Z
+	_station.hide()
+	_gas_station.hide()
+	for tree in _trees:
+		tree.visible = true
+	_set_car_talk_figures()
 	_refresh_highlights()
+	_start_dialogue(TALK, _start_meeting)
+
+
+func _start_meeting() -> void:
+	state = State.MEETING
+	hovered = ""
+	_menu.hide()
+	_select_ui.hide()
+	_station.hide()
+	_gas_station.show()
+	for tree in _trees:
+		tree.visible = false
+	_set_meeting_figures()
+	_grab_guns()
+	_refresh_highlights()
+	_start_dialogue(MEET, _enter_trunk_select)
+
+
+func _start_dialogue(lines: Array, done: Callable) -> void:
+	_dialogue = lines
+	_dialogue_done = done
 	_talk_line = -1
 	_talk_ui.show()
-	_next_talk_line()
+	_next_dialogue_line()
 
 
-func _next_talk_line() -> void:
+func _next_dialogue_line() -> void:
 	_talk_line += 1
-	if _talk_line >= TALK.size():
+	if _talk_line >= _dialogue.size():
+		var done := _dialogue_done
+		_dialogue_done = Callable()
 		_talk_ui.hide()
-		_start_arrival()
+		if done.is_valid():
+			done.call()
 		return
-	var who: String = TALK[_talk_line][0]
-	var text: String = TALK[_talk_line][1]
+	var line: Array = _dialogue[_talk_line]
+	var who: String = line[0]
+	var text: String = line[1]
+	if line.size() > 2:
+		voice_line_requested.emit(str(line[2]))
 	_talk_name.text = CHARACTERS[who]["name"].split(" ")[0]
 	_talk_text.text = text
 	var show_subtitles: bool = Settings.subtitles if "subtitles" in Settings else true
 	_talk_name.visible = show_subtitles
 	_talk_text.visible = show_subtitles
 	_talk_time = 0.0
-	_talk_length = clampf(text.length() / 15.0, 1.6, 7.0)  # reading time
+	_talk_length = clampf(text.length() / 15.0, 1.6, 7.0)
 
 
-func _update_talk(delta: float) -> void:
+func _enter_trunk_select() -> void:
+	_talk_ui.hide()
+	_set_state(State.SELECT)
+
+
+func _update_dialogue(delta: float) -> void:
 	if Input.is_action_pressed("ui_accept"):
 		_talk_hold += delta
-		if _talk_hold >= 1.0:  # held: skip the rest
+		if _talk_hold >= 1.0:
 			_talk_hold = 0.0
-			_talk_line = TALK.size() - 1
+			_talk_line = _dialogue.size() - 1
 			_talk_time = _talk_length
 	else:
 		_talk_hold = 0.0
 	_talk_time += delta
 	if _talk_time >= _talk_length:
-		_next_talk_line()
+		_next_dialogue_line()
 
 
 # ------------------------------------------------------------------ The rear-view mirror
@@ -505,9 +693,6 @@ func _build_mirror() -> void:
 func _update_mirror(delta: float) -> void:
 	if _mirror_cam == null:
 		return
-	# Picking someone shows their face in the mirror for a moment.
-	if state == State.SELECT and selected != _last_selected and selected != "":
-		_mirror_until = _time + 2.5
 	_last_selected = selected
 	var who := selected if selected != "" else "eli"
 	var from: Vector3 = _car.to_global(MIRROR_POS)
@@ -519,20 +704,22 @@ func _update_mirror(delta: float) -> void:
 
 # ------------------------------------------------------------------ Arrival
 
-## The car drives up to the Blackwater Weather Station and stops at the gate.
+## The car is already stopped at the gate; just hold the view and fade out.
 func _start_arrival() -> void:
 	state = State.ARRIVING
 	hovered = ""
-	_arrived = false
+	_arrived = true
 	_select_ui.hide()
 	_refresh_highlights()
-	## If embedded, we'll reposition the station to the chapter 1 level's entrance
-	## after the level loads. For now, use the procedural station.
-	_station.position.z = STATION_START_Z
-	_station.show()
+	_apply_select_layout()
+	if selected == "":
+		_gas_station.hide()
+		_station.position.z = STATION_STOP_Z
+		_station.show()
 	var tween := create_tween()
-	tween.tween_interval(1.5)
-	tween.tween_property(_arrival_label, "modulate:a", 1.0, 2.0)
+	tween.tween_interval(1.2)
+	tween.tween_property(_arrival_label, "modulate:a", 1.0, 1.0)
+	tween.tween_callback(_finish_arrival)
 
 
 func _update_arrival(delta: float) -> void:
@@ -570,24 +757,13 @@ func _finish_arrival() -> void:
 func _refresh_highlights() -> void:
 	for id: String in _figures:
 		var data: Dictionary = _figures[id]
-		var glow := 0.0
-		if state == State.SELECT:
-			glow = 0.9 if id == selected else 0.45 if id == hovered else 0.0
-		for mat: Material in data["materials"]:
-			if mat is ShaderMaterial:  # a posed model (PoseShader)
-				mat.set_shader_parameter("glow", glow * 0.18)
-				continue
-			mat.emission_enabled = glow > 0.0
-			mat.emission = Color(COLOR_HIGHLIGHT, 1.0)
-			mat.emission_energy_multiplier = glow * 0.18
-			mat.albedo_color.a = 1.0
 		var label: Label3D = data["label"]
-		label.visible = false  # name cards at the bottom show the names instead
+		label.visible = false
 		var label_text: String = CHARACTERS[id]["name"].split(" ")[0]
 		if taken.has(id):
 			label_text += "  (TAKEN)"
 		label.text = label_text
-		label.modulate = COLOR_RED if taken.has(id) else COLOR_HIGHLIGHT if (id == hovered or id == selected) else COLOR_TEXT
+		label.modulate = COLOR_RED if taken.has(id) else COLOR_TEXT
 
 
 func _refresh_cards() -> void:
@@ -608,7 +784,7 @@ func _refresh_info() -> void:
 	var id := hovered if hovered != "" else selected
 	if id == "":
 		_info_name.text = "WHO ARE YOU?"
-		_info_role.text = "HOVER OVER SOMEONE IN THE CAR"
+		_info_role.text = "HOVER OVER SOMEONE AT THE TRUNK"
 		_info_about.text = "Four people. One road in. Each of them has a reason to go into Deepwell, and a skill the others need to survive."
 		_info_abilities.text = ""
 		_info_quote.text = ""
@@ -678,6 +854,19 @@ func _box(parent: Node3D, size: Vector3, pos: Vector3, mat: Material) -> MeshIns
 	mi.material_override = mat
 	parent.add_child(mi)
 	return mi
+
+
+func _build_hand_gun(holder: Node3D, side: float) -> Node3D:
+	var gun := Node3D.new()
+	var metal := _mat(Color("25282d"), 0.42, Color("4a4f57"), 0.12)
+	_box(gun, Vector3(0.055, 0.065, 0.24), Vector3(0.0, 0.03, -0.02), metal)
+	var grip := _box(gun, Vector3(0.05, 0.13, 0.07), Vector3(0.0, -0.07, 0.05), metal)
+	grip.rotation_degrees.x = -16.0
+	_box(gun, Vector3(0.012, 0.012, 0.018), Vector3(0.0, 0.07, -0.11), _mat(Color("c9c3b4"), 0.6))
+	gun.position = Vector3(side * 0.5, 0.95, 1.45)
+	gun.visible = false
+	holder.add_child(gun)
+	return gun
 
 
 func _build_road_and_forest() -> void:
@@ -828,8 +1017,61 @@ func _build_station() -> void:
 	_station.add_child(gate_lamp)
 
 
+func _build_gas_station() -> void:
+	_gas_station = Node3D.new()
+	_gas_station.name = "GasStation"
+	_gas_station.hide()
+	add_child(_gas_station)
+	var concrete := _mat(Color(0.24, 0.25, 0.25), 0.95)
+	var metal := _mat(Color(0.3, 0.31, 0.32), 0.55)
+	var dark_glass := _mat(Color(0.02, 0.025, 0.03), 0.15)
+	var yellow := _mat(Color(0.55, 0.45, 0.2), 0.7, Color(1.0, 0.75, 0.3), 0.5)
+
+	_box(_gas_station, Vector3(12.0, 4.4, 6.0), Vector3(0.0, 2.2, -11.0), concrete)
+	for wx in [-4.0, -1.5, 1.5, 4.0]:
+		_box(_gas_station, Vector3(2.0, 1.2, 0.1), Vector3(wx, 2.4, -7.94), dark_glass)
+	_box(_gas_station, Vector3(3.0, 0.9, 0.1), Vector3(0.0, 3.6, -7.94), yellow)
+	var closed := Label3D.new()
+	closed.text = "CLOSED"
+	closed.position = Vector3(0.0, 3.6, -7.86)
+	closed.font_size = 48
+	closed.pixel_size = 0.0035
+	closed.modulate = Color(0.12, 0.08, 0.05)
+	closed.outline_size = 0
+	_gas_station.add_child(closed)
+
+	_box(_gas_station, Vector3(12.0, 0.3, 6.5), Vector3(0.0, 4.4, -2.0), concrete)
+	for px in [-5.5, 5.5]:
+		for pz in [-4.6, 0.6]:
+			_box(_gas_station, Vector3(0.22, 4.2, 0.22), Vector3(px, 2.1, pz), metal)
+	for px in [-3.2, 3.2]:
+		_box(_gas_station, Vector3(0.7, 1.9, 0.5), Vector3(px, 0.95, -2.4), yellow)
+		_box(_gas_station, Vector3(0.5, 0.7, 0.05), Vector3(px, 1.3, -2.68), dark_glass)
+
+	_station_lamp = OmniLight3D.new()
+	_station_lamp.position = Vector3(0.0, 4.1, -2.0)
+	_station_lamp.light_color = Color(1.0, 0.8, 0.45)
+	_station_lamp.omni_range = 13.0
+	_gas_station.add_child(_station_lamp)
+
+	var puddle_mat := _mat(Color(0.04, 0.06, 0.08, 0.75), 0.2, Color(0.35, 0.45, 0.6), 0.12)
+	for p in [Vector3(-2.4, 0.012, 1.2), Vector3(2.8, 0.012, 2.0), Vector3(-5.0, 0.012, -3.4)]:
+		var puddle := MeshInstance3D.new()
+		var plane := PlaneMesh.new()
+		plane.size = Vector2(2.6, 1.5)
+		puddle.mesh = plane
+		puddle.position = p
+		puddle.material_override = puddle_mat
+		_gas_station.add_child(puddle)
+
+	_box(_gas_station, Vector3(1.8, 1.25, 4.0), Vector3(-5.4, 0.65, -1.0), _mat(Color(0.18, 0.22, 0.3)))
+	_box(_gas_station, Vector3(2.2, 1.5, 4.8), Vector3(5.4, 0.75, -1.0), _mat(Color(0.12, 0.15, 0.18)))
+	_box(_gas_station, Vector3(2.0, 0.7, 1.8), Vector3(5.4, 1.7, -1.8), _mat(Color(0.15, 0.18, 0.21)))
+
+
 var _cole_gun: Node3D
 var _walter_tool: Node3D
+var _guns_grabbed := false
 
 
 ## Both cars go inside one holder (_car), so the people and the mirror ride
@@ -864,7 +1106,7 @@ func _swap_in_real_car(car: Node3D) -> void:
 	if model == null:
 		return
 	for child in car.get_children():
-		if child is GeometryInstance3D:
+		if child is GeometryInstance3D and not child.has_meta("keep_trunk"):
 			child.visible = false
 	var holder := Node3D.new()
 	holder.name = "RealCar"
@@ -903,6 +1145,14 @@ func _show_hero_car(hero: bool) -> void:
 	_placeholder_car.visible = not hero
 
 
+func _set_trunk_open(open: bool) -> void:
+	var angle := TRUNK_OPEN_ANGLE if open else 0.0
+	if _trunk_lid:
+		_trunk_lid.rotation_degrees.x = angle
+	if _trunk_lid_placeholder:
+		_trunk_lid_placeholder.rotation_degrees.x = angle
+
+
 func _build_hero_car() -> void:
 	_car = Node3D.new()
 	add_child(_car)
@@ -918,7 +1168,20 @@ func _build_hero_car() -> void:
 	_box(_car, Vector3(2.0, 0.45, 4.8), Vector3(0, 0.55, 0.2), paint)       # floor/lower body
 	_box(_car, Vector3(1.84, 0.02, 2.6), Vector3(0, 0.79, 0.4), _mat(Color(0.05, 0.045, 0.04)))  # cabin floor
 	_box(_car, Vector3(2.0, 0.35, 1.5), Vector3(0, 0.95, -1.55), paint)     # hood
-	_box(_car, Vector3(2.0, 0.35, 1.0), Vector3(0, 0.95, 2.1), paint)       # trunk
+	var cavity := _box(_car, Vector3(1.8, 0.28, 0.9), Vector3(0, 0.9, 2.1), _mat(Color(0.02, 0.02, 0.03)))
+	cavity.set_meta("keep_trunk", true)
+	_trunk_lid = Node3D.new()
+	_trunk_lid.position = Vector3(0, 1.14, 2.6)
+	_car.add_child(_trunk_lid)
+	var lid := _box(_trunk_lid, Vector3(2.0, 0.08, 1.0), Vector3(0, 0, -0.5), paint)
+	lid.set_meta("keep_trunk", true)
+	var trunk_light := OmniLight3D.new()
+	trunk_light.position = Vector3(0, 0.4, -0.5)
+	trunk_light.light_color = Color(1.0, 0.9, 0.75)
+	trunk_light.light_energy = 1.2
+	trunk_light.omni_range = 2.5
+	_trunk_lid.add_child(trunk_light)
+	_set_trunk_open(true)
 	_box(_car, Vector3(0.08, 0.38, 2.4), Vector3(-0.96, 0.95, 0.4), paint)  # door left
 	_box(_car, Vector3(0.08, 0.38, 2.4), Vector3(0.96, 0.95, 0.4), paint)   # door right
 	_box(_car, Vector3(2.04, 0.1, 4.9), Vector3(0, 0.3, 0.2), chrome)       # bumper line
@@ -1019,7 +1282,14 @@ func _build_placeholder_car() -> void:
 	_box(_car, Vector3(2.0, 0.5, 4.5), Vector3(0, 0.6, 0.3), placeholder_mat)       # floor/lower body
 	_box(_car, Vector3(1.8, 0.05, 2.5), Vector3(0, 0.85, 0.4), _mat(Color(0.05, 0.045, 0.04)))  # cabin floor
 	_box(_car, Vector3(2.0, 0.4, 1.5), Vector3(0, 1.0, -1.6), placeholder_mat)     # hood
-	_box(_car, Vector3(2.0, 0.4, 1.0), Vector3(0, 1.0, 2.0), placeholder_mat)       # trunk
+	var cavity := _box(_car, Vector3(1.8, 0.28, 0.9), Vector3(0, 0.95, 2.05), _mat(Color(0.02, 0.02, 0.03)))
+	cavity.set_meta("keep_trunk", true)
+	_trunk_lid_placeholder = Node3D.new()
+	_trunk_lid_placeholder.position = Vector3(0, 1.2, 2.55)
+	_car.add_child(_trunk_lid_placeholder)
+	var lid := _box(_trunk_lid_placeholder, Vector3(2.0, 0.08, 1.0), Vector3(0, 0, -0.5), placeholder_mat)
+	lid.set_meta("keep_trunk", true)
+	_set_trunk_open(true)
 	_box(_car, Vector3(0.1, 0.4, 2.4), Vector3(-1.0, 1.0, 0.5), placeholder_mat)   # door left
 	_box(_car, Vector3(0.1, 0.4, 2.4), Vector3(1.0, 1.0, 0.5), placeholder_mat)    # door right
 	_box(_car, Vector3(2.05, 0.1, 4.5), Vector3(0, 0.35, 0.3), _mat(Color(0.2, 0.2, 0.2))) # bumper line
@@ -1058,11 +1328,13 @@ func _build_character(id: String) -> void:
 	root.add_child(holder)
 	_car.add_child(root)
 	var materials: Array = []
+	var limbs: Array = []
+	var model: Node3D = null
 
 	var model_path := MODEL_PATH % MODEL_FILES[id][0]
 	var rig: HumanRig = null
 	if ResourceLoader.exists(model_path):
-		var model: Node3D = load(model_path).instantiate()
+		model = load(model_path).instantiate()
 		model.set_script(HumanRig)  # the game's posing: sitting, arms down
 		rig = model as HumanRig
 		holder.add_child(model)
@@ -1074,15 +1346,13 @@ func _build_character(id: String) -> void:
 			rig = null
 			var height: float = MODEL_FILES[id][1]
 			var size := height / RIGGED_MODEL_HEIGHT
-			var front := id in ["eli", "cole"]
-			size *= 0.94  # (a touch smaller, so heads clear the car's low roof)
-			var hips := Vector3(c["seat"].x, 0.88 if front else 0.93, 0.3 if front else 1.2)  # (car space)
+			size *= 0.94
 			var body: Dictionary = PoseShader.BODIES[MODEL_FILES[id][0]]
 			model.set_script(null)
 			PoseShader.apply(model, MODEL_FILES[id][0], true)
 			model.scale = Vector3.ONE * size
-			model.rotation.y = PI  # the models face +Z; people in the car face -Z
-			model.position = hips - c["seat"] - Vector3(0, float(body.hip_y) * size, 0)
+			model.rotation.y = PI
+			model.position = Vector3(0, 0.92 - float(body.hip_y) * size, 0)
 			for part: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
 				for i in part.mesh.get_surface_count():
 					materials.append(part.get_surface_override_material(i))
@@ -1129,6 +1399,7 @@ func _build_character(id: String) -> void:
 			thigh.rotation_degrees.x = 90.0
 			thigh.material_override = leg_mat
 			holder.add_child(thigh)
+			limbs.append({"node": thigh, "kind": "thigh"})
 
 			var arm := MeshInstance3D.new()
 			var arm_mesh := CapsuleMesh.new()
@@ -1139,8 +1410,13 @@ func _build_character(id: String) -> void:
 			arm.rotation_degrees.x = 55.0 if id == "eli" else 25.0
 			arm.material_override = body_mat
 			holder.add_child(arm)
+			limbs.append({"node": arm, "kind": "arm"})
 
 	# Clickable area around the whole figure.
+	var hand_gun: Node3D = null
+	if id in ["eli", "cole"]:
+		hand_gun = _build_hand_gun(holder, -1.0 if id == "eli" else 1.0)
+
 	var body := StaticBody3D.new()
 	var shape := CollisionShape3D.new()
 	var capsule := CapsuleShape3D.new()
@@ -1173,7 +1449,8 @@ func _build_character(id: String) -> void:
 	label.visible = false
 	root.add_child(label)
 
-	_figures[id] = {"root": root, "materials": materials, "label": label, "rig": rig,
+	_figures[id] = {"root": root, "holder": holder, "materials": materials, "label": label, "rig": rig,
+			"model": model, "limbs": limbs, "mode": "seat", "gun": hand_gun,
 			"posed": rig == null and not materials.is_empty() and materials[0] is ShaderMaterial}
 
 
@@ -1219,7 +1496,7 @@ func _build_ui() -> void:
 	_menu.auto_go_to_lobby = false
 	_menu.embedded = embedded
 	layer.add_child(_menu)
-	if not embedded:  # in the game, main.gd calls enter_select() when ready
+	if not embedded:  # in the game, main.gd calls enter_opening() when ready
 		_menu.host_requested.connect(_on_play_requested)
 		_menu.join_requested.connect(_on_play_requested)
 
@@ -1303,7 +1580,7 @@ func _build_select_ui(layer: CanvasLayer) -> void:
 	_select_ui.add_child(header)
 
 	_hint = Label.new()
-	_hint.text = "HOVER OVER A NAME TO MEET THEM.  CLICK TO CHOOSE.  ARROW KEYS + ENTER ALSO WORK."
+	_hint.text = "HOVER OVER SOMEONE AT THE TRUNK.  CLICK TO CHOOSE.  ARROW KEYS + ENTER ALSO WORK."
 	_hint.add_theme_font_size_override("font_size", 15)
 	_hint.add_theme_color_override("font_color", COLOR_DIM)
 	_hint.position = Vector2(90, 112)

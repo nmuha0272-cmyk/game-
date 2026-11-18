@@ -10,6 +10,7 @@ const INFO := {
 		"role": "Survivor",
 		"ability": "Survival Instinct: sense nearby danger through walls.",
 		"held_item": "res://scenes/player/held_items/dog_tags.tscn",
+		"inventory_items": ["dog_tags", "flashlight", "weapon_pistol"],
 		"color": Color(0.42, 0.27, 0.16),  # brown canvas jacket
 		"ability_script": "res://scripts/abilities/son_sense.gd",
 		"personality": "College student and Army Reserve soldier, trained by his father as a kid. Not a career soldier like Cole — ordinary guy driven by loss. Scared but keeps going.",
@@ -20,6 +21,7 @@ const INFO := {
 		"role": "Stunner / Lore",
 		"ability": "Camera Flash: stun a monster. Photograph evidence.",
 		"held_item": "res://scenes/player/held_items/film_camera.tscn",
+		"inventory_items": ["film_camera"],
 		"color": Color(0.62, 0.5, 0.36),  # tan trench coat
 		"ability_script": "res://scripts/abilities/journalist_flash.gd",
 	},
@@ -28,6 +30,7 @@ const INFO := {
 		"role": "Fixer",
 		"ability": "Repair: fix machines and hack security doors.",
 		"held_item": "res://scenes/player/held_items/wrench.tscn",
+		"inventory_items": ["wrench"],
 		"color": Color(0.14, 0.17, 0.3),  # navy overalls
 		"ability_script": "res://scripts/abilities/engineer_repair.gd",
 	},
@@ -36,6 +39,7 @@ const INFO := {
 		"role": "Protector",
 		"ability": "Strength: hold doors, move heavy things, carry teammates.",
 		"held_item": "res://scenes/player/held_items/heavy_flashlight.tscn",
+		"inventory_items": ["heavy_flashlight", "weapon_pistol"],
 		"color": Color(0.3, 0.33, 0.22),  # olive field jacket
 		"ability_script": "res://scripts/abilities/guard_strength.gd",
 		# Cole is big: a bit slower, and his footsteps are louder.

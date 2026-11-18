@@ -39,6 +39,25 @@ theme_override_font_sizes/font_size = 36
 text = "LOBBY"
 horizontal_alignment = 1
 
+[node name="InviteLabel" type="Label" parent="Center/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.72, 0.78, 1)
+theme_override_font_sizes/font_size = 15
+text = "INVITE FRIENDS (LAN): use Join Game with your IP : 7777"
+autowrap_mode = 2
+horizontal_alignment = 1
+
+[node name="InviteButtons" type="HBoxContainer" parent="Center/Box"]
+layout_mode = 2
+alignment = 1
+
+[node name="CopyInviteButton" type="Button" parent="Center/Box/InviteButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "COPY INVITE TEXT"
+
 [node name="PlayersHeader" type="Label" parent="Center/Box"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.55, 0.6, 0.58, 1)
@@ -50,6 +69,7 @@ custom_minimum_size = Vector2(0, 110)
 layout_mode = 2
 
 [node name="CharactersHeader" type="Label" parent="Center/Box"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.55, 0.6, 0.58, 1)
 text = "Choose your character (each can only be picked once)"

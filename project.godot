@@ -26,6 +26,7 @@ NetworkManager="*res://scripts/autoload/network_manager.gd"
 GameState="*res://scripts/autoload/game_state.gd"
 Settings="*res://scripts/autoload/settings.gd"
 VoiceChat="*res://scripts/autoload/voice_chat.gd"
+PlaytestLog="*res://scripts/game/playtest_log.gd"
 TestDriver="*res://tools/test_driver.gd"
 ; WebRTCSignaling="*res://scripts/autoload/disabled_webrtc/webrtc_signaling.gd"  ; Temporarily disabled
 
