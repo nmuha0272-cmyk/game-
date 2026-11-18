@@ -20,6 +20,7 @@ extends Node3D
 ## with a skeleton is posed by HumanRig instead.
 
 signal character_confirmed(character_id: String)
+signal voice_line_requested(line_id: String)
 ## Only when `embedded`: the arrival drive finished and the screen is black.
 signal arrived(character_id: String)
 
@@ -47,6 +48,18 @@ const STATION_START_Z := -75.0  # where the station appears, far down the road
 const STATION_STOP_Z := -9.0    # where its gate is when the car has stopped
 const ROAD_LENGTH := 160.0
 const TRUNK_OPEN_ANGLE := 68.0
+const MEET_POSITIONS := {
+	"eli": Vector3(-1.75, 0.0, 0.6),
+	"cole": Vector3(1.75, 0.0, 0.6),
+	"nora": Vector3(-4.15, 0.0, 0.2),
+	"walter": Vector3(4.15, 0.0, 0.2),
+}
+const TRUNK_POSITIONS := {
+	"walter": Vector3(1.35, 0.0, 3.55),
+	"nora": Vector3(0.45, 0.0, 3.4),
+	"eli": Vector3(-0.45, 0.0, 3.4),
+	"cole": Vector3(-1.35, 0.0, 3.55),
+}
 
 ## Order is the order the arrow keys cycle through.
 const CHARACTER_ORDER := ["eli", "cole", "nora", "walter"]
@@ -127,13 +140,25 @@ const CHARACTERS := {
 	},
 }
 
-enum State { MENU, SELECT, TALK, ARRIVING }
+enum State { MENU, SELECT, TALK, MEETING, ARRIVING }
 
 ## What Eli and Cole say on the drive, before Nora and Walter join at the gate.
 const TALK := [
-	["eli", "so what info do you have on the missing people?"],
-	["cole", "Marcus, Jenna, and my twin Mateo walked into that station and never came out. Before we go in, we're meeting two other people at the gate - Nora Vance and Walter Kessler. They know more than I do."],
-	["eli", "Then we go in together. We find them, and we all come out."],
+	["eli", "so what info do you have on the missing people?", "road_01"],
+	["cole", "Marcus, Jenna, and your twin Mateo walked into that station and never came out. Before we go in, we're meeting two other people at the gate - Nora Vance and Walter Kessler. They know more than I do.", "road_02"],
+	["eli", "Then we go in together. We find them, and we all come out.", "road_03"],
+]
+
+const MEET := [
+	["nora", "You're late.", "meet_01"],
+	["cole", "We're here. Eli, this is Nora Vance. She's been chasing Blackwater for three years.", "meet_02"],
+	["nora", "I read about your father. I'm sorry.", "meet_03"],
+	["cole", "And that's Walter.", "meet_04"],
+	["walter", "I worked maintenance there. A long time ago. I know the tunnels. I didn't think I'd ever go back.", "meet_05"],
+	["eli", "Then why are you?", "meet_06"],
+	["walter", "Because I helped build it.", "meet_07"],
+	["eli", "My twin brother Mateo went in after Marcus and Jenna. Two weeks ago. He's the eighth name on that poster.", "meet_08"],
+	["cole", "That's why we're here. Gear's in the trunk. Grab what you need. We go in before sunrise.", "meet_09"],
 ]
 
 const MIRROR_POS := Vector3(0.0, 1.62, -0.6)
@@ -178,11 +203,15 @@ var _cards := {}  # id -> Button
 var _unhover_timer: SceneTreeTimer
 var _speed := DRIVE_SPEED
 var _station: Node3D
+var _gas_station: Node3D
+var _station_lamp: OmniLight3D
 var _trees: Array[Node3D] = []
 var _fade: ColorRect
 var _arrival_label: Label
 var _arrived := false
 # The car talk.
+var _dialogue: Array = []
+var _dialogue_done := Callable()
 var _talk_line := -1
 var _talk_time := 0.0
 var _talk_length := 0.0
@@ -210,6 +239,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_road_and_forest()
 	_build_station()
+	_build_gas_station()
 	_build_cars()
 	for id: String in CHARACTER_ORDER:
 		_build_character(id)
@@ -244,11 +274,12 @@ func _process(delta: float) -> void:
 		var data: Dictionary = _figures[id]
 		var root: Node3D = data["root"]
 		var holder: Node3D = data["holder"]
-		var at_trunk := _is_at_trunk(id)
+		var mode: String = data.get("mode", "seat")
+		var at_trunk := mode == "trunk"
 		var reach := sin(_time * 2.4 + root.position.x * 5.0)
-		root.position.y = sin(_time * 1.6 + root.position.x * 3.0) * (0.006 if at_trunk else 0.002)
-		holder.rotation_degrees.x = 20.0 + reach * 6.0 if at_trunk else 0.0
-		holder.position.y = reach * 0.02 if at_trunk else 0.0
+		var bob := sin(_time * 1.6 + root.position.x * 3.0) * (0.006 if at_trunk else 0.002)
+		holder.rotation_degrees.x = -20.0 + reach * 6.0 if at_trunk else 0.0
+		holder.position.y = bob + (reach * 0.02 if at_trunk else 0.0)
 		var rig := data["rig"] as HumanRig
 		if rig == null:
 			continue
@@ -257,6 +288,8 @@ func _process(delta: float) -> void:
 			rig._turn("Spine", HumanRig.SIDE, 20.0 + reach * 4.0)
 			rig._turn("LeftArm", HumanRig.SIDE, -48.0 + reach * 14.0)
 			rig._turn("RightArm", HumanRig.SIDE, -48.0 - reach * 14.0)
+		elif mode == "meet":
+			rig.set_pose(0.0, 0.0, 0.0, 0.0, sin(_time * 1.6))
 		else:
 			rig.set_pose(0.0, 0.0, 0.0, 0.0, sin(_time * 1.6))
 			for leg in ["LeftUpLeg", "RightUpLeg"]:
@@ -267,31 +300,33 @@ func _process(delta: float) -> void:
 				for arm in ["LeftArm", "RightArm"]:
 					rig._turn(arm, HumanRig.SIDE, -55.0)
 
-	if state == State.TALK:
-		_update_talk(delta)
+	if state == State.TALK or state == State.MEETING:
+		_update_dialogue(delta)
+	if _station_lamp and (_gas_station.visible or _station.visible):
+		_station_lamp.light_energy = 1.1 + sin(_time * 7.0) * 0.08 + (0.25 if sin(_time * 23.0) > 0.92 else 0.0)
 	_update_mirror(delta)
 
 	var pos := MENU_CAM_POS + Vector3(sin(_time * 0.21) * 0.35, sin(_time * 0.33) * 0.08, 0.0)
 	var look := MENU_CAM_TARGET
-	if state == State.ARRIVING:
+	if state == State.ARRIVING and selected == "":
 		pos = ARRIVE_CAM_POS
 		look = ARRIVE_CAM_TARGET
-	elif state == State.TALK and _talk_line >= 0 and _talk_line < TALK.size():
-		var who: String = TALK[_talk_line][0]
-		var c: Dictionary = CHARACTERS[who]
-		var close: Vector3 = c["talk_cam"] if who in ["eli", "cole"] else c["side_cam"]
-		var aim: Vector3 = c["talk_look"] if who in ["eli", "cole"] else c["side_look"]
-		pos = close + _face_lift(who)
-		look = aim + _face_lift(who)
-	elif state == State.SELECT:
-		if hovered != "":
-			var sc: Dictionary = CHARACTERS[hovered]
-			pos = sc["side_cam"] + _face_lift(hovered)
-			look = sc["side_look"] + _face_lift(hovered)
+	elif (state == State.TALK or state == State.MEETING) and _talk_line >= 0 and _talk_line < _dialogue.size():
+		var who: String = _dialogue[_talk_line][0]
+		if state == State.MEETING:
+			var anchor: Vector3 = (_figures[who]["root"] as Node3D).position
+			var side := -1.0 if anchor.x > 0.0 else 1.0
+			pos = anchor + Vector3(side * 1.25, 1.65, -2.35) + _face_lift(who)
+			look = anchor + Vector3(0.0, 1.45, 0.0) + _face_lift(who)
 		else:
-			pos = SELECT_CAM_POS
-			look = SELECT_CAM_TARGET
-		pos += Vector3(sin(_time * 0.6) * 0.012, sin(_time * 0.9) * 0.01, 0.0)
+			var c: Dictionary = CHARACTERS[who]
+			var close: Vector3 = c["talk_cam"] if who in ["eli", "cole"] else c["side_cam"]
+			var aim: Vector3 = c["talk_look"] if who in ["eli", "cole"] else c["side_look"]
+			pos = close + _face_lift(who)
+			look = aim + _face_lift(who)
+	elif state == State.SELECT or (state == State.ARRIVING and selected != ""):
+		pos = SELECT_CAM_POS
+		look = SELECT_CAM_TARGET
 	_camera.fov = lerpf(_camera.fov, 58.0 if state == State.SELECT else 55.0, minf(delta * 4.0, 1.0))
 	if _select_ui:
 		_select_ui.modulate.a = move_toward(_select_ui.modulate.a, 1.0, delta * 4.0)
@@ -301,8 +336,8 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if state == State.TALK:
-		# A tap on Space (or a click) moves on; holding Space skips (see _update_talk).
+	if state == State.TALK or state == State.MEETING:
+		# A tap on Space (or a click) moves on; holding Space skips.
 		if (event is InputEventMouseButton and event.pressed) or event.is_action_released("ui_accept"):
 			if _talk_hold < 0.35:
 				_talk_time = _talk_length
@@ -347,23 +382,32 @@ func _set_state(new_state: State) -> void:
 		hovered = ""
 		_menu.hide()
 		_apply_select_layout()
-		get_tree().create_timer(1.2).timeout.connect(func() -> void:
-			if state == State.SELECT:
-				_select_ui.show()
-				_set_hovered(""))
+		_select_ui.show()
+		_set_hovered("")
 		_refresh_info()
 	else:
 		state = State.MENU
 		hovered = ""
 		_select_ui.hide()
 		_menu.show()
+		_guns_grabbed = false
+		for id: String in _figures:
+			var gun: Node3D = _figures[id].get("gun") as Node3D
+			if gun:
+				gun.visible = false
+		if _cole_gun:
+			_cole_gun.visible = true
 		if _menu.has_method("show_main_buttons"):
 			_menu.show_main_buttons()
 		_show_hero_car(false)
 		for id: String in _figures:
-			(_figures[id]["root"] as Node3D).visible = false
+			var root: Node3D = _figures[id]["root"]
+			root.visible = false
+			_set_figure_mode(id, "seat")
 		for tree in _trees:
 			tree.visible = true
+		_station.hide()
+		_gas_station.hide()
 		_set_trunk_open(false)
 	_refresh_highlights()
 
@@ -375,31 +419,96 @@ func get_menu_ui() -> Control:
 
 func _apply_select_layout() -> void:
 	_show_hero_car(true)
-	_station.position.z = STATION_STOP_Z
-	_station.show()
+	_station.hide()
+	_gas_station.show()
 	for tree in _trees:
 		tree.visible = false
 	_set_trunk_open(true)
 	for id: String in CHARACTER_ORDER:
+		_move_figure_to(id, TRUNK_POSITIONS[id])
 		var root: Node3D = _figures[id]["root"]
-		root.position = CHARACTERS[id]["seat"]
 		root.visible = true
+		_set_figure_mode(id, "trunk")
+
+
+func _move_figure_to(id: String, target: Vector3, duration := 0.85) -> void:
+	if not _figures.has(id):
+		return
+	var data: Dictionary = _figures[id]
+	var previous: Tween = data.get("move_tween") as Tween
+	if previous != null and previous.is_valid():
+		previous.kill()
+	var root: Node3D = data["root"]
+	var tween := create_tween()
+	tween.tween_property(root, "position", target, duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	data["move_tween"] = tween
+
+
+func _grab_guns() -> void:
+	if _guns_grabbed:
+		return
+	_guns_grabbed = true
+	if _cole_gun:
+		_cole_gun.visible = false
+	for id: String in ["eli", "cole"]:
+		var gun: Node3D = _figures[id].get("gun") as Node3D
+		if gun == null:
+			continue
+		var side := -1.0 if id == "eli" else 1.0
+		gun.visible = true
+		gun.position = Vector3(side * 0.5, 0.95, 1.45)
+		gun.rotation_degrees = Vector3(0.0, 0.0, side * 18.0)
+		var tween := create_tween()
+		tween.tween_interval(0.15 if id == "eli" else 0.45)
+		tween.tween_property(gun, "position", Vector3(side * 0.28, 1.04, -0.24), 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.parallel().tween_property(gun, "rotation_degrees", Vector3.ZERO, 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
+func _set_figure_mode(id: String, mode: String) -> void:
+	if not _figures.has(id):
+		return
+	var data: Dictionary = _figures[id]
+	data["mode"] = mode
+	var seated := mode == "seat"
+	if data.get("posed", false):
+		var model: Node3D = data.get("model")
+		if model:
+			PoseShader.set_sitting(model, seated)
+			var body: Dictionary = PoseShader.BODIES[MODEL_FILES[id][0]]
+			model.position.y = 0.92 - float(body.hip_y) * model.scale.x if seated else 0.0
+	for limb: Dictionary in data.get("limbs", []):
+		var node: Node3D = limb["node"]
+		if limb["kind"] == "thigh":
+			node.rotation_degrees.x = 90.0 if seated else 0.0
+		elif limb["kind"] == "arm":
+			node.rotation_degrees.x = 55.0 if seated else (35.0 if mode == "trunk" else 8.0)
 
 
 func _set_car_talk_figures() -> void:
+	for id: String in CHARACTER_ORDER:
+		var previous: Tween = _figures[id].get("move_tween") as Tween
+		if previous != null and previous.is_valid():
+			previous.kill()
 	for id: String in ["eli", "cole"]:
 		var root: Node3D = _figures[id]["root"]
 		root.position = CHARACTERS[id]["talk_seat"]
 		root.visible = true
+		_set_figure_mode(id, "seat")
 	for id: String in ["nora", "walter"]:
 		var root: Node3D = _figures[id]["root"]
 		root.position = CHARACTERS[id]["seat"]
 		root.visible = false
+		_set_figure_mode(id, "seat")
 	_set_trunk_open(false)
 
 
-func _is_at_trunk(_id: String) -> bool:
-	return state == State.SELECT or state == State.ARRIVING
+func _set_meeting_figures() -> void:
+	for id: String in CHARACTER_ORDER:
+		_move_figure_to(id, MEET_POSITIONS[id])
+		var root: Node3D = _figures[id]["root"]
+		root.visible = true
+		_set_figure_mode(id, "meet")
+	_set_trunk_open(false)
 
 
 ## Play the Eli/Cole drive talk; the trunk search and pick follow it.
@@ -476,29 +585,58 @@ func _start_talk() -> void:
 	_select_ui.hide()
 	_station.position.z = STATION_START_Z
 	_station.hide()
+	_gas_station.hide()
 	for tree in _trees:
 		tree.visible = true
 	_set_car_talk_figures()
 	_refresh_highlights()
+	_start_dialogue(TALK, _start_meeting)
+
+
+func _start_meeting() -> void:
+	state = State.MEETING
+	hovered = ""
+	_menu.hide()
+	_select_ui.hide()
+	_station.hide()
+	_gas_station.show()
+	for tree in _trees:
+		tree.visible = false
+	_set_meeting_figures()
+	_grab_guns()
+	_refresh_highlights()
+	_start_dialogue(MEET, _enter_trunk_select)
+
+
+func _start_dialogue(lines: Array, done: Callable) -> void:
+	_dialogue = lines
+	_dialogue_done = done
 	_talk_line = -1
 	_talk_ui.show()
-	_next_talk_line()
+	_next_dialogue_line()
 
 
-func _next_talk_line() -> void:
+func _next_dialogue_line() -> void:
 	_talk_line += 1
-	if _talk_line >= TALK.size():
-		_enter_trunk_select()
+	if _talk_line >= _dialogue.size():
+		var done := _dialogue_done
+		_dialogue_done = Callable()
+		_talk_ui.hide()
+		if done.is_valid():
+			done.call()
 		return
-	var who: String = TALK[_talk_line][0]
-	var text: String = TALK[_talk_line][1]
+	var line: Array = _dialogue[_talk_line]
+	var who: String = line[0]
+	var text: String = line[1]
+	if line.size() > 2:
+		voice_line_requested.emit(str(line[2]))
 	_talk_name.text = CHARACTERS[who]["name"].split(" ")[0]
 	_talk_text.text = text
 	var show_subtitles: bool = Settings.subtitles if "subtitles" in Settings else true
 	_talk_name.visible = show_subtitles
 	_talk_text.visible = show_subtitles
 	_talk_time = 0.0
-	_talk_length = clampf(text.length() / 15.0, 1.6, 7.0)  # reading time
+	_talk_length = clampf(text.length() / 15.0, 1.6, 7.0)
 
 
 func _enter_trunk_select() -> void:
@@ -506,18 +644,18 @@ func _enter_trunk_select() -> void:
 	_set_state(State.SELECT)
 
 
-func _update_talk(delta: float) -> void:
+func _update_dialogue(delta: float) -> void:
 	if Input.is_action_pressed("ui_accept"):
 		_talk_hold += delta
-		if _talk_hold >= 1.0:  # held: skip the rest
+		if _talk_hold >= 1.0:
 			_talk_hold = 0.0
-			_talk_line = TALK.size() - 1
+			_talk_line = _dialogue.size() - 1
 			_talk_time = _talk_length
 	else:
 		_talk_hold = 0.0
 	_talk_time += delta
 	if _talk_time >= _talk_length:
-		_next_talk_line()
+		_next_dialogue_line()
 
 
 # ------------------------------------------------------------------ The rear-view mirror
@@ -574,6 +712,10 @@ func _start_arrival() -> void:
 	_select_ui.hide()
 	_refresh_highlights()
 	_apply_select_layout()
+	if selected == "":
+		_gas_station.hide()
+		_station.position.z = STATION_STOP_Z
+		_station.show()
 	var tween := create_tween()
 	tween.tween_interval(1.2)
 	tween.tween_property(_arrival_label, "modulate:a", 1.0, 1.0)
@@ -712,6 +854,19 @@ func _box(parent: Node3D, size: Vector3, pos: Vector3, mat: Material) -> MeshIns
 	mi.material_override = mat
 	parent.add_child(mi)
 	return mi
+
+
+func _build_hand_gun(holder: Node3D, side: float) -> Node3D:
+	var gun := Node3D.new()
+	var metal := _mat(Color("25282d"), 0.42, Color("4a4f57"), 0.12)
+	_box(gun, Vector3(0.055, 0.065, 0.24), Vector3(0.0, 0.03, -0.02), metal)
+	var grip := _box(gun, Vector3(0.05, 0.13, 0.07), Vector3(0.0, -0.07, 0.05), metal)
+	grip.rotation_degrees.x = -16.0
+	_box(gun, Vector3(0.012, 0.012, 0.018), Vector3(0.0, 0.07, -0.11), _mat(Color("c9c3b4"), 0.6))
+	gun.position = Vector3(side * 0.5, 0.95, 1.45)
+	gun.visible = false
+	holder.add_child(gun)
+	return gun
 
 
 func _build_road_and_forest() -> void:
@@ -862,8 +1017,61 @@ func _build_station() -> void:
 	_station.add_child(gate_lamp)
 
 
+func _build_gas_station() -> void:
+	_gas_station = Node3D.new()
+	_gas_station.name = "GasStation"
+	_gas_station.hide()
+	add_child(_gas_station)
+	var concrete := _mat(Color(0.24, 0.25, 0.25), 0.95)
+	var metal := _mat(Color(0.3, 0.31, 0.32), 0.55)
+	var dark_glass := _mat(Color(0.02, 0.025, 0.03), 0.15)
+	var yellow := _mat(Color(0.55, 0.45, 0.2), 0.7, Color(1.0, 0.75, 0.3), 0.5)
+
+	_box(_gas_station, Vector3(12.0, 4.4, 6.0), Vector3(0.0, 2.2, -11.0), concrete)
+	for wx in [-4.0, -1.5, 1.5, 4.0]:
+		_box(_gas_station, Vector3(2.0, 1.2, 0.1), Vector3(wx, 2.4, -7.94), dark_glass)
+	_box(_gas_station, Vector3(3.0, 0.9, 0.1), Vector3(0.0, 3.6, -7.94), yellow)
+	var closed := Label3D.new()
+	closed.text = "CLOSED"
+	closed.position = Vector3(0.0, 3.6, -7.86)
+	closed.font_size = 48
+	closed.pixel_size = 0.0035
+	closed.modulate = Color(0.12, 0.08, 0.05)
+	closed.outline_size = 0
+	_gas_station.add_child(closed)
+
+	_box(_gas_station, Vector3(12.0, 0.3, 6.5), Vector3(0.0, 4.4, -2.0), concrete)
+	for px in [-5.5, 5.5]:
+		for pz in [-4.6, 0.6]:
+			_box(_gas_station, Vector3(0.22, 4.2, 0.22), Vector3(px, 2.1, pz), metal)
+	for px in [-3.2, 3.2]:
+		_box(_gas_station, Vector3(0.7, 1.9, 0.5), Vector3(px, 0.95, -2.4), yellow)
+		_box(_gas_station, Vector3(0.5, 0.7, 0.05), Vector3(px, 1.3, -2.68), dark_glass)
+
+	_station_lamp = OmniLight3D.new()
+	_station_lamp.position = Vector3(0.0, 4.1, -2.0)
+	_station_lamp.light_color = Color(1.0, 0.8, 0.45)
+	_station_lamp.omni_range = 13.0
+	_gas_station.add_child(_station_lamp)
+
+	var puddle_mat := _mat(Color(0.04, 0.06, 0.08, 0.75), 0.2, Color(0.35, 0.45, 0.6), 0.12)
+	for p in [Vector3(-2.4, 0.012, 1.2), Vector3(2.8, 0.012, 2.0), Vector3(-5.0, 0.012, -3.4)]:
+		var puddle := MeshInstance3D.new()
+		var plane := PlaneMesh.new()
+		plane.size = Vector2(2.6, 1.5)
+		puddle.mesh = plane
+		puddle.position = p
+		puddle.material_override = puddle_mat
+		_gas_station.add_child(puddle)
+
+	_box(_gas_station, Vector3(1.8, 1.25, 4.0), Vector3(-5.4, 0.65, -1.0), _mat(Color(0.18, 0.22, 0.3)))
+	_box(_gas_station, Vector3(2.2, 1.5, 4.8), Vector3(5.4, 0.75, -1.0), _mat(Color(0.12, 0.15, 0.18)))
+	_box(_gas_station, Vector3(2.0, 0.7, 1.8), Vector3(5.4, 1.7, -1.8), _mat(Color(0.15, 0.18, 0.21)))
+
+
 var _cole_gun: Node3D
 var _walter_tool: Node3D
+var _guns_grabbed := false
 
 
 ## Both cars go inside one holder (_car), so the people and the mirror ride
@@ -1120,11 +1328,13 @@ func _build_character(id: String) -> void:
 	root.add_child(holder)
 	_car.add_child(root)
 	var materials: Array = []
+	var limbs: Array = []
+	var model: Node3D = null
 
 	var model_path := MODEL_PATH % MODEL_FILES[id][0]
 	var rig: HumanRig = null
 	if ResourceLoader.exists(model_path):
-		var model: Node3D = load(model_path).instantiate()
+		model = load(model_path).instantiate()
 		model.set_script(HumanRig)  # the game's posing: sitting, arms down
 		rig = model as HumanRig
 		holder.add_child(model)
@@ -1189,6 +1399,7 @@ func _build_character(id: String) -> void:
 			thigh.rotation_degrees.x = 90.0
 			thigh.material_override = leg_mat
 			holder.add_child(thigh)
+			limbs.append({"node": thigh, "kind": "thigh"})
 
 			var arm := MeshInstance3D.new()
 			var arm_mesh := CapsuleMesh.new()
@@ -1199,8 +1410,13 @@ func _build_character(id: String) -> void:
 			arm.rotation_degrees.x = 55.0 if id == "eli" else 25.0
 			arm.material_override = body_mat
 			holder.add_child(arm)
+			limbs.append({"node": arm, "kind": "arm"})
 
 	# Clickable area around the whole figure.
+	var hand_gun: Node3D = null
+	if id in ["eli", "cole"]:
+		hand_gun = _build_hand_gun(holder, -1.0 if id == "eli" else 1.0)
+
 	var body := StaticBody3D.new()
 	var shape := CollisionShape3D.new()
 	var capsule := CapsuleShape3D.new()
@@ -1234,6 +1450,7 @@ func _build_character(id: String) -> void:
 	root.add_child(label)
 
 	_figures[id] = {"root": root, "holder": holder, "materials": materials, "label": label, "rig": rig,
+			"model": model, "limbs": limbs, "mode": "seat", "gun": hand_gun,
 			"posed": rig == null and not materials.is_empty() and materials[0] is ShaderMaterial}
 
 
