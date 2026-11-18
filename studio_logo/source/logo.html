@@ -1,0 +1,129 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Osw; font-weight: 700; src: url(oswald700.woff2); }
+@font-face { font-family: Osw; font-weight: 400; src: url(oswald400.woff2); }
+html, body { margin: 0; background: #000; }
+canvas { display: block; }
+</style></head>
+<body><canvas id="c" width="1920" height="1080"></canvas>
+<script>
+const style = new URLSearchParams(location.search).get("style") || "dark";
+const dark = style === "dark";
+const c = document.getElementById("c"), g = c.getContext("2d");
+const W = 1920, H = 1080;
+const WHITE = dark ? "#e9e4da" : "#f4f4f2";
+const RED = dark ? "#b0141c" : "#d0202a";
+
+// Same "random" every time, so the picture doesn't change between runs.
+let seed = 7;
+const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+
+function drawSymbol(x, y, r) {
+  // Scan lines inside the circle, like an old TV screen.
+  g.save();
+  g.beginPath(); g.arc(x, y, r - 10, 0, Math.PI * 2); g.clip();
+  g.fillStyle = dark ? "#0d0d0d" : "#141414"; g.fillRect(x - r, y - r, r * 2, r * 2);
+  g.fillStyle = dark ? "rgba(233,228,218,0.06)" : "rgba(255,255,255,0.05)";
+  for (let yy = y - r; yy < y + r; yy += 8) g.fillRect(x - r, yy, r * 2, 3);
+  g.restore();
+
+  // The ring, with a gap left and right where the signal passes through.
+  g.strokeStyle = WHITE; g.lineWidth = 12; g.lineCap = "butt";
+  const gap = 0.16;
+  g.beginPath(); g.arc(x, y, r, gap, Math.PI - gap); g.stroke();
+  g.beginPath(); g.arc(x, y, r, Math.PI + gap, Math.PI * 2 - gap); g.stroke();
+
+  // The signal: calm, a little static, then one deep drop and a spike.
+  const pts = [];
+  const left = x - r - 120, right = x + r + 120;
+  for (let px = left; px <= right; px += 4) {
+    const t = (px - x) / r;              // -1.x .. 1.x across the circle
+    let dy = 0;
+    if (t > -0.75 && t < -0.15) dy = (rnd() - 0.5) * 22 * (1 - Math.abs(t + 0.45) / 0.3);
+    pts.push([px, y + dy]);
+  }
+  // the drop ("deep") and the spike
+  const spike = [[x - 0.12 * r, y], [x - 0.02 * r, y + 0.78 * r], [x + 0.1 * r, y - 0.62 * r], [x + 0.2 * r, y + 0.18 * r], [x + 0.27 * r, y]];
+  const path = pts.filter(p => p[0] < spike[0][0]).concat(spike, pts.filter(p => p[0] > spike[spike.length - 1][0]));
+  g.save();
+  if (dark) { g.shadowColor = "rgba(220,20,30,0.85)"; g.shadowBlur = 24; }
+  g.strokeStyle = RED; g.lineWidth = 9; g.lineJoin = "miter"; g.miterLimit = 10;
+  g.beginPath(); path.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.stroke();
+  g.restore();
+}
+
+function drawWords(x, y) {
+  g.textAlign = "center"; g.textBaseline = "alphabetic";
+  g.font = "700 190px Osw";
+  if ("letterSpacing" in g) g.letterSpacing = "14px";
+  if (dark) { // a faint red ghost, like a bad signal
+    g.fillStyle = "rgba(176,20,28,0.55)"; g.fillText("DEEP STATIC", x + 6, y + 2);
+  }
+  g.fillStyle = WHITE; g.fillText("DEEP STATIC", x, y);
+
+  g.font = "400 58px Osw";
+  if ("letterSpacing" in g) g.letterSpacing = "38px";
+  const gy = y + 110;
+  g.fillStyle = dark ? RED : WHITE;
+  g.fillText("GAMES", x + 19, gy);
+  if ("letterSpacing" in g) g.letterSpacing = "0px";
+  // little lines either side of GAMES
+  g.fillStyle = dark ? RED : RED;
+  g.fillRect(x - 520, gy - 22, 250, 4);
+  g.fillRect(x + 270, gy - 22, 250, 4);
+}
+
+function wearItDown() {
+  // Rub off bits of the white and red, so it looks old and scratched.
+  g.save();
+  g.globalCompositeOperation = "destination-out";
+  for (let i = 0; i < 2600; i++) {
+    const px = rnd() * W, py = 120 + rnd() * 860, s = rnd() * rnd() * 7 + 0.6;
+    g.globalAlpha = 0.35 + rnd() * 0.65;
+    g.beginPath(); g.arc(px, py, s, 0, Math.PI * 2); g.fill();
+  }
+  for (let i = 0; i < 70; i++) { // thin scratches
+    const px = rnd() * W, py = 120 + rnd() * 860, len = 40 + rnd() * 260;
+    g.globalAlpha = 0.25 + rnd() * 0.5;
+    g.fillRect(px, py, len, 1 + rnd() * 1.5);
+  }
+  for (let i = 0; i < 5; i++) { // a few torn signal lines
+    const py = 120 + rnd() * 860;
+    g.globalAlpha = 0.5; g.fillRect(0, py, W, 2 + rnd() * 3);
+  }
+  g.restore();
+}
+
+function grainAndShadow() {
+  // background goes under everything we drew
+  g.save();
+  g.globalCompositeOperation = "destination-over";
+  const bg = g.createRadialGradient(W / 2, H / 2, 80, W / 2, H / 2, W * 0.62);
+  bg.addColorStop(0, "#151313"); bg.addColorStop(1, "#000");
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  g.restore();
+  // film grain
+  const img = g.getImageData(0, 0, W, H), d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const n = (rnd() - 0.5) * 34;
+    d[i] += n; d[i + 1] += n; d[i + 2] += n;
+  }
+  g.putImageData(img, 0, 0);
+  // dark corners
+  const v = g.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, W * 0.7);
+  v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.85)");
+  g.fillStyle = v; g.fillRect(0, 0, W, H);
+  // whole-screen scan lines
+  g.fillStyle = "rgba(0,0,0,0.18)";
+  for (let yy = 0; yy < H; yy += 4) g.fillRect(0, yy, W, 2);
+}
+
+document.fonts.load("700 100px Osw").then(() => document.fonts.load("400 50px Osw")).then(() => {
+  if (!dark) { g.fillStyle = "#0b0b0c"; g.fillRect(0, 0, W, H); }
+  drawSymbol(W / 2, 330, 170);
+  drawWords(W / 2, 770);
+  if (dark) { wearItDown(); grainAndShadow(); }
+  document.title = "done";
+});
+</script></body></html>
