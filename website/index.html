@@ -552,6 +552,28 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
 .term-line { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
 .term-line input { flex: 1; min-width: 0; background: transparent; border: 0; color: #c8ffd0; font: inherit; text-transform: uppercase; caret-color: #9fe6a8; outline: none; }
 .term-hint { color: var(--ash); font: 400 12px/1.5 var(--mono); margin-top: 12px; }
+
+/* ---------- five tabs ---------- */
+.file-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 28px; }
+.file-tabs a { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; border: 1px solid var(--rule); background: var(--panel); text-decoration: none; color: var(--ash); min-width: 0; transition: border-color .2s, background .2s; }
+.file-tabs a b { font: 700 22px/1.1 var(--display); text-transform: uppercase; letter-spacing: .04em; color: var(--bone); }
+.file-tabs a span { font: 400 12px/1.4 var(--mono); letter-spacing: .04em; }
+.file-tabs a:hover { border-color: var(--signal); }
+.file-tabs a[aria-current="true"] { border-color: var(--signal); background: linear-gradient(180deg, rgba(176,20,28,.18), rgba(176,20,28,.04)); box-shadow: inset 0 -3px 0 var(--signal); }
+.file-tabs a[aria-current="true"] b { color: #fff; }
+.s-files { padding-block: 56px 8px; }
+.subpage > section:first-child { border-top: 0; padding-top: 28px; }
+.subpage .page-title { font-size: clamp(40px, 7vw, 84px); }
+nav[aria-label=Pages] { gap: 30px; }
+nav[aria-label=Pages] a { font-size: 13px; }
+@media (max-width: 760px) { .file-tabs { grid-template-columns: 1fr; } nav[aria-label=Pages] { gap: 20px; } }
+
+/* Walter: static until you look closer */
+.walter-photo { position: relative; }
+.walter-photo .walter-static { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; transition: opacity .8s; image-rendering: pixelated; }
+.walter-photo .nofile { z-index: 3; transition: opacity .6s; }
+.card:hover .walter-static, .card:focus-within .walter-static { opacity: 0; }
+.card:hover .walter-photo .nofile { opacity: 0; }
 </style>
 
 <header class="bar">
@@ -562,12 +584,9 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
     </a>
     <nav aria-label="Pages">
       <a href="#home">Home</a>
-      <a href="#deepwell">Deepwell</a>
-      <a href="#news">Newspaper</a>
+      <a href="#deepwell">The Game</a>
       <a href="#characters">Characters</a>
-      <a href="#camera">Cell Cam</a>
-      <a href="#archive">Archive</a>
-      <a href="#footage">Footage</a>
+      <a href="#files">The Files</a>
       <a href="#studio">Studio</a>
     </nav>
     <button class="snd" id="ambient" type="button" aria-pressed="false" title="Background sound">Sound off</button>
@@ -639,7 +658,7 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
       </div>
     </div>
   </section>
-  <div class="pager"><span></span><a href="#deepwell">Deepwell →</a></div>
+  <div class="pager"><span></span><a href="#deepwell">The Game →</a></div>
 </div>
 <div class="page" data-page="deepwell" hidden>
   <section class="s-deepwell">
@@ -729,9 +748,104 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
     </div>
   </section>
 
-  <div class="pager"><a href="#home">← Home</a><a href="#news">Newspaper →</a></div>
+
+  <section class="s-footage">
+    <p class="eyebrow">From the game</p>
+    <h2>Recovered footage</h2>
+    <div class="footage">
+      <figure class="big"><span class="stamp">THE ROAD · 03:12</span><img src="media/op_hands.jpg" alt="Eli's hands on the steering wheel at night, Mateo's dog tag hanging from the mirror." loading="lazy"><figcaption><b>The drive in.</b> Mateo's dog tag hangs from the mirror.</figcaption></figure>
+      <figure class="tall"><img src="media/op_trunk_open.jpg" alt="Eli opens the trunk of the maroon sedan at the gas station." loading="lazy"><figcaption><b>Pine Hollow Gas.</b> "Gear's in the trunk."</figcaption></figure>
+      <figure class="big"><img src="media/car.jpg" alt="Eli and Cole in the front seats of the car, driving down a forest road at night." loading="lazy"><figcaption><b>The drive in.</b> Pick your character from inside the car.</figcaption></figure>
+      <figure class="tall"><img src="media/trunk.jpg" alt="Cole hands Eli a pistol by the car's trunk." loading="lazy"><figcaption><b>At the trunk.</b> "Safety on until you need it."</figcaption></figure>
+      <figure class="half"><img src="media/office.jpg" alt="An abandoned office with a checkered floor, a wooden desk and a red emergency light." loading="lazy"><figcaption><b>Inside the station.</b> The power still works.</figcaption></figure>
+      <figure class="half has-secret"><button type="button" class="doorway" data-secret="doorway" aria-label="Look closer at the dark doorway"></button><div class="enhance" hidden><b>ENHANCED · CAM 4</b>Something is standing in the doorway.<br>Top of the frame: 11 ft.<br><em>It was watching the camera.</em></div><img src="media/blood.jpg" alt="Fresh blood on the walls and floor of a hallway, seen by flashlight." loading="lazy"><figcaption><b>The blood is fresh.</b> Someone was here tonight.</figcaption></figure>
+      <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:50</span><img src="media/monster_peek.jpg" alt="Behind a filing cabinet by the stairwell door, something pale and very tall." loading="lazy"><figcaption><b>Camera 4.</b> Something by the stairwell door.</figcaption></figure>
+      <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_hall.jpg" alt="Subject 7 standing at the back of the bloody room, long arms hanging to its knees." loading="lazy"><figcaption><b>Camera 4.</b> It's standing up now.</figcaption></figure>
+      <figure class="big dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_close.jpg" alt="Subject 7 up close in the flashlight: a skeletal body, a torn cloth, clawed hands." loading="lazy"><figcaption><b>Last frame.</b> The camera was knocked down a second later.</figcaption></figure>
+      <figure class="tall"><span class="splat corner2" data-kind="splat" data-seed="3" aria-hidden="true"></span><img src="media/blood.jpg" alt="Blood smeared across the floor toward the stairwell door." loading="lazy"><figcaption><b>The trail.</b> It leads to the stairwell.</figcaption></figure>
+    </div>
+  </section>
+
+  <div class="pager"><a href="#home">← Home</a><a href="#characters">Characters →</a></div>
 </div>
-<div class="page" data-page="news" hidden>
+<div class="page" data-page="characters" hidden>
+  <section class="s-team">
+    <p class="eyebrow">Pick who you play</p>
+    <h1 class="page-title">The four who go in</h1>
+    <p class="lede">Each of them has a reason to go in, and a skill the others need to get out alive.</p>
+
+    <div class="team">
+      <article class="card">
+        <div class="photo"><img src="media/eli.jpg" alt="Eli Reyes: messy brown hair, grey hoodie under a brown jacket." loading="lazy"></div>
+        <div class="body">
+          <span class="role">The Son · Survivor</span>
+          <h3>Eli Reyes</h3>
+          <p>21. College student and Army Reserve soldier. His older twin brother Mateo walked into Blackwater two weeks ago and never came out.</p>
+          <ul class="skills"><li><b>SENSE</b> Hold to see nearby monsters through walls for 3 seconds.</li><li><b>MILITARY TRAINING</b> Steadier aim and faster reloads. Reads Morse code and military maps.</li><li><b>MENTOR BOND</b> Works better when Cole is close by.</li></ul>
+          <blockquote>"He's my big brother. He'd come for me."</blockquote>
+        </div>
+      </article>
+      <article class="card">
+        <div class="photo"><img src="media/cole.jpg" alt="Cole Brennan: short hair, green military field jacket." loading="lazy"></div>
+        <div class="body">
+          <span class="role">The Guard · Protector</span>
+          <h3>Cole Brennan</h3>
+          <p>36. Former soldier. Raised Eli like a son. Knows this place better than he admits.</p>
+          <ul class="skills"><li><b>STRENGTH</b> Hold doors shut, move heavy things, build barricades, carry downed teammates.</li><li><b>FIELD TRAINING</b> Longer stuns, and he can study a monster to show the team its weak point.</li><li><b>FIREARMS</b> Best with guns, but slower and louder than everyone else.</li></ul>
+          <blockquote>"Eyes up, kid. Stay behind me."</blockquote>
+        </div>
+      </article>
+      <article class="card">
+        <div class="photo"><img src="media/nora.jpg" alt="Nora Vance: hair in a bun, tan trench coat over a dark turtleneck." loading="lazy"></div>
+        <div class="body">
+          <span class="role">The Journalist · Stunner</span>
+          <h3>Nora Vance</h3>
+          <p>35. Investigative journalist. She's chased Blackwater for three years. Her source vanished trying to expose it.</p>
+          <ul class="skills"><li><b>CAMERA FLASH</b> Stuns a monster in front of her for 2 seconds.</li><li><b>EVIDENCE</b> Photograph clues to unlock story files for the whole team.</li></ul>
+          <blockquote>"If it's real, I'm getting it on film."</blockquote>
+        </div>
+      </article>
+      <article class="card">
+        <div class="photo walter-photo"><canvas class="walter-static" width="120" height="160" aria-hidden="true"></canvas><span class="nofile">No photo on file</span><img src="media/walter.jpg" alt="Walter Kessler, grey hair and black glasses, in a work shirt with suspenders." loading="lazy"></div>
+        <div class="body">
+          <span class="role">The Engineer · Fixer</span>
+          <h3>Walter Kessler</h3>
+          <p>60. Worked maintenance at Blackwater before it was sealed. Knows the tunnels. Nervous, quiet, and hiding something.</p>
+          <ul class="skills"><li><b>REPAIR</b> The only one who can fix generators, elevators and panels.</li><li><b>HACK</b> Opens locked security doors, but it takes time, so someone has to guard him.</li></ul>
+          <blockquote>"I can fix it. Just keep them away from me."</blockquote>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="s-subject">
+    <div class="subject">
+      <div>
+        <p class="eyebrow">Something else is down there</p>
+        <h2>Subject 7</h2>
+        <p>The files don't use his name anymore. Week 1 he was six feet tall. By week 23 he was over nine feet and didn't fit in his cell. Then they moved him to the tunnels.</p>
+        <p>He hates light. He hears radios, doors and running. And if he sees you hide, he remembers where.</p>
+      </div>
+      <div class="subject-box" id="subject-box">
+        <img src="media/monster_cutout.webp" alt="Subject 7: a skeletal, impossibly tall figure with long clawed arms and a torn cloth around its waist." width="420" height="576" loading="lazy">
+        <span class="subject-tag">H-7 · 9 ft 2 in</span>
+      </div>
+    </div>
+  </section>
+  <div class="pager"><a href="#deepwell">← The Game</a><a href="#files">The Files →</a></div>
+</div>
+<div class="page" data-page="files" hidden>
+  <section class="s-files">
+    <p class="eyebrow">Evidence</p>
+    <h1 class="page-title">The files</h1>
+    <p class="lede">What people found near Blackwater, and what Site 12 kept to itself.</p>
+    <nav class="file-tabs" aria-label="Files">
+      <a href="#news" data-sub="news"><b>The Courier</b><span>The local paper on the eight missing</span></a>
+      <a href="#camera" data-sub="camera"><b>Cell 7 Cam</b><span>A camera that still works</span></a>
+      <a href="#archive" data-sub="archive"><b>Site 12 Archive</b><span>53 files, tapes and photos</span></a>
+    </nav>
+  </section>
+<div class="subpage" data-sub="news">
   <section class="s-news">
     <p class="eyebrow">From the local paper</p>
     <div class="paper-sheet">
@@ -802,75 +916,8 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
       </div>
     </form>
   </section>
-  <div class="pager"><a href="#deepwell">← Deepwell</a><a href="#characters">Characters →</a></div>
 </div>
-<div class="page" data-page="characters" hidden>
-  <section class="s-team">
-    <p class="eyebrow">Pick who you play</p>
-    <h1 class="page-title">The four who go in</h1>
-    <p class="lede">Each of them has a reason to go in, and a skill the others need to get out alive.</p>
-
-    <div class="team">
-      <article class="card">
-        <div class="photo"><img src="media/eli.jpg" alt="Eli Reyes: messy brown hair, grey hoodie under a brown jacket." loading="lazy"></div>
-        <div class="body">
-          <span class="role">The Son · Survivor</span>
-          <h3>Eli Reyes</h3>
-          <p>21. College student and Army Reserve soldier. His older twin brother Mateo walked into Blackwater two weeks ago and never came out.</p>
-          <ul class="skills"><li><b>SENSE</b> Hold to see nearby monsters through walls for 3 seconds.</li><li><b>MILITARY TRAINING</b> Steadier aim and faster reloads. Reads Morse code and military maps.</li><li><b>MENTOR BOND</b> Works better when Cole is close by.</li></ul>
-          <blockquote>"He's my big brother. He'd come for me."</blockquote>
-        </div>
-      </article>
-      <article class="card">
-        <div class="photo"><img src="media/cole.jpg" alt="Cole Brennan: short hair, green military field jacket." loading="lazy"></div>
-        <div class="body">
-          <span class="role">The Guard · Protector</span>
-          <h3>Cole Brennan</h3>
-          <p>36. Former soldier. Raised Eli like a son. Knows this place better than he admits.</p>
-          <ul class="skills"><li><b>STRENGTH</b> Hold doors shut, move heavy things, build barricades, carry downed teammates.</li><li><b>FIELD TRAINING</b> Longer stuns, and he can study a monster to show the team its weak point.</li><li><b>FIREARMS</b> Best with guns, but slower and louder than everyone else.</li></ul>
-          <blockquote>"Eyes up, kid. Stay behind me."</blockquote>
-        </div>
-      </article>
-      <article class="card">
-        <div class="photo"><img src="media/nora.jpg" alt="Nora Vance: hair in a bun, tan trench coat over a dark turtleneck." loading="lazy"></div>
-        <div class="body">
-          <span class="role">The Journalist · Stunner</span>
-          <h3>Nora Vance</h3>
-          <p>35. Investigative journalist. She's chased Blackwater for three years. Her source vanished trying to expose it.</p>
-          <ul class="skills"><li><b>CAMERA FLASH</b> Stuns a monster in front of her for 2 seconds.</li><li><b>EVIDENCE</b> Photograph clues to unlock story files for the whole team.</li></ul>
-          <blockquote>"If it's real, I'm getting it on film."</blockquote>
-        </div>
-      </article>
-      <article class="card">
-        <div class="photo"><img src="media/walter.jpg" alt="Walter Kessler, grey hair and black glasses, in a work shirt with suspenders." loading="lazy"></div>
-        <div class="body">
-          <span class="role">The Engineer · Fixer</span>
-          <h3>Walter Kessler</h3>
-          <p>60. Worked maintenance at Blackwater before it was sealed. Knows the tunnels. Nervous, quiet, and hiding something.</p>
-          <ul class="skills"><li><b>REPAIR</b> The only one who can fix generators, elevators and panels.</li><li><b>HACK</b> Opens locked security doors, but it takes time, so someone has to guard him.</li></ul>
-          <blockquote>"I can fix it. Just keep them away from me."</blockquote>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <section class="s-subject">
-    <div class="subject">
-      <div>
-        <p class="eyebrow">Something else is down there</p>
-        <h2>Subject 7</h2>
-        <p>The files don't use his name anymore. Week 1 he was six feet tall. By week 23 he was over nine feet and didn't fit in his cell. Then they moved him to the tunnels.</p>
-        <p>He hates light. He hears radios, doors and running. And if he sees you hide, he remembers where.</p>
-      </div>
-      <div class="subject-box" id="subject-box">
-        <img src="media/monster_cutout.webp" alt="Subject 7: a skeletal, impossibly tall figure with long clawed arms and a torn cloth around its waist." width="420" height="576" loading="lazy">
-        <span class="subject-tag">H-7 · 9 ft 2 in</span>
-      </div>
-    </div>
-  </section>
-  <div class="pager"><a href="#news">← Newspaper</a><a href="#camera">Cell Cam →</a></div>
-</div>
-<div class="page" data-page="camera" hidden>
+<div class="subpage" data-sub="camera" hidden>
   <section class="s-camera">
     <p class="eyebrow">Observation booth 2 · live feed</p>
     <h1 class="page-title">Cell 7</h1>
@@ -907,9 +954,8 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
       </aside>
     </div>
   </section>
-  <div class="pager"><a href="#characters">← Characters</a><a href="#archive">Archive →</a></div>
 </div>
-<div class="page" data-page="archive" hidden>
+<div class="subpage" data-sub="archive" hidden>
   <section class="s-archive">
     <p class="eyebrow">Recovered from Site 12</p>
     <h1 class="page-title">The Archive</h1>
@@ -947,39 +993,8 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
       </button>
     </div>
   </section>
-  <div class="pager"><a href="#camera">← Cell Cam</a><a href="#footage">Footage →</a></div>
 </div>
-<div class="page" data-page="site12" hidden>
-  <section class="s-terminal">
-    <div class="terminal" id="terminal">
-      <div class="term-out" id="term-out" aria-live="polite"></div>
-      <form class="term-line" id="term-form" autocomplete="off">
-        <label for="term-in">&gt;</label>
-        <input id="term-in" type="text" spellcheck="false" aria-label="Type a command">
-      </form>
-    </div>
-    <p class="term-hint">Type HELP. You found the records terminal of Site 12. Nobody else knows it's here.</p>
-  </section>
-</div>
-<div class="page" data-page="footage" hidden>
-  <section class="s-footage">
-    <p class="eyebrow">From the game</p>
-    <h1 class="page-title">Recovered footage</h1>
-    <div class="footage">
-      <figure class="big"><span class="stamp">THE ROAD · 03:12</span><img src="media/op_hands.jpg" alt="Eli's hands on the steering wheel at night, Mateo's dog tag hanging from the mirror." loading="lazy"><figcaption><b>The drive in.</b> Mateo's dog tag hangs from the mirror.</figcaption></figure>
-      <figure class="tall"><img src="media/op_trunk_open.jpg" alt="Eli opens the trunk of the maroon sedan at the gas station." loading="lazy"><figcaption><b>Pine Hollow Gas.</b> "Gear's in the trunk."</figcaption></figure>
-      <figure class="big"><img src="media/car.jpg" alt="Eli and Cole in the front seats of the car, driving down a forest road at night." loading="lazy"><figcaption><b>The drive in.</b> Pick your character from inside the car.</figcaption></figure>
-      <figure class="tall"><img src="media/trunk.jpg" alt="Cole hands Eli a pistol by the car's trunk." loading="lazy"><figcaption><b>At the trunk.</b> "Safety on until you need it."</figcaption></figure>
-      <figure class="half"><img src="media/office.jpg" alt="An abandoned office with a checkered floor, a wooden desk and a red emergency light." loading="lazy"><figcaption><b>Inside the station.</b> The power still works.</figcaption></figure>
-      <figure class="half has-secret"><button type="button" class="doorway" data-secret="doorway" aria-label="Look closer at the dark doorway"></button><div class="enhance" hidden><b>ENHANCED · CAM 4</b>Something is standing in the doorway.<br>Top of the frame: 11 ft.<br><em>It was watching the camera.</em></div><img src="media/blood.jpg" alt="Fresh blood on the walls and floor of a hallway, seen by flashlight." loading="lazy"><figcaption><b>The blood is fresh.</b> Someone was here tonight.</figcaption></figure>
-      <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:50</span><img src="media/monster_peek.jpg" alt="Behind a filing cabinet by the stairwell door, something pale and very tall." loading="lazy"><figcaption><b>Camera 4.</b> Something by the stairwell door.</figcaption></figure>
-      <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_hall.jpg" alt="Subject 7 standing at the back of the bloody room, long arms hanging to its knees." loading="lazy"><figcaption><b>Camera 4.</b> It's standing up now.</figcaption></figure>
-      <figure class="big dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_close.jpg" alt="Subject 7 up close in the flashlight: a skeletal body, a torn cloth, clawed hands." loading="lazy"><figcaption><b>Last frame.</b> The camera was knocked down a second later.</figcaption></figure>
-      <figure class="tall"><span class="splat corner2" data-kind="splat" data-seed="3" aria-hidden="true"></span><img src="media/blood.jpg" alt="Blood smeared across the floor toward the stairwell door." loading="lazy"><figcaption><b>The trail.</b> It leads to the stairwell.</figcaption></figure>
-    </div>
-  </section>
-
-  <div class="pager"><a href="#archive">← Archive</a><a href="#studio">Studio →</a></div>
+  <div class="pager"><a href="#characters">← Characters</a><a href="#studio">Studio →</a></div>
 </div>
 <div class="page" data-page="studio" hidden>
   <section class="s-studio">
@@ -1018,7 +1033,19 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
     </ol>
   </section>
 
-  <div class="pager"><a href="#footage">← Footage</a><span></span></div>
+  <div class="pager"><a href="#files">← The Files</a><span></span></div>
+</div>
+<div class="page" data-page="site12" hidden>
+  <section class="s-terminal">
+    <div class="terminal" id="terminal">
+      <div class="term-out" id="term-out" aria-live="polite"></div>
+      <form class="term-line" id="term-form" autocomplete="off">
+        <label for="term-in">&gt;</label>
+        <input id="term-in" type="text" spellcheck="false" aria-label="Type a command">
+      </form>
+    </div>
+    <p class="term-hint">Type HELP. You found the records terminal of Site 12. Nobody else knows it's here.</p>
+  </section>
 </div>
 </main>
 
@@ -1083,21 +1110,36 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // ---------------------------------------------------------------- pages
 // Each page is a <div class="page" data-page="...">; the link's #name picks it.
+// The Files page holds three parts (#news, #camera, #archive), and #footage
+// is the end of The Game, so older links still land in the right place.
 (function () {
   const pages = [...document.querySelectorAll(".page")];
   const names = pages.map(p => p.dataset.page);
+  const ALIAS = { news: ["files", "news"], camera: ["files", "camera"], archive: ["files", "archive"], footage: ["deepwell", "footage"] };
   const video = document.getElementById("intro");
+  let lastSub = "news";
   function show() {
     const want = location.hash.slice(1);
-    const name = names.includes(want) ? want : "home";
+    let name = names.includes(want) ? want : "home", part = null;
+    if (ALIAS[want]) [name, part] = ALIAS[want];
     pages.forEach(p => { p.hidden = p.dataset.page !== name; });
-    document.querySelectorAll("nav a").forEach(a => {
+    if (name === "files") {
+      lastSub = part || lastSub;
+      document.querySelectorAll(".subpage").forEach(sp => { sp.hidden = sp.dataset.sub !== lastSub; });
+      document.querySelectorAll(".file-tabs a").forEach(a => {
+        if (a.dataset.sub === lastSub) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+      });
+    }
+    document.querySelectorAll("nav[aria-label=Pages] a").forEach(a => {
       if (a.getAttribute("href") === "#" + name) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
     if (name !== "home" && video) { video.pause(); }
     else if (video && video.paused) { video.play().catch(() => {}); }
-    window.scrollTo(0, 0);
-    if (name === "archive" && window.__archiveShown) window.__archiveShown();
+    if (part === "footage") {
+      requestAnimationFrame(() => document.querySelector(".s-footage").scrollIntoView());
+    } else if (!(name === "files" && ALIAS[want] && document.querySelector(".s-files").getBoundingClientRect().top < 0)) {
+      window.scrollTo(0, 0);
+    }
   }
   window.addEventListener("hashchange", show);
   show();
@@ -1667,7 +1709,7 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     for (let i = 0; i < nimg.data.length; i += 4) { const v = Math.random() * 255; nimg.data[i] = v * 0.8; nimg.data[i + 1] = v; nimg.data[i + 2] = v * 0.8; nimg.data[i + 3] = 255; }
     g.putImageData(nimg, 0, 0);
   }
-  snow(); if (!reduce) setInterval(() => { if (!box.closest(".page").hidden) snow(); }, 80);
+  snow(); if (!reduce) setInterval(() => { if (!box.closest(".subpage").hidden && !box.closest(".page").hidden) snow(); }, 80);
 
   let audio = null;
   function hiss(ms, vol) {
@@ -1881,5 +1923,17 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   form.addEventListener("submit", e => { e.preventDefault(); const v = input.value; input.value = ""; if (v.trim()) run(v); });
   boot();
   window.addEventListener("hashchange", () => { if (location.hash === "#site12") setTimeout(() => input.focus(), 300); });
+})();
+
+// Walter's photo hides behind static until you look closer.
+(function () {
+  const c = document.querySelector(".walter-static"); if (!c) return;
+  const g = c.getContext("2d"), img = g.createImageData(c.width, c.height);
+  function frame() {
+    for (let i = 0; i < img.data.length; i += 4) { const v = Math.random() * 200; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+    g.putImageData(img, 0, 0);
+  }
+  frame();
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(() => { if (c.offsetParent) frame(); }, 90);
 })();
 </script>
