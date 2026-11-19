@@ -634,6 +634,33 @@ nav[aria-label=Pages] a:hover, nav[aria-label=Pages] a[aria-current="page"] { co
 .cols p { color: #241e18; }
 .faces canvas { box-shadow: 2px 3px 0 rgba(0,0,0,.18); }
 @media (max-width: 760px) { .paper-sheet { transform: none; clip-path: none; } .paper-sheet .coffee { width: 90px; height: 90px; } }
+
+/* ---------- File 516 ---------- */
+.aka { font: 500 14px/1 var(--mono) !important; letter-spacing: .2em; text-transform: uppercase; color: var(--signal-hot) !important; margin: 6px 0 16px; }
+.dossier { position: relative; max-width: 860px; margin: 30px auto 0; padding: clamp(22px, 4vw, 48px); color: #221d16; transform: rotate(.5deg);
+  background: #d9cfb3; background-image: radial-gradient(ellipse at 80% 10%, rgba(255,255,255,.3), transparent 40%), radial-gradient(ellipse at 10% 90%, rgba(110,80,40,.3), transparent 45%), repeating-linear-gradient(0deg, rgba(60,40,20,.03) 0 1px, transparent 1px 3px);
+  box-shadow: 0 30px 70px rgba(0,0,0,.7), inset 0 0 70px rgba(110,80,40,.3); font: 400 15px/1.6 "IBM Plex Mono", monospace; }
+.dossier .burn { position: absolute; right: 0; bottom: 0; width: 180px; height: 150px; pointer-events: none;
+  background: radial-gradient(circle at 100% 100%, #0b0a0a 0 38%, #2a1608 46%, rgba(120,60,20,.6) 52%, transparent 62%); }
+.stamp-top, .stamp-ironwood { position: absolute; font: 700 22px/1 var(--display); letter-spacing: .2em; color: rgba(160, 20, 28, .75); border: 3px solid rgba(160, 20, 28, .65); padding: 6px 12px; pointer-events: none; }
+.stamp-top { top: 22px; right: 26px; transform: rotate(8deg); }
+.stamp-ironwood { top: 46%; right: 8%; transform: rotate(-14deg); font-size: 18px; opacity: .55; }
+.dos-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 2px solid #221d16; padding-bottom: 12px; font-size: 13px; letter-spacing: .06em; }
+.dos-no { text-align: right; padding-right: 150px; }
+.dos-title { font: 700 26px/1.2 var(--display); color: #221d16; text-transform: uppercase; letter-spacing: .04em; margin: 22px 0 14px; }
+.dossier h4 { font: 700 15px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; margin: 24px 0 10px; border-bottom: 1px solid rgba(34,29,22,.4); padding-bottom: 6px; }
+.dos-grid { display: grid; grid-template-columns: 210px 1fr; gap: 6px 18px; margin: 0; }
+.dos-grid dt { text-transform: uppercase; letter-spacing: .06em; font-size: 13px; color: #5a4f40; }
+.dos-grid dd { margin: 0; min-width: 0; }
+.red-ink { color: #9c121a; font-weight: 500; letter-spacing: .1em; }
+.dos-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.dos-log b { display: inline-block; width: 62px; }
+.dos-log .faded { opacity: .35; filter: blur(.4px); }
+.redact { display: inline-block; width: var(--w); max-width: 100%; height: 1.05em; vertical-align: -2px; background: #0d0c0b; transform: rotate(-.4deg); box-shadow: 1px 0 0 #0d0c0b; }
+.torn-note { text-align: center; letter-spacing: .3em; font-size: 13px; color: #5a4f40; margin: 22px 0; padding: 10px; border-block: 2px dashed rgba(34,29,22,.5); background: rgba(0,0,0,.06); }
+.dos-text { max-width: none; margin: 0 0 8px; }
+.dos-foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 26px; padding-top: 10px; border-top: 1px solid rgba(34,29,22,.4); font-size: 13px; padding-right: 150px; }
+@media (max-width: 640px) { .dos-grid { grid-template-columns: 1fr; gap: 2px; } .dos-grid dd { margin-bottom: 8px; } .dos-no, .dos-foot { padding-right: 0; } .stamp-top { font-size: 15px; top: 10px; right: 10px; } .dossier { transform: none; } .dossier .burn { width: 110px; height: 90px; } }
 </style>
 
 <div class="ticker" aria-label="Latest"><div class="ticker-track"><span>EIGHTH PERSON MISSING NEAR BLACKWATER</span><span>THEY WENT IN. NOBODY CAME OUT.</span><span>NEW: THE OPENING — THE ROAD, THE MEETING, THE TRUNK</span><span>1–4 PLAYER CO-OP HORROR</span><span>DO NOT GO PAST THE GATE AFTER DARK</span><span>DEMO IN DEVELOPMENT</span><span>HAVE YOU SEEN MATEO REYES?</span><span>EIGHTH PERSON MISSING NEAR BLACKWATER</span><span>THEY WENT IN. NOBODY CAME OUT.</span><span>NEW: THE OPENING — THE ROAD, THE MEETING, THE TRUNK</span><span>1–4 PLAYER CO-OP HORROR</span><span>DO NOT GO PAST THE GATE AFTER DARK</span><span>DEMO IN DEVELOPMENT</span><span>HAVE YOU SEEN MATEO REYES?</span></div></div>
@@ -705,6 +732,7 @@ nav[aria-label=Pages] a:hover, nav[aria-label=Pages] a[aria-current="page"] { co
       </div>
     </div>
     <div class="news-grid">
+      <a class="news-card" data-kind="news" href="#characters" data-jump="s-dossier"><div class="nc-pic"><img src="media/monster_close.jpg" alt="" loading="lazy"><span class="nc-tag">Classified</span></div><b>File 516: what they did to Subject 7</b><small>Partly redacted</small></a>
       <a class="news-card" data-kind="news" href="#news"><div class="nc-pic"><img src="media/station.jpg" alt="" loading="lazy"><span class="nc-tag">The Courier</span></div><b>Eighth person vanishes near old weather station</b><small>Oct 22, 2015</small></a>
       <a class="news-card" data-kind="story" href="#deepwell"><div class="nc-pic"><img src="media/op_road.jpg" alt="" loading="lazy"><span class="nc-tag">Story</span></div><b>The Road: Eli and Cole drive to Blackwater</b><small>Opening, part 1</small></a>
       <a class="news-card" data-kind="character" href="#characters"><div class="nc-pic"><img src="media/eli.jpg" alt="" loading="lazy"><span class="nc-tag">Character</span></div><b>Eli Reyes: going in after his brother</b><small>Character</small></a>
@@ -902,13 +930,53 @@ nav[aria-label=Pages] a:hover, nav[aria-label=Pages] a[aria-current="page"] { co
       <div>
         <p class="eyebrow">Something else is down there</p>
         <h2>Subject 7</h2>
+        <p class="aka">Experiment 516</p>
         <p>The files don't use his name anymore. Week 1 he was six feet tall. By week 23 he was over nine feet and didn't fit in his cell. Then they moved him to the tunnels.</p>
         <p>He hates light. He hears radios, doors and running. And if he sees you hide, he remembers where.</p>
       </div>
       <div class="subject-box" id="subject-box">
         <img src="media/monster_cutout.webp" alt="Subject 7: a skeletal, impossibly tall figure with long clawed arms and a torn cloth around its waist." width="420" height="576" loading="lazy">
-        <span class="subject-tag">H-7 · 9 ft 2 in</span>
+        <span class="subject-tag">EXP. 516 · H-7 · 9 ft 2 in</span>
       </div>
+    </div>
+  </section>
+  <section class="s-dossier">
+    <p class="eyebrow">Recovered from the Site 12 records room</p>
+    <h2>File 516</h2>
+    <div class="dossier">
+      <span class="stamp-top">TOP SECRET</span>
+      <span class="stamp-ironwood">PROJECT IRONWOOD</span>
+      <span class="burn" aria-hidden="true"></span>
+      <header class="dos-head">
+        <div><b>DEPARTMENT OF DEFENSE</b><br>SITE 12 // BLACKWATER WEATHER STATION</div>
+        <div class="dos-no">FILE NO. 516<br><small>COPY 2 OF 3</small></div>
+      </header>
+      <h3 class="dos-title">Experiment 516 — Subject Record</h3>
+      <dl class="dos-grid">
+        <dt>Designation</dt><dd>EXPERIMENT 516 &nbsp;/&nbsp; "SUBJECT 7"</dd>
+        <dt>Name</dt><dd>T<span class="redact" style="--w:14ch" title="REDACTED">&nbsp;</span></dd>
+        <dt>Date of birth</dt><dd><span class="redact" style="--w:10ch" title="REDACTED">&nbsp;</span>, 19<span class="redact" style="--w:2ch" title="REDACTED">&nbsp;</span></dd>
+        <dt>Age at intake</dt><dd>19</dd>
+        <dt>Volunteer no.</dt><dd>07</dd>
+        <dt>Next of kin</dt><dd><span class="redact" style="--w:9ch" title="REDACTED">&nbsp;</span> (mother) — <i>not to be contacted</i></dd>
+        <dt>Treatment</dt><dd>Serum H-7 ("GROWTH"), batch 1 through <span class="redact" style="--w:2ch" title="REDACTED">&nbsp;</span></dd>
+        <dt>Supervising officer</dt><dd>DR. H. CALLOWAY</dd>
+        <dt>Status</dt><dd class="red-ink">NOT CONTAINED</dd>
+      </dl>
+      <h4>Observations</h4>
+      <ol class="dos-log">
+        <li><b>WK 01</b> 6 ft 0 in. Good spirits. Asks about his mother.</li>
+        <li><b>WK 06</b> 6 ft 9 in. Joint pain. Bones still lengthening. <span class="redact" style="--w:22ch" title="REDACTED">&nbsp;</span></li>
+        <li><b>WK 14</b> 7 ft 11 in. Cannot lie flat. Light is painful to him. Sings at night. Staff are asked to <span class="redact" style="--w:18ch" title="REDACTED">&nbsp;</span></li>
+        <li><b>WK 23</b> 9 ft 2 in. No longer fits in his cell. <span class="redact" style="--w:30ch" title="REDACTED">&nbsp;</span></li>
+        <li><b>WK 31</b> Moved to the maintenance tunnels. Stopped answering to his name.</li>
+        <li class="missing"><b>WK 3?</b> <span class="faded">Subject was seen speaking with Volunteer 14 thr</span></li>
+      </ol>
+      <p class="torn-note">[ PAGES 4–9 MISSING ]</p>
+      <h4>Recommendation</h4>
+      <p class="dos-text">Experiment 516 is to be <span class="redact" style="--w:12ch" title="REDACTED">&nbsp;</span>. Under no circumstances is the subject to be <span class="redact" style="--w:20ch" title="REDACTED">&nbsp;</span>. If containment fails, seal Level B regardless of <span class="redact" style="--w:16ch" title="REDACTED">&nbsp;</span>.</p>
+      <p class="dos-text">Guard on duty that night: C. <span class="redact" style="--w:7ch" title="REDACTED">&nbsp;</span>.</p>
+      <footer class="dos-foot"><span>Signed: <span class="redact" style="--w:14ch" title="REDACTED">&nbsp;</span></span><span>Date: <span class="redact" style="--w:4ch" title="REDACTED">&nbsp;</span> 1999</span></footer>
     </div>
   </section>
   <div class="pager"><a href="#deepwell">← The Game</a><a href="#files">The Files →</a></div>
@@ -2027,4 +2095,9 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     document.querySelectorAll(".news-card").forEach(c => { c.hidden = f !== "all" && c.dataset.kind !== f; });
   }));
 })();
+
+// Cards that point at a part of a page scroll to it.
+document.querySelectorAll("[data-jump]").forEach(a => a.addEventListener("click", () => {
+  setTimeout(() => { const t = document.querySelector("." + a.dataset.jump); if (t) t.scrollIntoView({ behavior: "smooth" }); }, 80);
+}));
 </script>
