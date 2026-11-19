@@ -1,5 +1,10 @@
 <meta charset="utf-8">
 <title>Deep Static Games</title>
+<!--
+  SITE 12 // STAFF NOTICE
+  The night bus arrives at 02:00. Do not look at the passengers.
+  Records terminal: knock first. The way the pipes do.
+-->
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Deep Static Games, an indie horror studio. Now making Deepwell, a 1-4 player co-op horror game.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -521,6 +526,32 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
 .card:hover { border-color: var(--signal); transform: translateY(-3px); }
 section h2 { font-size: clamp(36px, 5.5vw, 68px); }
 @media (max-width: 900px) { .op-reel { grid-template-columns: 1fr; } .title-screen { grid-template-columns: 1fr; } }
+
+/* ---------- hidden lore ---------- */
+.hidden-ink { color: var(--paper) !important; font-size: 13px !important; margin-top: 6px !important; cursor: text; }
+.hidden-ink::selection { background: #8f1017; color: #fff; }
+.cctv-scratch { position: absolute; right: 9%; bottom: 22%; background: none; border: 0; padding: 6px; cursor: crosshair;
+  font: 700 clamp(9px, 1.3vw, 15px)/1.15 var(--display); letter-spacing: .1em; color: rgba(210, 230, 200, 0.06); text-align: left; transform: rotate(-4deg); transition: color .6s; }
+.cctv-scratch:hover, .cctv-scratch:focus-visible { color: rgba(230, 245, 220, 0.75); }
+.has-secret { position: relative; }
+.doorway { position: absolute; left: 40%; top: 14%; width: 16%; height: 40%; z-index: 2; background: transparent; border: 0; cursor: zoom-in; }
+.doorway:focus-visible { outline: 1px dashed var(--signal-hot); }
+.enhance { position: absolute; inset: 0 0 auto 0; z-index: 3; margin: 12px; padding: 12px 14px; background: rgba(0,0,0,0.82); border-left: 3px solid var(--signal); font: 400 13px/1.5 var(--mono); color: var(--bone); }
+.enhance b { display: block; color: var(--signal-hot); font-weight: 500; letter-spacing: .14em; margin-bottom: 4px; }
+.enhance em { color: var(--signal-hot); }
+.secret-pill { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 40; font: 500 11px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--bone); background: rgba(10, 8, 8, 0.9); border: 1px solid var(--signal); padding: 9px 12px; }
+.secret-toast { position: fixed; left: 50%; bottom: calc(60px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 41; font: 500 13px/1.4 var(--mono); letter-spacing: .1em;
+  color: #fff; background: #5e080c; padding: 12px 18px; border: 1px solid var(--signal-hot); max-width: calc(100% - 32px); text-align: center; animation: toast 3.6s ease both; }
+@keyframes toast { 0% { opacity: 0; transform: translate(-50%, 10px); } 10%, 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
+.s-terminal { padding-block: 48px; }
+.terminal { background: #050805; border: 1px solid #1f3a22; box-shadow: 0 0 40px rgba(60, 255, 120, 0.06) inset, 0 20px 60px rgba(0,0,0,0.6); padding: 22px; min-height: 460px; display: flex; flex-direction: column; font: 400 15px/1.6 var(--mono); color: #9fe6a8; text-shadow: 0 0 6px rgba(120, 255, 150, 0.35); }
+.term-out { flex: 1; white-space: pre-wrap; overflow-wrap: anywhere; }
+.term-out .red { color: #ff6b6b; text-shadow: 0 0 6px rgba(255, 80, 80, 0.4); }
+.term-out .dim { color: #4f8a57; }
+.term-line { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+.term-line input { flex: 1; min-width: 0; background: transparent; border: 0; color: #c8ffd0; font: inherit; text-transform: uppercase; caret-color: #9fe6a8; outline: none; }
+.term-hint { color: var(--ash); font: 400 12px/1.5 var(--mono); margin-top: 12px; }
 </style>
 
 <header class="bar">
@@ -737,6 +768,7 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
         <div class="box quiet">
           <h3>Weather</h3>
           <p>Rain tonight. Rain tomorrow. Fog near the station after midnight.</p>
+          <p class="hidden-ink" data-secret="ink">They don't measure rain up there. Ask about Project IRONWOOD.</p>
         </div>
       </aside>
 
@@ -857,6 +889,7 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
           <span class="br" id="cctv-state">BOOTH DOOR: SHUT</span>
         </div>
         <div class="cctv-nosignal" id="cctv-nosignal" hidden>NO SIGNAL</div>
+        <button type="button" class="cctv-scratch" id="cctv-scratch" hidden aria-label="Something is scratched into the wall">HE KNOWS<br>THE LOCKERS<br>NOW</button>
       </div>
 
       <aside class="cctv-side">
@@ -916,6 +949,18 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
   </section>
   <div class="pager"><a href="#camera">← Cell Cam</a><a href="#footage">Footage →</a></div>
 </div>
+<div class="page" data-page="site12" hidden>
+  <section class="s-terminal">
+    <div class="terminal" id="terminal">
+      <div class="term-out" id="term-out" aria-live="polite"></div>
+      <form class="term-line" id="term-form" autocomplete="off">
+        <label for="term-in">&gt;</label>
+        <input id="term-in" type="text" spellcheck="false" aria-label="Type a command">
+      </form>
+    </div>
+    <p class="term-hint">Type HELP. You found the records terminal of Site 12. Nobody else knows it's here.</p>
+  </section>
+</div>
 <div class="page" data-page="footage" hidden>
   <section class="s-footage">
     <p class="eyebrow">From the game</p>
@@ -926,7 +971,7 @@ section h2 { font-size: clamp(36px, 5.5vw, 68px); }
       <figure class="big"><img src="media/car.jpg" alt="Eli and Cole in the front seats of the car, driving down a forest road at night." loading="lazy"><figcaption><b>The drive in.</b> Pick your character from inside the car.</figcaption></figure>
       <figure class="tall"><img src="media/trunk.jpg" alt="Cole hands Eli a pistol by the car's trunk." loading="lazy"><figcaption><b>At the trunk.</b> "Safety on until you need it."</figcaption></figure>
       <figure class="half"><img src="media/office.jpg" alt="An abandoned office with a checkered floor, a wooden desk and a red emergency light." loading="lazy"><figcaption><b>Inside the station.</b> The power still works.</figcaption></figure>
-      <figure class="half"><img src="media/blood.jpg" alt="Fresh blood on the walls and floor of a hallway, seen by flashlight." loading="lazy"><figcaption><b>The blood is fresh.</b> Someone was here tonight.</figcaption></figure>
+      <figure class="half has-secret"><button type="button" class="doorway" data-secret="doorway" aria-label="Look closer at the dark doorway"></button><div class="enhance" hidden><b>ENHANCED · CAM 4</b>Something is standing in the doorway.<br>Top of the frame: 11 ft.<br><em>It was watching the camera.</em></div><img src="media/blood.jpg" alt="Fresh blood on the walls and floor of a hallway, seen by flashlight." loading="lazy"><figcaption><b>The blood is fresh.</b> Someone was here tonight.</figcaption></figure>
       <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:50</span><img src="media/monster_peek.jpg" alt="Behind a filing cabinet by the stairwell door, something pale and very tall." loading="lazy"><figcaption><b>Camera 4.</b> Something by the stairwell door.</figcaption></figure>
       <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_hall.jpg" alt="Subject 7 standing at the back of the bloody room, long arms hanging to its knees." loading="lazy"><figcaption><b>Camera 4.</b> It's standing up now.</figcaption></figure>
       <figure class="big dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_close.jpg" alt="Subject 7 up close in the flashlight: a skeletal body, a torn cloth, clawed hands." loading="lazy"><figcaption><b>Last frame.</b> The camera was knocked down a second later.</figcaption></figure>
@@ -1659,6 +1704,7 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         later(() => { nosig.hidden = false; hiss(900, 0.2); }, 650);
         later(() => {
           nosig.hidden = true; feed("empty"); box.classList.remove("alarm");
+          document.getElementById("cctv-scratch").hidden = false;
           state.textContent = "CELL DOOR: LOCKED";
           note("Cell 7 is empty. The door is still locked.");
           booth.hidden = true; reset.hidden = false;
@@ -1679,6 +1725,161 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     step = 0; booth.disabled = false; booth.hidden = false; reset.hidden = true;
     booth.textContent = "Open the booth door"; state.textContent = "BOOTH DOOR: SHUT";
     hiss(300, 0.15); burst(300); feed("wall"); note("Feed reset. Subject is back in the corner.");
+    document.getElementById("cctv-scratch").hidden = true;
   });
+})();
+
+// ---------------------------------------------------------------- hidden lore
+// Five secrets, all tied to the game. Found ones are remembered in this browser.
+(function () {
+  const ALL = {
+    ink: "Hidden ink in the Courier: Project IRONWOOD.",
+    lockers: "Scratched in Cell 7: he knows the lockers now.",
+    doorway: "Camera 4, enhanced: something 11 ft tall in the doorway.",
+    knock: "Four knocks. Wait. Four knocks. A terminal answers.",
+    ironwood: "You opened the Site 12 records.",
+  };
+  const store = {
+    get() { try { return JSON.parse(localStorage.getItem("ds-secrets") || "[]"); } catch (e) { return []; } },
+    set(v) { try { localStorage.setItem("ds-secrets", JSON.stringify(v)); } catch (e) {} },
+  };
+  let found = new Set(store.get().filter(k => ALL[k]));
+  let pill = null;
+  function showPill() {
+    if (!found.size) return;
+    if (!pill) { pill = document.createElement("div"); pill.className = "secret-pill"; document.body.append(pill); }
+    pill.textContent = "Secrets found " + found.size + " / " + Object.keys(ALL).length;
+  }
+  window.foundSecret = function (key) {
+    if (!ALL[key] || found.has(key)) return;
+    found.add(key); store.set([...found]); showPill();
+    const t = document.createElement("div"); t.className = "secret-toast"; t.setAttribute("role", "status");
+    t.textContent = "SECRET FOUND  ·  " + ALL[key];
+    document.body.append(t); setTimeout(() => t.remove(), 3700);
+  };
+  showPill();
+
+  // 1. Select the hidden ink in the newspaper.
+  document.addEventListener("selectionchange", () => {
+    const sel = String(window.getSelection() || "");
+    if (sel.toUpperCase().includes("IRONWOOD")) window.foundSecret("ink");
+  });
+  // 2. The scratches in the empty cell.
+  const scratch = document.getElementById("cctv-scratch");
+  if (scratch) ["mouseenter", "focus", "click"].forEach(ev => scratch.addEventListener(ev, () => window.foundSecret("lockers")));
+  // 3. The doorway on camera 4.
+  document.querySelectorAll(".doorway").forEach(b => b.addEventListener("click", () => {
+    const box = b.parentElement.querySelector(".enhance");
+    box.hidden = !box.hidden;
+    window.foundSecret("doorway");
+  }));
+  // 4. Knock on the studio logo: four knocks, wait, four knocks.
+  const brand = document.querySelector(".brand");
+  let knocks = [];
+  brand.addEventListener("click", e => {
+    const now = performance.now();
+    knocks = knocks.filter(t => now - t < 9000); knocks.push(now);
+    const groups = []; let g = [knocks[0]];
+    for (let i = 1; i < knocks.length; i++) { if (knocks[i] - knocks[i - 1] > 900) { groups.push(g); g = []; } g.push(knocks[i]); }
+    groups.push(g);
+    const n = groups.map(x => x.length);
+    if (n.length >= 2 && n[n.length - 1] === 4 && n[n.length - 2] === 4) {
+      e.preventDefault(); knocks = [];
+      window.foundSecret("knock");
+      location.hash = "site12";
+    }
+  });
+  // When you leave the tab, the page notices.
+  const realTitle = document.title;
+  document.addEventListener("visibilitychange", () => { document.title = document.hidden ? "...come back" : realTitle; });
+
+  // 5. The Site 12 records terminal.
+  const out = document.getElementById("term-out"), form = document.getElementById("term-form"), input = document.getElementById("term-in");
+  let unlocked = found.has("ironwood");
+  const FILES = {
+    "INTAKE_2015.TXT": [
+      "LEVEL B INTAKE // 2015 // DO NOT FORWARD",
+      "",
+      "AUG 14  MARSH, D. (41)     at the vault door. Press badge taken.  -> LEVEL B",
+      "AUG 22  ALVAREZ, R. (58)   ridge trail, off the path.            -> LEVEL B",
+      "AUG 29  GREER, T. (33)     cut the fence at the county line.     -> LEVEL B",
+      "SEP 12  DOSS, K. (19)      came to the gate on a dare.           -> LEVEL B",
+      "SEP 26  PRATT, O. (27)     truck left running on the road.       -> LEVEL B",
+      "OCT 01  BELL, M. (21)      video camera. CAMERA NOT RECOVERED.   -> LEVEL D",
+      "OCT 01  PARK, J. (20)      with BELL, M.                         -> LEVEL D",
+      "OCT 08  REYES, M. (21)     Army Reserve. Uniform jacket.",
+      "                           Asked for his brother by name.",
+      "                           STATUS: ALIVE                         -> LEVEL D",
+    ],
+    "CAMERA_4.TXT": [
+      "CAMERA 4 // CELL 7 // TUNNEL JUNCTION",
+      "",
+      "03:14  Subject in the corner, facing the wall.",
+      "03:14  Booth door opened. Subject turned to face the glass.",
+      "03:15  Subject is directly under the camera.",
+      "03:15  Signal lost.",
+      "03:16  Cell empty. Door still locked from the outside.",
+      "       Height of the hit on the lens: 11 ft.",
+    ],
+    "LEVEL_D.TXT": [
+      "LEVEL D",
+      "",
+      "Level D is not on any map of Site 12.",
+      "The elevator only goes down there when two launch keys",
+      "are turned at the same time. Nobody goes alone.",
+      "",
+      "PROJECT IRONWOOD: CLOSED 1999.",
+      "PROJECT ECHO:     ACTIVE.",
+    ],
+    "NOTE.TXT": [
+      "If you are reading this you got further than most.",
+      "",
+      "He hates light. A flash in the face makes him stop.",
+      "Bullets slow it down. They do not stop it.",
+      "If the dripping stops, get in a locker and don't breathe.",
+      "And if he sees you hide... he remembers where.",
+    ],
+  };
+  function print(lines, cls) {
+    (Array.isArray(lines) ? lines : [lines]).forEach(l => {
+      const d = document.createElement("div"); if (cls) d.className = cls; d.textContent = l; out.append(d);
+    });
+    out.parentElement.scrollTop = out.parentElement.scrollHeight;
+  }
+  function boot() {
+    out.innerHTML = "";
+    print(["SITE 12 // RECORDS TERMINAL // BLACKWATER WEATHER STATION", "LINK: LEVEL B RELAY ... OK", ""], "dim");
+    if (unlocked) print(["CLEARANCE: IRONWOOD. Type LIST."]);
+    else print(["THIS TERMINAL IS LOCKED.", "ENTER THE PROJECT NAME TO CONTINUE."], "red");
+  }
+  function run(cmd) {
+    print("> " + cmd, "dim");
+    const c = cmd.trim().toUpperCase();
+    if (!unlocked) {
+      if (c === "IRONWOOD" || c === "PROJECT IRONWOOD") {
+        unlocked = true; window.foundSecret("ironwood");
+        print(["ACCESS GRANTED. CLEARANCE: IRONWOOD.", "Type LIST to see the files."]);
+      } else if (c === "HELP") {
+        print(["The project's name was printed in the local paper, in ink you can't see."]);
+      } else {
+        print("ACCESS DENIED.", "red");
+      }
+      return;
+    }
+    if (c === "HELP") print(["LIST           the files", "OPEN <FILE>    read one (OPEN NOTE.TXT)", "CLEAR          clear the screen", "EXIT           leave"]);
+    else if (c === "LIST" || c === "LS" || c === "DIR") print(Object.keys(FILES).map(f => "  " + f));
+    else if (c.startsWith("OPEN ") || c.startsWith("READ ") || c.startsWith("CAT ")) {
+      let name = c.split(/\s+/)[1] || "";
+      if (!name.includes(".")) name += ".TXT";
+      if (FILES[name]) print(FILES[name]); else print("NO SUCH FILE: " + name, "red");
+    } else if (c === "CLEAR") boot();
+    else if (c === "EXIT" || c === "QUIT") location.hash = "home";
+    else if (c === "MATEO" || c === "REYES") print(["REYES, M. STATUS: ALIVE. LOCATION: LEVEL D.", "He keeps asking for his brother."]);
+    else if (c === "ECHO") print(["PROJECT ECHO: ACTIVE.", "You do not have clearance for this file."], "red");
+    else print("UNKNOWN COMMAND. Type HELP.", "red");
+  }
+  form.addEventListener("submit", e => { e.preventDefault(); const v = input.value; input.value = ""; if (v.trim()) run(v); });
+  boot();
+  window.addEventListener("hashchange", () => { if (location.hash === "#site12") setTimeout(() => input.focus(), 300); });
 })();
 </script>
