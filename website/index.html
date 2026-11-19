@@ -469,6 +469,36 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
   .snd { position: absolute; top: 14px; right: max(16px, env(safe-area-inset-right, 0px)); }
   .bar .wrap { position: relative; }
 }
+
+/* ---------- cell 7 camera ---------- */
+[hidden] { display: none !important; }
+.cctv-wrap { display: grid; grid-template-columns: 1fr 320px; gap: 24px; margin-top: 32px; align-items: start; }
+.cctv-wrap > * { min-width: 0; }
+.cctv { position: relative; aspect-ratio: 16 / 9; max-width: 100%; overflow: hidden; background: #000; border: 10px solid #1b1a18; border-radius: 6px; box-shadow: inset 0 0 0 1px #000, 0 0 0 1px var(--rule), 0 20px 50px rgba(0,0,0,0.6); }
+.cctv img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(1) sepia(0.35) hue-rotate(55deg) saturate(1.7) contrast(1.35) brightness(1.25); animation: jitter 6s steps(1) infinite; }
+@keyframes jitter { 0%, 100% { transform: none; } 41% { transform: translate(-2px, 1px); } 42% { transform: none; } 77% { transform: translate(1px, -1px) scale(1.003); } 78% { transform: none; } }
+.cctv canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.16; mix-blend-mode: screen; image-rendering: pixelated; }
+.cctv-scan { position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.28) 2px 3px), radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.75) 100%); pointer-events: none; }
+.cctv-band { position: absolute; left: 0; right: 0; height: 18%; background: linear-gradient(rgba(200,255,200,0), rgba(200,255,200,0.07), rgba(200,255,200,0)); animation: band 7s linear infinite; pointer-events: none; }
+@keyframes band { from { top: -20%; } to { top: 110%; } }
+.cctv-ui span { position: absolute; font: 500 clamp(10px, 1.4vw, 14px)/1 var(--mono); letter-spacing: 0.1em; color: #e6f2df; text-shadow: 0 0 6px rgba(160,255,160,0.5), 0 1px 1px #000; }
+.cctv-ui .tl { top: 14px; left: 16px; } .cctv-ui .tr { top: 14px; right: 16px; display: flex; gap: 6px; align-items: center; }
+.cctv-ui .bl { bottom: 14px; left: 16px; font-variant-numeric: tabular-nums; } .cctv-ui .br { bottom: 14px; right: 16px; }
+.cctv-ui .tr i { width: 9px; height: 9px; border-radius: 50%; background: #ff3b3b; animation: blink 1.2s steps(2) infinite; }
+.cctv.alarm .cctv-ui .br { color: #ff6b6b; }
+.cctv-nosignal { position: absolute; inset: 0; display: grid; place-items: center; background: #050605; font: 700 clamp(28px, 6vw, 64px)/1 var(--display); letter-spacing: 0.3em; color: #d9e6d4; text-shadow: 0 0 12px rgba(160,255,160,0.5); }
+.cctv.burst canvas { opacity: 0.85; }
+.cctv.burst img { filter: grayscale(1) contrast(2) brightness(1.6); transform: translateX(-6px) skewX(-3deg); }
+.cctv-side { border: 1px solid var(--rule); background: var(--panel); padding: 18px; display: grid; gap: 14px; }
+.cctv-btns { display: grid; gap: 10px; }
+.cctv-btns .btn { justify-content: center; }
+.cctv-side h3 { font-size: 18px; letter-spacing: 0.1em; }
+.cctv-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font: 400 13px/1.5 var(--mono); color: var(--ash); max-height: 360px; overflow-y: auto; }
+.cctv-log time { display: block; color: var(--signal-hot); letter-spacing: 0.1em; font-size: 11px; }
+.cctv-log li.new { color: var(--bone); animation: flick 0.6s steps(1) 1; }
+@media (max-width: 900px) { .cctv-wrap { grid-template-columns: 1fr; } .cctv { border-width: 6px; } }
+@media (prefers-reduced-motion: reduce) { .cctv img, .cctv-band, .cctv-ui .tr i { animation: none; } }
 </style>
 
 <header class="bar">
@@ -482,6 +512,7 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
       <a href="#deepwell">Deepwell</a>
       <a href="#news">Newspaper</a>
       <a href="#characters">Characters</a>
+      <a href="#camera">Cell Cam</a>
       <a href="#archive">Archive</a>
       <a href="#footage">Footage</a>
       <a href="#studio">Studio</a>
@@ -765,7 +796,45 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
       </div>
     </div>
   </section>
-  <div class="pager"><a href="#news">← Newspaper</a><a href="#archive">Archive →</a></div>
+  <div class="pager"><a href="#news">← Newspaper</a><a href="#camera">Cell Cam →</a></div>
+</div>
+<div class="page" data-page="camera" hidden>
+  <section class="s-camera">
+    <p class="eyebrow">Observation booth 2 · live feed</p>
+    <h1 class="page-title">Cell 7</h1>
+    <p class="lede">This camera still works. It looks into the cell where they kept Subject 7. The staff log says to keep the booth door shut.</p>
+
+    <div class="cctv-wrap">
+      <div class="cctv" id="cctv" aria-live="polite">
+        <img id="cctv-img" src="media/cell_wall.jpg" alt="Security camera view of a dark cinder-block cell. A very tall, skeletal figure stands in the far corner, facing the wall.">
+        <canvas id="cctv-noise" width="320" height="180" aria-hidden="true"></canvas>
+        <div class="cctv-scan" aria-hidden="true"></div>
+        <div class="cctv-band" aria-hidden="true"></div>
+        <div class="cctv-ui" aria-hidden="true">
+          <span class="tl">CAM 07 · CELL 7 · SUBJ. 7 (H-7)</span>
+          <span class="tr"><i></i>REC</span>
+          <span class="bl" id="cctv-clock">OCT 22 2015 03:14:00</span>
+          <span class="br" id="cctv-state">BOOTH DOOR: SHUT</span>
+        </div>
+        <div class="cctv-nosignal" id="cctv-nosignal" hidden>NO SIGNAL</div>
+      </div>
+
+      <aside class="cctv-side">
+        <div class="cctv-btns">
+          <button class="btn solid" type="button" id="booth">Open the booth door</button>
+          <button class="btn" type="button" id="cctv-reset" hidden>Reset the feed</button>
+        </div>
+        <h3>Observation log</h3>
+        <ol class="cctv-log" id="cctv-log">
+          <li><time>WK 18</time>Subject stands in the corner facing the wall for 9 hrs. Does not sleep.</li>
+          <li><time>WK 20</time>Subject has learned the booth is staffed. Turns to face the glass when the booth door opens. We now keep the door shut.</li>
+          <li><time>WK 22</time>The booth door only stays open while someone stands on the plate outside. Two-man rule. Nobody goes in alone.</li>
+          <li><time>WK 25</time>Subject tapped on the glass. Four times.</li>
+        </ol>
+      </aside>
+    </div>
+  </section>
+  <div class="pager"><a href="#characters">← Characters</a><a href="#archive">Archive →</a></div>
 </div>
 <div class="page" data-page="archive" hidden>
   <section class="s-archive">
@@ -805,7 +874,7 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
       </button>
     </div>
   </section>
-  <div class="pager"><a href="#characters">← Characters</a><a href="#footage">Footage →</a></div>
+  <div class="pager"><a href="#camera">← Cell Cam</a><a href="#footage">Footage →</a></div>
 </div>
 <div class="page" data-page="footage" hidden>
   <section class="s-footage">
@@ -1493,6 +1562,95 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     b.setAttribute("aria-pressed", on ? "true" : "false");
     b.textContent = on ? "Sound on" : "Sound off";
     try { on ? start() : stop(); } catch (e) { b.textContent = "No sound"; }
+  });
+})();
+
+// ---------------------------------------------------------------- cell 7 camera
+(function () {
+  const box = document.getElementById("cctv"); if (!box) return;
+  const img = document.getElementById("cctv-img"), noise = document.getElementById("cctv-noise");
+  const clock = document.getElementById("cctv-clock"), state = document.getElementById("cctv-state");
+  const nosig = document.getElementById("cctv-nosignal"), log = document.getElementById("cctv-log");
+  const booth = document.getElementById("booth"), reset = document.getElementById("cctv-reset");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const FEEDS = {
+    wall: ["media/cell_wall.jpg", "Security camera view of a dark cell. A very tall, skeletal figure stands in the far corner, facing the wall."],
+    turned: ["media/cell_turned.jpg", "The tall figure has turned around. It is facing the camera."],
+    close: ["media/cell_close.jpg", "The figure is right under the camera, looking up into it."],
+    empty: ["media/cell_empty.jpg", "The cell is empty. The door is still shut."],
+  };
+  ["turned", "close", "empty"].forEach(k => { const i = new Image(); i.src = FEEDS[k][0]; });
+
+  // the camera's own clock: starts at 03:14 and keeps running
+  const start = Date.now();
+  setInterval(() => {
+    const s = 14 * 60 + Math.floor((Date.now() - start) / 1000);
+    clock.textContent = "OCT 22 2015 03:" + String(Math.floor(s / 60) % 60).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+  }, 250);
+
+  // live static
+  const g = noise.getContext("2d"), nimg = g.createImageData(noise.width, noise.height);
+  function snow() {
+    for (let i = 0; i < nimg.data.length; i += 4) { const v = Math.random() * 255; nimg.data[i] = v * 0.8; nimg.data[i + 1] = v; nimg.data[i + 2] = v * 0.8; nimg.data[i + 3] = 255; }
+    g.putImageData(nimg, 0, 0);
+  }
+  snow(); if (!reduce) setInterval(() => { if (!box.closest(".page").hidden) snow(); }, 80);
+
+  let audio = null;
+  function hiss(ms, vol) {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      const n = Math.floor(audio.sampleRate * ms / 1000), buf = audio.createBuffer(1, n, audio.sampleRate), d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+      const src = audio.createBufferSource(), gn = audio.createGain(); gn.gain.value = vol;
+      src.buffer = buf; src.connect(gn); gn.connect(audio.destination); src.start();
+    } catch (e) {}
+  }
+  function feed(name) { img.src = FEEDS[name][0]; img.alt = FEEDS[name][1]; }
+  function burst(ms) { box.classList.add("burst"); setTimeout(() => box.classList.remove("burst"), ms); }
+  function note(text) {
+    const li = document.createElement("li"); li.className = "new";
+    const t = document.createElement("time"); t.textContent = clock.textContent.slice(-8);
+    li.append(t, text); log.append(li); log.scrollTop = log.scrollHeight;
+  }
+
+  let step = 0, timers = [];
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+  booth.addEventListener("click", () => {
+    if (step === 0) {
+      step = 1;
+      state.textContent = "BOOTH DOOR: OPEN"; box.classList.add("alarm");
+      booth.textContent = "Close the booth door";
+      hiss(250, 0.15); burst(250);
+      later(() => { feed("turned"); note("Booth door opened. Subject turned to face the glass."); }, 260);
+      // if you leave the door open, he comes to the camera
+      later(() => {
+        if (step !== 1) return;
+        step = 2; booth.disabled = true;
+        hiss(500, 0.3); burst(500); feed("close"); note("Subject is directly under the camera.");
+        later(() => { nosig.hidden = false; hiss(900, 0.2); }, 650);
+        later(() => {
+          nosig.hidden = true; feed("empty"); box.classList.remove("alarm");
+          state.textContent = "CELL DOOR: LOCKED";
+          note("Cell 7 is empty. The door is still locked.");
+          booth.hidden = true; reset.hidden = false;
+          if (window.glimpse) setTimeout(window.glimpse, 2500);
+        }, 2600);
+      }, 6000);
+    } else if (step === 1) {
+      step = 0;
+      timers.forEach(clearTimeout); timers = [];
+      state.textContent = "BOOTH DOOR: SHUT"; box.classList.remove("alarm");
+      booth.textContent = "Open the booth door";
+      hiss(200, 0.12); burst(200);
+      later(() => { feed("wall"); note("Booth door shut. Subject faces the wall again."); }, 220);
+    }
+  });
+  reset.addEventListener("click", () => {
+    timers.forEach(clearTimeout); timers = [];
+    step = 0; booth.disabled = false; booth.hidden = false; reset.hidden = true;
+    booth.textContent = "Open the booth door"; state.textContent = "BOOTH DOOR: SHUT";
+    hiss(300, 0.15); burst(300); feed("wall"); note("Feed reset. Subject is back in the corner.");
   });
 })();
 </script>
