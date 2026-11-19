@@ -373,15 +373,11 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
 .subject { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
 .subject > * { min-width: 0; }
 .subject p { color: var(--ash); }
-.subject-box { position: relative; background: radial-gradient(circle at 50% 45%, #1a1010, #050303 70%); border: 1px solid var(--rule); display: grid; place-items: center; padding: 24px; aspect-ratio: 4 / 5; max-width: 100%; overflow: hidden; }
-.subject-box img { width: 78%; height: auto; filter: brightness(0.07) contrast(1.4); transition: filter 0.25s; }
-.subject-box:hover img, .subject-box.lit img { filter: brightness(0.62) contrast(1.1); }
-.subject-box.lit { background: radial-gradient(circle at 50% 40%, #3a2e26, #050303 70%); }
+.subject-box { position: relative; background: radial-gradient(circle at 50% 42%, #3b2b26, #0c0808 72%); border: 1px solid var(--rule); display: grid; place-items: center; padding: 24px; aspect-ratio: 4 / 5; max-width: 100%; overflow: hidden; }
+.subject-box img { width: 82%; height: auto; }
 .subject-tag { position: absolute; left: 14px; bottom: 12px; font: 500 11px/1 var(--mono); letter-spacing: 0.16em; color: var(--signal-hot); }
 
 /* footage: dark shots that light up */
-.footage figure.dark img { filter: brightness(0.32); transition: filter 0.3s; }
-.footage figure.dark:hover img, .footage figure.dark:focus-within img { filter: none; }
 .footage figure { position: relative; }
 .footage .stamp { position: absolute; top: 10px; left: 12px; font: 500 11px/1 var(--mono); letter-spacing: 0.14em; color: var(--bone); text-shadow: 0 1px 2px #000; display: flex; gap: 6px; align-items: center; }
 .footage .stamp::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--signal-hot); animation: blink 1.4s steps(2) infinite; }
@@ -718,7 +714,6 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
         <h2>Subject 7</h2>
         <p>The files don't use his name anymore. Week 1 he was six feet tall. By week 23 he was over nine feet and didn't fit in his cell. Then they moved him to the tunnels.</p>
         <p>He hates light. He hears radios, doors and running. And if he sees you hide, he remembers where.</p>
-        <button class="btn" type="button" id="shine" aria-pressed="false">Shine your flashlight</button>
       </div>
       <div class="subject-box" id="subject-box">
         <img src="media/monster_cutout.webp" alt="Subject 7: a skeletal, impossibly tall figure with long clawed arms and a torn cloth around its waist." width="420" height="576" loading="lazy">
@@ -777,7 +772,7 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
       <figure class="tall"><img src="media/trunk.jpg" alt="Cole hands Eli a pistol by the car's trunk." loading="lazy"><figcaption><b>At the trunk.</b> "Safety on until you need it."</figcaption></figure>
       <figure class="half"><img src="media/office.jpg" alt="An abandoned office with a checkered floor, a wooden desk and a red emergency light." loading="lazy"><figcaption><b>Inside the station.</b> The power still works.</figcaption></figure>
       <figure class="half"><img src="media/blood.jpg" alt="Fresh blood on the walls and floor of a hallway, seen by flashlight." loading="lazy"><figcaption><b>The blood is fresh.</b> Someone was here tonight.</figcaption></figure>
-      <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:50</span><img src="media/monster_peek.jpg" alt="Behind a filing cabinet by the stairwell door, something pale and very tall." loading="lazy"><figcaption><b>Camera 4.</b> Something by the stairwell door. Hover to brighten.</figcaption></figure>
+      <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:50</span><img src="media/monster_peek.jpg" alt="Behind a filing cabinet by the stairwell door, something pale and very tall." loading="lazy"><figcaption><b>Camera 4.</b> Something by the stairwell door.</figcaption></figure>
       <figure class="half dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_hall.jpg" alt="Subject 7 standing at the back of the bloody room, long arms hanging to its knees." loading="lazy"><figcaption><b>Camera 4.</b> It's standing up now.</figcaption></figure>
       <figure class="big dark" tabindex="0"><span class="stamp">CAM 4 · 03:51</span><img src="media/monster_close.jpg" alt="Subject 7 up close in the flashlight: a skeletal body, a torn cloth, clawed hands." loading="lazy"><figcaption><b>Last frame.</b> The camera was knocked down a second later.</figcaption></figure>
       <figure class="tall"><span class="splat corner2" data-kind="splat" data-seed="3" aria-hidden="true"></span><img src="media/blood.jpg" alt="Blood smeared across the floor toward the stairwell door." loading="lazy"><figcaption><b>The trail.</b> It leads to the stairwell.</figcaption></figure>
