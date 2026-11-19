@@ -31,4 +31,24 @@ func _ready() -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _show_title() -> void:
-	get_tree().call_group("player_hud", "show_message", title.replace("\n", ":  "))
+	# Big, in the middle of the screen, for a few seconds.
+	var layer := CanvasLayer.new()
+	layer.layer = 60
+	add_child(layer)
+	var label := Label.new()
+	label.text = title.replace("\n", ": ")
+	label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 46)
+	label.add_theme_color_override("font_color", Color("d9d3c1"))
+	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	label.add_theme_constant_override("outline_size", 10)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.modulate.a = 0.0
+	layer.add_child(label)
+	var tween := create_tween()
+	tween.tween_property(label, "modulate:a", 1.0, 1.0)
+	tween.tween_interval(3.0)
+	tween.tween_property(label, "modulate:a", 0.0, 1.2)
+	tween.tween_callback(layer.queue_free)

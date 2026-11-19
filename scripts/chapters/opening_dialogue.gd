@@ -98,7 +98,10 @@ var SPEAKER_IDS := {
 
 func _ready() -> void:
 	_real_trunk_pistols()
-	if not auto_play or GameState.checkpoint_order != 0 or GameState.from_save or not multiplayer.is_server():
+	# The team already met and grabbed their gear in the opening (the gas
+	# station and the trunk), so this arrival talk is only for older starts.
+	if not auto_play or GameState.opening_played or GameState.checkpoint_order != 0 or GameState.from_save \
+			or not multiplayer.is_server():
 		return
 	await _wait_for_intro()
 	_trigger_dialogue.rpc()

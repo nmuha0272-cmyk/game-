@@ -27,6 +27,12 @@ var home: Node3D
 var _lobby_for_car_select := false
 ## Network ids of the players whose car has reached the gate.
 var _arrived_ids := {}
+## Where the host's opening is: "menu", "road", "meeting" or "select".
+var _opening_phase := "menu"
+## Host: who voted to skip the cutscene that's playing (network id -> true).
+var _skip_votes := {}
+## Client: the host put us into the opening (we joined while it was playing).
+var _joined_opening := false
 
 @onready var level_root: Node = $Level
 @onready var opening_cutscene = $OpeningCutscene
@@ -51,6 +57,7 @@ func _ready() -> void:
 	NetworkManager.connected_to_server.connect(_on_connected_to_server)
 	NetworkManager.connection_failed.connect(_on_connection_failed)
 	NetworkManager.server_disconnected.connect(_on_server_disconnected)
+	multiplayer.peer_connected.connect(_on_peer_connected)
 	GameState.game_started.connect(_on_game_started)
 	GameState.restart_requested.connect(_restart_level)
 	GameState.chapter_completed.connect(_on_chapter_completed)
@@ -98,6 +105,12 @@ func _open_home(message := "") -> void:
 	ui.settings_requested.connect(settings_menu.open)
 	home.character_confirmed.connect(_on_home_character)
 	home.arrived.connect(_on_home_arrived)
+	home.step_started.connect(_on_home_step)
+	home.skip_vote.connect(_on_home_skip_vote)
+	home.pick_requested.connect(_on_home_pick)
+	home.ready_toggled.connect(GameState.request_set_ready)
+	home.start_requested.connect(_on_home_start)
+	home.follow = multiplayer.has_multiplayer_peer() and not multiplayer.is_server()
 	if not message.is_empty():
 		ui.show_status(message, true)
 
@@ -196,17 +209,129 @@ func _everyone_arrived() -> bool:
 	return true
 
 
-## Seats other players already picked show as TAKEN in the car.
+## Tells the trunk screen who picked whom (PLAYER 1, 2...), who's ready, and
+## whether the host can start. Characters other players picked show TAKEN.
 func _update_home_taken() -> void:
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server() and not _skip_votes.is_empty():
+		# Someone left: drop their vote, and maybe everyone left has voted.
+		for id: int in _skip_votes.keys():
+			if not GameState.players.has(id):
+				_skip_votes.erase(id)
+		if not _skip_votes.is_empty() and _skip_votes.size() >= GameState.players.size() and is_instance_valid(home):
+			_skip_votes.clear()
+			home.skip_scene()
+		_send_skip_count()
 	if not is_instance_valid(home):
 		return
 	var mine := multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else 1
-	for seat: String in HOME_CHARACTERS:
-		var is_taken := false
-		for id: int in GameState.players:
-			if id != mine and GameState.players[id].character == HOME_CHARACTERS[seat]:
-				is_taken = true
-		home.set_character_taken(seat, is_taken)
+	var team := {}
+	var number := 0
+	for id: int in GameState.players:
+		number += 1
+		var character: int = GameState.players[id].character
+		for seat: String in HOME_CHARACTERS:
+			if HOME_CHARACTERS[seat] == character:
+				team[seat] = {"player": number, "mine": id == mine, "ready": GameState.players[id].get("ready", false)}
+	var is_host := not multiplayer.has_multiplayer_peer() or multiplayer.is_server()
+	home.set_team(team, is_host and GameState.can_start() and GameState.all_ready(), is_host)
+
+
+# ---------------------------------------------------------------- the opening, together
+
+## Host: its cutscene moved on; every other screen shows the same step.
+func _on_home_step(index: int) -> void:
+	if not multiplayer.has_multiplayer_peer() or not multiplayer.is_server() or not is_instance_valid(home):
+		return
+	var phase: String = home.scene_of(index)
+	if phase != _opening_phase:
+		_opening_phase = phase
+		_skip_votes.clear()
+		_send_skip_count()
+	_home_step.rpc(index)
+
+
+@rpc("authority", "reliable")
+func _home_step(index: int) -> void:
+	if is_instance_valid(home):
+		home.net_step(index)
+
+
+## Someone held the skip button. The host's vote skips right away; otherwise
+## it skips when every player has voted.
+func _on_home_skip_vote(_voting: bool) -> void:
+	if not multiplayer.has_multiplayer_peer() or multiplayer.is_server():
+		_count_skip_vote(1)
+	else:
+		_send_skip_vote.rpc_id(1)
+
+
+@rpc("any_peer", "reliable")
+func _send_skip_vote() -> void:
+	if multiplayer.is_server():
+		_count_skip_vote(multiplayer.get_remote_sender_id())
+
+
+func _count_skip_vote(id: int) -> void:
+	_skip_votes[id] = true
+	if (id == 1 or _skip_votes.size() >= maxi(GameState.players.size(), 1)) and is_instance_valid(home):
+		_skip_votes.clear()
+		home.skip_scene()
+	_send_skip_count()
+
+
+func _send_skip_count() -> void:
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+		_skip_count.rpc(_skip_votes.size(), maxi(GameState.players.size(), 1))
+
+
+@rpc("authority", "call_local", "reliable")
+func _skip_count(count: int, total: int) -> void:
+	if is_instance_valid(home):
+		home.set_skip_votes(count, total)
+
+
+## Picked someone at the trunk ("" = put them back).
+func _on_home_pick(seat: String) -> void:
+	GameState.request_character(HOME_CHARACTERS.get(seat, Characters.Id.NONE))
+
+
+## Host pressed Start at the trunk: everyone fades to black, then Chapter 1.
+func _on_home_start() -> void:
+	if multiplayer.is_server() and GameState.can_start() and GameState.all_ready():
+		_begin_from_trunk.rpc()
+
+
+@rpc("authority", "call_local", "reliable")
+func _begin_from_trunk() -> void:
+	GameState.opening_played = true
+	if is_instance_valid(home):
+		home.fade_to_black(1.0)
+	if multiplayer.is_server():
+		await get_tree().create_timer(1.3).timeout
+		GameState.start_game()
+
+
+## Host: someone joined. If the opening is already playing, they wait on a
+## "Joining..." screen and meet the team at the trunk.
+func _on_peer_connected(id: int) -> void:
+	if not multiplayer.is_server() or _opening_phase == "menu" or GameState.game_in_progress:
+		return
+	_sync_join.rpc_id(id, _opening_phase)
+
+
+@rpc("authority", "reliable")
+func _sync_join(phase: String) -> void:
+	_joined_opening = true
+	_lobby_for_car_select = false
+	lobby.hide()
+	menu.hide()
+	_open_home()
+	home.follow = true
+	if phase == "select":
+		home.enter_select_now()
+	else:
+		home.show_joining()
+	_update_home_taken()
 
 
 func _on_host_requested() -> void:
@@ -244,8 +369,13 @@ func _on_join_requested(address: String) -> void:
 
 func _on_connected_to_server() -> void:
 	get_window().title = "Subject Zero (Player %d)" % multiplayer.get_unique_id()
+	if _joined_opening:
+		return  # the host already put us into the opening
 	if is_instance_valid(home):
-		home.enter_opening()
+		# Wait in the lobby with the others until the host presses Play.
+		_lobby_for_car_select = true
+		_show_lobby()
+		lobby.set_car_select_mode(true)
 		return
 	_show_lobby()
 	# The player list arrives from the host a moment later.
@@ -265,8 +395,12 @@ func _open_opening_talk() -> void:
 	lobby.hide()
 	menu.hide()
 	_open_home()
+	_opening_phase = "road"
+	_skip_votes.clear()
 	if is_instance_valid(home):
 		home.enter_opening()
+		_update_home_taken()
+		_send_skip_count()
 
 
 @rpc("authority", "call_local", "reliable")
@@ -281,6 +415,11 @@ func _on_start_requested() -> void:
 
 func _on_game_started() -> void:
 	_lobby_for_car_select = false
+	_opening_phase = "menu"
+	if GameState.opening_played:
+		# From the trunk: black, then fade in at the gate once the level is there.
+		$ScreenFader.fade_out("", 0.01)
+		get_tree().create_timer(1.4).timeout.connect(func() -> void: $ScreenFader.fade_in(1.6))
 	_close_home()
 	lobby.hide()
 	menu.hide()
@@ -435,6 +574,9 @@ func _return_to_menu(message: String) -> void:
 	$ScreenFader.fade_in(0.1)
 	GameState.reset()
 	_lobby_for_car_select = false
+	_opening_phase = "menu"
+	_skip_votes.clear()
+	_joined_opening = false
 	get_window().title = "Subject Zero"
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	lobby.hide()

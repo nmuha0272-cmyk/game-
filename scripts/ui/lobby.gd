@@ -104,9 +104,9 @@ func refresh() -> void:
 	var is_host := multiplayer.is_server()
 	start_button.visible = is_host
 	start_button.disabled = not _car_select_mode and not GameState.can_start()
-	start_button.text = "GO TO CAR" if _car_select_mode else "Start Game"
+	start_button.text = "PLAY" if _car_select_mode else "Start Game"
 	if _car_select_mode:
-		hint_label.text = "Invite friends, then press GO TO CAR." if is_host else "Waiting for the host to take everyone to the car..."
+		hint_label.text = "Invite friends (1-4 players), then press PLAY." if is_host else "Waiting for the host to press PLAY..."
 		return
 	if GameState.get_character(my_id) == Characters.Id.NONE:
 		hint_label.text = "Pick a character."

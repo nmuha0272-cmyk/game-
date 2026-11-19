@@ -37,6 +37,12 @@ func _ready() -> void:
 	subtitles.toggled.connect(Settings.set_subtitles)
 	content.add_child(subtitles)
 
+	var full := CheckButton.new()
+	full.text = "Fullscreen"
+	full.button_pressed = Settings.fullscreen
+	full.toggled.connect(Settings.set_fullscreen)
+	content.add_child(full)
+
 	var cam_heading := Label.new()
 	cam_heading.text = "\nCamera"
 	content.add_child(cam_heading)

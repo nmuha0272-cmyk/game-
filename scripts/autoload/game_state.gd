@@ -52,7 +52,7 @@ func _ready() -> void:
 ## Host only: start a fresh list with just the host in it.
 func start_hosting() -> void:
 	reset()
-	players[1] = {"name": local_player_name, "character": Characters.Id.NONE}
+	players[1] = {"name": local_player_name, "character": Characters.Id.NONE, "ready": false}
 	players_changed.emit()
 
 
@@ -69,6 +69,7 @@ func reset() -> void:
 	from_save = false
 	continue_on_start = false
 	pending_positions = {}
+	opening_played = false
 	players_changed.emit()
 
 
@@ -125,6 +126,39 @@ func request_character(character: int) -> void:
 		_request_character.rpc_id(1, character)
 
 
+## Character select at the trunk: say you're ready (or not). The host decides.
+func request_set_ready(is_ready: bool) -> void:
+	if multiplayer.is_server():
+		_set_ready(1, is_ready)
+	else:
+		_request_ready.rpc_id(1, is_ready)
+
+
+## True when every player has picked a character and pressed Ready.
+func all_ready() -> bool:
+	if players.is_empty():
+		return false
+	for id in players:
+		if players[id].character == Characters.Id.NONE or not players[id].get("ready", false):
+			return false
+	return true
+
+
+@rpc("any_peer", "reliable")
+func _request_ready(is_ready: bool) -> void:
+	if multiplayer.is_server():
+		_set_ready(multiplayer.get_remote_sender_id(), is_ready)
+
+
+func _set_ready(id: int, is_ready: bool) -> void:
+	if game_in_progress or not players.has(id):
+		return
+	if is_ready and players[id].character == Characters.Id.NONE:
+		return  # pick someone first
+	players[id]["ready"] = is_ready
+	_send_players_to_everyone()
+
+
 ## Host only: start the game once everyone has picked.
 func start_game() -> void:
 	if can_start():
@@ -157,7 +191,7 @@ func _register(player_name: String) -> void:
 	player_name = player_name.strip_edges().left(20)
 	if player_name.is_empty():
 		player_name = "Player %d" % (players.size() + 1)
-	players[id] = {"name": player_name, "character": Characters.Id.NONE}
+	players[id] = {"name": player_name, "character": Characters.Id.NONE, "ready": false}
 	_send_players_to_everyone()
 
 
@@ -176,6 +210,8 @@ func _try_pick(id: int, character: int) -> void:
 		var owner_id := get_owner_of(character)
 		if owner_id != 0 and owner_id != id:
 			return  # Someone else already has it.
+	if players[id].character != character:
+		players[id]["ready"] = false  # changed their mind: not ready any more
 	players[id].character = character
 	_send_players_to_everyone()
 
@@ -385,6 +421,9 @@ var current_level := ""
 var from_save := false
 ## CONTINUE was pressed on the home screen: load the save when the game starts.
 var continue_on_start := false
+## True once the team played the opening (the car, the gas station and the
+## trunk): then Chapter 1 skips its own intro scenes and starts at the gate.
+var opening_played := false
 ## Host only, while loading: network ID -> where that player was standing.
 var pending_positions := {}
 

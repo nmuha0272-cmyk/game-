@@ -1,0 +1,29 @@
+{
+	"_help": "The opening cutscenes' lines. Edit the text here; no code needed. speaker: eli, cole, nora or walter. id: the voice clip name (put road_01.ogg / .wav / .mp3 in assets/audio/voice/ and it plays with the line). shot: where the camera is (road: over_cole, eli, hands, windshield, cole_window, cole; meeting: the speaker's face). pause: seconds of silence before the line. action: something a character does on that line.",
+	"road": [
+		{"id": "road_01", "speaker": "eli", "text": "You ever hear of a place called Blackwater?", "shot": "over_cole", "pause": 0.6},
+		{"id": "road_02", "speaker": "cole", "text": "Should I have?", "shot": "cole_window", "action": "cole_looks_out"},
+		{"id": "road_03", "speaker": "eli", "text": "It's a weather station. Middle of nowhere. Mateo's last text came from a gas station twenty miles from it.", "shot": "hands"},
+		{"id": "road_04", "speaker": "cole", "text": "Eli...", "shot": "cole_window"},
+		{"id": "road_05", "speaker": "eli", "text": "He's not the only one. Eight people went missing out there since August. Marcus. Jenna. A reporter. Nobody looks for them. Nobody even asks.", "shot": "over_cole"},
+		{"id": "road_06", "speaker": "cole", "text": "Some people don't want to be found.", "shot": "cole_window"},
+		{"id": "road_07", "speaker": "eli", "text": "And some people don't get a choice.", "shot": "eli"},
+		{"id": "road_08", "speaker": "cole", "text": "You've been thinking about this since the night he left.", "shot": "cole", "pause": 2.5, "action": "cole_looks_at_eli"},
+		{"id": "road_09", "speaker": "eli", "text": "Since he walked up that road in his uniform jacket and didn't come back. He's my big brother, Cole. Six minutes older. He'd come for me.", "shot": "over_cole"},
+		{"id": "road_10", "speaker": "cole", "text": "We're not doing this alone. We're meeting some people.", "shot": "cole", "pause": 1.6},
+		{"id": "road_11", "speaker": "eli", "text": "People? You said it'd be just us.", "shot": "eli"},
+		{"id": "road_12", "speaker": "cole", "text": "A reporter who's been chasing the same story. And a man who used to work there.", "shot": "cole"},
+		{"id": "road_13", "speaker": "eli", "text": "Worked there? You trust him?", "shot": "hands"},
+		{"id": "road_14", "speaker": "cole", "text": "I don't trust anybody. ...Except you, kid. Take the next left.", "shot": "cole"}
+	],
+	"meeting": [
+		{"id": "meet_01", "speaker": "nora", "text": "You're late."},
+		{"id": "meet_02", "speaker": "cole", "text": "We're here. Eli, this is Nora Vance. She's been chasing Blackwater for three years."},
+		{"id": "meet_03", "speaker": "nora", "text": "I read about your brother. I'm sorry."},
+		{"id": "meet_04", "speaker": "cole", "text": "And that's Walter."},
+		{"id": "meet_05", "speaker": "walter", "text": "I worked maintenance there. A long time ago. I know the tunnels. ...I didn't think I'd ever go back."},
+		{"id": "meet_06", "speaker": "eli", "text": "Then why are you?"},
+		{"id": "meet_07", "speaker": "walter", "text": "Because I helped build it.", "pause": 2.0},
+		{"id": "meet_08", "speaker": "cole", "text": "Gear's in the trunk. Grab what you need. We go in before sunrise.", "pause": 1.2, "action": "cole_to_trunk"}
+	]
+}

@@ -30,6 +30,8 @@ var noise_gate_threshold := 0.01
 var camera_perspective := 0
 ## Subtitles for what people say (cutscenes, the car talk, voice lines).
 var subtitles := true
+## Full screen or a window.
+var fullscreen := false
 
 ## The controls the player is allowed to change, and the name shown in the menu.
 const REMAP_ACTIONS := [
@@ -107,6 +109,19 @@ func set_noise_gate_threshold(value: float) -> void:
 	VoiceChat.set_noise_gate(value)
 	_save()
 	changed.emit()
+
+
+func set_fullscreen(value: bool) -> void:
+	fullscreen = value
+	_apply_fullscreen()
+	_save()
+	changed.emit()
+
+
+func _apply_fullscreen() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
 
 
 func set_subtitles(value: bool) -> void:
@@ -215,6 +230,9 @@ func _load() -> void:
 	noise_gate_threshold = config.get_value("settings", "noise_gate_threshold", noise_gate_threshold)
 	camera_perspective = config.get_value("settings", "camera_perspective", camera_perspective)
 	subtitles = config.get_value("settings", "subtitles", subtitles)
+	fullscreen = config.get_value("settings", "fullscreen", fullscreen)
+	if fullscreen:
+		_apply_fullscreen.call_deferred()
 	_controls.clear()
 	for pair in REMAP_ACTIONS:
 		var action: String = pair[0]
@@ -238,6 +256,7 @@ func _save() -> void:
 	config.set_value("settings", "noise_gate_threshold", noise_gate_threshold)
 	config.set_value("settings", "camera_perspective", camera_perspective)
 	config.set_value("settings", "subtitles", subtitles)
+	config.set_value("settings", "fullscreen", fullscreen)
 	for action in _controls:
 		config.set_value("input", action, _controls[action])
 	config.save(SAVE_PATH)
