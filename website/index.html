@@ -669,6 +669,39 @@ nav[aria-label=Pages] a:hover, nav[aria-label=Pages] a[aria-current="page"] { co
 .file-photo img { width: 100%; height: auto; display: block; }
 .dos-grid { padding-right: 170px; }
 @media (max-width: 640px) { .file-photo { position: static; width: 140px; margin: 14px 0 0 auto; } .dos-grid { padding-right: 0; } }
+
+/* ---------- polish round ---------- */
+.nw { white-space: nowrap; }
+html, body { overflow-x: clip; }
+.hero { padding-block: 0; margin-inline: calc(50% - 50vw); }
+.torch { height: clamp(480px, 72vh, 760px); border: 0; border-bottom: 1px solid var(--rule); --r: 1.35; }
+.torch-img { filter: brightness(1.25) contrast(1.05); }
+.hero-text { padding: 48px max(32px, calc((100vw - 1240px) / 2 + 16px)); background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,.5) 55%, rgba(0,0,0,0)); }
+.hero-title { font-size: clamp(80px, 17vw, 220px); }
+.stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid var(--rule); }
+.stats li { padding: 28px 20px; display: flex; flex-direction: column; gap: 6px; border-right: 1px solid var(--rule); min-width: 0; }
+.stats li:last-child { border-right: 0; }
+.stats b { font: 700 clamp(44px, 6vw, 72px)/1 var(--display); color: #fff; text-shadow: 3px 0 rgba(176,20,28,.6); font-variant-numeric: tabular-nums; }
+.stats span { font: 500 12px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ash); }
+.s-stats { border-top: 0; padding-block: 48px 0; }
+.demo-band { position: relative; overflow: hidden; border: 0; padding: 0; margin: 40px calc(50% - 50vw) 0; min-height: 440px; display: grid; align-items: center; }
+.demo-band > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(1.3) saturate(.9) contrast(1.05); }
+.demo-band::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.9) 0%, rgba(0,0,0,.45) 50%, rgba(0,0,0,0)); z-index: 1; }
+.demo-inner { position: relative; z-index: 2; max-width: 1240px; width: 100%; margin: 0 auto; padding: 64px max(16px, env(safe-area-inset-left, 0px)); }
+.demo-inner h2 { font-size: clamp(48px, 8vw, 104px); line-height: .95; color: #fff; }
+.demo-inner p:not(.eyebrow) { color: var(--bone); font-size: 19px; max-width: 42ch; margin: 18px 0 24px; }
+footer { padding-block: 56px 32px; background: #070606; border-top: 1px solid var(--rule); margin-top: 0; }
+.foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; }
+.foot-grid > * { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.foot-grid h4 { font: 700 15px/1 var(--display); letter-spacing: .12em; text-transform: uppercase; color: #fff; margin: 0 0 6px; }
+.foot-grid a { color: var(--ash); text-decoration: none; font: 400 14px/1.4 var(--body); }
+.foot-grid a:hover { color: #f2c230; }
+.foot-brand .foot-logo { width: 190px; }
+.foot-brand p { color: var(--ash); max-width: 34ch; margin: 0; font-size: 14px; }
+.foot-bottom { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--rule); font: 400 12px/1.6 var(--mono); color: var(--ash); letter-spacing: .06em; }
+.news-card b { min-height: 2.3em; }
+@media (max-width: 900px) { .stats { grid-template-columns: 1fr 1fr; } .stats li:nth-child(2) { border-right: 0; } .stats li:nth-child(-n+2) { border-bottom: 1px solid var(--rule); } .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .hero-text { padding: 24px 16px; } .demo-band { min-height: 380px; } }
 </style>
 
 <div class="ticker" aria-label="Latest"><div class="ticker-track"><span>EIGHTH PERSON MISSING NEAR BLACKWATER</span><span>THEY WENT IN. NOBODY CAME OUT.</span><span>NEW: THE OPENING — THE ROAD, THE MEETING, THE TRUNK</span><span>1–4 PLAYER CO-OP HORROR</span><span>DO NOT GO PAST THE GATE AFTER DARK</span><span>DEMO IN DEVELOPMENT</span><span>HAVE YOU SEEN MATEO REYES?</span><span>EIGHTH PERSON MISSING NEAR BLACKWATER</span><span>THEY WENT IN. NOBODY CAME OUT.</span><span>NEW: THE OPENING — THE ROAD, THE MEETING, THE TRUNK</span><span>1–4 PLAYER CO-OP HORROR</span><span>DO NOT GO PAST THE GATE AFTER DARK</span><span>DEMO IN DEVELOPMENT</span><span>HAVE YOU SEEN MATEO REYES?</span></div></div>
@@ -713,7 +746,7 @@ nav[aria-label=Pages] a:hover, nav[aria-label=Pages] a[aria-current="page"] { co
     <div class="home-grid">
       <div>
         <p class="eyebrow">Now making</p>
-        <h2>A co-op horror game for 1–4 players</h2>
+        <h2>A co-op horror game for <span class="nw">1–4</span> players</h2>
         <p class="lede">Under an old weather station is a Cold War lab that was sealed in 1999 with people still inside. This year, eight people went missing on the road outside. Four people go in to find them.</p>
       </div>
       <div class="intro">
@@ -752,8 +785,15 @@ nav[aria-label=Pages] a:hover, nav[aria-label=Pages] a[aria-current="page"] { co
       <a class="news-card" data-kind="character" href="#characters"><div class="nc-pic"><img src="media/cole.jpg" alt="" loading="lazy"><span class="nc-tag">Character</span></div><b>Cole Brennan: eyes up, kid</b><small>Character</small></a>
       <a class="news-card" data-kind="news" href="#archive"><div class="nc-pic"><img src="media/office.jpg" alt="" loading="lazy"><span class="nc-tag">Evidence</span></div><b>53 files recovered from Site 12</b><small>Archive</small></a>
       <a class="news-card" data-kind="news" href="#studio"><div class="nc-pic"><img src="media/game_menu.jpg" alt="" loading="lazy"><span class="nc-tag">Update</span></div><b>Dev log: a new title screen</b><small>Nov 19</small></a>
-      <a class="news-card" data-kind="news" href="#footage"><div class="nc-pic"><img src="media/monster_peek.jpg" alt="" loading="lazy"><span class="nc-tag">Evidence</span></div><b>Camera 4: look closely</b><small>Footage</small></a>
     </div>
+  </section>
+  <section class="s-stats">
+    <ul class="stats">
+      <li><b>1–4</b><span>players, online co-op</span></li>
+      <li><b>8</b><span>people missing</span></li>
+      <li><b>53</b><span>files, tapes and photos to find</span></li>
+      <li><b>1</b><span>way in</span></li>
+    </ul>
   </section>
   <section class="s-opening">
     <p class="eyebrow">The first ten minutes</p>
@@ -771,6 +811,15 @@ nav[aria-label=Pages] a:hover, nav[aria-label=Pages] a[aria-current="page"] { co
         <h3>Press Host. Wait for your friends. Drive.</h3>
         <p>The game opens on the car on the forest road, with the studio logo in the corner and the static never quite going away.</p>
       </div>
+    </div>
+  </section>
+  <section class="demo-band">
+    <img src="media/op_gas.jpg" alt="" loading="lazy">
+    <div class="demo-inner">
+      <p class="eyebrow">Chapter 1: The Surface</p>
+      <h2>The demo is coming</h2>
+      <p>Grab three friends. Meet at Pine Hollow Gas. Don't go past the gate alone.</p>
+      <div class="hero-btns"><a class="btn solid" href="#characters">Pick who you play</a><a class="btn" href="#files">Read the files</a></div>
     </div>
   </section>
   <div class="pager"><span></span><a href="#deepwell">The Game →</a></div>
@@ -1209,8 +1258,17 @@ nav[aria-label=Pages] a:hover, nav[aria-label=Pages] a[aria-current="page"] { co
 </main>
 
 <footer>
-  <div class="wrap">
-    <span><img class="foot-logo" src="media/logo.png" alt="" width="900" height="600" loading="lazy">© 2026 Deep Static Games</span>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <img class="foot-logo" src="media/logo_clear.png" alt="Deep Static Games" width="900" height="600" loading="lazy">
+      <p>A small, independent studio making horror you play with friends.</p>
+    </div>
+    <div><h4>Deepwell</h4><a href="#deepwell">The game</a><a href="#characters">Characters</a><a href="#footage">Footage</a></div>
+    <div><h4>The Files</h4><a href="#news">The Courier</a><a href="#camera">Cell 7 Cam</a><a href="#archive">Site 12 Archive</a></div>
+    <div><h4>Studio</h4><a href="#studio">About us</a><a href="#studio">Dev log</a></div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© 2026 Deep Static Games</span>
     <span>Deepwell is in development. Everything shown may change.</span>
   </div>
 </footer>
