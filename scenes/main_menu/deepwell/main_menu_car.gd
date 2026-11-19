@@ -71,7 +71,7 @@ const COLOR_RED := Color("c0392b")
 const DRIVE_SPEED := 17.0  # meters per second
 const STATION_START_Z := -75.0  # (the weather station isn't on this road any more)
 const ROAD_LENGTH := 160.0
-const TRUNK_OPEN_ANGLE := -45.0  # the back edge swings up (and frames the top of the trunk view)
+const TRUNK_OPEN_ANGLE := -38.0  # the back edge swings up (and frames the top of the trunk view)
 const SKIP_HOLD_TIME := 1.2
 ## Where the gas station starts when the car pulls in (it slides up to the car).
 const GAS_STATION_START_Z := -40.0
@@ -288,7 +288,7 @@ const ARRIVE_CAM_POS := Vector3(0.0, 0.98, 1.7)
 const ARRIVE_CAM_TARGET := Vector3(0.0, 1.58, 3.45)
 ## Inside the open trunk, lying on the floor and looking up and out.
 const SELECT_CAM_POS := Vector3(0.0, 0.86, 1.85)
-const SELECT_CAM_TARGET := Vector3(0.0, 2.015, 3.85)
+const SELECT_CAM_TARGET := Vector3(0.0, 1.86, 3.85)
 
 
 func _ready() -> void:
@@ -623,6 +623,7 @@ func _enter_scene(scene: String) -> void:
 		for tree in _trees:
 			tree.visible = true
 		for id: String in CHARACTER_ORDER:
+			_stop_turn(id)
 			var root: Node3D = _figures[id]["root"]
 			root.visible = id in ["eli", "cole"]
 			root.rotation.y = 0.0
@@ -643,6 +644,7 @@ func _enter_scene(scene: String) -> void:
 		_gas_station.show()
 		_speed = 12.0
 		for id: String in ["eli", "cole"]:
+			_stop_turn(id)
 			var root: Node3D = _figures[id]["root"]
 			root.visible = true
 			root.position = CHARACTERS[id]["seat"]
@@ -945,11 +947,23 @@ func _face_toward(id: String, point: Vector3, seconds := 0.0) -> void:
 	if dir.length() < 0.01:
 		return
 	var yaw := atan2(-dir.x, -dir.z)
+	_stop_turn(id)
 	if seconds <= 0.0:
 		root.rotation.y = yaw
 	else:
 		var tween := create_tween()
 		tween.tween_property(root, "rotation:y", root.rotation.y + wrapf(yaw - root.rotation.y, -PI, PI), seconds).set_trans(Tween.TRANS_SINE)
+		_figures[id]["turn_tween"] = tween
+
+
+## Stop someone turning (a skip can jump to the next scene mid-turn).
+func _stop_turn(id: String) -> void:
+	var tween: Tween = _figures[id].get("turn_tween") as Tween
+	if tween != null and tween.is_valid():
+		tween.kill()
+	var move: Tween = _figures[id].get("move_tween") as Tween
+	if move != null and move.is_valid():
+		move.kill()
 
 
 ## Turn someone's body a little in their seat (looking out of the window or at the driver).
@@ -978,6 +992,7 @@ func _set_state(new_state: State) -> void:
 	_car.rotation.y = 0.0
 	# Only Eli (driving) and Cole are in the car; the back seat has a duffel bag.
 	for id: String in _figures:
+		_stop_turn(id)
 		var root: Node3D = _figures[id]["root"]
 		root.visible = id in ["eli", "cole"]
 		root.position = CHARACTERS[id]["seat"]
@@ -1016,6 +1031,7 @@ func _enter_select() -> void:
 	_set_taillights(false)
 	_duffel.visible = false  # it's in the trunk now
 	for id: String in CHARACTER_ORDER:
+		_stop_turn(id)
 		var root: Node3D = _figures[id]["root"]
 		root.visible = true
 		root.position = TRUNK_POSITIONS[id]

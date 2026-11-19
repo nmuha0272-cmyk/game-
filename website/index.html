@@ -40,7 +40,7 @@ body::before {
 }
 a { color: inherit; }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--signal-hot); outline-offset: 3px; }
-.wrap { max-width: 1120px; margin: 0 auto; }
+.wrap { max-width: 1240px; margin: 0 auto; }
 img { max-width: 100%; display: block; }
 
 /* ---------- top bar ---------- */
@@ -499,6 +499,28 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
 .cctv-log li.new { color: var(--bone); animation: flick 0.6s steps(1) 1; }
 @media (max-width: 900px) { .cctv-wrap { grid-template-columns: 1fr; } .cctv { border-width: 6px; } }
 @media (prefers-reduced-motion: reduce) { .cctv img, .cctv-band, .cctv-ui .tr i { animation: none; } }
+
+/* ---------- round 4: the opening ---------- */
+.op-reel { list-style: none; margin: 36px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.op-reel li { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.op-reel figure { margin: 0 0 8px; position: relative; background: #000; border: 1px solid var(--rule); padding: 9% 0; overflow: hidden; }
+.op-reel figure img { width: 100%; aspect-ratio: 2.35 / 1; object-fit: cover; display: block; transition: transform .6s, filter .6s; filter: saturate(.9) contrast(1.05); }
+.op-reel li:hover figure img { transform: scale(1.04); filter: saturate(1.05) contrast(1.1); }
+.op-n { font: 500 11px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--signal-hot); }
+.op-reel b { font: 700 24px/1.1 var(--display); text-transform: uppercase; letter-spacing: .04em; }
+.op-reel p { margin: 0; color: var(--ash); font-size: 15px; }
+.title-screen { margin-top: 40px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; border: 1px solid var(--rule); background: var(--panel); padding: 18px; }
+.title-screen > * { min-width: 0; }
+.title-screen figure { margin: 0; }
+.title-screen img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; border: 1px solid var(--rule); }
+.title-screen h3 { font-size: 28px; margin-bottom: 10px; }
+.title-screen p { color: var(--ash); margin: 0; }
+.card .photo img { transition: transform .5s, filter .5s; filter: contrast(1.05); }
+.card:hover .photo img { transform: scale(1.04); }
+.card { transition: border-color .25s, transform .25s; }
+.card:hover { border-color: var(--signal); transform: translateY(-3px); }
+section h2 { font-size: clamp(36px, 5.5vw, 68px); }
+@media (max-width: 900px) { .op-reel { grid-template-columns: 1fr; } .title-screen { grid-template-columns: 1fr; } }
 </style>
 
 <header class="bar">
@@ -568,6 +590,24 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
       <a class="tile" href="#footage"><div class="pic"><img src="media/monster_peek.jpg" alt="" loading="lazy"></div><b>Footage</b><span>Pictures from inside the game. Look closely.</span><i>Watch →</i></a>
     </div>
   </section>
+  <section class="s-opening">
+    <p class="eyebrow">The first ten minutes</p>
+    <h2>The opening</h2>
+    <p class="lede">Before anyone sets foot in the station, the four of them have to meet. Play it together: everyone sees the same scene at the same time.</p>
+    <ol class="op-reel">
+      <li><figure><img src="media/op_road.jpg" alt="Inside the car at night: Cole in the passenger seat, Eli driving in the rain." loading="lazy"></figure><span class="op-n">Part 1</span><b>The Road</b><p>Eli and Cole, a wet two-lane road, and Mateo's dog tag swinging from the mirror.</p></li>
+      <li><figure><img src="media/op_gas.jpg" alt="The car pulls into a closed gas station under one buzzing light." loading="lazy"></figure><span class="op-n">Part 2</span><b>The Meeting</b><p>Pine Hollow Gas, 3:30 AM. Nora and Walter are already waiting.</p></li>
+      <li><figure><img src="media/op_trunk.jpg" alt="Seen from inside the open trunk: Walter, Nora, Eli and Cole looking down at the gear." loading="lazy"></figure><span class="op-n">Part 3</span><b>The Trunk</b><p>Pick who you play from inside the trunk. Grab your gear. Nobody gets the same person.</p></li>
+    </ol>
+    <div class="title-screen">
+      <figure><img src="media/game_menu.jpg" alt="Deepwell's title screen: the DEEPWELL title, a red heartbeat line, the menu buttons and the car on a rainy road." loading="lazy"></figure>
+      <div>
+        <p class="eyebrow">New title screen</p>
+        <h3>Press Host. Wait for your friends. Drive.</h3>
+        <p>The game opens on the car on the forest road, with the studio logo in the corner and the static never quite going away.</p>
+      </div>
+    </div>
+  </section>
   <div class="pager"><span></span><a href="#deepwell">Deepwell →</a></div>
 </div>
 <div class="page" data-page="deepwell" hidden>
@@ -596,7 +636,7 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
     <div class="story">
       <div>
         <p>Under the weather station is a secret Cold War lab that studied "soldier enhancement." In 1999 the experiments went wrong. The lower floors were sealed with people still inside, and the official story was a gas leak.</p>
-        <p>Eli Reyes lost both his parents that night. Now it's 2015. His two best friends went in to find out the truth and never came back. Two weeks ago his twin brother Mateo followed them.</p>
+        <p>Now it's 2015. Eli Reyes's two best friends went in to find out the truth and never came back. Two weeks ago his older twin brother, Mateo, followed them. Eli is going in after him.</p>
         <p>Nothing inside was ever updated: reel-to-reel tapes, bulky computers, bunker doors. Your phones get no signal down there. All you have is walkie-talkies, flashlights, and each other.</p>
       </div>
 
@@ -622,11 +662,11 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
     <ol class="timeline">
       <li class=""><span class="when">1960s</span><div><h3>Site 12 opens</h3><p>A secret lab is built under a fake weather station. Project Ironwood studies "soldier enhancement." Volunteers are told they're getting vitamins.</p></div></li>
       <li class=""><span class="when">Phase One</span><div><h3>Subject 7</h3><p>The first volunteer given Serum H-7 won't stop growing. Six feet, then seven, then nine. They move him to the tunnels.</p></div></li>
-      <li class=""><span class="when">1998</span><div><h3>A family photo</h3><p>Dr. Maria Reyes and her husband Daniel pose with their little boy, Eli, outside the station.</p></div></li>
-      <li class="red"><span class="when">1999</span><div><h3>The sealing</h3><p>Level B is sealed with people still inside. The official story is a gas leak. Eli's parents never come home.</p></div></li>
+      <li class="red"><span class="when">1999</span><div><h3>The sealing</h3><p>Level B is sealed with people still inside. The official story is a gas leak. Nobody comes home.</p></div></li>
       <li class=""><span class="when">Aug 2015</span><div><h3>The road</h3><p>People start disappearing on the access road: a reporter, a hiker, a surveyor.</p></div></li>
       <li class=""><span class="when">Oct 2015</span><div><h3>The camera</h3><p>Eli's best friends, Marcus and Jenna, go in with a video camera to find the truth.</p></div></li>
       <li class=""><span class="when">2 weeks ago</span><div><h3>Number eight</h3><p>Eli's twin brother, Mateo, follows them in his uniform jacket.</p></div></li>
+      <li class=""><span class="when">3:30 AM</span><div><h3>Pine Hollow Gas</h3><p>Eli and Cole meet Nora and Walter at a closed gas station. Gear's in the trunk.</p></div></li>
       <li class="red"><span class="when">Tonight</span><div><h3>Four go in</h3><p>Eli, Cole, Nora and Walter drive up to the gate.</p></div></li>
     </ol>
   </section>
@@ -740,17 +780,17 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
 
     <div class="team">
       <article class="card">
-        <div class="photo"><img src="media/eli.jpg" alt="Eli Reyes in a brown jacket and grey hoodie." loading="lazy"></div>
+        <div class="photo"><img src="media/eli.jpg" alt="Eli Reyes: messy brown hair, grey hoodie under a brown jacket." loading="lazy"></div>
         <div class="body">
           <span class="role">The Son · Survivor</span>
           <h3>Eli Reyes</h3>
-          <p>21. College student and Army Reserve soldier. Both his parents died here in 1999.</p>
+          <p>21. College student and Army Reserve soldier. His older twin brother Mateo walked into Blackwater two weeks ago and never came out.</p>
           <ul class="skills"><li><b>SENSE</b> Hold to see nearby monsters through walls for 3 seconds.</li><li><b>MILITARY TRAINING</b> Steadier aim and faster reloads. Reads Morse code and military maps.</li><li><b>MENTOR BOND</b> Works better when Cole is close by.</li></ul>
-          <blockquote>"Dad always said: slow is smooth, smooth is fast."</blockquote>
+          <blockquote>"He's my big brother. He'd come for me."</blockquote>
         </div>
       </article>
       <article class="card">
-        <div class="photo"><img src="media/cole.jpg" alt="Cole Brennan in a green military field jacket." loading="lazy"></div>
+        <div class="photo"><img src="media/cole.jpg" alt="Cole Brennan: short hair, green military field jacket." loading="lazy"></div>
         <div class="body">
           <span class="role">The Guard · Protector</span>
           <h3>Cole Brennan</h3>
@@ -760,21 +800,21 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
         </div>
       </article>
       <article class="card">
-        <div class="photo"><img src="media/nora.jpg" alt="Nora Vance in a tan trench coat with a camera around her neck." loading="lazy"></div>
+        <div class="photo"><img src="media/nora.jpg" alt="Nora Vance: hair in a bun, tan trench coat over a dark turtleneck." loading="lazy"></div>
         <div class="body">
           <span class="role">The Journalist · Stunner</span>
           <h3>Nora Vance</h3>
-          <p>35. Investigative journalist. Her source vanished trying to expose Deepwell.</p>
+          <p>35. Investigative journalist. She's chased Blackwater for three years. Her source vanished trying to expose it.</p>
           <ul class="skills"><li><b>CAMERA FLASH</b> Stuns a monster in front of her for 2 seconds.</li><li><b>EVIDENCE</b> Photograph clues to unlock story files for the whole team.</li></ul>
           <blockquote>"If it's real, I'm getting it on film."</blockquote>
         </div>
       </article>
       <article class="card">
-        <div class="photo"><canvas id="walter-static" width="150" height="200" aria-hidden="true"></canvas><span class="nofile">No photo on file</span></div>
+        <div class="photo"><img src="media/walter.jpg" alt="Walter Kessler, grey hair and black glasses, in a work shirt with suspenders." loading="lazy"></div>
         <div class="body">
           <span class="role">The Engineer · Fixer</span>
           <h3>Walter Kessler</h3>
-          <p>60. Worked at Deepwell before it was sealed. Nervous, quiet, and hiding something.</p>
+          <p>60. Worked maintenance at Blackwater before it was sealed. Knows the tunnels. Nervous, quiet, and hiding something.</p>
           <ul class="skills"><li><b>REPAIR</b> The only one who can fix generators, elevators and panels.</li><li><b>HACK</b> Opens locked security doors, but it takes time, so someone has to guard him.</li></ul>
           <blockquote>"I can fix it. Just keep them away from me."</blockquote>
         </div>
@@ -881,6 +921,8 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
     <p class="eyebrow">From the game</p>
     <h1 class="page-title">Recovered footage</h1>
     <div class="footage">
+      <figure class="big"><span class="stamp">THE ROAD · 03:12</span><img src="media/op_hands.jpg" alt="Eli's hands on the steering wheel at night, Mateo's dog tag hanging from the mirror." loading="lazy"><figcaption><b>The drive in.</b> Mateo's dog tag hangs from the mirror.</figcaption></figure>
+      <figure class="tall"><img src="media/op_trunk_open.jpg" alt="Eli opens the trunk of the maroon sedan at the gas station." loading="lazy"><figcaption><b>Pine Hollow Gas.</b> "Gear's in the trunk."</figcaption></figure>
       <figure class="big"><img src="media/car.jpg" alt="Eli and Cole in the front seats of the car, driving down a forest road at night." loading="lazy"><figcaption><b>The drive in.</b> Pick your character from inside the car.</figcaption></figure>
       <figure class="tall"><img src="media/trunk.jpg" alt="Cole hands Eli a pistol by the car's trunk." loading="lazy"><figcaption><b>At the trunk.</b> "Safety on until you need it."</figcaption></figure>
       <figure class="half"><img src="media/office.jpg" alt="An abandoned office with a checkered floor, a wooden desk and a red emergency light." loading="lazy"><figcaption><b>Inside the station.</b> The power still works.</figcaption></figure>
@@ -918,6 +960,7 @@ body.flicker main { animation: flick 0.9s steps(1) both; }
     <p class="eyebrow">Dev log</p>
     <h2>What we're working on</h2>
     <ol class="devlog">
+      <li><time>Nov 19</time><p>A new title screen, and a new opening: the drive, the gas station, and picking your character from inside the trunk.</p></li>
       <li><time>Nov 19</time><p>The studio logo now opens the game. Press any key to skip it.</p></li>
       <li><time>Nov 18</time><p>New opening: the team meets at a gas station, and everyone starts with gear in their inventory.</p></li>
       <li><time>Nov 13</time><p>Everyone walks and runs faster. The monsters got faster too.</p></li>
@@ -968,21 +1011,6 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   g.beginPath(); g.arc(x, y, r, Math.PI + 0.2, Math.PI * 2 - 0.2); g.stroke();
   g.strokeStyle = "#e3363e"; g.lineWidth = 3.5; g.lineJoin = "miter";
   g.beginPath(); g.moveTo(0, y); g.lineTo(x - 5, y); g.lineTo(x - 1, y + 24); g.lineTo(x + 4, y - 19); g.lineTo(x + 7, y + 5); g.lineTo(x + 9, y); g.lineTo(s, y); g.stroke();
-})();
-
-// Walter has no photo: just static.
-(function () {
-  const c = document.getElementById("walter-static"), g = c.getContext("2d");
-  const img = g.createImageData(c.width, c.height);
-  function frame() {
-    for (let i = 0; i < img.data.length; i += 4) {
-      const v = Math.random() * 200;
-      img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255;
-    }
-    g.putImageData(img, 0, 0);
-  }
-  frame();
-  if (!reduce) setInterval(frame, 90);
 })();
 
 // A heartbeat line moving across the studio readout.
