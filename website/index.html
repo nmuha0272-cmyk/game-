@@ -702,6 +702,22 @@ footer { padding-block: 56px 32px; background: #070606; border-top: 1px solid va
 .news-card b { min-height: 2.3em; }
 @media (max-width: 900px) { .stats { grid-template-columns: 1fr 1fr; } .stats li:nth-child(2) { border-right: 0; } .stats li:nth-child(-n+2) { border-bottom: 1px solid var(--rule); } .foot-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 520px) { .hero-text { padding: 24px 16px; } .demo-band { min-height: 380px; } }
+
+/* ---------- a banner for each tab ---------- */
+.tab-hero { position: relative; margin-inline: calc(50% - 50vw); padding: 0; border-top: 0; min-height: clamp(360px, 52vh, 540px); display: grid; place-items: center; overflow: hidden; text-align: center; }
+.tab-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(1.35) saturate(.95) contrast(1.05); transform: scale(1.04); animation: drift 24s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: scale(1.12) translate(-1.5%, -1%); } }
+.tab-hero::before { content: ""; position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse at center, rgba(0,0,0,.45) 0, rgba(0,0,0,.2) 55%, rgba(0,0,0,.55) 100%), linear-gradient(to bottom, rgba(0,0,0,0) 60%, var(--void)); }
+.tab-hero-in { position: relative; z-index: 2; padding: 72px max(16px, env(safe-area-inset-left, 0px)) 56px; max-width: 980px; }
+.tab-hero h1 { font: 700 clamp(60px, 11vw, 150px)/.9 var(--display); text-transform: uppercase; color: #fff; text-shadow: 4px 0 rgba(176,20,28,.7), 0 0 40px rgba(0,0,0,.8); margin: 0; text-wrap: balance; }
+.tab-lede { font: 500 clamp(16px, 1.8vw, 19px)/1.6 var(--mono); color: var(--bone); max-width: 52ch; margin: 20px auto 0; }
+.tab-hero .pills { margin-top: 28px; }
+.th-game .eyebrow, .th-chars .eyebrow, .th-files .eyebrow, .th-studio .eyebrow { color: #f2c230; }
+.th-files > img { filter: brightness(1.2) sepia(.4) saturate(.85); }
+.th-studio > img { filter: brightness(1.1) blur(1.5px); }
+.s-deepwell .game-head { margin-top: 0; }
+.s-deepwell, .s-team, .s-studio { border-top: 0; }
+@media (prefers-reduced-motion: reduce) { .tab-hero > img { animation: none; } }
 </style>
 
 <div class="ticker" aria-label="Latest"><div class="ticker-track"><span>EIGHTH PERSON MISSING NEAR BLACKWATER</span><span>THEY WENT IN. NOBODY CAME OUT.</span><span>NEW: THE OPENING — THE ROAD, THE MEETING, THE TRUNK</span><span>1–4 PLAYER CO-OP HORROR</span><span>DO NOT GO PAST THE GATE AFTER DARK</span><span>DEMO IN DEVELOPMENT</span><span>HAVE YOU SEEN MATEO REYES?</span><span>EIGHTH PERSON MISSING NEAR BLACKWATER</span><span>THEY WENT IN. NOBODY CAME OUT.</span><span>NEW: THE OPENING — THE ROAD, THE MEETING, THE TRUNK</span><span>1–4 PLAYER CO-OP HORROR</span><span>DO NOT GO PAST THE GATE AFTER DARK</span><span>DEMO IN DEVELOPMENT</span><span>HAVE YOU SEEN MATEO REYES?</span></div></div>
@@ -825,12 +841,16 @@ footer { padding-block: 56px 32px; background: #070606; border-top: 1px solid va
   <div class="pager"><span></span><a href="#deepwell">The Game →</a></div>
 </div>
 <div class="page" data-page="deepwell" hidden>
+  <section class="tab-hero th-game">
+    <img src="media/op_road.jpg" alt="" loading="eager">
+    <div class="tab-hero-in">
+      <p class="eyebrow">Our first game · in development</p>
+      <h1>Deepwell</h1>
+      <p class="tab-lede">A Cold War lab under a fake weather station. Eight people missing. Four go in.</p>
+    </div>
+  </section>
   <section class="s-deepwell">
     <div class="game-head">
-      <div>
-        <p class="eyebrow">Our first game · in development</p>
-        <h1 class="game-title">Deepwell</h1>
-      </div>
       <div class="tags">
         <span class="tag">1–4 players co-op</span>
         <span class="tag">First person</span>
@@ -933,10 +953,15 @@ footer { padding-block: 56px 32px; background: #070606; border-top: 1px solid va
   <div class="pager"><a href="#home">← Home</a><a href="#characters">Characters →</a></div>
 </div>
 <div class="page" data-page="characters" hidden>
+  <section class="tab-hero th-chars">
+    <img src="media/op_trunk.jpg" alt="" loading="eager">
+    <div class="tab-hero-in">
+      <p class="eyebrow">Pick who you play</p>
+      <h1>The four who go in</h1>
+      <p class="tab-lede">Each of them has a reason to go in, and a skill the others need to get out alive.</p>
+    </div>
+  </section>
   <section class="s-team">
-    <p class="eyebrow">Pick who you play</p>
-    <h1 class="page-title">The four who go in</h1>
-    <p class="lede">Each of them has a reason to go in, and a skill the others need to get out alive.</p>
 
     <div class="team">
       <article class="card">
@@ -1041,15 +1066,20 @@ footer { padding-block: 56px 32px; background: #070606; border-top: 1px solid va
   <div class="pager"><a href="#deepwell">← The Game</a><a href="#files">The Files →</a></div>
 </div>
 <div class="page" data-page="files" hidden>
-  <section class="s-files">
-    <h1 class="fresh-title">The files</h1>
-    <p class="fresh-lede">What people found near Blackwater, and what Site 12 kept to itself.</p>
-    <nav class="pills file-pills" aria-label="Files">
-      <a class="pill" href="#news" data-sub="news">The Courier</a>
-      <a class="pill" href="#camera" data-sub="camera">Cell 7 Cam</a>
-      <a class="pill" href="#archive" data-sub="archive">Site 12 Archive</a>
-    </nav>
+  <section class="tab-hero th-files s-files">
+    <img src="media/office.jpg" alt="" loading="eager">
+    <div class="tab-hero-in">
+      <p class="eyebrow">Evidence</p>
+      <h1>The files</h1>
+      <p class="tab-lede">What people found near Blackwater, and what Site 12 kept to itself.</p>
+      <nav class="pills file-pills" aria-label="Files">
+        <a class="pill" href="#news" data-sub="news">The Courier</a>
+        <a class="pill" href="#camera" data-sub="camera">Cell 7 Cam</a>
+        <a class="pill" href="#archive" data-sub="archive">Site 12 Archive</a>
+      </nav>
+    </div>
   </section>
+
 <div class="subpage" data-sub="news">
   <section class="s-news">
     <p class="eyebrow">From the local paper</p>
@@ -1205,6 +1235,14 @@ footer { padding-block: 56px 32px; background: #070606; border-top: 1px solid va
   <div class="pager"><a href="#characters">← Characters</a><a href="#studio">Studio →</a></div>
 </div>
 <div class="page" data-page="studio" hidden>
+  <section class="tab-hero th-studio">
+    <img src="media/game_menu.jpg" alt="" loading="eager">
+    <div class="tab-hero-in">
+      <p class="eyebrow">The people behind it</p>
+      <h1>Deep Static Games</h1>
+      <p class="tab-lede">A small, independent studio making horror you play with friends.</p>
+    </div>
+  </section>
   <section class="s-studio">
     <div class="studio">
       <div>
