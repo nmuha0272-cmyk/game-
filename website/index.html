@@ -718,6 +718,30 @@ footer { padding-block: 56px 32px; background: #070606; border-top: 1px solid va
 .s-deepwell .game-head { margin-top: 0; }
 .s-deepwell, .s-team, .s-studio { border-top: 0; }
 @media (prefers-reduced-motion: reduce) { .tab-hero > img { animation: none; } }
+
+/* ---------- feature cards, dev log, scroll motion ---------- */
+.feat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 36px; }
+.feat-card { position: relative; min-height: 300px; overflow: hidden; border: 1px solid var(--rule); display: flex; align-items: flex-end; min-width: 0; }
+.feat-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.95) saturate(.85); transition: transform .6s, filter .6s; }
+.feat-card::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(0,0,0,.95) 15%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.1)); }
+.feat-card > div { position: relative; z-index: 2; padding: 22px; }
+.feat-card span { font: 700 13px/1 var(--mono); color: #f2c230; letter-spacing: .2em; }
+.feat-card h3 { font: 700 26px/1.05 var(--display); text-transform: uppercase; color: #fff; margin: 8px 0 6px; }
+.feat-card p { margin: 0; color: var(--bone); font-size: 15px; }
+.feat-card:hover img { transform: scale(1.06); filter: brightness(1.15) saturate(1); }
+.feat-card:hover { border-color: var(--signal); }
+.devlog { position: relative; border-top: 0; padding-left: 28px; }
+.devlog::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(var(--signal), var(--rule)); }
+.devlog li { position: relative; display: block; border: 1px solid var(--rule); background: var(--panel); padding: 16px 20px; margin-bottom: 12px; transition: border-color .2s, transform .2s; }
+.devlog li::before { content: ""; position: absolute; left: -27px; top: 20px; width: 12px; height: 12px; border-radius: 50%; background: var(--void); border: 2px solid var(--signal-hot); }
+.devlog li:first-child::before { background: var(--signal-hot); box-shadow: 0 0 12px var(--signal); }
+.devlog li:hover { border-color: var(--signal); transform: translateX(4px); }
+.devlog time { display: inline-block; font: 700 12px/1 var(--mono); letter-spacing: .14em; color: #120d05; background: #f2c230; padding: 5px 8px; border-radius: 999px; margin-bottom: 8px; }
+.reveal { transform: translateY(26px); transition: transform .7s cubic-bezier(.2,.7,.2,1); }
+.reveal.in { transform: none; }
+@media (max-width: 900px) { .feat { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .feat { grid-template-columns: 1fr; } .feat-card { min-height: 240px; } }
+@media (prefers-reduced-motion: reduce) { .reveal { transform: none; transition: none; } }
 </style>
 
 <div class="ticker" aria-label="Latest"><div class="ticker-track"><span>EIGHTH PERSON MISSING NEAR BLACKWATER</span><span>THEY WENT IN. NOBODY CAME OUT.</span><span>NEW: THE OPENING — THE ROAD, THE MEETING, THE TRUNK</span><span>1–4 PLAYER CO-OP HORROR</span><span>DO NOT GO PAST THE GATE AFTER DARK</span><span>DEMO IN DEVELOPMENT</span><span>HAVE YOU SEEN MATEO REYES?</span><span>EIGHTH PERSON MISSING NEAR BLACKWATER</span><span>THEY WENT IN. NOBODY CAME OUT.</span><span>NEW: THE OPENING — THE ROAD, THE MEETING, THE TRUNK</span><span>1–4 PLAYER CO-OP HORROR</span><span>DO NOT GO PAST THE GATE AFTER DARK</span><span>DEMO IN DEVELOPMENT</span><span>HAVE YOU SEEN MATEO REYES?</span></div></div>
@@ -860,7 +884,6 @@ footer { padding-block: 56px 32px; background: #070606; border-top: 1px solid va
       </div>
     </div>
 
-    <p class="lede">Eight people have gone missing near an old weather station. Four people go in after them.</p>
 
     <figure class="station">
       <img src="media/station.jpg" alt="The abandoned weather station at night, ivy on the walls and a single light by the door." loading="eager">
@@ -907,13 +930,13 @@ footer { padding-block: 56px 32px; background: #070606; border-top: 1px solid va
   <section class="s-plays">
     <p class="eyebrow">How it plays</p>
     <h2>Stay together</h2>
-    <div class="plays">
-      <div><h3>Play with friends</h3><p>1 to 4 players. Play alone or invite friends. Everyone picks a different character.</p></div>
-      <div><h3>Solve it together</h3><p>Find a fuse, a brass key, a floppy disk. One clue opens the next door, and some locks need two people.</p></div>
-      <div><h3>Share your gear</h3><p>Hand items to your team. Heavy things slow you down, unless you're Cole.</p></div>
-      <div><h3>Hide or run</h3><p>Monsters hunt by sound and light. Turn off your flashlight, hide in a locker, or sprint.</p></div>
-      <div><h3>1960s tech</h3><p>Reel tapes, old computers and bunker doors, while you carry 2015 gear.</p></div>
-      <div><h3>Find out what happened</h3><p>Tapes, files and photos tell the story of the night in 1999.</p></div>
+    <div class="feat">
+      <article class="feat-card"><img src="media/op_trunk.jpg" alt="" loading="lazy"><div><span>01</span><h3>Play with friends</h3><p>1 to 4 players. Play alone or invite friends. Everyone picks a different character.</p></div></article>
+      <article class="feat-card"><img src="media/office.jpg" alt="" loading="lazy"><div><span>02</span><h3>Solve it together</h3><p>Find a fuse, a brass key, a floppy disk. One clue opens the next door, and some locks need two people.</p></div></article>
+      <article class="feat-card"><img src="media/op_trunk_open.jpg" alt="" loading="lazy"><div><span>03</span><h3>Share your gear</h3><p>Hand items to your team. Heavy things slow you down, unless you're Cole.</p></div></article>
+      <article class="feat-card"><img src="media/monster_peek.jpg" alt="" loading="lazy"><div><span>04</span><h3>Hide or run</h3><p>Monsters hunt by sound and light. Turn off your flashlight, hide in a locker, or sprint.</p></div></article>
+      <article class="feat-card"><img src="media/cell_wall.jpg" alt="" loading="lazy"><div><span>05</span><h3>1960s tech</h3><p>Reel tapes, old computers and bunker doors, while you carry 2015 gear.</p></div></article>
+      <article class="feat-card"><img src="media/blood.jpg" alt="" loading="lazy"><div><span>06</span><h3>Find out what happened</h3><p>Tapes, files and photos tell the story of the night in 1999.</p></div></article>
     </div>
   </section>
 
@@ -2207,4 +2230,15 @@ const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 document.querySelectorAll("[data-jump]").forEach(a => a.addEventListener("click", () => {
   setTimeout(() => { const t = document.querySelector("." + a.dataset.jump); if (t) t.scrollIntoView({ behavior: "smooth" }); }, 80);
 }));
+
+// Sections slide up a little as they come into view (they're always visible).
+(function () {
+  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+  document.querySelectorAll(".news-card, .feat-card, .card, .devlog li, .stats li, .op-reel li, .timeline li").forEach((el, i) => {
+    el.classList.add("reveal"); el.style.transitionDelay = (i % 4) * 70 + "ms"; io.observe(el);
+  });
+  window.addEventListener("hashchange", () => setTimeout(() => document.querySelectorAll(".reveal:not(.in)").forEach(el => {
+    const r = el.getBoundingClientRect(); if (r.top < innerHeight) el.classList.add("in"); }), 50));
+})();
 </script>
