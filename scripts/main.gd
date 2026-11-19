@@ -36,8 +36,9 @@ var _arrived_ids := {}
 
 
 func _ready() -> void:
-	# Show main menu right away
+	# Show main menu right away (the studio logo plays on top of it first).
 	_show_main_menu()
+	StudioLogo.play_on(self)
 	
 	menu.host_requested.connect(_on_host_requested)
 	menu.join_requested.connect(_on_join_requested)
