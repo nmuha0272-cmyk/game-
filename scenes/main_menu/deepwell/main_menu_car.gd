@@ -2499,12 +2499,14 @@ func _build_select_ui(layer: CanvasLayer) -> void:
 	_ready_button = Button.new()
 	_ready_button.text = "READY"
 	_ready_button.custom_minimum_size = Vector2(150, 40)
+	_ready_button.add_theme_font_size_override("font_size", 22)
 	_ready_button.pressed.connect(_on_ready_pressed)
 	bottom.add_child(_ready_button)
 
 	_start_button = Button.new()
 	_start_button.text = "START"
 	_start_button.custom_minimum_size = Vector2(150, 40)
+	_start_button.add_theme_font_size_override("font_size", 22)
 	_start_button.pressed.connect(_on_start_pressed)
 	bottom.add_child(_start_button)
 
